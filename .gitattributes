@@ -1,3 +1,6 @@
 
 # Migration snapshot: store included files directly in Git; oversized files are listed separately.
-* -filter -diff -merge -text
+* -filter !diff !merge -text
+
+# Large-file transfer parts (restore originals using the migration script).
+/.github-transfer/objects/* filter=lfs diff=lfs merge=lfs -text

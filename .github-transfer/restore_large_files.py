@@ -76,6 +76,15 @@ def main():
     parser.add_argument('--verify-only', action='store_true')
     args = parser.parse_args()
     root = Path(__file__).resolve().parent.parent
+    directories = root / '.github-transfer/empty-directories.json'
+    if directories.exists():
+        for relative in json.loads(directories.read_text()):
+            directory = contained(root, relative)
+            if args.verify_only:
+                if not directory.is_dir():
+                    raise FileNotFoundError(f'Missing original directory: {relative}')
+            else:
+                directory.mkdir(parents=True, exist_ok=True)
     manifest = root / '.github-transfer/large-files.json'
     if not manifest.exists():
         raise SystemExit('No uploaded large-file manifest yet; check .github-transfer/pending-files.json.')

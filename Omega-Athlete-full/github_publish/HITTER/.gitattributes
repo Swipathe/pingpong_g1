@@ -11,4 +11,4 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 
 # Migration snapshot: store included files directly in Git; oversized files are listed separately.
-* -filter -diff -merge -text
+* -filter !diff !merge -text
