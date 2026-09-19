@@ -1,0 +1,1517 @@
+alg_cfg:
+  desc: ''
+  sort: 3
+  value:
+    clip_param: 0.2
+    desired_kl: 0.01
+    entropy_coef: 0.005
+    gamma: 0.99
+    lam: 0.95
+    learning_rate: 0.0003
+    max_grad_norm: 1.0
+    normalize_advantage_per_mini_batch: false
+    num_learning_epochs: 5
+    num_mini_batches: 4
+    rnd_cfg: null
+    schedule: fixed
+    symmetry_cfg: null
+    use_clipped_value_loss: true
+    value_loss_coef: 1.0
+env_cfg:
+  desc: ''
+  sort: 4
+  value:
+    actions:
+      joint_pos:
+        asset_name: robot
+        class_type: isaaclab.envs.mdp.actions.joint_actions:JointPositionAction
+        clip: null
+        debug_vis: false
+        joint_names:
+        - .*
+        offset: 0.0
+        preserve_order: false
+        scale:
+          .*_ankle_pitch_joint: 0.43857731392336724
+          .*_ankle_roll_joint: 0.43857731392336724
+          .*_elbow_joint: 0.43857731392336724
+          .*_hip_pitch_joint: 0.5475464652142303
+          .*_hip_roll_joint: 0.3506614663788243
+          .*_hip_yaw_joint: 0.5475464652142303
+          .*_knee_joint: 0.3506614663788243
+          .*_shoulder_pitch_joint: 0.43857731392336724
+          .*_shoulder_roll_joint: 0.43857731392336724
+          .*_shoulder_yaw_joint: 0.43857731392336724
+          .*_wrist_pitch_joint: 0.07450087032950714
+          .*_wrist_roll_joint: 0.43857731392336724
+          .*_wrist_yaw_joint: 0.07450087032950714
+          waist_pitch_joint: 0.43857731392336724
+          waist_roll_joint: 0.43857731392336724
+          waist_yaw_joint: 0.5475464652142303
+        use_default_offset: true
+    commands:
+      motion:
+        adaptive_alpha: 0.001
+        adaptive_kernel_size: 1
+        adaptive_lambda: 0.8
+        adaptive_uniform_ratio: 0.1
+        align_reference_phase_to_strike_time: false
+        anchor_body_name: pelvis
+        anchor_visualizer_cfg:
+          markers:
+            frame:
+              activate_contact_sensors: false
+              articulation_props: null
+              collision_props: null
+              copy_from_source: true
+              deformable_props: null
+              fixed_tendons_props: null
+              func: isaaclab.sim.spawners.from_files.from_files:spawn_from_usd
+              joint_drive_props: null
+              mass_props: null
+              rigid_props: null
+              scale:
+              - 0.2
+              - 0.2
+              - 0.2
+              semantic_tags: null
+              usd_path: http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/UIElements/frame_prim.usd
+              variants: null
+              visible: true
+              visual_material: null
+              visual_material_path: material
+          prim_path: /Visuals/Command/pose
+        asset_name: robot
+        backhand_nominal_racket_y_b: 0.22
+        backhand_racket_velocity_x_range:
+        - 2.6
+        - 3.4
+        backhand_racket_velocity_y_range:
+        - -1.6
+        - 0.4
+        backhand_racket_y_range:
+        - -0.7625
+        - 0.7625
+        base_target_visualizer_cfg:
+          markers:
+            pelvis_target:
+              activate_contact_sensors: false
+              articulation_props: null
+              asset_path: /root/Hitter/MOSAIC-main/source/whole_body_tracking/whole_body_tracking/assets/unitree_description/urdf/g1/pelvis_target_marker.urdf
+              collider_type: convex_hull
+              collision_from_visuals: false
+              collision_props: null
+              convert_mimic_joints_to_normal_joints: false
+              copy_from_source: true
+              deformable_props: null
+              fix_base: true
+              fixed_tendons_props: null
+              force_usd_conversion: false
+              func: isaaclab.sim.spawners.from_files.from_files:spawn_from_urdf
+              joint_drive:
+                drive_type: force
+                gains:
+                  damping: 0
+                  stiffness: 0
+                target_type: position
+              joint_drive_props: null
+              link_density: 0.0
+              make_instanceable: false
+              mass_props: null
+              merge_fixed_joints: true
+              replace_cylinders_with_capsules: false
+              rigid_props: null
+              root_link_name: null
+              scale: null
+              self_collision: false
+              semantic_tags: null
+              usd_dir: null
+              usd_file_name: null
+              visible: true
+              visual_material:
+                diffuse_color:
+                - 0.0
+                - 1.0
+                - 0.0
+                emissive_color:
+                - 0.0
+                - 0.0
+                - 0.0
+                func: isaaclab.sim.spawners.materials.visual_materials:spawn_preview_surface
+                metallic: 0.0
+                opacity: 1.0
+                roughness: 0.5
+              visual_material_path: material
+          prim_path: /Visuals/Command/hitter/base_target
+        base_target_x_offset: 0.0
+        body_names:
+        - pelvis
+        - waist_yaw_link
+        - waist_roll_link
+        - torso_link
+        - left_shoulder_pitch_link
+        - left_shoulder_roll_link
+        - left_shoulder_yaw_link
+        - left_elbow_link
+        - left_wrist_roll_link
+        - left_wrist_pitch_link
+        - left_wrist_yaw_link
+        - right_shoulder_pitch_link
+        - right_shoulder_roll_link
+        - right_shoulder_yaw_link
+        - right_elbow_link
+        - right_wrist_roll_link
+        - right_wrist_pitch_link
+        - right_wrist_yaw_link
+        body_visualizer_cfg:
+          markers:
+            frame:
+              activate_contact_sensors: false
+              articulation_props: null
+              collision_props: null
+              copy_from_source: true
+              deformable_props: null
+              fixed_tendons_props: null
+              func: isaaclab.sim.spawners.from_files.from_files:spawn_from_usd
+              joint_drive_props: null
+              mass_props: null
+              rigid_props: null
+              scale:
+              - 0.1
+              - 0.1
+              - 0.1
+              semantic_tags: null
+              usd_path: http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/UIElements/frame_prim.usd
+              variants: null
+              visible: true
+              visual_material: null
+              visual_material_path: material
+          prim_path: /Visuals/Command/pose
+        cap_beta: 2.0
+        class_type: whole_body_tracking.tasks.hitter.mdp.commands:HitterStrikingCommand
+        command_velocity: true
+        debug_vis: true
+        enable_strike_targets: true
+        file_glob: '*.npz'
+        force_strike_type: null
+        forehand_nominal_racket_y_b: -0.5
+        forehand_racket_velocity_x_range:
+        - 2.6
+        - 3.4
+        forehand_racket_velocity_y_range:
+        - -0.4
+        - 1.6
+        forehand_racket_y_range:
+        - -0.7625
+        - 0.7625
+        joint_position_range:
+        - -0.05
+        - 0.05
+        max_active_motions: 10000
+        motion: data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean
+        motion_dataset_load_cap: null
+        motion_dataset_log_shard_info: false
+        motion_dataset_log_wandb_summary: true
+        motion_dataset_shard_across_gpus: true
+        motion_dataset_shard_by: global
+        motion_dataset_shard_seed: 0
+        motion_dataset_shard_strategy: chunk
+        motion_group_sampling_ratios:
+          backhand: 0.5
+          forehand: 0.5
+        motion_groups:
+          backhand:
+          - backhand
+          forehand:
+          - forehand
+        motion_horizon: 1
+        motion_preload_device: cuda
+        motion_sampling_ramp_s: 1000000000.0
+        motion_sampling_schedule: linear
+        motion_sampling_warmup_s: 1000000000.0
+        normalize_reference_root_xy_yaw: true
+        physical_table_width: 1.525
+        pose_range:
+          pitch:
+          - -0.05
+          - 0.05
+          roll:
+          - -0.05
+          - 0.05
+          x:
+          - -0.02
+          - 0.02
+          y:
+          - -0.02
+          - 0.02
+          yaw:
+          - -0.1
+          - 0.1
+          z:
+          - -0.01
+          - 0.01
+        racket_body_name: right_racket_link
+        racket_normal_axis_in_body_frame:
+        - 0.0
+        - -1.0
+        - 0.0
+        racket_orientation_use_abs_normal_alignment: false
+        racket_pos_offset_in_body_frame:
+        - 0.0
+        - 0.0
+        - 0.0
+        racket_radius: 0.075
+        racket_target_position_frame: world_fixed
+        racket_target_visualizer_cfg:
+          markers:
+            racket_target:
+              activate_contact_sensors: false
+              articulation_props: null
+              collision_props: null
+              copy_from_source: true
+              deformable_props: null
+              fixed_tendons_props: null
+              func: isaaclab.sim.spawners.from_files.from_files:spawn_from_usd
+              joint_drive_props: null
+              mass_props: null
+              rigid_props: null
+              scale: null
+              semantic_tags: null
+              usd_path: /root/Hitter/MOSAIC-main/source/whole_body_tracking/whole_body_tracking/assets/unitree_description/usd/g1_hitter_racket/target_marker.usda
+              variants: null
+              visible: true
+              visual_material: null
+              visual_material_path: material
+          prim_path: /Visuals/Command/hitter/racket_target
+        racket_velocity_z_range:
+        - -0.3
+        - 2.7
+        racket_z_range:
+        - 0.0
+        - 0.5
+        reference_start_frame: 0
+        reference_strike_frame: 43
+        resample_motions_every_s: 1000000000.0
+        resampling_time_range:
+        - 1000000000.0
+        - 1000000000.0
+        start_frame: 0
+        start_from_beginning: true
+        strike_metric_window_s: 0.01
+        strike_plane_x: 0.4
+        swing_duration_range:
+        - 1.75
+        - 1.95
+        target_base_height_w: 0.793
+        time_to_strike_range:
+        - 0.8
+        - 0.92
+        unique_per_batch: true
+        velocity_range:
+          pitch:
+          - -0.52
+          - 0.52
+          roll:
+          - -0.52
+          - 0.52
+          x:
+          - -0.5
+          - 0.5
+          y:
+          - -0.5
+          - 0.5
+          yaw:
+          - -0.78
+          - 0.78
+          z:
+          - -0.2
+          - 0.2
+        weight_fail: 0.5
+        weight_novel: 0.3
+    curriculum: null
+    decimation: 4
+    episode_length_s: 10.0
+    events:
+      add_joint_default_pos:
+        func: whole_body_tracking.tasks.tracking.mdp.events:randomize_joint_default_pos
+        interval_range_s: null
+        is_global_time: false
+        min_step_count_between_reset: 0
+        mode: startup
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: null
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names:
+            - .*
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          operation: add
+          pos_distribution_params:
+          - -0.01
+          - 0.01
+      base_com:
+        func: whole_body_tracking.tasks.tracking.mdp.events:randomize_rigid_body_com
+        interval_range_s: null
+        is_global_time: false
+        min_step_count_between_reset: 0
+        mode: startup
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: torso_link
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          com_range:
+            x:
+            - -0.025
+            - 0.025
+            y:
+            - -0.05
+            - 0.05
+            z:
+            - -0.05
+            - 0.05
+      physics_material:
+        func: isaaclab.envs.mdp.events:randomize_rigid_body_material
+        interval_range_s: null
+        is_global_time: false
+        min_step_count_between_reset: 0
+        mode: startup
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: .*
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          dynamic_friction_range:
+          - 1.0
+          - 1.0
+          num_buckets: 64
+          restitution_range:
+          - 0.0
+          - 0.0
+          static_friction_range:
+          - 1.0
+          - 1.0
+      push_robot:
+        func: isaaclab.envs.mdp.events:push_by_setting_velocity
+        interval_range_s:
+        - 1.0
+        - 3.0
+        is_global_time: false
+        min_step_count_between_reset: 0
+        mode: interval
+        params:
+          velocity_range:
+            pitch:
+            - -0.52
+            - 0.52
+            roll:
+            - -0.52
+            - 0.52
+            x:
+            - -0.5
+            - 0.5
+            y:
+            - -0.5
+            - 0.5
+            yaw:
+            - -0.78
+            - 0.78
+            z:
+            - -0.2
+            - 0.2
+    is_finite_horizon: false
+    observations:
+      critic:
+        actions:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:last_action
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        base_ang_vel:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:base_ang_vel
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        base_forward_xy:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_base_forward_xy
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        base_lin_vel:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:base_lin_vel
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        base_target_pos:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_base_target_pos
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        body_pose:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_robot_body_pose
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        concatenate_terms: true
+        enable_corruption: false
+        flatten_history_dim: true
+        history_length: null
+        joint_pos:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:joint_pos_rel
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        joint_vel:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:joint_vel_rel
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        motion_anchor_ori_b:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.tracking.mdp.observations:motion_anchor_ori_b
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        motion_anchor_pos_b:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.tracking.mdp.observations:motion_anchor_pos_b
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        projected_gravity:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:projected_gravity
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        racket_target_pos:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_racket_target_pos
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        racket_target_vel:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_racket_target_vel
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        reference_joint_state:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_reference_joint_state
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        time_left:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_time_left
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        time_to_strike:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_time_to_strike
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+      policy:
+        actions:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:last_action
+          history_length: 0
+          modifiers: null
+          noise: null
+          params: {}
+          scale: null
+        base_ang_vel:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:base_ang_vel
+          history_length: 0
+          modifiers: null
+          noise:
+            func: isaaclab.utils.noise.noise_model:uniform_noise
+            n_max: 0.2
+            n_min: -0.2
+            operation: add
+          params: {}
+          scale: null
+        base_forward_xy:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_base_forward_xy
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        base_target_pos:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_base_target_pos
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        concatenate_terms: true
+        enable_corruption: true
+        flatten_history_dim: true
+        history_length: null
+        joint_pos:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:joint_pos_rel
+          history_length: 0
+          modifiers: null
+          noise:
+            func: isaaclab.utils.noise.noise_model:uniform_noise
+            n_max: 0.01
+            n_min: -0.01
+            operation: add
+          params: {}
+          scale: null
+        joint_vel:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:joint_vel_rel
+          history_length: 0
+          modifiers: null
+          noise:
+            func: isaaclab.utils.noise.noise_model:uniform_noise
+            n_max: 0.5
+            n_min: -0.5
+            operation: add
+          params: {}
+          scale: null
+        projected_gravity:
+          clip: null
+          flatten_history_dim: true
+          func: isaaclab.envs.mdp.observations:projected_gravity
+          history_length: 0
+          modifiers: null
+          noise:
+            func: isaaclab.utils.noise.noise_model:uniform_noise
+            n_max: 0.05
+            n_min: -0.05
+            operation: add
+          params: {}
+          scale: null
+        racket_target_pos:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_racket_target_pos
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        racket_target_vel:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_racket_target_vel
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+        time_to_strike:
+          clip: null
+          flatten_history_dim: true
+          func: whole_body_tracking.tasks.hitter.mdp.observations:hitter_time_to_strike
+          history_length: 0
+          modifiers: null
+          noise: null
+          params:
+            command_name: motion
+          scale: null
+    recorders:
+      dataset_export_dir_path: /tmp/isaaclab/logs
+      dataset_export_mode:
+        _name_: EXPORT_ALL
+        _value_: 1
+      dataset_file_handler_class_type: isaaclab.utils.datasets.hdf5_dataset_file_handler:HDF5DatasetFileHandler
+      dataset_filename: dataset
+      export_in_record_pre_reset: true
+    rerender_on_reset: false
+    rewards:
+      action_rate_l2:
+        func: isaaclab.envs.mdp.rewards:action_rate_l2
+        params: {}
+        weight: -0.1
+      base_ang_vel_xy_l2:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_base_ang_vel_xy_l2
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: null
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          command_name: motion
+          strike_scale: 2.0
+          strike_window_s: 0.25
+        weight: -0.4
+      base_pos:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_base_position_error_exp
+        params:
+          command_name: motion
+          std: 0.3
+        weight: 5.0
+      hip_yaw_default:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_joint_default_position_error_exp
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: null
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names:
+            - .*_hip_yaw_joint
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          std: 0.2
+        weight: 2.0
+      hitter_foot_edge_drag:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_foot_edge_drag
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: .*_ankle_roll_link
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          ground_z: 0.0
+          lateral_weight: 1.0
+          min_clearance: 0.025
+          pelvis_cfg:
+            body_ids: slice(None, None, None)
+            body_names: pelvis
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          sole_radius: 0.0
+          speed_deadzone: 0.05
+        weight: -1.0
+      hitter_foot_slip_l2:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_foot_slip_l2
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: .*_ankle_roll_link
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          sensor_cfg:
+            body_ids: slice(None, None, None)
+            body_names: .*_ankle_roll_link
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: contact_forces
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          threshold: 1.0
+        weight: -2.0
+      hitter_hit_unstable_support:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_hit_unstable_support
+        params:
+          both_air_penalty: 1.5
+          command_name: motion
+          force_threshold: 1.0
+          imbalance_weight: 0.5
+          max_support_force_ratio: 0.85
+          sensor_cfg:
+            body_ids: slice(None, None, None)
+            body_names: .*_ankle_roll_link
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: contact_forces
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          single_stance_penalty: 1.0
+          window_s: 0.12
+        weight: -6.0
+      joint_acc:
+        func: isaaclab.envs.mdp.rewards:joint_acc_l2
+        params: {}
+        weight: -2.5e-07
+      joint_limit:
+        func: isaaclab.envs.mdp.rewards:joint_pos_limits
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: null
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names:
+            - .*
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+        weight: -10.0
+      joint_pos: null
+      joint_torque:
+        func: isaaclab.envs.mdp.rewards:joint_torques_l2
+        params: {}
+        weight: -1.0e-05
+      motion_anchor_lin_vel:
+        func: whole_body_tracking.tasks.tracking.mdp.rewards:motion_anchor_linear_velocity_error_exp
+        params:
+          command_name: motion
+          std: 1.0
+        weight: 1.0
+      motion_body_ang_vel:
+        func: whole_body_tracking.tasks.tracking.mdp.rewards:motion_global_body_angular_velocity_error_exp
+        params:
+          command_name: motion
+          std: 3.14
+        weight: 1.5
+      motion_body_lin_vel:
+        func: whole_body_tracking.tasks.tracking.mdp.rewards:motion_global_body_linear_velocity_error_exp
+        params:
+          command_name: motion
+          std: 1.0
+        weight: 1.5
+      motion_body_ori:
+        func: whole_body_tracking.tasks.tracking.mdp.rewards:motion_relative_body_orientation_error_exp
+        params:
+          command_name: motion
+          std: 0.4
+        weight: 1.0
+      motion_body_pos:
+        func: whole_body_tracking.tasks.tracking.mdp.rewards:motion_relative_body_position_error_exp
+        params:
+          command_name: motion
+          std: 0.3
+        weight: 1.0
+      motion_global_anchor_ori:
+        func: whole_body_tracking.tasks.tracking.mdp.rewards:motion_global_anchor_orientation_error_exp
+        params:
+          command_name: motion
+          std: 0.4
+        weight: 0.5
+      motion_global_anchor_pos:
+        func: whole_body_tracking.tasks.tracking.mdp.rewards:motion_global_anchor_position_error_exp
+        params:
+          command_name: motion
+          std: 0.3
+        weight: 0.5
+      racket_ori:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_racket_orientation_error_exp
+        params:
+          command_name: motion
+          std: 0.45
+          use_abs_normal_alignment: false
+          window_s: 0.03
+        weight: 30.0
+      racket_pos:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_racket_position_error_exp
+        params:
+          command_name: motion
+          std: 0.1
+          window_s: 0.02
+        weight: 120.0
+      racket_vel:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_racket_velocity_error_exp
+        params:
+          command_name: motion
+          std: 1.2
+          window_s: 0.03
+        weight: 120.0
+      torso_forward_lean_l2:
+        func: whole_body_tracking.tasks.hitter.mdp.rewards:hitter_torso_forward_lean_l2
+        params:
+          body_cfg:
+            body_ids: slice(None, None, None)
+            body_names: torso_link
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          command_name: motion
+          roll_weight: 1.0
+          strike_scale: 2.0
+          strike_window_s: 0.25
+          target_forward_z: -0.1
+        weight: -2.0
+      undesired_contacts:
+        func: isaaclab.envs.mdp.rewards:undesired_contacts
+        params:
+          sensor_cfg:
+            body_ids: slice(None, None, None)
+            body_names:
+            - ^(?!left_ankle_roll_link$)(?!right_ankle_roll_link$)(?!left_wrist_yaw_link$)(?!right_wrist_yaw_link$)(?!right_racket_link$).+$
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: contact_forces
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          threshold: 1.0
+        weight: -0.05
+    scene:
+      contact_forces:
+        class_type: isaaclab.sensors.contact_sensor.contact_sensor:ContactSensor
+        debug_vis: false
+        filter_prim_paths_expr: []
+        force_threshold: 10.0
+        history_length: 3
+        prim_path: /World/envs/env_.*/Robot/.*
+        track_air_time: false
+        track_pose: false
+        update_period: 0.0
+        visualizer_cfg:
+          markers:
+            contact:
+              activate_contact_sensors: false
+              collision_props: null
+              copy_from_source: true
+              func: isaaclab.sim.spawners.shapes.shapes:spawn_sphere
+              mass_props: null
+              physics_material: null
+              physics_material_path: material
+              radius: 0.02
+              rigid_props: null
+              semantic_tags: null
+              visible: true
+              visual_material:
+                diffuse_color:
+                - 1.0
+                - 0.0
+                - 0.0
+                emissive_color:
+                - 0.0
+                - 0.0
+                - 0.0
+                func: isaaclab.sim.spawners.materials.visual_materials:spawn_preview_surface
+                metallic: 0.0
+                opacity: 1.0
+                roughness: 0.5
+              visual_material_path: material
+            no_contact:
+              activate_contact_sensors: false
+              collision_props: null
+              copy_from_source: true
+              func: isaaclab.sim.spawners.shapes.shapes:spawn_sphere
+              mass_props: null
+              physics_material: null
+              physics_material_path: material
+              radius: 0.02
+              rigid_props: null
+              semantic_tags: null
+              visible: false
+              visual_material:
+                diffuse_color:
+                - 0.0
+                - 1.0
+                - 0.0
+                emissive_color:
+                - 0.0
+                - 0.0
+                - 0.0
+                func: isaaclab.sim.spawners.materials.visual_materials:spawn_preview_surface
+                metallic: 0.0
+                opacity: 1.0
+                roughness: 0.5
+              visual_material_path: material
+          prim_path: /Visuals/ContactSensor
+      env_spacing: 2.5
+      filter_collisions: true
+      lazy_sensor_update: true
+      light:
+        class_type: null
+        collision_group: 0
+        debug_vis: false
+        init_state:
+          pos:
+          - 0.0
+          - 0.0
+          - 0.0
+          rot:
+          - 1.0
+          - 0.0
+          - 0.0
+          - 0.0
+        prim_path: /World/light
+        spawn:
+          angle: 0.53
+          color:
+          - 0.75
+          - 0.75
+          - 0.75
+          color_temperature: 6500.0
+          copy_from_source: true
+          enable_color_temperature: false
+          exposure: 0.0
+          func: isaaclab.sim.spawners.lights.lights:spawn_light
+          intensity: 3000.0
+          normalize: false
+          prim_type: DistantLight
+          semantic_tags: null
+          visible: true
+      num_envs: 60000
+      replicate_physics: true
+      robot:
+        actuators:
+          arms:
+            armature: 0.01
+            class_type: isaaclab.actuators.actuator_pd:ImplicitActuator
+            damping:
+              .*_elbow_joint: 0.907222843292423
+              .*_shoulder_pitch_joint: 0.907222843292423
+              .*_shoulder_roll_joint: 0.907222843292423
+              .*_shoulder_yaw_joint: 0.907222843292423
+              .*_wrist_pitch_joint: 1.06814150219
+              .*_wrist_roll_joint: 0.907222843292423
+              .*_wrist_yaw_joint: 1.06814150219
+            effort_limit: null
+            effort_limit_sim:
+              .*_elbow_joint: 25.0
+              .*_shoulder_pitch_joint: 25.0
+              .*_shoulder_roll_joint: 25.0
+              .*_shoulder_yaw_joint: 25.0
+              .*_wrist_pitch_joint: 5.0
+              .*_wrist_roll_joint: 25.0
+              .*_wrist_yaw_joint: 5.0
+            friction: 0.1
+            joint_names_expr:
+            - .*_shoulder_pitch_joint
+            - .*_shoulder_roll_joint
+            - .*_shoulder_yaw_joint
+            - .*_elbow_joint
+            - .*_wrist_roll_joint
+            - .*_wrist_pitch_joint
+            - .*_wrist_yaw_joint
+            stiffness:
+              .*_elbow_joint: 14.25062309787429
+              .*_shoulder_pitch_joint: 14.25062309787429
+              .*_shoulder_roll_joint: 14.25062309787429
+              .*_shoulder_yaw_joint: 14.25062309787429
+              .*_wrist_pitch_joint: 16.77832748089279
+              .*_wrist_roll_joint: 14.25062309787429
+              .*_wrist_yaw_joint: 16.77832748089279
+            velocity_limit: null
+            velocity_limit_sim:
+              .*_elbow_joint: 37.0
+              .*_shoulder_pitch_joint: 37.0
+              .*_shoulder_roll_joint: 37.0
+              .*_shoulder_yaw_joint: 37.0
+              .*_wrist_pitch_joint: 22.0
+              .*_wrist_roll_joint: 37.0
+              .*_wrist_yaw_joint: 22.0
+          feet:
+            armature: 0.01
+            class_type: isaaclab.actuators.actuator_pd:ImplicitActuator
+            damping: 1.814445686584846
+            effort_limit: null
+            effort_limit_sim: 50.0
+            friction: 0.1
+            joint_names_expr:
+            - .*_ankle_pitch_joint
+            - .*_ankle_roll_joint
+            stiffness: 28.50124619574858
+            velocity_limit: null
+            velocity_limit_sim: 37.0
+          legs:
+            armature: 0.01
+            class_type: isaaclab.actuators.actuator_pd:ImplicitActuator
+            damping:
+              .*_hip_pitch_joint: 2.5578897650279457
+              .*_hip_roll_joint: 6.3088018534966395
+              .*_hip_yaw_joint: 2.5578897650279457
+              .*_knee_joint: 6.3088018534966395
+            effort_limit: null
+            effort_limit_sim:
+              .*_hip_pitch_joint: 88.0
+              .*_hip_roll_joint: 139.0
+              .*_hip_yaw_joint: 88.0
+              .*_knee_joint: 139.0
+            friction: 0.1
+            joint_names_expr:
+            - .*_hip_yaw_joint
+            - .*_hip_roll_joint
+            - .*_hip_pitch_joint
+            - .*_knee_joint
+            stiffness:
+              .*_hip_pitch_joint: 40.17923847137318
+              .*_hip_roll_joint: 99.09842777666113
+              .*_hip_yaw_joint: 40.17923847137318
+              .*_knee_joint: 99.09842777666113
+            velocity_limit: null
+            velocity_limit_sim:
+              .*_hip_pitch_joint: 32.0
+              .*_hip_roll_joint: 20.0
+              .*_hip_yaw_joint: 32.0
+              .*_knee_joint: 20.0
+          waist:
+            armature: 0.01
+            class_type: isaaclab.actuators.actuator_pd:ImplicitActuator
+            damping: 1.814445686584846
+            effort_limit: null
+            effort_limit_sim: 50
+            friction: 0.1
+            joint_names_expr:
+            - waist_roll_joint
+            - waist_pitch_joint
+            stiffness: 28.50124619574858
+            velocity_limit: null
+            velocity_limit_sim: 37.0
+          waist_yaw:
+            armature: 0.01
+            class_type: isaaclab.actuators.actuator_pd:ImplicitActuator
+            damping: 2.5578897650279457
+            effort_limit: null
+            effort_limit_sim: 88
+            friction: 0.1
+            joint_names_expr:
+            - waist_yaw_joint
+            stiffness: 40.17923847137318
+            velocity_limit: null
+            velocity_limit_sim: 32.0
+        class_type: isaaclab.assets.articulation.articulation:Articulation
+        collision_group: 0
+        debug_vis: false
+        init_state:
+          ang_vel:
+          - 0.0
+          - 0.0
+          - 0.0
+          joint_pos:
+            .*_ankle_pitch_joint: -0.363
+            .*_elbow_joint: 0.6
+            .*_hip_pitch_joint: -0.312
+            .*_knee_joint: 0.669
+            left_shoulder_pitch_joint: 0.2
+            left_shoulder_roll_joint: 0.2
+            right_shoulder_pitch_joint: 0.2
+            right_shoulder_roll_joint: -0.2
+          joint_vel:
+            .*: 0.0
+          lin_vel:
+          - 0.0
+          - 0.0
+          - 0.0
+          pos:
+          - 0.0
+          - 0.0
+          - 0.793
+          rot:
+          - 1.0
+          - 0.0
+          - 0.0
+          - 0.0
+        prim_path: /World/envs/env_.*/Robot
+        soft_joint_pos_limit_factor: 0.9
+        spawn:
+          activate_contact_sensors: true
+          articulation_props:
+            articulation_enabled: null
+            enabled_self_collisions: true
+            fix_root_link: null
+            sleep_threshold: null
+            solver_position_iteration_count: 8
+            solver_velocity_iteration_count: 4
+            stabilization_threshold: null
+          collision_props: null
+          copy_from_source: true
+          deformable_props: null
+          fixed_tendons_props: null
+          func: isaaclab.sim.spawners.from_files.from_files:spawn_from_usd
+          joint_drive_props: null
+          mass_props: null
+          rigid_props:
+            angular_damping: 0.0
+            disable_gravity: false
+            enable_gyroscopic_forces: null
+            kinematic_enabled: null
+            linear_damping: 0.0
+            max_angular_velocity: 1000.0
+            max_contact_impulse: null
+            max_depenetration_velocity: 1.0
+            max_linear_velocity: 1000.0
+            retain_accelerations: false
+            rigid_body_enabled: null
+            sleep_threshold: null
+            solver_position_iteration_count: null
+            solver_velocity_iteration_count: null
+            stabilization_threshold: null
+          scale: null
+          semantic_tags: null
+          usd_path: /root/Hitter/MOSAIC-main/source/whole_body_tracking/whole_body_tracking/assets/unitree_description/usd/g1_hitter_racket/main.usda
+          variants: null
+          visible: true
+          visual_material: null
+          visual_material_path: material
+      sky_light:
+        class_type: null
+        collision_group: 0
+        debug_vis: false
+        init_state:
+          pos:
+          - 0.0
+          - 0.0
+          - 0.0
+          rot:
+          - 1.0
+          - 0.0
+          - 0.0
+          - 0.0
+        prim_path: /World/skyLight
+        spawn:
+          color:
+          - 0.9
+          - 0.9
+          - 0.9
+          color_temperature: 6500.0
+          copy_from_source: true
+          enable_color_temperature: false
+          exposure: 0.0
+          func: isaaclab.sim.spawners.lights.lights:spawn_light
+          intensity: 1000.0
+          normalize: false
+          prim_type: DomeLight
+          semantic_tags: null
+          texture_file: null
+          texture_format: automatic
+          visible: true
+          visible_in_primary_ray: true
+      terrain:
+        class_type: isaaclab.terrains.terrain_importer:TerrainImporter
+        collision_group: -1
+        debug_vis: false
+        env_spacing: 2.5
+        max_init_terrain_level: null
+        num_envs: 60000
+        physics_material:
+          compliant_contact_damping: 0.0
+          compliant_contact_stiffness: 0.0
+          dynamic_friction: 1.0
+          friction_combine_mode: multiply
+          func: isaaclab.sim.spawners.materials.physics_materials:spawn_rigid_body_material
+          improve_patch_friction: true
+          restitution: 0.0
+          restitution_combine_mode: multiply
+          static_friction: 1.0
+        prim_path: /World/ground
+        terrain_generator: null
+        terrain_type: plane
+        usd_path: null
+        visual_material:
+          diffuse_color:
+          - 0.0
+          - 0.0
+          - 0.0
+          emissive_color:
+          - 0.0
+          - 0.0
+          - 0.0
+          func: isaaclab.sim.spawners.materials.visual_materials:spawn_preview_surface
+          metallic: 0.0
+          opacity: 1.0
+          roughness: 0.5
+    seed: 42
+    sim:
+      device: cuda:0
+      dt: 0.005
+      enable_scene_query_support: false
+      gravity:
+      - 0.0
+      - 0.0
+      - -9.81
+      physics_material:
+        compliant_contact_damping: 0.0
+        compliant_contact_stiffness: 0.0
+        dynamic_friction: 1.0
+        friction_combine_mode: multiply
+        func: isaaclab.sim.spawners.materials.physics_materials:spawn_rigid_body_material
+        improve_patch_friction: true
+        restitution: 0.0
+        restitution_combine_mode: multiply
+        static_friction: 1.0
+      physics_prim_path: /physicsScene
+      physx:
+        bounce_threshold_velocity: 0.5
+        enable_ccd: false
+        enable_enhanced_determinism: false
+        enable_stabilization: true
+        friction_correlation_distance: 0.025
+        friction_offset_threshold: 0.04
+        gpu_collision_stack_size: 67108864
+        gpu_found_lost_aggregate_pairs_capacity: 33554432
+        gpu_found_lost_pairs_capacity: 2097152
+        gpu_heap_capacity: 67108864
+        gpu_max_num_partitions: 8
+        gpu_max_particle_contacts: 1048576
+        gpu_max_rigid_contact_count: 8388608
+        gpu_max_rigid_patch_count: 1966080
+        gpu_max_soft_body_contacts: 1048576
+        gpu_temp_buffer_capacity: 16777216
+        gpu_total_aggregate_pairs_capacity: 2097152
+        max_position_iteration_count: 255
+        max_velocity_iteration_count: 255
+        min_position_iteration_count: 1
+        min_velocity_iteration_count: 0
+        solver_type: 1
+      render:
+        antialiasing_mode: null
+        carb_settings: null
+        dlss_mode: null
+        enable_ambient_occlusion: null
+        enable_direct_lighting: null
+        enable_dl_denoiser: null
+        enable_dlssg: null
+        enable_global_illumination: null
+        enable_reflections: null
+        enable_shadows: null
+        enable_translucency: null
+        rendering_mode: null
+        samples_per_pixel: null
+      render_interval: 4
+      use_fabric: true
+    terminations:
+      anchor_ori:
+        func: whole_body_tracking.tasks.tracking.mdp.terminations:bad_anchor_ori
+        params:
+          asset_cfg:
+            body_ids: slice(None, None, None)
+            body_names: null
+            fixed_tendon_ids: slice(None, None, None)
+            fixed_tendon_names: null
+            joint_ids: slice(None, None, None)
+            joint_names: null
+            name: robot
+            object_collection_ids: slice(None, None, None)
+            object_collection_names: null
+            preserve_order: false
+          command_name: motion
+          threshold: 0.9
+        time_out: false
+      anchor_pos:
+        func: whole_body_tracking.tasks.hitter.mdp.terminations:hitter_bad_anchor_height
+        params:
+          command_name: motion
+          target_height: 0.793
+          threshold: 0.35
+        time_out: false
+      base_bad_orientation: null
+      base_height: null
+      time_out:
+        func: isaaclab.envs.mdp.terminations:time_out
+        params: {}
+        time_out: true
+    ui_window_class_type: isaaclab.envs.ui.manager_based_rl_env_window:ManagerBasedRLEnvWindow
+    viewer:
+      asset_name: robot
+      body_name: null
+      cam_prim_path: /OmniverseKit_Persp
+      env_index: 0
+      eye:
+      - 3.5
+      - 3.5
+      - 3.0
+      lookat:
+      - 0.0
+      - 0.0
+      - 0.0
+      origin_type: env
+      resolution:
+      - 1280
+      - 720
+    wait_for_textures: true
+    xr: null
+log_dir:
+  desc: ''
+  sort: 0
+  value: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-17_00-56-11_hitter_connector_m10699_skipopt_lr3e4_2xa100_env60000_20260617_005557
+policy_cfg:
+  desc: ''
+  sort: 2
+  value:
+    activation: elu
+    actor_hidden_dims:
+    - 512
+    - 256
+    - 128
+    critic_hidden_dims:
+    - 512
+    - 256
+    - 128
+    init_noise_std: 1.0
+    noise_std_type: scalar
+runner_cfg:
+  desc: ''
+  sort: 1
+  value:
+    algorithm:
+      clip_param: 0.2
+      desired_kl: 0.01
+      entropy_coef: 0.005
+      gamma: 0.99
+      lam: 0.95
+      learning_rate: 0.0003
+      max_grad_norm: 1.0
+      normalize_advantage_per_mini_batch: false
+      num_learning_epochs: 5
+      num_mini_batches: 4
+      rnd_cfg: null
+      schedule: fixed
+      symmetry_cfg: null
+      use_clipped_value_loss: true
+      value_loss_coef: 1.0
+    clip_actions: null
+    device: cuda:0
+    empirical_normalization: true
+    experiment_name: hitter_striking_g1
+    freeze_normalizer_on_resume: false
+    load_checkpoint: model_10699.pt
+    load_run: 2026-06-16_17-08-12_hitter_wbc_m7700_fullrange_skipopt_lr3e4_swanlab_2xa100_env50000_20260616_170756
+    logger: swanlab
+    max_iterations: 10000
+    neptune_project: hitter_striking_g1
+    num_steps_per_env: 24
+    policy:
+      activation: elu
+      actor_hidden_dims:
+      - 512
+      - 256
+      - 128
+      critic_hidden_dims:
+      - 512
+      - 256
+      - 128
+      init_noise_std: 1.0
+      noise_std_type: scalar
+    reset_noise_std_on_resume: false
+    resume: true
+    run_name: hitter_connector_m10699_skipopt_lr3e4_2xa100_env60000_20260617_005557
+    save_interval: 100
+    seed: 42
+    swanlab_project: hitter_striking_g1
+    wandb_project: hitter_striking_g1

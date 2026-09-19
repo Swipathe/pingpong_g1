@@ -1,0 +1,1121 @@
+# Review package: ebec23637c452b1a7ca1a3dc336efe81d9fa22ff..15063ca88fd2e6ff7ea120201631c40c82f1953d
+
+## Commits
+15063ca feat: type HITTER failures and select side from table y
+
+## Files changed
+ deploy/envs/hitter.py                              |  80 ++++++--
+ .../tests/test_hitter_planner_failure_reasons.py   | 228 +++++++++++++++++++++
+ deploy/tests/test_hitter_runtime_factory.py        |  21 ++
+ deploy/tests/test_hitter_strike_target_logging.py  |   3 +
+ deploy/utils/hitter_planner.py                     | 159 +++++++++++---
+ deploy/utils/hitter_runtime_factory.py             |   6 +
+ deploy/utils/hitter_runtime_types.py               |  19 ++
+ 7 files changed, 473 insertions(+), 43 deletions(-)
+
+## Diff
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index 49b5f38..95a145c 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -18,56 +18,63 @@ from utils.hitter_runtime_factory import (
+     resolve_hitter_runtime_settings,
+ )
+ from utils.hitter_realtime import (
+     BallEstimateSnapshot,
+     CommandPhase,
+     HitterCommandLifecycle,
+     IncomingTrackConfirmation,
+     LatestOnlyPlannerWorker,
+     PlannerResultSnapshot,
+ )
++from utils.hitter_runtime_types import PlannerFailureReason, PlannerRejected
+ from utils.hitter_task_observation import (
+     assemble_active_hitter_task_observation,
+ )
+ from utils.transformation import matrix_from_quat
+ 
+ import time
+ 
+ import os
+ from pathlib import Path
+ 
+ if "MUJOCO_GL" not in os.environ and not os.environ.get("DISPLAY"):
+     os.environ["MUJOCO_GL"] = "egl"
+ 
+ import imageio
+ import mujoco
+ 
+ 
+ TRACK_ENDED_ERROR = "HITTER_TRACK_ENDED"
+-TRACK_ENDED_RESULT_ERROR = f"RuntimeError: {TRACK_ENDED_ERROR}"
++TRACK_ENDED_RESULT_ERROR = PlannerFailureReason.TRACK_ENDED.value
+ 
+ class HitterEnv(BaseEnv):
+     """Environment wrapper for the HITTER target-conditioned policy."""
+ 
+     def __init__(self, config: DictConfig):
+         super().__init__(config)
+ 
+         cfg_dict = OmegaConf.to_container(config, resolve=True) if isinstance(config, DictConfig) else config
+         self.policy_cfg: Dict[str, Union[float, bool]] = cfg_dict.get("policy", {}) if isinstance(cfg_dict, dict) else {}
+         self.motion_cfg: Dict[str, Union[float, bool, str]] = (
+             cfg_dict.get("motion", {}) if isinstance(cfg_dict, dict) else {}
+         )
+         control_cfg = (
+             cfg_dict.get("control", {})
+             if isinstance(cfg_dict, dict)
+             else {}
+         )
++        planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
++        self.hitter_forced_strike_type = forced_strike_type(
++            planner_cfg,
++            self.motion_cfg,
++            is_real_world=bool(getattr(self.simulator, "is_real", False)),
++        )
+         self.hitter_runtime_settings = resolve_hitter_runtime_settings(
+             policy_config=self.policy_cfg,
+             motion_config=self.motion_cfg,
+             control_config=control_cfg,
+         )
+ 
+         self.playback_speed = float(self.motion_cfg.get("playback_speed", 1.0))
+         self.action_beta = float(self.policy_cfg.get("action_beta", 1.0))
+         self.real_world_first_frame_transition_s = float(
+             self.policy_cfg.get("real_world_first_frame_transition_s", 0.0)
+@@ -562,68 +569,83 @@ class HitterEnv(BaseEnv):
+         logger.info(
+             "HITTER waiting base target captured at world position {}.",
+             self.hitter_waiting_base_target_pos_w.tolist(),
+         )
+ 
+     def _build_hitter_ball_planner(self) -> HitterSystemPlanner:
+         planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
+         return build_hitter_system_planner(planner_cfg)
+ 
+     def _forced_strike_type_name(self) -> Optional[str]:
+-        planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
+-        return forced_strike_type(
+-            planner_cfg,
+-            self.motion_cfg,
+-        )
++        return self.hitter_forced_strike_type
+ 
+     def _reset_hitter_ball_sequence_if_needed(self) -> None:
+         if not self.hitter_ball_sequence_needs_reset:
+             return
+         if self.reset_ball_on_command and hasattr(self.simulator, "reset_hitter_ball"):
+             self.simulator.reset_hitter_ball()
+         self.hitter_ball_sequence_needs_reset = False
+ 
+     @staticmethod
+     def _validated_vector(value, *, name: str, size: int) -> np.ndarray:
+         array = np.asarray(value, dtype=np.float32)
+         if array.shape != (size,):
+             raise ValueError(
+                 f"HITTER command `{name}` must have shape ({size},), got {array.shape}."
+             )
+         if not np.isfinite(array).all():
+             raise ValueError(f"HITTER command `{name}` contains non-finite values.")
+         return array.copy()
+ 
+     @staticmethod
+-    def _validated_snapshot_vector(value, *, name: str, size: int) -> np.ndarray:
++    def _validated_snapshot_vector(
++        value,
++        *,
++        name: str,
++        size: int,
++        reject_nonfinite: bool = False,
++    ) -> np.ndarray:
+         array = np.asarray(value, dtype=np.float64)
+         if array.shape != (size,):
+             raise ValueError(
+                 f"HITTER `{name}` must have shape ({size},), got {array.shape}."
+             )
+         if not np.isfinite(array).all():
++            if reject_nonfinite:
++                raise PlannerRejected(
++                    PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT,
++                    f"HITTER `{name}` contains non-finite values.",
++                )
+             raise ValueError(f"HITTER `{name}` contains non-finite values.")
+         return array.copy()
+ 
+     def _validated_hitter_command_fields(self, command) -> dict:
+         strike_type = str(command.strike_type).strip().lower()
+         if strike_type not in {"forehand", "backhand"}:
+             raise ValueError(
+                 "HITTER command `strike_type` must be forehand or backhand, "
+                 f"got {command.strike_type!r}."
+             )
+         time_to_strike = float(command.time_to_strike)
+         if not np.isfinite(time_to_strike) or time_to_strike < 0.0:
+             raise ValueError(
+                 "HITTER command `time_to_strike` must be finite and non-negative."
+             )
+         strike_plan = command.strike_plan
++        strike_table_y_w = float(command.strike_table_y_w)
++        if not np.isfinite(strike_table_y_w):
++            raise ValueError("HITTER command `strike_table_y_w` must be finite.")
++        strike_side_source = str(command.strike_side_source).strip().lower()
++        if strike_side_source not in {"table_y", "forced"}:
++            raise ValueError(
++                "HITTER command `strike_side_source` must be table_y or forced."
++            )
+         base_target = self._validated_vector(
+             command.p_base_target_xy,
+             name="p_base_target_xy",
+             size=2,
+         )
+         racket_target = self._validated_vector(
+             strike_plan.p_racket_target,
+             name="strike_plan.p_racket_target",
+             size=3,
+         )
+@@ -636,20 +658,22 @@ class HitterEnv(BaseEnv):
+             strike_plan.v_ball_in,
+             name="strike_plan.v_ball_in",
+             size=3,
+         )
+         base_height = float(self._hitter_target_base_height_w())
+         if not np.isfinite(base_height):
+             raise ValueError("HITTER target base height must be finite.")
+         return {
+             "strike_type": strike_type,
+             "strike_type_index": 0 if strike_type == "forehand" else 1,
++            "strike_table_y_w": strike_table_y_w,
++            "strike_side_source": strike_side_source,
+             "time_to_strike": time_to_strike,
+             "base_target": base_target,
+             "base_height": np.float32(base_height),
+             "racket_target": racket_target,
+             "racket_velocity": racket_velocity,
+             "ball_in_velocity": ball_in_velocity,
+         }
+ 
+     @staticmethod
+     def _format_hitter_velocity_log_vector(value: np.ndarray) -> str:
+@@ -668,26 +692,29 @@ class HitterEnv(BaseEnv):
+             fields = self._validated_hitter_command_fields(command)
+             ball_in_velocity = fields["ball_in_velocity"].copy()
+             ball_out_velocity = self._validated_vector(
+                 command.strike_plan.v_ball_out,
+                 name="strike_plan.v_ball_out",
+                 size=3,
+             )
+             racket_velocity = fields["racket_velocity"].copy()
+             logger.info(
+                 "HITTER strike target: track_id={} generation={} type={} "
++                "strike_table_y_w={:.4f} side_source={} "
+                 "v_ball_in_w_mps={} speed_ball_in_mps={:.4f} "
+                 "v_ball_out_w_mps={} speed_ball_out_mps={:.4f} "
+                 "v_racket_target_w_mps={} speed_racket_mps={:.4f}",
+                 int(active_result.track_id),
+                 int(active_result.source_generation),
+                 fields["strike_type"],
++                fields["strike_table_y_w"],
++                fields["strike_side_source"],
+                 self._format_hitter_velocity_log_vector(
+                     ball_in_velocity
+                 ),
+                 float(np.linalg.norm(ball_in_velocity)),
+                 self._format_hitter_velocity_log_vector(
+                     ball_out_velocity
+                 ),
+                 float(np.linalg.norm(ball_out_velocity)),
+                 self._format_hitter_velocity_log_vector(
+                     racket_velocity
+@@ -719,67 +746,84 @@ class HitterEnv(BaseEnv):
+         self.hitter_strike_duration_s = max(
+             fields["time_to_strike"]
+             + float(self.hitter_command_lifecycle.recovery_duration_s),
+             fields["time_to_strike"],
+         )
+ 
+     def _plan_hitter_snapshot(self, snapshot: BallEstimateSnapshot):
+         if not snapshot.visible:
+             if getattr(self.simulator, "is_real", False):
+                 self.hitter_incoming_track_confirmation.reset()
+-            raise RuntimeError(TRACK_ENDED_ERROR)
++            raise PlannerRejected(
++                PlannerFailureReason.TRACK_ENDED,
++                TRACK_ENDED_ERROR,
++            )
+         if not snapshot.ready:
+-            raise ValueError("HITTER ball estimator is not ready.")
++            raise PlannerRejected(
++                PlannerFailureReason.ESTIMATOR_NOT_READY,
++                "HITTER ball estimator is not ready.",
++            )
+         if not snapshot.base_valid:
+-            raise ValueError("HITTER base pose is not valid.")
++            raise PlannerRejected(
++                PlannerFailureReason.BASE_POSE_INVALID,
++                "HITTER base pose is not valid.",
++            )
+ 
+         ball_pos_w = self._validated_snapshot_vector(
+             snapshot.position_w,
+             name="snapshot.position_w",
+             size=3,
++            reject_nonfinite=True,
+         )
+         ball_vel_w = self._validated_snapshot_vector(
+             snapshot.velocity_w,
+             name="snapshot.velocity_w",
+             size=3,
++            reject_nonfinite=True,
+         )
+         if getattr(self.simulator, "is_real", False):
+             confirmed = self.hitter_incoming_track_confirmation.observe(
+                 track_id=snapshot.track_id,
+                 velocity_x_mps=float(ball_vel_w[0]),
+             )
+             if not confirmed:
+-                raise ValueError(
++                raise PlannerRejected(
++                    PlannerFailureReason.BALL_NOT_INCOMING,
+                     "HITTER ball track is not stably incoming: "
+                     f"vx={float(ball_vel_w[0]):.3f} m/s."
+                 )
+         base_pos_w = self._validated_snapshot_vector(
+             snapshot.base_position_w,
+             name="snapshot.base_position_w",
+             size=3,
++            reject_nonfinite=True,
+         )
+         base_quat_w = self._validated_snapshot_vector(
+             snapshot.base_quaternion_xyzw,
+             name="snapshot.base_quaternion_xyzw",
+             size=4,
++            reject_nonfinite=True,
+         )
+         quat_norm = float(np.linalg.norm(base_quat_w))
+         if quat_norm < 1.0e-6:
+-            raise ValueError("HITTER snapshot base quaternion has near-zero norm.")
++            raise PlannerRejected(
++                PlannerFailureReason.BASE_POSE_INVALID,
++                "HITTER snapshot base quaternion has near-zero norm.",
++            )
+         base_quat_w /= quat_norm
+         base_forward_xy_w = matrix_from_quat(base_quat_w)[:, 0][:2]
+         return self.hitter_ball_planner.plan_command(
+             ball_pos_w,
+             ball_vel_w,
+             current_base_xy_w=base_pos_w,
+             base_forward_xy_w=base_forward_xy_w,
+-            strike_type=self._forced_strike_type_name(),
++            strike_type=self.hitter_forced_strike_type,
+         )
+ 
+     def _mujoco_planner_result(self, *, now: float) -> PlannerResultSnapshot:
+         if self._mujoco_serve_schedule_enabled():
+             self._update_mujoco_serve_schedule()
+         elif self.hitter_ball_sequence_needs_reset:
+             self._reset_hitter_ball_sequence_if_needed()
+             self._hitter_sync_track_id += 1
+             self._hitter_sync_generation = 0
+         self.simulator.get_state()
+@@ -806,20 +850,30 @@ class HitterEnv(BaseEnv):
+             command = self._plan_hitter_snapshot(snapshot)
+             deadline = now + float(command.time_to_strike)
+             return PlannerResultSnapshot(
+                 track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=deadline,
+                 completed_monotonic_s=now,
+                 command=command,
+             )
++        except PlannerRejected as exc:
++            return PlannerResultSnapshot(
++                track_id=snapshot.track_id,
++                source_generation=snapshot.generation,
++                source_frame=snapshot.source_frame,
++                strike_deadline_monotonic_s=float("nan"),
++                completed_monotonic_s=now,
++                command=None,
++                error=exc.reason.value,
++            )
+         except Exception as exc:
+             return PlannerResultSnapshot(
+                 track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=float("nan"),
+                 completed_monotonic_s=now,
+                 command=None,
+                 error=f"{type(exc).__name__}: {exc}",
+             )
+diff --git a/deploy/tests/test_hitter_planner_failure_reasons.py b/deploy/tests/test_hitter_planner_failure_reasons.py
+new file mode 100644
+index 0000000..5c840b9
+--- /dev/null
++++ b/deploy/tests/test_hitter_planner_failure_reasons.py
+@@ -0,0 +1,228 @@
++from __future__ import annotations
++
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++
++from envs.hitter import HitterEnv
++from utils.hitter_planner import (
++    BallTrajectory,
++    BallTrajectoryPredictor,
++    BaseTargetPlanner,
++    HitterSystemPlanner,
++    StrikePlan,
++    StrikePlanner,
++)
++from utils.hitter_realtime import BallEstimateSnapshot, IncomingTrackConfirmation
++from utils.hitter_runtime_types import PlannerFailureReason, PlannerRejected
++
++
++class FixedStrikePlanner:
++    def __init__(self, point, *, t_strike=0.5, racket_velocity=None):
++        self.point = np.asarray(point, dtype=np.float64)
++        self.t_strike = t_strike
++        self.racket_velocity = (
++            np.zeros(3, dtype=np.float64)
++            if racket_velocity is None
++            else np.asarray(racket_velocity, dtype=np.float64)
++        )
++
++    def plan(self, _ball_position, _ball_velocity) -> StrikePlan:
++        return StrikePlan(
++            t_strike=self.t_strike,
++            p_racket_target=self.point.copy(),
++            v_racket_target=self.racket_velocity.copy(),
++            v_ball_in=np.array([-1.0, 0.0, 0.0], dtype=np.float64),
++            v_ball_out=np.array([1.0, 0.0, 0.0], dtype=np.float64),
++        )
++
++
++def system_planner_with_fixed_strike_point(point) -> HitterSystemPlanner:
++    return HitterSystemPlanner(
++        strike_planner=FixedStrikePlanner(point),
++        base_planner=BaseTargetPlanner(),
++    )
++
++
++@pytest.fixture
++def strike_planner() -> StrikePlanner:
++    return StrikePlanner(
++        predictor=BallTrajectoryPredictor(table_height=0.76, dt=0.005),
++        virtual_hit_plane_x=0.0,
++        prediction_horizon_s=2.0,
++        maximum_prediction_horizon_s=5.0,
++        minimum_hit_height=0.76,
++        maximum_hit_height=1.45,
++        require_future_hit_plane_crossing=True,
++    )
++
++
++@pytest.mark.parametrize(
++    "table_y,expected",
++    [(-1.0e-9, "forehand"), (0.0, "backhand"), (1.0e-9, "backhand")],
++)
++def test_strike_type_uses_absolute_table_y(table_y, expected):
++    planner = system_planner_with_fixed_strike_point([0.0, table_y, 1.0])
++    for base_y, yaw in [(-0.8, -1.2), (0.0, 0.0), (0.9, 2.1)]:
++        forward = [np.cos(yaw), np.sin(yaw)]
++        command = planner.plan_command(
++            [0.8, 0.0, 1.0],
++            [-2.0, 0.0, 0.0],
++            current_base_xy_w=[-0.4, base_y],
++            base_forward_xy_w=forward,
++        )
++        assert command.strike_type == expected
++        assert command.strike_table_y_w == pytest.approx(table_y)
++        assert command.strike_side_source == "table_y"
++
++
++def test_forced_strike_type_is_explicitly_recorded():
++    planner = system_planner_with_fixed_strike_point([0.0, -0.2, 1.0])
++    command = planner.plan_command(
++        [0.8, 0.0, 1.0],
++        [-2.0, 0.0, 0.0],
++        strike_type="backhand",
++    )
++    assert command.strike_type == "backhand"
++    assert command.strike_table_y_w == pytest.approx(-0.2)
++    assert command.strike_side_source == "forced"
++
++
++def test_no_crossing_has_typed_reason(strike_planner):
++    with pytest.raises(PlannerRejected) as caught:
++        strike_planner.hit_plane_intersection(
++            [0.8, 0.0, 1.0],
++            [-0.01, 0.0, 4.0],
++        )
++    assert caught.value.reason is PlannerFailureReason.NO_FUTURE_CROSSING
++
++
++def test_outgoing_ball_has_typed_reason(strike_planner):
++    with pytest.raises(PlannerRejected) as caught:
++        strike_planner.plan([0.8, 0.0, 1.0], [0.1, 0.0, 0.0])
++    assert caught.value.reason is PlannerFailureReason.BALL_NOT_INCOMING
++
++
++def test_hit_height_has_typed_reason():
++    planner = StrikePlanner(
++        predictor=BallTrajectoryPredictor(
++            gravity=[0.0, 0.0, 0.0],
++            table_height=0.76,
++            dt=0.005,
++        ),
++        virtual_hit_plane_x=0.0,
++        minimum_hit_height=0.76,
++        maximum_hit_height=1.45,
++    )
++    with pytest.raises(PlannerRejected) as caught:
++        planner.plan([0.4, 0.0, 1.46], [-1.0, 0.0, 0.0])
++    assert caught.value.reason is PlannerFailureReason.HIT_HEIGHT_OUT_OF_RANGE
++
++
++class NonfiniteTrajectoryPredictor(BallTrajectoryPredictor):
++    def predict(self, _position, _velocity, horizon_s):
++        return BallTrajectory(
++            times=np.array([0.0, float(horizon_s)]),
++            positions=np.array([[0.1, 0.0, 1.0], [np.nan, 0.0, 1.0]]),
++            velocities=np.array([[-1.0, 0.0, 0.0], [-1.0, 0.0, 0.0]]),
++        )
++
++
++@pytest.mark.parametrize("source", ["input", "trajectory"])
++def test_nonfinite_data_has_typed_reason(source, strike_planner):
++    planner = strike_planner
++    position = [np.nan, 0.0, 1.0]
++    if source == "trajectory":
++        planner = StrikePlanner(
++            predictor=NonfiniteTrajectoryPredictor(),
++            virtual_hit_plane_x=0.0,
++            minimum_hit_height=0.76,
++            maximum_hit_height=1.45,
++        )
++        position = [0.1, 0.0, 1.0]
++    with pytest.raises(PlannerRejected) as caught:
++        planner.plan(position, [-1.0, 0.0, 0.0])
++    assert caught.value.reason is PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT
++
++
++@pytest.mark.parametrize(
++    "strike_planner",
++    [
++        FixedStrikePlanner([0.0, 0.0, 1.0], t_strike=np.nan),
++        FixedStrikePlanner(
++            [0.0, 0.0, 1.0],
++            racket_velocity=[np.inf, 0.0, 0.0],
++        ),
++    ],
++)
++def test_nonfinite_strike_plan_output_has_typed_reason(strike_planner):
++    planner = HitterSystemPlanner(
++        strike_planner=strike_planner,
++        base_planner=BaseTargetPlanner(),
++    )
++    with pytest.raises(PlannerRejected) as caught:
++        planner.plan_command([0.8, 0.0, 1.0], [-2.0, 0.0, 0.0])
++    assert caught.value.reason is PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT
++
++
++def snapshot(**changes) -> BallEstimateSnapshot:
++    values = {
++        "track_id": 7,
++        "generation": 1,
++        "source_frame": 1,
++        "source_time_s": 1.0,
++        "received_monotonic_s": 2.0,
++        "position_w": np.array([0.8, 0.0, 1.0]),
++        "velocity_w": np.array([-2.0, 0.0, 0.0]),
++        "base_position_w": np.array([-0.4, 0.0, 0.8]),
++        "base_quaternion_xyzw": np.array([0.0, 0.0, 0.0, 1.0]),
++        "base_valid": True,
++        "visible": True,
++        "ready": True,
++    }
++    values.update(changes)
++    return BallEstimateSnapshot(**values)
++
++
++def real_world_planning_env() -> HitterEnv:
++    env = HitterEnv.__new__(HitterEnv)
++    env.simulator = SimpleNamespace(is_real=True)
++    env.hitter_incoming_track_confirmation = IncomingTrackConfirmation(
++        minimum_speed_x_mps=0.2,
++        required_consecutive_snapshots=2,
++    )
++    env.hitter_ball_planner = system_planner_with_fixed_strike_point(
++        [0.0, 0.0, 1.0]
++    )
++    env.hitter_forced_strike_type = None
++    return env
++
++
++@pytest.mark.parametrize(
++    "changes,reason",
++    [
++        ({"visible": False}, PlannerFailureReason.TRACK_ENDED),
++        ({"ready": False}, PlannerFailureReason.ESTIMATOR_NOT_READY),
++        ({"base_valid": False}, PlannerFailureReason.BASE_POSE_INVALID),
++        ({}, PlannerFailureReason.BALL_NOT_INCOMING),
++    ],
++)
++def test_snapshot_admission_has_typed_reason(changes, reason):
++    env = real_world_planning_env()
++    with pytest.raises(PlannerRejected) as caught:
++        env._plan_hitter_snapshot(snapshot(**changes))
++    assert caught.value.reason is reason
++
++
++def test_internal_error_reason_is_reserved_for_worker_boundary():
++    assert set(PlannerFailureReason) == {
++        PlannerFailureReason.TRACK_ENDED,
++        PlannerFailureReason.ESTIMATOR_NOT_READY,
++        PlannerFailureReason.BASE_POSE_INVALID,
++        PlannerFailureReason.BALL_NOT_INCOMING,
++        PlannerFailureReason.NO_FUTURE_CROSSING,
++        PlannerFailureReason.HIT_HEIGHT_OUT_OF_RANGE,
++        PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT,
++        PlannerFailureReason.INTERNAL_ERROR,
++    }
+diff --git a/deploy/tests/test_hitter_runtime_factory.py b/deploy/tests/test_hitter_runtime_factory.py
+index d88a87d..675b80b 100644
+--- a/deploy/tests/test_hitter_runtime_factory.py
++++ b/deploy/tests/test_hitter_runtime_factory.py
+@@ -408,20 +408,41 @@ class RuntimeFactoryCharacterizationTests(unittest.TestCase):
+     def test_invalid_forced_strike_type_is_rejected(self):
+         with self.assertRaisesRegex(
+             ValueError,
+             "force_strike_type must be forehand/backhand/None",
+         ):
+             forced_strike_type(
+                 {"force_strike_type": "smash"},
+                 {},
+             )
+ 
++    def test_real_world_rejects_forced_strike_type(self):
++        with self.assertRaisesRegex(
++            ValueError,
++            "force_strike_type is disabled",
++        ):
++            forced_strike_type(
++                {"force_strike_type": "forehand"},
++                {},
++                is_real_world=True,
++            )
++
++    def test_mujoco_may_force_strike_type(self):
++        self.assertEqual(
++            forced_strike_type(
++                {"force_strike_type": "forehand"},
++                {},
++                is_real_world=False,
++            ),
++            "forehand",
++        )
++
+     def test_seeded_lifecycle_recovery_sequence_matches_hitter_env(self):
+         settings = resolve_hitter_runtime_settings(
+             policy_config=self.policy_config,
+             motion_config=self.motion_config,
+             control_config=self.control_config,
+         )
+         env = HitterEnv.__new__(HitterEnv)
+         env.motion_cfg = self.motion_config
+         env.waiting_time_to_strike_s = settings.waiting_tts_s
+         env.hitter_runtime_settings = settings
+diff --git a/deploy/tests/test_hitter_strike_target_logging.py b/deploy/tests/test_hitter_strike_target_logging.py
+index 26bf7bd..25c6f27 100644
+--- a/deploy/tests/test_hitter_strike_target_logging.py
++++ b/deploy/tests/test_hitter_strike_target_logging.py
+@@ -37,20 +37,22 @@ def fake_command(
+     racket_velocity=None,
+ ):
+     if ball_in is None:
+         ball_in = [-marker, -marker, -marker]
+     if ball_out is None:
+         ball_out = [marker, marker, marker]
+     if racket_velocity is None:
+         racket_velocity = [marker, marker, marker]
+     return SimpleNamespace(
+         strike_type=strike_type,
++        strike_table_y_w=0.1,
++        strike_side_source="table_y",
+         p_base_target_xy=np.array([-0.4, 0.0], dtype=np.float64),
+         v_racket_target_w=np.asarray(racket_velocity, dtype=np.float64),
+         time_to_strike=0.90,
+         strike_plan=SimpleNamespace(
+             p_racket_target=np.array([0.0, 0.1, 1.0], dtype=np.float64),
+             v_ball_in=np.asarray(ball_in, dtype=np.float64),
+             v_ball_out=np.asarray(ball_out, dtype=np.float64),
+         ),
+     )
+ 
+@@ -121,20 +123,21 @@ class StrikeTargetPayloadTests(unittest.TestCase):
+             env._log_hitter_strike_target(result)
+ 
+         target_messages = [
+             message
+             for message in messages
+             if message.startswith("HITTER strike target:")
+         ]
+         self.assertEqual(len(target_messages), 1)
+         message = target_messages[0]
+         self.assertIn("track_id=27 generation=8103 type=backhand", message)
++        self.assertIn("strike_table_y_w=0.1000 side_source=table_y", message)
+         self.assertIn(
+             "v_ball_in_w_mps=[-3.0000,0.4000,-1.2000]",
+             message,
+         )
+         self.assertIn(
+             f"speed_ball_in_mps={np.linalg.norm(ball_in):.4f}",
+             message,
+         )
+         self.assertIn(
+             "v_ball_out_w_mps=[4.2708,-0.5000,1.8000]",
+diff --git a/deploy/utils/hitter_planner.py b/deploy/utils/hitter_planner.py
+index 98af6c6..dc492ef 100644
+--- a/deploy/utils/hitter_planner.py
++++ b/deploy/utils/hitter_planner.py
+@@ -1,50 +1,70 @@
+ from __future__ import annotations
+ 
+ import time
+ from collections import deque
+ from dataclasses import dataclass
+ 
+ import numpy as np
+ 
++from utils.hitter_runtime_types import PlannerFailureReason, PlannerRejected
+ 
+-def _vec2(value, name: str) -> np.ndarray:
++def _vec2(value, name: str, *, reject_nonfinite: bool = False) -> np.ndarray:
+     arr = np.asarray(value, dtype=np.float64).reshape(-1)
+     if arr.shape != (2,):
+         raise ValueError(f"{name} must have shape (2,), got {arr.shape}.")
+     if not np.isfinite(arr).all():
++        if reject_nonfinite:
++            raise PlannerRejected(
++                PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT,
++                f"{name} contains non-finite values: {arr}.",
++            )
+         raise ValueError(f"{name} contains non-finite values: {arr}.")
+     return arr
+ 
+ 
+-def _vec3(value, name: str) -> np.ndarray:
++def _vec3(value, name: str, *, reject_nonfinite: bool = False) -> np.ndarray:
+     arr = np.asarray(value, dtype=np.float64).reshape(-1)
+     if arr.shape != (3,):
+         raise ValueError(f"{name} must have shape (3,), got {arr.shape}.")
+     if not np.isfinite(arr).all():
++        if reject_nonfinite:
++            raise PlannerRejected(
++                PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT,
++                f"{name} contains non-finite values: {arr}.",
++            )
+         raise ValueError(f"{name} contains non-finite values: {arr}.")
+     return arr
+ 
+ 
+-def _base_position(value, default_z: float) -> np.ndarray:
++def _base_position(value, default_z: float, *, reject_nonfinite: bool = False) -> np.ndarray:
+     arr = np.asarray(value, dtype=np.float64).reshape(-1)
+     if arr.shape == (2,):
+         arr = np.array([arr[0], arr[1], default_z], dtype=np.float64)
+     if arr.shape != (3,):
+         raise ValueError(f"current_base_xy_w must contain 2 or 3 values, got shape {arr.shape}.")
+     if not np.isfinite(arr).all():
++        if reject_nonfinite:
++            raise PlannerRejected(
++                PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT,
++                f"current_base_xy_w contains non-finite values: {arr}.",
++            )
+         raise ValueError(f"current_base_xy_w contains non-finite values: {arr}.")
+     return arr
+ 
+ 
+-def _world_from_base_yaw(base_forward_xy_w) -> np.ndarray:
+-    forward = _vec2(base_forward_xy_w, "base_forward_xy_w")
++def _world_from_base_yaw(base_forward_xy_w, *, reject_nonfinite: bool = False) -> np.ndarray:
++    forward = _vec2(
++        base_forward_xy_w,
++        "base_forward_xy_w",
++        reject_nonfinite=reject_nonfinite,
++    )
+     norm = np.linalg.norm(forward)
+     if norm < 1.0e-9:
+         raise ValueError("base_forward_xy_w must be nonzero.")
+     forward = forward / norm
+     left = np.array([-forward[1], forward[0]], dtype=np.float64)
+     return np.column_stack([forward, left])
+ 
+ 
+ @dataclass(frozen=True)
+ class BallTrajectory:
+@@ -297,41 +317,54 @@ class StrikePlanner:
+             raise ValueError("prediction_horizon_s must be positive.")
+         if self.maximum_prediction_horizon_s < self.prediction_horizon_s:
+             raise ValueError(
+                 "maximum_prediction_horizon_s must be greater than or equal to "
+                 "prediction_horizon_s."
+             )
+         if self.minimum_hit_height >= self.maximum_hit_height:
+             raise ValueError("minimum_hit_height must be less than maximum_hit_height.")
+ 
+     def hit_plane_intersection(self, ball_position, ball_velocity) -> tuple[float, np.ndarray, np.ndarray]:
+-        ball_position = _vec3(ball_position, "ball_position")
+-        ball_velocity = _vec3(ball_velocity, "ball_velocity")
++        ball_position = _vec3(
++            ball_position,
++            "ball_position",
++            reject_nonfinite=True,
++        )
++        ball_velocity = _vec3(
++            ball_velocity,
++            "ball_velocity",
++            reject_nonfinite=True,
++        )
+         if not ball_position[0] > self.virtual_hit_plane_x:
+-            raise ValueError(
++            raise PlannerRejected(
++                PlannerFailureReason.BALL_NOT_INCOMING,
+                 f"ball admission requires x > {self.virtual_hit_plane_x:g}, "
+                 f"got x={ball_position[0]:.3f}."
+             )
+         if not ball_velocity[0] < 0.0:
+-            raise ValueError(
++            raise PlannerRejected(
++                PlannerFailureReason.BALL_NOT_INCOMING,
+                 f"ball admission requires vx < 0, got vx={ball_velocity[0]:.3f}."
+             )
+ 
+         horizon = self.prediction_horizon_s
+         while True:
+             trajectory = self.predictor.predict(ball_position, ball_velocity, horizon)
+             if not (
+                 np.isfinite(trajectory.times).all()
+                 and np.isfinite(trajectory.positions).all()
+                 and np.isfinite(trajectory.velocities).all()
+             ):
+-                raise ValueError("ball trajectory predictor produced non-finite values.")
++                raise PlannerRejected(
++                    PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT,
++                    "ball trajectory predictor produced non-finite values.",
++                )
+ 
+             x = trajectory.positions[:, 0]
+             signed = x - self.virtual_hit_plane_x
+             crossing = np.where(
+                 (signed[:-1] > 0.0)
+                 & (signed[1:] <= 0.0)
+                 & (trajectory.velocities[:-1, 0] < 0.0)
+             )[0]
+             if crossing.size:
+                 index = int(crossing[0])
+@@ -350,61 +383,72 @@ class StrikePlanner:
+                     pos = (
+                         (1.0 - alpha) * trajectory.positions[index]
+                         + alpha * trajectory.positions[index + 1]
+                     )
+                     vel = (
+                         (1.0 - alpha) * trajectory.velocities[index]
+                         + alpha * trajectory.velocities[index + 1]
+                     )
+                     pos[0] = self.virtual_hit_plane_x
+                     if not (self.minimum_hit_height < pos[2] <= self.maximum_hit_height):
+-                        raise ValueError(
++                        raise PlannerRejected(
++                            PlannerFailureReason.HIT_HEIGHT_OUT_OF_RANGE,
+                             f"predicted hit height {pos[2]:.3f} is outside "
+                             f"({self.minimum_hit_height:.3f}, {self.maximum_hit_height:.3f}]"
+                         )
+                     return float(t), pos, vel
+ 
+             if horizon >= self.maximum_prediction_horizon_s:
+                 break
+             horizon = min(
+                 horizon + self.prediction_horizon_s,
+                 self.maximum_prediction_horizon_s,
+             )
+ 
+-        raise ValueError(
++        raise PlannerRejected(
++            PlannerFailureReason.NO_FUTURE_CROSSING,
+             f"ball trajectory has no directed crossing of hit plane "
+             f"x={self.virtual_hit_plane_x:.3f} within maximum prediction horizon "
+             f"{self.maximum_prediction_horizon_s:.3f}s"
+         )
+ 
+     def desired_outgoing_ball_velocity(self, strike_position: np.ndarray) -> np.ndarray:
+-        strike_position = _vec3(strike_position, "strike_position")
++        strike_position = _vec3(
++            strike_position,
++            "strike_position",
++            reject_nonfinite=True,
++        )
+         flight_time = max(self.post_hit_flight_time, 1.0e-6)
+         return (self.desired_landing_point - strike_position) / flight_time - 0.5 * self.predictor.gravity * flight_time
+ 
+     def racket_velocity_from_ball_velocities(self, v_ball_in: np.ndarray, v_ball_out: np.ndarray) -> np.ndarray:
+-        v_in = _vec3(v_ball_in, "v_ball_in")
+-        v_out = _vec3(v_ball_out, "v_ball_out")
++        v_in = _vec3(v_ball_in, "v_ball_in", reject_nonfinite=True)
++        v_out = _vec3(v_ball_out, "v_ball_out", reject_nonfinite=True)
+         delta = v_out - v_in
+         norm = np.linalg.norm(delta)
+         if norm < 1.0e-9:
+             return np.zeros(3, dtype=np.float64)
+         normal = delta / norm
+         scalar = (np.dot(v_out, normal) + self.racket_restitution * np.dot(v_in, normal)) / (
+             1.0 + self.racket_restitution
+         )
+         return scalar * normal
+ 
+     def plan(self, ball_position, ball_velocity) -> StrikePlan:
+         t_strike, p_strike, v_in = self.hit_plane_intersection(ball_position, ball_velocity)
+         v_out = self.desired_outgoing_ball_velocity(p_strike)
+         v_racket = self.racket_velocity_from_ball_velocities(v_in, v_out)
++        v_racket = _vec3(
++            v_racket,
++            "v_racket_target",
++            reject_nonfinite=True,
++        )
+         return StrikePlan(
+             t_strike=t_strike,
+             p_racket_target=p_strike,
+             v_racket_target=v_racket,
+             v_ball_in=v_in,
+             v_ball_out=v_out,
+         )
+ 
+ 
+ class BaseTargetPlanner:
+@@ -420,44 +464,67 @@ class BaseTargetPlanner:
+         self.forehand_nominal_racket_y_b = float(forehand_nominal_racket_y_b)
+         self.backhand_nominal_racket_y_b = float(backhand_nominal_racket_y_b)
+         self.default_base_z = float(default_base_z)
+ 
+     def plan(
+         self,
+         *,
+         racket_target_w,
+         current_base_xy_w=(0.0, 0.0, 0.78),
+         base_forward_xy_w=(1.0, 0.0),
+-        strike_type: str | None = None,
++        strike_type: str,
+     ) -> tuple[str, np.ndarray]:
+-        racket_target_w = _vec3(racket_target_w, "racket_target_w")
+-        current_base_w = _base_position(current_base_xy_w, self.default_base_z)
+-        frame = _world_from_base_yaw(base_forward_xy_w)
+-        if strike_type is None:
+-            local_xy = frame.T @ (racket_target_w[:2] - current_base_w[:2])
+-            strike_type = "forehand" if local_xy[1] < 0.0 else "backhand"
+-        else:
+-            strike_type = str(strike_type).lower()
+-            if strike_type not in {"forehand", "backhand"}:
+-                raise ValueError("strike_type must be 'forehand', 'backhand', or None.")
++        racket_target_w = _vec3(
++            racket_target_w,
++            "racket_target_w",
++            reject_nonfinite=True,
++        )
++        current_base_w = _base_position(
++            current_base_xy_w,
++            self.default_base_z,
++            reject_nonfinite=True,
++        )
++        frame = _world_from_base_yaw(
++            base_forward_xy_w,
++            reject_nonfinite=True,
++        )
++        strike_type = validate_explicit_strike_type(strike_type)
+         nominal_y = self.forehand_nominal_racket_y_b if strike_type == "forehand" else self.backhand_nominal_racket_y_b
+         p_base_target_xy = racket_target_w[:2] - self.racket_x_offset_b * frame[:, 0] - nominal_y * frame[:, 1]
+         return strike_type, p_base_target_xy
+ 
+ 
++def validate_explicit_strike_type(strike_type: str) -> str:
++    resolved = str(strike_type).strip().lower()
++    if resolved not in {"forehand", "backhand"}:
++        raise ValueError("strike_type must be 'forehand' or 'backhand'.")
++    return resolved
++
++
++def strike_type_from_table_y(racket_target_w) -> str:
++    target = _vec3(
++        racket_target_w,
++        "racket_target_w",
++        reject_nonfinite=True,
++    )
++    return "forehand" if float(target[1]) < 0.0 else "backhand"
++
++
+ @dataclass(frozen=True)
+ class HitterWbcCommand:
+     strike_type: str
+     p_base_target_xy: np.ndarray
+     v_racket_target_w: np.ndarray
+     time_to_strike: float
+     strike_plan: StrikePlan
++    strike_table_y_w: float
++    strike_side_source: str
+ 
+ 
+ class HitterSystemPlanner:
+     def __init__(
+         self,
+         *,
+         strike_planner: StrikePlanner | None = None,
+         base_planner: BaseTargetPlanner | None = None,
+     ):
+         self.strike_planner = strike_planner if strike_planner is not None else StrikePlanner()
+@@ -466,23 +533,55 @@ class HitterSystemPlanner:
+     def plan_command(
+         self,
+         ball_position,
+         ball_velocity,
+         *,
+         current_base_xy_w=(0.0, 0.0, 0.78),
+         base_forward_xy_w=(1.0, 0.0),
+         strike_type: str | None = None,
+     ) -> HitterWbcCommand:
+         strike_plan = self.strike_planner.plan(ball_position, ball_velocity)
+-        strike_type, p_base_target_xy = self.base_planner.plan(
++        time_to_strike = float(strike_plan.t_strike)
++        if not np.isfinite(time_to_strike):
++            raise PlannerRejected(
++                PlannerFailureReason.NONFINITE_INPUT_OR_OUTPUT,
++                "strike_plan.t_strike is non-finite.",
++            )
++        for name in ("v_racket_target", "v_ball_in", "v_ball_out"):
++            _vec3(
++                getattr(strike_plan, name),
++                f"strike_plan.{name}",
++                reject_nonfinite=True,
++            )
++        strike_table_y_w = float(
++            _vec3(
++                strike_plan.p_racket_target,
++                "strike_plan.p_racket_target",
++                reject_nonfinite=True,
++            )[1]
++        )
++        resolved_strike_type = (
++            strike_type_from_table_y(strike_plan.p_racket_target)
++            if strike_type is None
++            else validate_explicit_strike_type(strike_type)
++        )
++        strike_side_source = "table_y" if strike_type is None else "forced"
++        resolved_strike_type, p_base_target_xy = self.base_planner.plan(
+             racket_target_w=strike_plan.p_racket_target,
+             current_base_xy_w=current_base_xy_w,
+             base_forward_xy_w=base_forward_xy_w,
+-            strike_type=strike_type,
++            strike_type=resolved_strike_type,
++        )
++        _vec2(
++            p_base_target_xy,
++            "p_base_target_xy",
++            reject_nonfinite=True,
+         )
+         return HitterWbcCommand(
+-            strike_type=strike_type,
++            strike_type=resolved_strike_type,
+             p_base_target_xy=p_base_target_xy,
+             v_racket_target_w=strike_plan.v_racket_target,
+-            time_to_strike=strike_plan.t_strike,
++            time_to_strike=time_to_strike,
+             strike_plan=strike_plan,
++            strike_table_y_w=strike_table_y_w,
++            strike_side_source=strike_side_source,
+         )
+diff --git a/deploy/utils/hitter_runtime_factory.py b/deploy/utils/hitter_runtime_factory.py
+index bc265e3..d92f208 100644
+--- a/deploy/utils/hitter_runtime_factory.py
++++ b/deploy/utils/hitter_runtime_factory.py
+@@ -148,37 +148,43 @@ def build_hitter_system_planner(
+     )
+     return HitterSystemPlanner(
+         strike_planner=strike_planner,
+         base_planner=base_planner,
+     )
+ 
+ 
+ def forced_strike_type(
+     planner_config: Mapping[str, object],
+     motion_config: Mapping[str, object],
++    *,
++    is_real_world: bool = False,
+ ) -> str | None:
+     """Resolve and validate forehand/backhand/None exactly once."""
+     forced = planner_config.get(
+         "force_strike_type",
+         motion_config.get("force_strike_type", None),
+     )
+     if (
+         forced is None
+         or str(forced).strip().lower() in {"", "none", "null"}
+     ):
+         return None
+     forced_name = str(forced).strip().lower()
+     if forced_name not in {"forehand", "backhand"}:
+         raise ValueError(
+             "force_strike_type must be forehand/backhand/None, "
+             f"got {forced_name!r}."
+         )
++    if is_real_world:
++        raise ValueError(
++            "force_strike_type is disabled for real-world HITTER runtime."
++        )
+     return forced_name
+ 
+ 
+ @dataclass(frozen=True)
+ class HitterRuntimeSettings:
+     estimator_sample_rate_hz: float
+     planner_update_rate_hz: float
+     planner_update_interval_s: float
+     minimum_incoming_speed_x_mps: float
+     incoming_confirmation_snapshots: int
+diff --git a/deploy/utils/hitter_runtime_types.py b/deploy/utils/hitter_runtime_types.py
+index 6c8bf3a..7e842e5 100644
+--- a/deploy/utils/hitter_runtime_types.py
++++ b/deploy/utils/hitter_runtime_types.py
+@@ -1,13 +1,32 @@
+ from __future__ import annotations
+ 
+ from dataclasses import dataclass
++from enum import Enum
++
++
++class PlannerFailureReason(str, Enum):
++    TRACK_ENDED = "TRACK_ENDED"
++    ESTIMATOR_NOT_READY = "ESTIMATOR_NOT_READY"
++    BASE_POSE_INVALID = "BASE_POSE_INVALID"
++    BALL_NOT_INCOMING = "BALL_NOT_INCOMING"
++    NO_FUTURE_CROSSING = "NO_FUTURE_CROSSING"
++    HIT_HEIGHT_OUT_OF_RANGE = "HIT_HEIGHT_OUT_OF_RANGE"
++    NONFINITE_INPUT_OR_OUTPUT = "NONFINITE_INPUT_OR_OUTPUT"
++    INTERNAL_ERROR = "INTERNAL_ERROR"
++
++
++class PlannerRejected(RuntimeError):
++    def __init__(self, reason: PlannerFailureReason, detail: str):
++        self.reason = PlannerFailureReason(reason)
++        self.detail = str(detail)
++        super().__init__(f"{self.reason.value}: {self.detail}")
+ 
+ 
+ @dataclass(frozen=True, order=True)
+ class SnapshotKey:
+     track_id: int
+     generation: int
+ 
+     def __post_init__(self) -> None:
+         if type(self.track_id) is not int or self.track_id <= 0:
+             raise ValueError("track_id must be positive")

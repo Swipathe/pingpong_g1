@@ -1,0 +1,1773 @@
+# Review package: 1a9bb52f9cd30586e05148f5f7549d8bab808dab..HEAD
+
+## Commits
+391f403 fix: render truthful HITTER live diagnostics
+
+## Files changed
+ deploy/diagnostics/static/hitter_task_monitor.html | 738 ++++++++++++++++-----
+ deploy/tests/test_hitter_task_frontend.py          | 554 ++++++++++++++--
+ 2 files changed, 1075 insertions(+), 217 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/static/hitter_task_monitor.html b/deploy/diagnostics/static/hitter_task_monitor.html
+index afe5817..7e17d8e 100644
+--- a/deploy/diagnostics/static/hitter_task_monitor.html
++++ b/deploy/diagnostics/static/hitter_task_monitor.html
+@@ -208,30 +208,41 @@
+       padding-left: 1.2rem;
+     }
+ 
+     .health-warnings li {
+       overflow-wrap: anywhere;
+     }
+ 
+     .progress-stages {
+       display: grid;
+       gap: 0.65rem;
+-      grid-template-columns: repeat(6, minmax(7rem, 1fr));
+       list-style: none;
+       margin: 0;
+       padding: 0;
+     }
+ 
++    .ball-stages {
++      grid-template-columns: repeat(3, minmax(9rem, 1fr));
++    }
++
++    .gate-stages {
++      grid-template-columns: repeat(5, minmax(8rem, 1fr));
++    }
++
++    .section-heading {
++      margin: 1rem 0 0.65rem;
++    }
++
+     .stage {
+       border: 1px solid var(--line);
+       border-radius: 10px;
+-      min-height: 5.2rem;
++      min-height: 6rem;
+       padding: 0.75rem;
+       position: relative;
+     }
+ 
+     .stage::after {
+       color: var(--gray);
+       content: "→";
+       font-size: 1.1rem;
+       position: absolute;
+       right: -0.75rem;
+@@ -250,20 +261,36 @@
+       letter-spacing: 0.035em;
+     }
+ 
+     .stage-value {
+       display: block;
+       font-size: 0.9rem;
+       margin-top: 0.45rem;
+       overflow-wrap: anywhere;
+     }
+ 
++    .stage-detail {
++      color: var(--muted);
++      display: block;
++      font-size: 0.7rem;
++      line-height: 1.45;
++      margin-top: 0.4rem;
++      overflow-wrap: anywhere;
++    }
++
++    .telemetry-grid {
++      display: grid;
++      gap: 0.65rem;
++      grid-template-columns: repeat(5, minmax(9rem, 1fr));
++      margin-top: 0.65rem;
++    }
++
+     .stage.progress {
+       border-color: var(--blue);
+       box-shadow: inset 0 0 0 1px rgba(84, 167, 255, 0.12);
+     }
+ 
+     .stage.pass {
+       border-color: var(--green);
+       box-shadow: inset 0 0 0 1px rgba(82, 209, 141, 0.12);
+     }
+ 
+@@ -396,46 +423,51 @@
+       }
+ 
+       .health-grid {
+         grid-template-columns: repeat(3, minmax(8rem, 1fr));
+       }
+ 
+       .progress-stages {
+         grid-template-columns: repeat(3, minmax(8rem, 1fr));
+       }
+ 
+-      .stage:nth-child(3)::after {
++      .telemetry-grid {
++        grid-template-columns: repeat(3, minmax(8rem, 1fr));
++      }
++
++      .ball-stages .stage:nth-child(3)::after {
+         content: "";
+       }
+     }
+ 
+     @media (max-width: 680px) {
+       header {
+         align-items: flex-start;
+         flex-direction: column;
+       }
+ 
+       .health-grid,
+       .progress-stages,
++      .telemetry-grid,
+       .detail-grid {
+         grid-template-columns: 1fr;
+       }
+ 
+       .stage::after {
+         bottom: -0.9rem;
+         left: 50%;
+         right: auto;
+         top: auto;
+         transform: rotate(90deg);
+       }
+ 
+-      .stage:nth-child(3)::after {
++      .ball-stages .stage:nth-child(3)::after {
+         content: "→";
+       }
+ 
+       .detail-card.wide {
+         grid-column: auto;
+       }
+     }
+   </style>
+ </head>
+ <body>
+@@ -454,61 +486,111 @@
+       <div
+         id="health-warnings"
+         class="health-warnings"
+         aria-live="polite"
+         hidden
+       ></div>
+     </section>
+ 
+     <section id="current-attempt" class="panel span-all" aria-labelledby="current-title">
+       <h2 id="current-title">当前来球</h2>
+-      <ol id="progress-stages" class="progress-stages">
+-        <li class="stage" data-stage="detected">
++      <div
++        id="live-schema-notice"
++        class="notice"
++        aria-live="polite"
++      ></div>
++      <h3 class="section-heading">球实时状态</h3>
++      <ol id="progress-stages" class="progress-stages ball-stages">
++        <li id="ball-status-card" class="stage" data-stage="detected">
+           <span class="stage-label">球检测</span>
+-          <span class="stage-value">等待</span>
++          <span id="ball-status-value" class="stage-value">UNKNOWN</span>
++          <span id="ball-status-detail" class="stage-detail">age — · frame —</span>
+         </li>
+-        <li class="stage" data-stage="estimating">
+-          <span class="stage-label">ESTIMATING</span>
+-          <span class="stage-value">0/31</span>
++        <li id="ball-estimator-card" class="stage" data-stage="estimator">
++          <span class="stage-label">ESTIMATOR</span>
++          <span id="estimator-value" class="stage-value">UNKNOWN · —</span>
++          <span id="estimator-detail" class="stage-detail">ready — · reset —</span>
++        </li>
++        <li id="ball-incoming-card" class="stage" data-stage="ball-incoming">
++          <span class="stage-label">BALL-ONLY INCOMING</span>
++          <span id="ball-incoming-value" class="stage-value">UNKNOWN · —</span>
++          <span id="ball-incoming-detail" class="stage-detail">confirmed — · blocker —</span>
++        </li>
++      </ol>
++      <div id="ball-telemetry" class="telemetry-grid">
++        <div class="metric">
++          <span class="metric-label">RAW POSITION</span>
++          <span id="ball-raw-position-value" class="metric-value">—</span>
++        </div>
++        <div class="metric">
++          <span class="metric-label">ESTIMATED POSITION</span>
++          <span id="ball-estimated-position-value" class="metric-value">—</span>
++        </div>
++        <div class="metric">
++          <span class="metric-label">ESTIMATED VELOCITY</span>
++          <span id="ball-velocity-value" class="metric-value">—</span>
++        </div>
++        <div class="metric">
++          <span class="metric-label">SPEED / VX</span>
++          <span id="ball-speed-value" class="metric-value">—</span>
++        </div>
++        <div class="metric">
++          <span class="metric-label">TRACK / GENERATION / FRAME / AGE</span>
++          <span id="ball-identity-value" class="metric-value">—</span>
++        </div>
++      </div>
++
++      <h3 class="section-heading">完整任务门控</h3>
++      <ol id="production-gate-stages" class="progress-stages gate-stages">
++        <li id="gate-pelvis-card" class="stage" data-gate="pelvis">
++          <span class="stage-label">PELVIS</span>
++          <span id="gate-pelvis-value" class="stage-value">UNKNOWN</span>
++          <span id="gate-pelvis-detail" class="stage-detail">subject UNKNOWN</span>
+         </li>
+-        <li class="stage" data-stage="incoming">
+-          <span class="stage-label">PLANNER-READY INCOMING</span>
+-          <span class="stage-value">0/3</span>
++        <li id="gate-production-incoming-card" class="stage" data-gate="production-incoming">
++          <span class="stage-label">PRODUCTION INCOMING</span>
++          <span id="gate-production-incoming-value" class="stage-value">UNKNOWN · —</span>
++          <span id="gate-production-incoming-detail" class="stage-detail">—</span>
+         </li>
+-        <li class="stage" data-stage="planner">
++        <li id="gate-planner-card" class="stage" data-gate="planner">
+           <span class="stage-label">PLANNER</span>
+-          <span class="stage-value">等待</span>
++          <span id="gate-planner-value" class="stage-value">UNKNOWN</span>
++          <span id="gate-planner-detail" class="stage-detail">reason — · TTS —</span>
+         </li>
+-        <li class="stage" data-stage="armed">
++        <li id="gate-arm-card" class="stage" data-gate="armed">
+           <span class="stage-label">ARMED</span>
+-          <span class="stage-value">等待</span>
++          <span id="gate-arm-value" class="stage-value">UNKNOWN</span>
++          <span id="gate-arm-detail" class="stage-detail">ARM threshold —</span>
+         </li>
+-        <li class="stage" data-stage="task">
+-          <span class="stage-label">SHADOW 3/100 TASK OBS</span>
+-          <span class="stage-value">0/11</span>
++        <li id="gate-task-card" class="stage" data-gate="task">
++          <span class="stage-label">TASK OBS</span>
++          <span id="gate-task-value" class="stage-value">UNKNOWN · —</span>
++          <span id="gate-task-detail" class="stage-detail">clip count —</span>
+         </li>
+       </ol>
+       <div id="attempt-meta" class="attempt-meta"></div>
+       <div id="attempt-notice" class="notice"></div>
+     </section>
+ 
+     <section class="panel" aria-labelledby="history-title">
+       <h2 id="history-title">逐球历史</h2>
+       <div class="table-wrap">
+         <table id="attempt-history">
+           <thead>
+             <tr>
+               <th>球</th>
+               <th>速度</th>
++              <th>Estimator</th>
++              <th>Ball-only incoming</th>
+               <th>阶段</th>
+               <th>阻塞点</th>
+-              <th>ARM TTS</th>
++              <th>ARM TTS 记录</th>
+               <th>Task Obs</th>
+               <th>A/B</th>
+             </tr>
+           </thead>
+           <tbody id="attempt-history-body"></tbody>
+         </table>
+       </div>
+       <div class="pager">
+         <button id="load-more" type="button" disabled>加载更早记录</button>
+       </div>
+@@ -537,33 +619,167 @@
+     let refreshTimer = null;
+     let requestInFlight = false;
+     let eventSource = null;
+     let reconnectTimer = null;
+     let reconnectDelayMs = 500;
+     let nextBefore = null;
+     let historyRows = [];
+ 
+     const byId = (id) => document.getElementById(id);
+ 
++    const formatOptional = (value, formatter) =>
++      value === null || value === undefined ? '—' : formatter(value);
++
+     function setText(node, value) {
+-      node.textContent = value === null || value === undefined ? '—' : String(value);
++      node.textContent = formatOptional(value, (item) => String(item));
+     }
+ 
+     function formatNumber(value, digits, suffix) {
+-      if (value === null || value === undefined) {
++      return formatOptional(value, (item) => {
++        const numeric = Number(item);
++        return Number.isFinite(numeric)
++          ? numeric.toFixed(digits) + (suffix || '')
++          : '—';
++      });
++    }
++
++    function formatCountPair(count, total) {
++      if (
++        count === null || count === undefined ||
++        total === null || total === undefined
++      ) {
+         return '—';
+       }
+-      const numeric = Number(value);
+-      if (!Number.isFinite(numeric)) {
++      const numericCount = Number(count);
++      const numericTotal = Number(total);
++      if (
++        !Number.isInteger(numericCount) ||
++        !Number.isInteger(numericTotal) ||
++        numericCount < 0 ||
++        numericTotal < 0
++      ) {
+         return '—';
+       }
+-      return numeric.toFixed(digits) + (suffix || '');
++      return String(numericCount) + '/' + String(numericTotal);
++    }
++
++    function formatVector(value, digits, suffix) {
++      if (!Array.isArray(value) || value.length !== 3) {
++        return '—';
++      }
++      const numeric = value.map((item) => Number(item));
++      if (!numeric.every((item) => Number.isFinite(item))) {
++        return '—';
++      }
++      return '[' + numeric.map((item) => item.toFixed(digits)).join(', ')
++        + ']' + (suffix || '');
++    }
++
++    function statusText(value) {
++      return (
++        typeof value === 'string' && value.trim()
++          ? value.trim().toUpperCase()
++          : 'UNKNOWN'
++      );
++    }
++
++    function formatFlag(value) {
++      if (value === true) {
++        return 'TRUE';
++      }
++      if (value === false) {
++        return 'FALSE';
++      }
++      return '—';
++    }
++
++    function formatHealthFlag(value, trueLabel, falseLabel) {
++      if (value === true) {
++        return trueLabel;
++      }
++      if (value === false) {
++        return falseLabel;
++      }
++      return 'UNKNOWN';
++    }
++
++    function liveSnapshotFor(state) {
++      if (
++        Number(state?.schema_version) !== 2 ||
++        !state.live_snapshot ||
++        typeof state.live_snapshot !== 'object' ||
++        Number(state.live_snapshot.schema_version) !== 2
++      ) {
++        return null;
++      }
++      return state.live_snapshot;
++    }
++
++    function schemaNotice(state) {
++      const stateSchema = Number(state?.schema_version);
++      if (Number.isFinite(stateSchema) && stateSchema > 2) {
++        return 'UNSUPPORTED_SCHEMA：后端 schema_version '
++          + String(state.schema_version) + '，停止猜测实时值。';
++      }
++      if (stateSchema !== 2 || !('live_snapshot' in (state || {}))) {
++        return '旧版后端状态：缺少 live_snapshot；请重启 diagnostics 服务。';
++      }
++      if (state.live_snapshot === null) {
++        return '结构化实时快照尚不可用；等待下一次 monitor tick。';
++      }
++      if (
++        typeof state.live_snapshot !== 'object' ||
++        Number(state.live_snapshot.schema_version) !== 2
++      ) {
++        return 'UNSUPPORTED_SCHEMA：live_snapshot 版本不受支持，停止猜测实时值。';
++      }
++      return null;
++    }
++
++    function statusClass(value) {
++      const status = statusText(value);
++      if (new Set([
++        'LIVE',
++        'VALID',
++        'READY',
++        'CONFIRMED',
++        'INCOMING',
++        'ARMED',
++        'AVAILABLE',
++        'PASS',
++        'COMPLETE',
++      ]).has(status)) {
++        return 'pass';
++      }
++      if (new Set([
++        'ESTIMATING',
++        'CONFIRMING',
++        'PENDING',
++        'NOT_ARMED',
++      ]).has(status)) {
++        return 'progress';
++      }
++      if (new Set([
++        'INVALID',
++        'REJECTED',
++        'FAILED',
++        'ERROR',
++      ]).has(status)) {
++        return 'fail';
++      }
++      return 'warn';
++    }
++
++    function setCardStatus(cardId, status) {
++      const node = byId(cardId);
++      node.className = 'stage';
++      node.classList.add(statusClass(status));
+     }
+ 
+     function makeElement(tag, className, text) {
+       const element = document.createElement(tag);
+       if (className) {
+         element.className = className;
+       }
+       if (text !== undefined) {
+         setText(element, text);
+       }
+@@ -576,44 +792,119 @@
+       setText(node, message);
+     }
+ 
+     function metric(label, value) {
+       const card = makeElement('div', 'metric');
+       card.appendChild(makeElement('span', 'metric-label', label));
+       card.appendChild(makeElement('span', 'metric-value', value));
+       return card;
+     }
+ 
++    function subjectMetric(label, subject) {
++      const value = subject && typeof subject === 'object' ? subject : {};
++      return metric(
++        label,
++        [
++          statusText(value.status),
++          formatNumber(value.rate_hz, 1, ' Hz'),
++          formatNumber(value.age_s, 3, ' s'),
++          'frame ' + formatOptional(
++            value.source_frame,
++            (item) => String(item),
++          ),
++        ].join(' · '),
++      );
++    }
++
+     function renderHealth(state) {
+       const health = state.health || {};
+-      const rates = health.message_rate_hz_by_subject || {};
+-      const ages = health.message_age_s_by_subject || {};
+-      const frames = health.source_frame_by_subject || {};
++      const live = liveSnapshotFor(state);
++      const subjects = live && live.subjects ? live.subjects : {};
+       const warnings = Array.isArray(health.warnings)
+         ? health.warnings.map((item) => String(item))
+         : [];
++      const plannerCounts = [
++        health.planner_submitted,
++        health.planner_completed,
++        health.planner_failed,
++      ];
++      const plannerCountText = plannerCounts.some(
++        (item) => item === null || item === undefined,
++      )
++        ? '—'
++        : plannerCounts.map((item) => String(item)).join(' / ');
+       const values = [
+-        ['LCM ball', formatNumber(rates.ball, 1, ' Hz') + ' / ' + formatNumber(ages.ball, 3, ' s')],
+-        ['LCM pelvis', formatNumber(rates.g1pelvis, 1, ' Hz') + ' / ' + formatNumber(ages.g1pelvis, 3, ' s')],
+-        ['source frame', String(frames.ball ?? '—') + ' / ' + String(frames.g1pelvis ?? '—')],
+-        ['pelvis', (health.pelvis_valid ? 'VALID' : 'INVALID') + ' / ' + formatNumber(health.pelvis_age_s, 3, ' s')],
+-        ['planner S/C/F', [health.planner_submitted, health.planner_completed, health.planner_failed].map((item) => item ?? 0).join(' / ')],
+-        ['planner drops', String(health.planner_dropped_pending ?? 0) + ' pending · ' + String(health.planner_results_overwritten_before_consume ?? 0) + ' result'],
+-        ['phase', (state.lifecycle && state.lifecycle.phase) || 'waiting'],
+-        ['diagnostic drops', String(health.raw_samples_dropped ?? 0) + ' raw · ' + String(health.diagnostic_events_dropped ?? 0) + ' event'],
+-        ['recorder', health.recorder_healthy === false ? 'DEGRADED' : 'HEALTHY'],
+-        ['recording', health.recording_complete === false ? 'INCOMPLETE' : 'COMPLETE'],
+-        ['config', health.config_name || '—'],
+-        ['session', health.session_basename || '—'],
++        subjectMetric('BALL', subjects.ball),
++        subjectMetric('PELVIS', subjects.g1pelvis),
++        subjectMetric('TABLE', subjects.table),
++        metric(
++          'transport',
++          formatHealthFlag(health.lcm_connected, 'ONLINE', 'OFFLINE'),
++        ),
++        metric('planner S/C/F', plannerCountText),
++        metric(
++          'planner drops',
++          formatOptional(
++            health.planner_dropped_pending,
++            (item) => String(item),
++          )
++            + ' pending · '
++            + formatOptional(
++              health.planner_results_overwritten_before_consume,
++              (item) => String(item),
++            )
++            + ' result',
++        ),
++        metric(
++          'phase',
++          statusText(state.lifecycle && state.lifecycle.phase),
++        ),
++        metric(
++          'diagnostic drops',
++          formatOptional(
++            health.raw_samples_dropped,
++            (item) => String(item),
++          )
++            + ' raw · '
++            + formatOptional(
++              health.diagnostic_events_dropped,
++              (item) => String(item),
++            )
++            + ' event',
++        ),
++        metric(
++          'recorder',
++          formatHealthFlag(
++            health.recorder_healthy,
++            'HEALTHY',
++            'DEGRADED',
++          ),
++        ),
++        metric(
++          'recording',
++          formatHealthFlag(
++            health.recording_complete,
++            'COMPLETE',
++            'INCOMPLETE',
++          ),
++        ),
++        metric(
++          'config',
++          formatOptional(health.config_name, (item) => String(item)),
++        ),
++        metric(
++          'session',
++          formatOptional(health.session_basename, (item) => String(item)),
++        ),
+       ];
+       const grid = byId('health-grid');
+-      grid.replaceChildren(...values.map((item) => metric(item[0], item[1])));
++      grid.replaceChildren(...values);
+       const warningPanel = byId('health-warnings');
+       if (warnings.length > 0) {
+         const warningList = makeElement('ul');
+         warnings.forEach((warning) => {
+           warningList.appendChild(makeElement('li', '', warning));
+         });
+         warningPanel.replaceChildren(
+           makeElement('strong', '', '健康告警'),
+           warningList,
+         );
+@@ -626,126 +917,211 @@
+       const connected = Boolean(health.lcm_connected) && !heartbeatStale;
+       let connectionMessage = 'LCM 数据在线';
+       if (heartbeatStale) {
+         connectionMessage = 'LCM 数据离线：心跳超时；保留最近画面';
+       } else if (!connected) {
+         connectionMessage = 'LCM 数据离线；保留最近画面';
+       }
+       setConnection(connected, connectionMessage);
+     }
+ 
+-    const stageOrder = {
+-      detected: 0,
+-      estimating: 1,
+-      incoming: 2,
+-      planner: 3,
+-      armed: 4,
+-      task: 5,
+-    };
++    function renderCurrentAttempt(state) {
++      const live = liveSnapshotFor(state);
++      const subjects = live && live.subjects ? live.subjects : {};
++      const ballSubject = subjects.ball || {};
++      const pelvisSubject = subjects.g1pelvis || {};
++      const ball = live && live.ball ? live.ball : {};
++      const gate = live && live.production_gate
++        ? live.production_gate
++        : {};
++      const attempt = live ? live.current_attempt : null;
++
++      const schemaMessage = schemaNotice(state);
++      const liveNotice = byId('live-schema-notice');
++      liveNotice.classList.toggle('visible', schemaMessage !== null);
++      setText(liveNotice, schemaMessage === null ? '' : schemaMessage);
++
++      const ballSubjectStatus = statusText(ballSubject.status);
++      setCardStatus('ball-status-card', ballSubjectStatus);
++      setText(byId('ball-status-value'), ballSubjectStatus);
++      setText(
++        byId('ball-status-detail'),
++        'rate ' + formatNumber(ballSubject.rate_hz, 1, ' Hz')
++          + ' · age ' + formatNumber(ballSubject.age_s, 3, ' s')
++          + ' · frame ' + formatOptional(
++            ballSubject.source_frame,
++            (item) => String(item),
++          ),
++      );
+ 
+-    function stageIndex(stageName) {
+-      const stage = String(stageName || '').toUpperCase();
+-      if (stage.includes('TASK') || stage.includes('PASS')) {
+-        return 5;
+-      }
+-      if (stage.includes('ARM')) {
+-        return 4;
+-      }
+-      if (stage.includes('PLAN')) {
+-        return 3;
+-      }
+-      if (stage.includes('INCOMING') || stage.includes('CONFIRM')) {
+-        return 2;
+-      }
+-      if (stage.includes('ESTIM')) {
+-        return 1;
+-      }
+-      return 0;
+-    }
++      const estimatorStatus = statusText(ball.status);
++      setCardStatus('ball-estimator-card', estimatorStatus);
++      setText(
++        byId('estimator-value'),
++        estimatorStatus + ' · ' + formatCountPair(
++          ball.estimator_sample_count,
++          ball.estimator_window_size,
++        ),
++      );
++      setText(
++        byId('estimator-detail'),
++        'ready ' + formatFlag(ball.estimator_ready)
++          + ' · reset ' + formatOptional(
++            ball.last_estimator_reset_reason,
++            (item) => String(item),
++          ),
++      );
+ 
+-    function stageValue(attempt, key) {
+-      const values = attempt && attempt.values ? attempt.values : {};
+-      const stageText = String(attempt?.stage || '');
+-      if (key === 'detected') {
+-        return attempt ? 'DETECTED' : '等待';
+-      }
+-      if (key === 'estimating') {
+-        const match = stageText.match(
+-          /^ESTIMATING\s+(\d+)\s*\/\s*(\d+)$/i,
+-        );
+-        const count = values.estimator_sample_count
+-          ?? attempt?.estimator_sample_count
+-          ?? (match ? Number(match[1]) : 0);
+-        const windowSize = values.estimator_window_size
+-          ?? attempt?.estimator_window_size
+-          ?? (match ? Number(match[2]) : null)
+-          ?? 31;
+-        return String(count) + '/' + String(windowSize);
+-      }
+-      if (key === 'incoming') {
+-        const match = stageText.match(
+-          /^INCOMING_(?:CONFIRMING|CONFIRMED)\s+(\d+)\s*\/\s*(\d+)$/i,
+-        );
+-        const count = values.incoming_count
+-          ?? attempt?.incoming_count
+-          ?? (match ? Number(match[1]) : 0);
+-        const required = values.incoming_required_count
+-          ?? attempt?.incoming_required_count
+-          ?? (match ? Number(match[2]) : null)
+-          ?? 3;
+-        return String(count) + '/' + String(required);
+-      }
+-      if (key === 'planner') {
+-        return values.planner_status
+-          || attempt?.planner_status
+-          || (stageText.includes('PLANNER') ? stageText : '等待');
+-      }
+-      if (key === 'armed') {
+-        return values.arm_status || (stageIndex(attempt?.stage) >= 4 ? 'ARMED' : '等待');
+-      }
+-      const obs = attempt?.task_obs_status || values.task_obs_status;
+-      if (obs === 'PASS') {
+-        return '11/11 PASS';
+-      }
+-      const count = values.task_obs_dimension_count ?? 0;
+-      return String(count) + '/11' + (obs ? ' ' + String(obs) : '');
+-    }
++      const diagnosticIncomingStatus = statusText(ball.incoming_status);
++      setCardStatus('ball-incoming-card', diagnosticIncomingStatus);
++      setText(
++        byId('ball-incoming-value'),
++        diagnosticIncomingStatus + ' · ' + formatCountPair(
++          ball.ball_only_incoming_count,
++          ball.ball_only_incoming_required,
++        ),
++      );
++      setText(
++        byId('ball-incoming-detail'),
++        'confirmed ' + formatFlag(ball.ball_only_incoming_confirmed)
++          + ' · blocker ' + formatOptional(
++            ball.blocker,
++            (item) => String(item),
++          ),
++      );
+ 
+-    function renderCurrentAttempt(state) {
+-      const attempt = state.current_attempt;
+-      const currentIndex = attempt ? stageIndex(attempt.stage) : -1;
+-      const failed = Boolean(attempt && attempt.primary_blocker && attempt.status !== 'active');
+-      const stages = Array.from(byId('progress-stages').querySelectorAll('.stage'));
+-      stages.forEach((node) => {
+-        const key = node.dataset.stage;
+-        const index = stageOrder[key];
+-        node.className = 'stage';
+-        if (attempt && index < currentIndex) {
+-          node.classList.add('pass');
+-        } else if (attempt && index === currentIndex) {
+-          node.classList.add(failed ? 'fail' : 'progress');
+-        }
+-        const valueNode = node.querySelector('.stage-value');
+-        setText(valueNode, stageValue(attempt, key));
+-      });
++      setText(
++        byId('ball-raw-position-value'),
++        formatVector(ball.raw_position_w, 3, ' m'),
++      );
++      setText(
++        byId('ball-estimated-position-value'),
++        formatVector(ball.estimated_position_w, 3, ' m'),
++      );
++      setText(
++        byId('ball-velocity-value'),
++        formatVector(ball.estimated_velocity_w, 3, ' m/s'),
++      );
++      const speedAvailable = (
++        ball.speed_mps !== null && ball.speed_mps !== undefined
++      );
++      const vxAvailable = (
++        ball.velocity_x_mps !== null && ball.velocity_x_mps !== undefined
++      );
++      setText(
++        byId('ball-speed-value'),
++        speedAvailable || vxAvailable
++          ? formatNumber(ball.speed_mps, 3, ' m/s')
++            + ' · vx ' + formatNumber(ball.velocity_x_mps, 3, ' m/s')
++          : '—',
++      );
++      setText(
++        byId('ball-identity-value'),
++        'track ' + formatOptional(ball.track_epoch, (item) => String(item))
++          + ' · gen ' + formatOptional(ball.generation, (item) => String(item))
++          + ' · frame ' + formatOptional(
++            ball.source_frame,
++            (item) => String(item),
++          )
++          + ' · age ' + formatNumber(ball.age_s, 3, ' s'),
++      );
++
++      const pelvisStatus = statusText(gate.pelvis_status);
++      setCardStatus('gate-pelvis-card', pelvisStatus);
++      setText(byId('gate-pelvis-value'), pelvisStatus);
++      setText(
++        byId('gate-pelvis-detail'),
++        'subject ' + statusText(pelvisSubject.status),
++      );
++
++      const productionIncomingStatus = statusText(
++        gate.production_incoming_status,
++      );
++      setCardStatus(
++        'gate-production-incoming-card',
++        productionIncomingStatus,
++      );
++      setText(
++        byId('gate-production-incoming-value'),
++        productionIncomingStatus + ' · ' + formatCountPair(
++          gate.production_incoming_count,
++          gate.production_incoming_required,
++        ),
++      );
++      setText(byId('gate-production-incoming-detail'), 'production gate');
++
++      const plannerStatus = statusText(gate.planner_status);
++      setCardStatus('gate-planner-card', plannerStatus);
++      setText(byId('gate-planner-value'), plannerStatus);
++      setText(
++        byId('gate-planner-detail'),
++        'reason ' + formatOptional(
++          gate.planner_reason_code,
++          (item) => String(item),
++        )
++          + ' · TTS ' + formatNumber(gate.planner_tts_s, 3, ' s'),
++      );
++
++      const armStatus = statusText(gate.arm_status);
++      setCardStatus('gate-arm-card', armStatus);
++      setText(byId('gate-arm-value'), armStatus);
++      setText(
++        byId('gate-arm-detail'),
++        'ARM threshold ' + formatNumber(
++          gate.arm_trigger_tts_s,
++          3,
++          ' s',
++        ),
++      );
++
++      const taskStatus = statusText(gate.task_observation_status);
++      setCardStatus('gate-task-card', taskStatus);
++      setText(
++        byId('gate-task-value'),
++        taskStatus + ' · ' + formatCountPair(
++          gate.task_observation_valid_dimensions,
++          gate.task_observation_total_dimensions,
++        ),
++      );
++      setText(
++        byId('gate-task-detail'),
++        'clip count ' + formatOptional(
++          gate.task_observation_clip_count,
++          (item) => String(item),
++        ),
++      );
+ 
+       const meta = byId('attempt-meta');
+       meta.replaceChildren();
+-      if (!attempt) {
+-        meta.appendChild(makeElement('span', '', '等待下一颗球'));
++      if (!live) {
++        [
++          'Attempt UNKNOWN',
++          '速度 —',
++          '预测击球 —',
++          'planner TTS —',
++          'ARM threshold —',
++        ].forEach(
++          (item) => meta.appendChild(makeElement('span', 'badge', item)),
++        );
++      } else if (!attempt) {
++        meta.appendChild(makeElement('span', '', '当前无 active attempt'));
+       } else {
+         const items = [
+           'Attempt #' + String(attempt.attempt_id),
+-          '速度 ' + formatNumber(attempt.ball_speed_mps, 2, ' m/s'),
++          '速度 ' + formatNumber(ball.speed_mps, 2, ' m/s'),
+           '预测击球 ' + formatNumber(attempt.predicted_strike_time_s, 3, ' s'),
+-          'planner TTS ' + formatNumber(attempt.planner_tts_s, 3, ' s'),
+-          'ARM TTS ' + formatNumber(attempt.arm_tts_s, 3, ' s'),
++          'planner TTS ' + formatNumber(gate.planner_tts_s, 3, ' s'),
++          'ARM threshold ' + formatNumber(
++            gate.arm_trigger_tts_s,
++            3,
++            ' s',
++          ),
+         ];
+         items.forEach((item) => meta.appendChild(makeElement('span', 'badge', item)));
+       }
+ 
+       const specialStates = new Set([
+         'WAITING_FOR_PREVIOUS_RECOVERY',
+         'CACHED_DURING_RECOVERY',
+         'REACQUIRE_GRACE',
+         'POST_DEADLINE_TAIL',
+       ]);
+@@ -756,55 +1132,103 @@
+       );
+       notice.classList.toggle('visible', Boolean(special));
+       setText(notice, special ? (attempt.stage || attempt.status) : '');
+     }
+ 
+     function summaryCell(row, key, fallback) {
+       const value = row[key];
+       return value === null || value === undefined ? fallback : String(value);
+     }
+ 
+-    function renderHistoryRows(rows, append) {
++    function renderHistoryTable() {
+       const body = byId('attempt-history-body');
+-      if (!append) {
+-        historyRows = [];
+-        body.replaceChildren();
+-      }
+-      rows.forEach((row) => {
+-        if (historyRows.some((item) => item.attempt_id === row.attempt_id)) {
+-          return;
+-        }
+-        historyRows.push(row);
++      body.replaceChildren();
++      historyRows.forEach((row) => {
+         const tr = document.createElement('tr');
+         tr.tabIndex = 0;
++        const attemptId = String(row.attempt_id);
+         const values = [
+-          '#' + String(row.attempt_id),
+-          formatNumber(row.ball_speed_mps, 2, ' m/s'),
+-          summaryCell(row, 'stage', '—'),
+-          summaryCell(row, 'primary_blocker', '—'),
+-          formatNumber(row.arm_tts_s, 3, ' s'),
+-          summaryCell(row, 'task_obs_status', '—'),
+-          summaryCell(row, 'ab_summary', 'pending'),
++          ['#' + attemptId, ''],
++          [formatNumber(row.ball_speed_mps, 2, ' m/s'), ''],
++          [
++            formatCountPair(
++              row.estimator_sample_count,
++              row.estimator_window_size,
++            ),
++            'history-estimator-' + attemptId,
++          ],
++          [
++            formatCountPair(
++              row.incoming_count,
++              row.incoming_required_count,
++            ),
++            'history-incoming-' + attemptId,
++          ],
++          [summaryCell(row, 'stage', '—'), ''],
++          [summaryCell(row, 'primary_blocker', '—'), ''],
++          [formatNumber(row.arm_tts_s, 3, ' s'), ''],
++          [summaryCell(row, 'task_obs_status', '—'), ''],
++          [summaryCell(row, 'ab_summary', 'pending'), ''],
+         ];
+-        values.forEach((value) => tr.appendChild(makeElement('td', '', value)));
++        values.forEach(([value, id]) => {
++          const cell = makeElement('td', '', value);
++          if (id) {
++            cell.id = id;
++          }
++          tr.appendChild(cell);
++        });
+         const open = () => loadAttemptDetail(row.attempt_id);
+         tr.addEventListener('click', open);
+         tr.addEventListener('keydown', (event) => {
+           if (event.key === 'Enter' || event.key === ' ') {
+             event.preventDefault();
+             open();
+           }
+         });
+         body.appendChild(tr);
+       });
+     }
+ 
++    function renderHistoryRows(rows, append) {
++      const safeRows = Array.isArray(rows) ? rows : [];
++      if (!append) {
++        historyRows = [];
++      }
++      safeRows.forEach((row) => {
++        const index = historyRows.findIndex(
++          (item) => item.attempt_id === row.attempt_id,
++        );
++        if (index >= 0) {
++          historyRows[index] = row;
++        } else {
++          historyRows.push(row);
++        }
++      });
++      renderHistoryTable();
++    }
++
++    function mergeRecentHistoryRows(rows) {
++      const safeRows = Array.isArray(rows) ? rows : [];
++      const recentIds = new Set(safeRows.map((row) => row.attempt_id));
++      const recent = [];
++      safeRows.forEach((row) => {
++        if (recent.some((item) => item.attempt_id === row.attempt_id)) {
++          return;
++        }
++        recent.push(row);
++      });
++      historyRows = recent.concat(
++        historyRows.filter((row) => !recentIds.has(row.attempt_id)),
++      );
++      renderHistoryTable();
++    }
++
+     function pretty(value) {
+       return JSON.stringify(value === undefined ? null : value, null, 2);
+     }
+ 
+     function detailCard(title, value, wide) {
+       const card = makeElement('section', 'detail-card' + (wide ? ' wide' : ''));
+       card.appendChild(makeElement('h3', '', title));
+       const pre = document.createElement('pre');
+       setText(pre, pretty(value));
+       card.appendChild(pre);
+@@ -874,21 +1298,21 @@
+         Number(state.watermark_event_id) < renderedWatermark
+       ) {
+         return;
+       }
+       if (Number.isFinite(watermark)) {
+         renderedWatermark = watermark;
+       }
+       renderHealth(state);
+       renderCurrentAttempt(state);
+       const rows = Array.isArray(state.recent_attempts) ? state.recent_attempts : [];
+-      renderHistoryRows(rows, false);
++      mergeRecentHistoryRows(rows);
+     }
+ 
+     async function performStateRefresh() {
+       if (requestInFlight) {
+         refreshPending = true;
+         return;
+       }
+       requestInFlight = true;
+       refreshPending = false;
+       lastRequestStartedMs = performance.now();
+diff --git a/deploy/tests/test_hitter_task_frontend.py b/deploy/tests/test_hitter_task_frontend.py
+index 09dee8c..77c0bb8 100644
+--- a/deploy/tests/test_hitter_task_frontend.py
++++ b/deploy/tests/test_hitter_task_frontend.py
+@@ -17,26 +17,28 @@ STATIC_HTML = (
+     / "diagnostics"
+     / "static"
+     / "hitter_task_monitor.html"
+ )
+ 
+ 
+ class _LandmarkParser(HTMLParser):
+     def __init__(self):
+         super().__init__()
+         self.ids = set()
++        self.attrs_by_id = {}
+         self.tags = []
+ 
+     def handle_starttag(self, tag, attrs):
+         values = dict(attrs)
+         if "id" in values:
+             self.ids.add(values["id"])
++            self.attrs_by_id[values["id"]] = values
+         self.tags.append((tag, values))
+ 
+ 
+ class _TextByIdParser(HTMLParser):
+     def __init__(self):
+         super().__init__()
+         self._active_ids = []
+         self._text = {}
+ 
+     def handle_starttag(self, _tag, attrs):
+@@ -52,43 +54,194 @@ class _TextByIdParser(HTMLParser):
+             self._active_ids.pop()
+ 
+     def handle_data(self, data):
+         if self._active_ids and self._active_ids[-1] is not None:
+             self._text[self._active_ids[-1]].append(data)
+ 
+     def text_for(self, element_id):
+         return "".join(self._text.get(element_id, ())).strip()
+ 
+ 
+-def _frontend_state(*, lcm_connected=True, warnings=()):
++def _subject(
++    *,
++    status,
++    rate_hz=None,
++    age_s=None,
++    source_frame=None,
++    valid=None,
++    occluded=None,
++):
+     return {
++        "status": status,
++        "rate_hz": rate_hz,
++        "age_s": age_s,
++        "source_frame": source_frame,
++        "valid": valid,
++        "occluded": occluded,
++    }
++
++
++def _ball_state(**overrides):
++    value = {
++        "status": "NOT_SEEN",
++        "source_frame": None,
++        "track_epoch": None,
++        "generation": None,
++        "raw_position_w": None,
++        "estimated_position_w": None,
++        "estimated_velocity_w": None,
++        "speed_mps": None,
++        "velocity_x_mps": None,
++        "estimator_sample_count": None,
++        "estimator_window_size": None,
++        "estimator_ready": None,
++        "last_estimator_reset_reason": None,
++        "ball_only_incoming_count": None,
++        "ball_only_incoming_required": None,
++        "ball_only_incoming_confirmed": None,
++        "incoming_status": "NOT_EVALUATED",
++        "blocker": None,
++        "observed_monotonic_s": None,
++        "age_s": None,
++    }
++    value.update(overrides)
++    return value
++
++
++def _production_gate(**overrides):
++    value = {
++        "pelvis_status": "UNKNOWN",
++        "production_incoming_status": "NOT_EVALUATED",
++        "production_incoming_count": None,
++        "production_incoming_required": None,
++        "planner_status": "BLOCKED",
++        "planner_reason_code": None,
++        "planner_tts_s": None,
++        "arm_status": "NOT_EVALUATED",
++        "arm_trigger_tts_s": None,
++        "task_observation_status": "NOT_AVAILABLE",
++        "task_observation_valid_dimensions": None,
++        "task_observation_total_dimensions": None,
++        "task_observation_clip_count": None,
++    }
++    value.update(overrides)
++    return value
++
++
++def _attempt(**overrides):
++    value = {
+         "schema_version": 1,
++        "attempt_id": 22,
++        "status": "ACTIVE",
++        "stage": "DETECTED",
++        "primary_blocker": None,
++        "ball_speed_mps": None,
++        "predicted_strike_time_s": None,
++        "planner_tts_s": None,
++        "arm_tts_s": None,
++        "task_obs_status": "NOT_AVAILABLE",
++        "ab_summary": None,
++        "recording_complete": True,
++        "estimator_sample_count": None,
++        "estimator_window_size": None,
++        "incoming_count": None,
++        "incoming_required_count": None,
++    }
++    value.update(overrides)
++    return value
++
++
++def _frontend_state(
++    *,
++    lcm_connected=True,
++    warnings=(),
++    subjects=None,
++    ball=None,
++    production_gate=None,
++    current_attempt=None,
++    recent_attempts=(),
++):
++    if subjects is None:
++        subjects = {
++            "ball": _subject(status="NEVER_SEEN"),
++            "g1pelvis": _subject(status="NEVER_SEEN"),
++            "table": _subject(status="NEVER_SEEN"),
++        }
++    if ball is None:
++        ball = _ball_state()
++    if production_gate is None:
++        production_gate = _production_gate()
++    return {
++        "schema_version": 2,
+         "watermark_event_id": 7,
+         "health": {
++            "schema_version": 1,
+             "lcm_connected": lcm_connected,
+             "message_rate_hz_by_subject": {},
+             "message_age_s_by_subject": {},
+             "source_frame_by_subject": {},
+             "pelvis_valid": True,
++            "pelvis_age_s": None,
+             "planner_submitted": 0,
+             "planner_completed": 0,
+             "planner_failed": 0,
++            "planner_dropped_pending": 0,
++            "planner_results_overwritten_before_consume": 0,
++            "raw_samples_dropped": 0,
++            "recorder_event_gaps": 0,
++            "diagnostic_events_dropped": 0,
++            "recorder_healthy": True,
++            "recording_complete": True,
+             "warnings": list(warnings),
+             "config_name": "fixture",
+             "session_basename": "fixture",
+         },
+-        "lifecycle": {"phase": "waiting"},
+-        "current_attempt": None,
+-        "recent_attempts": [],
++        "lifecycle": {
++            "schema_version": 1,
++            "phase": "waiting",
++            "last_decision": "none",
++            "active_key": None,
++            "cached_key": None,
++            "lifecycle_now_s": None,
++            "obs_now_s": None,
++        },
++        "current_attempt": current_attempt,
++        "recent_attempts": list(recent_attempts),
++        "live_snapshot": {
++            "schema_version": 2,
++            "revision": 4,
++            "captured_monotonic_s": 10.125,
++            "subjects": subjects,
++            "ball": ball,
++            "production_gate": production_gate,
++            "current_attempt": current_attempt,
++        },
+     }
+ 
+ 
++def _legacy_frontend_state():
++    state = _frontend_state(
++        current_attempt=_attempt(
++            stage="TASK_OBS_PASS 11/11",
++            estimator_sample_count=31,
++            estimator_window_size=31,
++            incoming_count=3,
++            incoming_required_count=3,
++            planner_tts_s=0.0,
++            arm_tts_s=0.0,
++        )
++    )
++    state["schema_version"] = 1
++    state.pop("live_snapshot")
++    return state
++
++
+ class _FrontendFixtureHandler(BaseHTTPRequestHandler):
+     html = b""
+     marker = "runtime-fixture-73b41"
+     malicious = '<img id="diagnostic-xss-sentinel">'
+ 
+     def log_message(self, _format, *_args):
+         return
+ 
+     def _send(self, status, content_type, body):
+         self.send_response(status)
+@@ -145,33 +298,34 @@ class _FrontendFixtureHandler(BaseHTTPRequestHandler):
+             return
+         self._send(404, "application/json", b'{"error":"not found"}')
+ 
+ 
+ class HitterTaskFrontendContractTest(unittest.TestCase):
+     def setUp(self):
+         self.source = STATIC_HTML.read_text(encoding="utf-8")
+         self.parser = _LandmarkParser()
+         self.parser.feed(self.source)
+ 
+-    def _render_state_in_headless_browser(self, state):
++    def _run_in_headless_browser(self, javascript):
+         chrome = shutil.which("google-chrome-stable")
+         if chrome is None:
+             self.skipTest("google-chrome-stable is not installed")
+         startup = (
+             "    scheduleStateRefresh();\n"
+             "    loadHistory(null, false).catch(() => {});\n"
+             "    connectEvents();"
+         )
+         fixture_source = self.source.replace(
+             startup,
+-            "    renderState({});".format(
+-                json.dumps(state, ensure_ascii=False)
++            "\n".join(
++                "    " + line if line else ""
++                for line in javascript.splitlines()
+             ),
+         )
+         self.assertNotEqual(fixture_source, self.source)
+         with tempfile.TemporaryDirectory(
+             prefix="hitter-task-frontend-state-"
+         ) as directory:
+             fixture_path = Path(directory) / "index.html"
+             fixture_path.write_text(fixture_source, encoding="utf-8")
+             result = subprocess.run(
+                 [
+@@ -194,47 +348,70 @@ class HitterTaskFrontendContractTest(unittest.TestCase):
+                 ],
+                 timeout=10,
+                 check=True,
+                 capture_output=True,
+                 text=True,
+             )
+         parser = _TextByIdParser()
+         parser.feed(result.stdout)
+         return result.stdout, parser
+ 
++    def _render_state_in_headless_browser(self, state):
++        return self._run_in_headless_browser(
++            "renderState({});".format(
++                json.dumps(state, ensure_ascii=False)
++            )
++        )
++
+     def test_page_has_required_health_progress_history_and_detail_regions(self):
+         required = {
+             "connection-status",
+             "health-grid",
+             "current-attempt",
+             "progress-stages",
+             "attempt-history",
+             "attempt-detail",
+             "ab-comparison",
+             "load-more",
+         }
+         self.assertTrue(required.issubset(self.parser.ids))
+         self.assertTrue(
+             any(tag == "main" for tag, _attrs in self.parser.tags)
+         )
+         self.assertTrue(
+             any(tag == "table" for tag, _attrs in self.parser.tags)
+         )
+ 
+-    def test_six_canonical_stages_and_shadow_disclaimer_are_literal(self):
++    def test_ball_and_production_gate_regions_and_shadow_disclaimer_exist(self):
++        required = {
++            "live-schema-notice",
++            "progress-stages",
++            "ball-telemetry",
++            "production-gate-stages",
++            "ball-status-value",
++            "estimator-value",
++            "ball-incoming-value",
++            "gate-pelvis-value",
++            "gate-production-incoming-value",
++            "gate-planner-value",
++            "gate-arm-value",
++            "gate-task-value",
++        }
++        self.assertTrue(required.issubset(self.parser.ids))
+         for text in (
+             "球检测",
+-            "ESTIMATING",
+-            "PLANNER-READY INCOMING",
++            "ESTIMATOR",
++            "BALL-ONLY INCOMING",
++            "PRODUCTION INCOMING",
+             "PLANNER",
+             "ARMED",
+-            "SHADOW 3/100 TASK OBS",
++            "TASK OBS",
+         ):
+             self.assertIn(text, self.source)
+         self.assertIn("只读旁路诊断", self.source)
+         self.assertIn("不会向机器人发布控制命令", self.source)
+ 
+     def test_frontend_has_no_unsafe_or_external_mutation_paths(self):
+         lowered = self.source.lower()
+         self.assertNotIn("innerhtml", lowered)
+         self.assertNotIn("document.write", lowered)
+         self.assertNotRegex(
+@@ -325,80 +502,337 @@ class HitterTaskFrontendContractTest(unittest.TestCase):
+             _frontend_state(
+                 lcm_connected=True,
+                 warnings=("LCM_HEARTBEAT_STALE",),
+             )
+         )
+ 
+         status_text = parser.text_for("connection-status")
+         self.assertIn("LCM 数据离线", status_text)
+         self.assertIn("心跳超时", status_text)
+ 
+-    def test_headless_advanced_stage_keeps_estimator_count_and_null_tts_empty(self):
++    def test_headless_v2_uses_canonical_ball_and_production_gate_fields(self):
++        attempt = _attempt(
++            stage="TASK_OBS_PASS 11/11",
++            ball_speed_mps=99.0,
++            predicted_strike_time_s=None,
++            planner_tts_s=99.0,
++            arm_tts_s=99.0,
++            task_obs_status="PASS",
++            estimator_sample_count=1,
++            estimator_window_size=31,
++            incoming_count=1,
++            incoming_required_count=3,
++        )
++        state = _frontend_state(
++            subjects={
++                "ball": _subject(
++                    status="LIVE",
++                    rate_hz=119.5,
++                    age_s=0.012,
++                    source_frame=901,
++                    valid=True,
++                    occluded=False,
++                ),
++                "g1pelvis": _subject(status="NEVER_SEEN"),
++                "table": _subject(
++                    status="LIVE",
++                    rate_hz=119.4,
++                    age_s=0.013,
++                    source_frame=901,
++                    valid=True,
++                    occluded=False,
++                ),
++            },
++            ball=_ball_state(
++                status="READY",
++                source_frame=901,
++                track_epoch=8,
++                generation=31,
++                raw_position_w=[1.0, 2.0, 3.0],
++                estimated_position_w=[1.1, 2.1, 3.1],
++                estimated_velocity_w=[-0.45, 0.02, 0.03],
++                speed_mps=0.452,
++                velocity_x_mps=-0.45,
++                estimator_sample_count=31,
++                estimator_window_size=31,
++                estimator_ready=True,
++                ball_only_incoming_count=2,
++                ball_only_incoming_required=3,
++                ball_only_incoming_confirmed=False,
++                incoming_status="CONFIRMING",
++                observed_monotonic_s=10.113,
++                age_s=0.012,
++            ),
++            production_gate=_production_gate(
++                pelvis_status="BLOCKED",
++                production_incoming_status="NOT_EVALUATED",
++                planner_status="BLOCKED",
++                planner_reason_code="PELVIS_UNAVAILABLE",
++                arm_status="NOT_EVALUATED",
++                arm_trigger_tts_s=0.35,
++                task_observation_status="NOT_AVAILABLE",
++            ),
++            current_attempt=attempt,
++        )
++
++        output, parser = self._render_state_in_headless_browser(state)
++
++        self.assertEqual(parser.text_for("ball-status-value"), "LIVE")
++        self.assertIn("31/31", parser.text_for("estimator-value"))
++        self.assertIn("2/3", parser.text_for("ball-incoming-value"))
++        self.assertIn(
++            "NOT_EVALUATED",
++            parser.text_for("gate-production-incoming-value"),
++        )
++        self.assertNotIn(
++            "0/3",
++            parser.text_for("gate-production-incoming-value"),
++        )
++        self.assertEqual(parser.text_for("gate-planner-value"), "BLOCKED")
++        self.assertIn(
++            "PELVIS_UNAVAILABLE",
++            parser.text_for("gate-planner-detail"),
++        )
++        self.assertIn("0.350 s", parser.text_for("gate-arm-detail"))
++        self.assertIn("ARM threshold", parser.text_for("gate-arm-detail"))
++        self.assertNotIn("ARM TTS", parser.text_for("attempt-meta"))
++        self.assertIn("NOT_AVAILABLE", parser.text_for("gate-task-value"))
++        self.assertNotIn("0/11", parser.text_for("gate-task-value"))
++        self.assertIn(
++            "[1.100, 2.100, 3.100] m",
++            parser.text_for("ball-estimated-position-value"),
++        )
++        self.assertIn(
++            "[-0.450, 0.020, 0.030] m/s",
++            parser.text_for("ball-velocity-value"),
++        )
++        self.assertIn(
++            "0.452 m/s · vx -0.450 m/s",
++            parser.text_for("ball-speed-value"),
++        )
++        landmarks = _LandmarkParser()
++        landmarks.feed(output)
++        self.assertIn(
++            "pass",
++            landmarks.attrs_by_id["ball-estimator-card"]["class"],
++        )
++        self.assertIn(
++            "warn",
++            landmarks.attrs_by_id["gate-planner-card"]["class"],
++        )
++
++    def test_headless_null_live_values_render_dashes_without_fake_zeroes(self):
++        state = _frontend_state(current_attempt=_attempt())
++
++        _output, parser = self._render_state_in_headless_browser(state)
++
++        progress_text = " ".join(
++            parser.text_for(element_id)
++            for element_id in (
++                "estimator-value",
++                "ball-incoming-value",
++                "gate-production-incoming-value",
++                "gate-planner-detail",
++                "gate-arm-detail",
++                "gate-task-value",
++                "gate-task-detail",
++                "ball-raw-position-value",
++                "ball-speed-value",
++                "attempt-meta",
++            )
++        )
++        self.assertIn("—", progress_text)
++        self.assertNotIn("0/31", progress_text)
++        self.assertNotIn("0/3", progress_text)
++        self.assertNotIn("0/11", progress_text)
++        self.assertNotIn("0.000 s", progress_text)
++
++    def test_headless_v1_does_not_infer_live_progress_from_stage_or_defaults(self):
++        _output, parser = self._render_state_in_headless_browser(
++            _legacy_frontend_state()
++        )
++
++        notice = parser.text_for("live-schema-notice")
++        self.assertIn("旧版后端", notice)
++        self.assertIn("重启", notice)
++        progress_text = " ".join(
++            parser.text_for(element_id)
++            for element_id in (
++                "ball-status-value",
++                "estimator-value",
++                "ball-incoming-value",
++                "gate-pelvis-value",
++                "gate-production-incoming-value",
++                "gate-planner-value",
++                "gate-arm-value",
++                "gate-task-value",
++                "attempt-meta",
++            )
++        )
++        self.assertIn("UNKNOWN", progress_text)
++        self.assertIn("—", progress_text)
++        self.assertNotIn("31/31", progress_text)
++        self.assertNotIn("3/3", progress_text)
++        self.assertNotIn("11/11", progress_text)
++        self.assertNotIn("0.000 s", progress_text)
++
++    def test_headless_newer_schema_stops_instead_of_guessing_values(self):
+         state = _frontend_state()
+-        state["current_attempt"] = {
+-            "schema_version": 1,
+-            "attempt_id": 22,
+-            "status": "ACTIVE",
+-            "stage": "INCOMING_CONFIRMED 3/3",
+-            "primary_blocker": None,
+-            "ball_speed_mps": 1.39,
+-            "predicted_strike_time_s": None,
+-            "planner_tts_s": None,
+-            "arm_tts_s": 0.92,
+-            "task_obs_status": "PENDING",
+-            "ab_summary": None,
+-            "recording_complete": True,
+-            "estimator_sample_count": 31,
+-            "estimator_window_size": 31,
+-        }
++        state["schema_version"] = 3
++        state["live_snapshot"]["schema_version"] = 3
+ 
+         _output, parser = self._render_state_in_headless_browser(state)
+ 
+-        progress_text = parser.text_for("progress-stages")
++        notice = parser.text_for("live-schema-notice")
++        self.assertIn("UNSUPPORTED_SCHEMA", notice)
++        self.assertIn("停止猜测", notice)
++        self.assertEqual(parser.text_for("estimator-value"), "UNKNOWN · —")
++        self.assertEqual(
++            parser.text_for("gate-production-incoming-value"),
++            "UNKNOWN · —",
++        )
++
++    def test_headless_subject_health_uses_structured_subject_values(self):
++        state = _frontend_state(
++            subjects={
++                "ball": _subject(
++                    status="LIVE",
++                    rate_hz=119.5,
++                    age_s=0.012,
++                    source_frame=901,
++                    valid=True,
++                    occluded=False,
++                ),
++                "g1pelvis": _subject(status="NEVER_SEEN"),
++                "table": _subject(
++                    status="STALE",
++                    rate_hz=60.0,
++                    age_s=0.8,
++                    source_frame=900,
++                    valid=True,
++                    occluded=False,
++                ),
++            },
++        )
++
++        _output, parser = self._render_state_in_headless_browser(state)
++
++        health_text = parser.text_for("health-grid")
++        self.assertIn("BALL", health_text)
++        self.assertIn("LIVE", health_text)
++        self.assertIn("119.5 Hz", health_text)
++        self.assertIn("0.012 s", health_text)
++        self.assertIn("frame 901", health_text)
++        self.assertIn("PELVIS", health_text)
++        self.assertIn("NEVER_SEEN", health_text)
++        self.assertIn("TABLE", health_text)
++        self.assertIn("STALE", health_text)
++
++    def test_headless_history_uses_recorded_counts_without_defaults(self):
++        rows = (
++            _attempt(
++                attempt_id=31,
++                stage="PLANNER_READY",
++                estimator_sample_count=19,
++                estimator_window_size=31,
++                incoming_count=2,
++                incoming_required_count=3,
++            ),
++            _attempt(
++                attempt_id=30,
++                stage="ESTIMATING 0/31",
++                estimator_sample_count=None,
++                estimator_window_size=31,
++                incoming_count=None,
++                incoming_required_count=3,
++            ),
++        )
++        state = _frontend_state(recent_attempts=rows)
++
++        _output, parser = self._render_state_in_headless_browser(state)
++
++        self.assertEqual(parser.text_for("history-estimator-31"), "19/31")
++        self.assertEqual(parser.text_for("history-incoming-31"), "2/3")
++        self.assertEqual(parser.text_for("history-estimator-30"), "—")
++        self.assertEqual(parser.text_for("history-incoming-30"), "—")
++
++    def test_headless_state_refresh_preserves_loaded_history_and_cursor(self):
++        state = _frontend_state(
++            recent_attempts=(_attempt(attempt_id=33),)
++        )
++        existing_rows = [
++            _attempt(attempt_id=32),
++            _attempt(attempt_id=31),
++        ]
++        script = """
++renderHistoryRows({}, false);
++nextBefore = 31;
++renderState({});
++const sentinel = makeElement('div', '', (
++  historyRows.map((row) => String(row.attempt_id)).join(',')
++  + '|cursor=' + String(nextBefore)
++));
++sentinel.id = 'history-refresh-sentinel';
++document.body.appendChild(sentinel);
++""".format(
++            json.dumps(existing_rows, ensure_ascii=False),
++            json.dumps(state, ensure_ascii=False),
++        )
++
++        _output, parser = self._run_in_headless_browser(script)
++
++        self.assertEqual(
++            parser.text_for("history-refresh-sentinel"),
++            "33,32,31|cursor=31",
++        )
++
++    def test_headless_advanced_stage_keeps_estimator_count_and_null_tts_empty(self):
++        attempt = _attempt(
++            stage="INCOMING_CONFIRMED 3/3",
++            ball_speed_mps=1.39,
++            predicted_strike_time_s=None,
++            planner_tts_s=None,
++            arm_tts_s=None,
++            estimator_sample_count=31,
++            estimator_window_size=31,
++            incoming_count=3,
++            incoming_required_count=3,
++        )
++        state = _frontend_state(
++            ball=_ball_state(
++                status="READY",
++                speed_mps=1.39,
++                estimator_sample_count=31,
++                estimator_window_size=31,
++                estimator_ready=True,
++                ball_only_incoming_count=3,
++                ball_only_incoming_required=3,
++                ball_only_incoming_confirmed=True,
++                incoming_status="CONFIRMED",
++            ),
++            production_gate=_production_gate(
++                planner_tts_s=None,
++                arm_trigger_tts_s=0.92,
++            ),
++            current_attempt=attempt,
++        )
++
++        _output, parser = self._render_state_in_headless_browser(state)
++
++        progress_text = parser.text_for("estimator-value")
+         meta_text = parser.text_for("attempt-meta")
+         self.assertIn("31/31", progress_text)
+         self.assertIn("预测击球 —", meta_text)
+         self.assertIn("planner TTS —", meta_text)
+         self.assertNotIn("预测击球 0.000 s", meta_text)
+         self.assertNotIn("planner TTS 0.000 s", meta_text)
+ 
+-    def test_headless_estimator_progress_is_not_parsed_as_incoming_progress(self):
+-        state = _frontend_state()
+-        state["current_attempt"] = {
+-            "schema_version": 1,
+-            "attempt_id": 23,
+-            "status": "ACTIVE",
+-            "stage": "ESTIMATING 17/31",
+-            "primary_blocker": None,
+-            "ball_speed_mps": 0.0,
+-            "predicted_strike_time_s": None,
+-            "planner_tts_s": None,
+-            "arm_tts_s": 0.92,
+-            "task_obs_status": "PENDING",
+-            "ab_summary": None,
+-            "recording_complete": True,
+-            "estimator_sample_count": 17,
+-            "estimator_window_size": 31,
+-        }
+-
+-        output, parser = self._render_state_in_headless_browser(state)
+-
+-        progress_text = parser.text_for("progress-stages")
+-        self.assertIn("17/31", progress_text)
+-        self.assertRegex(
+-            output,
+-            re.compile(
+-                r'data-stage="incoming"[\s\S]*?'
+-                r'<span class="stage-value">0/3</span>'
+-            ),
+-        )
+-
+     def test_headless_browser_renders_marker_without_creating_injected_node(self):
+         chrome = shutil.which("google-chrome-stable")
+         if chrome is None:
+             self.skipTest("google-chrome-stable is not installed")
+ 
+         fixture_state = {
+             "schema_version": 1,
+             "watermark_event_id": 7,
+             "health": {
+                 "lcm_connected": True,

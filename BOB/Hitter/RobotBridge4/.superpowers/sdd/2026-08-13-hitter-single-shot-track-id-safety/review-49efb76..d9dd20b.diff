@@ -1,0 +1,1500 @@
+# Review package: 49efb76b3b5705c690e33275f5d25dc19db6bf9e..d9dd20b
+
+## Commits
+d9dd20b feat: consume authoritative HITTER track ids
+
+## Files changed
+ deploy/simulator/real_world.py              | 586 +++++++++++++++++++++++++---
+ deploy/tests/test_real_world_v2_consumer.py | 574 +++++++++++++++++++++++++++
+ deploy/utils/hitter_runtime_factory.py      |  36 ++
+ 3 files changed, 1143 insertions(+), 53 deletions(-)
+
+## Diff
+diff --git a/deploy/simulator/real_world.py b/deploy/simulator/real_world.py
+index 41d3f0f..3c057c4 100755
+--- a/deploy/simulator/real_world.py
++++ b/deploy/simulator/real_world.py
+@@ -1,34 +1,76 @@
+ from __future__ import annotations
+ 
+ import time
+ import lcm
+ import copy
+ import select
+ import threading
++from collections import deque
++from dataclasses import dataclass
++from enum import Enum
+ from typing import Callable
+ import numpy as np
+ from simulator.base_sim import BaseSim
+ from loguru import logger
+ from scipy.spatial.transform import Rotation as sRot
+ 
+ import sys
+ sys.path.append('../')
+ from unitree_sdk2.lcm_types.body_control_data_lcmt import body_control_data_lcmt
+ from unitree_sdk2.lcm_types.rc_command_lcmt import rc_command_lcmt
+ from unitree_sdk2.lcm_types.state_estimator_lcmt import state_estimator_lcmt
+ from unitree_sdk2.lcm_types.pd_tau_targets_lcmt import pd_tau_targets_lcmt
+ from unitree_sdk2.lcm_types.transformation_t import transformation_t
+ 
+ from utils.helpers import get_gravity, get_rpy
+ from utils.hitter_realtime import BallEstimateSnapshot
+-from utils.hitter_runtime_factory import build_ball_state_estimator
++from utils.hitter_runtime_factory import (
++    build_ball_state_estimator,
++    resolve_vicon_consumer_settings,
++)
++
++
++class ViconInputFault(str, Enum):
++    VICON_SCHEMA_ERROR = "VICON_SCHEMA_ERROR"
++    VICON_STREAM_STALE = "VICON_STREAM_STALE"
++    TRACK_ID_CONFLICT = "TRACK_ID_CONFLICT"
++    BALL_MESSAGE_STALE = "BALL_MESSAGE_STALE"
++
++
++class ViconEventReason(str, Enum):
++    TRACK_ENDED = "TRACK_ENDED"
++    BASE_POSE_INVALID = "BASE_POSE_INVALID"
++    VICON_SCHEMA_ERROR = "VICON_SCHEMA_ERROR"
++    VICON_STREAM_STALE = "VICON_STREAM_STALE"
++    BALL_MESSAGE_STALE = "BALL_MESSAGE_STALE"
++    TRACK_ID_CONFLICT = "TRACK_ID_CONFLICT"
++
++
++@dataclass(frozen=True)
++class ViconConsumerEvent:
++    sequence: int
++    reason: ViconEventReason
++    track_id: int | None
++    detail: str
++
++
++@dataclass(frozen=True)
++class ViconConsumerStatus:
++    stream_fresh: bool
++    ball_fresh: bool
++    base_pose_valid: bool
++    active_track_id: int | None
++    last_track_id: int | None
++    visible: bool
++    ready_for_new_serve: bool
++    latched_fault: ViconInputFault | None
+ 
+ class RealWorld(BaseSim):
+     is_real = True
+     def __init__(self, config):
+         super().__init__(config)
+         self._init_communication()
+         self.spin()
+         self.sync = True
+         while True:
+             if self.connected:
+@@ -93,37 +135,69 @@ class RealWorld(BaseSim):
+         self._init_ball_state()
+         self.terminate_on_r2 = bool(getattr(self.cfg.control, "terminate_on_r2", True))
+         logger.info(f"[RealWorld] terminate_on_r2={self.terminate_on_r2}")
+ 
+     def _init_ball_state(self) -> None:
+         self._hitter_ball_state_lock = threading.RLock()
+         self.ball_pos_world = np.zeros(3, dtype=np.float32)
+         self.ball_vel_world = np.zeros(3, dtype=np.float32)
+         self.ball_pos_world_tmp = np.zeros(3, dtype=np.float32)
+         self.ball_vel_world_tmp = np.zeros(3, dtype=np.float32)
++        if not hasattr(self, "root_trans_world_tmp"):
++            self.root_trans_world_tmp = np.zeros(3, dtype=np.float32)
++        if not hasattr(self, "root_quat_world_tmp"):
++            self.root_quat_world_tmp = np.array(
++                [0.0, 0.0, 0.0, 1.0],
++                dtype=np.float32,
++            )
+         self.ball_visible = False
+         self.ball_visible_tmp = False
+         self.base_pose_valid = False
+         self.base_pose_valid_tmp = False
+         self.firstReceiveBall = False
++        self.firstReceiveVicon = False
+         self._hitter_ball_listener_lock = threading.Lock()
+         self._hitter_ball_listeners: list[
+             tuple[object, Callable[[BallEstimateSnapshot], None]]
+         ] = []
+         self.ball_snapshot_generation = 0
+-        self.ball_track_id = 1
++        self.ball_track_id = 0
+         self.latest_ball_snapshot = None
++        self.active_ball_track_id: int | None = None
++        self.last_ball_track_id: int | None = None
++        self.seen_ball_track_ids: set[int] = set()
++        self.consumed_ball_track_ids: set[int] = set()
++        self.admitted_ball_track_ids: set[int] = set()
++        self.ball_track_generations: dict[int, int] = {}
++        self.ball_track_last_frames: dict[int, int] = {}
++        self._last_any_vicon_monotonic_s: float | None = None
++        self._last_ball_vicon_monotonic_s: float | None = None
++        self._no_ball_since_monotonic_s: float | None = None
++        self._hitter_policy_session_open = False
++        self.vicon_fault_latched: ViconInputFault | None = None
++        self._vicon_schema_fault_seen = False
++        self._vicon_fault_event_emitted: set[ViconInputFault] = set()
++        self._vicon_event_sequence = 0
++        self._vicon_events: deque[ViconConsumerEvent] = deque()
+         self._last_base_pose_wait_log_monotonic_s = None
+         planner_cfg = {}
+         motion_cfg = getattr(self.cfg, "motion", None)
+         if motion_cfg is not None:
+             planner_cfg = motion_cfg.get("ball_planner", {}) or {}
++        vicon_cfg = (
++            {}
++            if motion_cfg is None
++            else motion_cfg.get("vicon_consumer", {}) or {}
++        )
++        self.vicon_consumer_settings = resolve_vicon_consumer_settings(
++            vicon_cfg
++        )
+         self.ball_state_estimator_sample_rate_hz = float(planner_cfg.get("state_estimator_sample_rate_hz", 300.0))
+         self.ball_state_estimator_time = None
+         self.ball_state_estimator_last_host_time = None
+         self.ball_state_estimator = build_ball_state_estimator(
+             planner_cfg
+         )
+         self.ball_state_estimator_ready = False
+         self.ball_state_estimator_ready_tmp = False
+         self.ball_state_estimator_sample_count = 0
+         self.ball_state_estimator_sample_count_tmp = 0
+@@ -146,45 +220,56 @@ class RealWorld(BaseSim):
+                         self._hitter_ball_listeners.pop(index)
+                         break
+ 
+         return unregister
+ 
+     def _prepare_ball_snapshot_locked(
+         self,
+         msg,
+         *,
+         received_monotonic_s: float,
++        consumed: bool | None = None,
++        new_track: bool = False,
+     ) -> tuple[
+         BallEstimateSnapshot,
+         tuple[Callable[[BallEstimateSnapshot], None], ...],
+     ]:
+         source_frame = int(getattr(msg, "vicon_frame_number", 0) or 0)
+         source_time_s = float(getattr(msg, "vicon_time_s", 0.0) or 0.0)
++        track_id = int(getattr(msg, "track_id", 0) or 0)
++        if consumed is None:
++            consumed = track_id in self.consumed_ball_track_ids
+         with self._hitter_ball_listener_lock:
+-            self.ball_snapshot_generation += 1
+             snapshot = BallEstimateSnapshot(
+-                track_id=int(self.ball_track_id),
++                track_id=track_id,
+                 generation=int(self.ball_snapshot_generation),
+                 source_frame=source_frame,
+                 source_time_s=source_time_s,
+                 received_monotonic_s=float(received_monotonic_s),
+                 position_w=self.ball_pos_world_tmp,
+                 velocity_w=self.ball_vel_world_tmp,
+                 base_position_w=self.root_trans_world_tmp,
+                 base_quaternion_xyzw=self.root_quat_world_tmp,
+                 base_valid=bool(self.base_pose_valid_tmp),
+                 visible=bool(self.ball_visible_tmp),
+                 ready=bool(self.ball_state_estimator_ready_tmp),
++                consumed=bool(consumed),
++                new_track=bool(new_track),
+             )
+             self.latest_ball_snapshot = snapshot
+-            listeners = tuple(
+-                listener for _token, listener in self._hitter_ball_listeners
++            listeners = (
++                ()
++                if consumed
++                else tuple(
++                    listener
++                    for _token, listener in self._hitter_ball_listeners
++                )
+             )
+         return snapshot, listeners
+ 
+     @staticmethod
+     def _notify_ball_snapshot_listeners(snapshot, listeners) -> None:
+         for listener in listeners:
+             try:
+                 listener(snapshot)
+             except Exception:
+                 logger.exception("[RealWorld] HITTER ball listener failed")
+@@ -206,49 +291,281 @@ class RealWorld(BaseSim):
+     def reset_ball_state_estimator(self) -> None:
+         self._clear_ball_tracking()
+         logger.info("[RealWorld] ball state estimator reset.")
+ 
+     def _clear_ball_tracking(
+         self,
+         *,
+         emit_snapshot: bool = False,
+         source_message=None,
+         received_monotonic_s: float | None = None,
+-        advance_track_id: bool = True,
++        advance_track_id: bool = False,
+     ) -> None:
+         notification = None
+         with self._hitter_ball_state_lock:
+-            self._clear_ball_tracking_locked(advance_track_id=advance_track_id)
++            self._clear_ball_tracking_locked()
+             if emit_snapshot:
+                 if source_message is None:
+                     raise ValueError("source_message is required when emitting a snapshot")
+                 if received_monotonic_s is None:
+                     received_monotonic_s = time.monotonic()
+                 notification = self._prepare_ball_snapshot_locked(
+                     source_message,
+                     received_monotonic_s=received_monotonic_s,
+                 )
+         if notification is not None:
+             self._notify_ball_snapshot_listeners(*notification)
+ 
+-    def _clear_ball_tracking_locked(self, *, advance_track_id: bool) -> None:
++    def _clear_ball_tracking_locked(self) -> None:
+         self.ball_state_estimator.reset()
+         self.ball_state_estimator_time = None
+         self.ball_state_estimator_last_host_time = None
+         self.ball_state_estimator_ready = False
+         self.ball_state_estimator_ready_tmp = False
+         self.ball_state_estimator_sample_count = 0
+         self.ball_state_estimator_sample_count_tmp = 0
+-        self.ball_visible = False
++
++    def _enqueue_vicon_event_locked(
++        self,
++        reason: ViconEventReason,
++        *,
++        track_id: int | None,
++        detail: str,
++    ) -> None:
++        self._vicon_event_sequence += 1
++        self._vicon_events.append(
++            ViconConsumerEvent(
++                sequence=self._vicon_event_sequence,
++                reason=reason,
++                track_id=track_id,
++                detail=str(detail),
++            )
++        )
++
++    def _latch_vicon_fault(
++        self,
++        fault: ViconInputFault,
++        *,
++        received_monotonic_s: float,
++        detail: str,
++        track_id: int | None = None,
++    ) -> None:
++        with self._hitter_ball_state_lock:
++            if fault is ViconInputFault.VICON_SCHEMA_ERROR:
++                self._vicon_schema_fault_seen = True
++            if (
++                self.vicon_fault_latched is None
++                or fault is ViconInputFault.VICON_SCHEMA_ERROR
++            ):
++                self.vicon_fault_latched = fault
++            if fault not in self._vicon_fault_event_emitted:
++                self._vicon_fault_event_emitted.add(fault)
++                self._enqueue_vicon_event_locked(
++                    ViconEventReason(fault.value),
++                    track_id=track_id,
++                    detail=detail,
++                )
++
++    def _end_active_ball_locked(
++        self,
++        *,
++        now_monotonic_s: float,
++        event_reason: ViconEventReason | None,
++        detail: str,
++    ) -> int | None:
++        track_id = self.active_ball_track_id
++        if track_id is None:
++            return None
++        self.active_ball_track_id = None
+         self.ball_visible_tmp = False
+-        if advance_track_id:
+-            self.ball_track_id += 1
++        self.ball_visible = False
++        self._no_ball_since_monotonic_s = float(now_monotonic_s)
++        self._clear_ball_tracking_locked()
++        if event_reason is not None:
++            self._enqueue_vicon_event_locked(
++                event_reason,
++                track_id=track_id,
++                detail=detail,
++            )
++        return track_id
++
++    def _stream_fresh_locked(self, now_monotonic_s: float) -> bool:
++        last = self._last_any_vicon_monotonic_s
++        return bool(
++            last is not None
++            and float(now_monotonic_s) - last
++            <= self.vicon_consumer_settings.stream_timeout_s
++        )
++
++    def _ball_fresh_locked(self, now_monotonic_s: float) -> bool:
++        last = self._last_ball_vicon_monotonic_s
++        if last is None:
++            return True
++        return bool(
++            float(now_monotonic_s) - last
++            <= self.vicon_consumer_settings.ball_timeout_s
++        )
++
++    def _apply_freshness_locked(self, now_monotonic_s: float) -> None:
++        now = float(now_monotonic_s)
++        last_any = self._last_any_vicon_monotonic_s
++        if (
++            last_any is not None
++            and now - last_any
++            > self.vicon_consumer_settings.stream_timeout_s
++        ):
++            ended_track = self._end_active_ball_locked(
++                now_monotonic_s=now,
++                event_reason=None,
++                detail="authoritative v2 stream became stale",
++            )
++            self.base_pose_valid_tmp = False
++            self.base_pose_valid = False
++            self._latch_vicon_fault(
++                ViconInputFault.VICON_STREAM_STALE,
++                received_monotonic_s=now,
++                detail="authoritative v2 stream age exceeded timeout",
++                track_id=ended_track,
++            )
++            return
++
++        last_ball = self._last_ball_vicon_monotonic_s
++        if (
++            self.active_ball_track_id is not None
++            and last_ball is not None
++            and now - last_ball
++            > self.vicon_consumer_settings.ball_timeout_s
++        ):
++            ended_track = self._end_active_ball_locked(
++                now_monotonic_s=now,
++                event_reason=None,
++                detail="active ball message became stale",
++            )
++            self._latch_vicon_fault(
++                ViconInputFault.BALL_MESSAGE_STALE,
++                received_monotonic_s=now,
++                detail="active ball message age exceeded timeout",
++                track_id=ended_track,
++            )
++
++    def _status_locked(self, now_monotonic_s: float) -> ViconConsumerStatus:
++        now = float(now_monotonic_s)
++        stream_fresh = self._stream_fresh_locked(now)
++        ball_fresh = self._ball_fresh_locked(now)
++        no_ball_long_enough = bool(
++            self._no_ball_since_monotonic_s is not None
++            and now - self._no_ball_since_monotonic_s
++            >= self.vicon_consumer_settings.new_serve_no_ball_s
++        )
++        visible = bool(self.ball_visible_tmp)
++        ready = bool(
++            self._hitter_policy_session_open
++            and self.vicon_fault_latched is None
++            and stream_fresh
++            and self.base_pose_valid_tmp
++            and self.active_ball_track_id is None
++            and not visible
++            and no_ball_long_enough
++        )
++        return ViconConsumerStatus(
++            stream_fresh=stream_fresh,
++            ball_fresh=ball_fresh,
++            base_pose_valid=bool(self.base_pose_valid_tmp),
++            active_track_id=self.active_ball_track_id,
++            last_track_id=self.last_ball_track_id,
++            visible=visible,
++            ready_for_new_serve=ready,
++            latched_fault=self.vicon_fault_latched,
++        )
++
++    def hitter_vicon_status(
++        self,
++        *,
++        now_monotonic_s: float,
++    ) -> ViconConsumerStatus:
++        now = float(now_monotonic_s)
++        if not np.isfinite(now):
++            raise ValueError("now_monotonic_s must be finite")
++        with self._hitter_ball_state_lock:
++            self._apply_freshness_locked(now)
++            return self._status_locked(now)
++
++    def drain_hitter_vicon_events(self) -> tuple[ViconConsumerEvent, ...]:
++        with self._hitter_ball_state_lock:
++            events = tuple(self._vicon_events)
++            self._vicon_events.clear()
++            return events
++
++    def consume_hitter_track(self, track_id: int) -> bool:
++        track_id = int(track_id)
++        if track_id <= 0:
++            raise ValueError("track_id must be positive")
++        with self._hitter_ball_state_lock:
++            if track_id not in self.seen_ball_track_ids:
++                return False
++            already_consumed = track_id in self.consumed_ball_track_ids
++            self.consumed_ball_track_ids.add(track_id)
++            if (
++                self.latest_ball_snapshot is not None
++                and self.latest_ball_snapshot.track_id == track_id
++                and not self.latest_ball_snapshot.consumed
++            ):
++                snapshot = self.latest_ball_snapshot
++                self.latest_ball_snapshot = BallEstimateSnapshot(
++                    track_id=snapshot.track_id,
++                    generation=snapshot.generation,
++                    source_frame=snapshot.source_frame,
++                    source_time_s=snapshot.source_time_s,
++                    received_monotonic_s=snapshot.received_monotonic_s,
++                    position_w=snapshot.position_w,
++                    velocity_w=snapshot.velocity_w,
++                    base_position_w=snapshot.base_position_w,
++                    base_quaternion_xyzw=snapshot.base_quaternion_xyzw,
++                    base_valid=snapshot.base_valid,
++                    visible=snapshot.visible,
++                    ready=snapshot.ready,
++                    consumed=True,
++                    new_track=snapshot.new_track,
++                )
++            return not already_consumed
++
++    def begin_hitter_policy_session(
++        self,
++        *,
++        now_monotonic_s: float,
++    ) -> bool:
++        now = float(now_monotonic_s)
++        if not np.isfinite(now):
++            raise ValueError("now_monotonic_s must be finite")
++        with self._hitter_ball_state_lock:
++            self._apply_freshness_locked(now)
++            if self._vicon_schema_fault_seen:
++                return False
++            if not self._stream_fresh_locked(now) or not self.base_pose_valid_tmp:
++                return False
++
++            recoverable = {
++                ViconInputFault.VICON_STREAM_STALE,
++                ViconInputFault.BALL_MESSAGE_STALE,
++                ViconInputFault.TRACK_ID_CONFLICT,
++            }
++            if self.vicon_fault_latched in recoverable:
++                self.vicon_fault_latched = None
++            self._vicon_fault_event_emitted.difference_update(recoverable)
++            self._hitter_policy_session_open = True
++            if self.active_ball_track_id is not None and self.ball_visible_tmp:
++                self.consumed_ball_track_ids.add(self.active_ball_track_id)
++                self._no_ball_since_monotonic_s = None
++                self._clear_ball_tracking_locked()
++            else:
++                self._no_ball_since_monotonic_s = now
++            return True
+ 
+     def _ball_estimator_timestamp_from_msg(self, msg, host_time: float) -> float:
+         with self._hitter_ball_state_lock:
+             vicon_time = float(getattr(msg, "vicon_time_s", 0.0) or 0.0)
+             if np.isfinite(vicon_time) and vicon_time > 0.0:
+                 return vicon_time
+ 
+             publish_time_us = int(getattr(msg, "publish_time_us", 0) or 0)
+             if publish_time_us > 0:
+                 return float(publish_time_us) * 1.0e-6
+@@ -269,21 +586,24 @@ class RealWorld(BaseSim):
+         self._poll_stop_event = threading.Event()
+         self._communication_close_lock = threading.Lock()
+         self._communication_closed = False
+         self.firstReceiveAlarm = False
+         self.firstReceiveOdometer = False
+         self.firstReceiveVicon = False
+         self._init_time = time.time()
+         
+         self.root_state_subscriber = self.lc.subscribe('state_estimator_data', self._root_state_handler)
+         self.joint_state_subscriber = self.lc.subscribe('body_control_data', self._joint_state_handler)
+-        self.vicon_state_subscriber = self.lc.subscribe('vicon_state_data', self._vicon_state_handler)
++        self.vicon_state_subscriber = self.lc.subscribe(
++            self.vicon_consumer_settings.channel,
++            self._vicon_state_handler,
++        )
+         self.remote_controller_subscriber = self.lc.subscribe('rc_command_data', self._remote_controller_handler)
+         self.teleop_state_subscriber = self.lc.subscribe('camera_reference_data', self._teleop_state_handler)
+ 
+     def _next_ball_estimator_timestamp(self, host_time):
+         with self._hitter_ball_state_lock:
+             if self.ball_state_estimator_time is None or self.ball_state_estimator_last_host_time is None:
+                 self.ball_state_estimator_time = 0.0
+             else:
+                 wall_dt = max(0.0, float(host_time - self.ball_state_estimator_last_host_time))
+                 nominal_dt = 1.0 / self.ball_state_estimator_sample_rate_hz if self.ball_state_estimator_sample_rate_hz > 0.0 else wall_dt
+@@ -297,101 +617,261 @@ class RealWorld(BaseSim):
+             self.firstReceiveOdometer = True
+             logger.info('State Estimator Information Received!')
+             logger.info(f'Root Translation: {np.array(msg.p)}, Root Linear Velocity: {np.array(msg.vBody)}')
+         self.root_trans_tmp = np.array(msg.p)
+         self.root_rpy_tmp = np.array(msg.rpy)
+         self.root_quat_tmp = np.roll(np.array(msg.quat), -1) # (w,x,y,z) -> (x,y,z,w)
+         self.base_lin_vel_tmp = np.array(msg.vBody)
+         self.base_ang_vel_tmp = np.array(msg.omegaBody)
+ 
+     def _vicon_state_handler(self, channel, data):
+-        msg = transformation_t.decode(data)
++        received_monotonic_s = time.monotonic()
++        try:
++            if channel != self.vicon_consumer_settings.channel:
++                raise ValueError(
++                    f"unexpected Vicon channel {channel!r}; expected "
++                    f"{self.vicon_consumer_settings.channel!r}"
++                )
++            msg = transformation_t.decode(data)
++            self._ingest_vicon_v2_message(
++                msg,
++                received_monotonic_s=received_monotonic_s,
++            )
++        except Exception as exc:
++            self._latch_vicon_fault(
++                ViconInputFault.VICON_SCHEMA_ERROR,
++                received_monotonic_s=received_monotonic_s,
++                detail=f"{type(exc).__name__}: {exc}",
++            )
++
++    def _ingest_vicon_v2_message(
++        self,
++        msg,
++        *,
++        received_monotonic_s: float,
++    ) -> None:
++        received = float(received_monotonic_s)
++        if not np.isfinite(received):
++            raise ValueError("received_monotonic_s must be finite")
+         name = str(getattr(msg, "name", "") or "").strip().lower()
+-        pos_raw = np.asarray(msg.pos_vicon, dtype=np.float64).reshape(-1)[:3]
+-        quat = np.asarray(msg.quat_vicon, dtype=np.float32).reshape(-1)[:4]
+-        vicon_time_s = float(getattr(msg, "vicon_time_s", 0.0) or 0.0)
+-        vicon_frame_number = int(getattr(msg, "vicon_frame_number", 0) or 0)
+-        if name == "ball":
+-            print(f"[VICON] name={name}, vicon_time_s={vicon_time_s:.2f}, vicon_frame_number={vicon_frame_number}, pos={pos_raw}, quat={quat}, valid={getattr(msg, 'valid', 1)}, occluded={getattr(msg, 'occluded', 0)}")
++        track_id = int(getattr(msg, "track_id", 0) or 0)
+         if name == "ball":
+-            self._update_ball_state_from_vicon(msg, pos_raw)
+-            return
+-
+-        if name == "table":
++            if track_id <= 0:
++                self._latch_vicon_fault(
++                    ViconInputFault.VICON_SCHEMA_ERROR,
++                    received_monotonic_s=received,
++                    detail=f"ball track_id must be positive, got {track_id}",
++                )
++                return
++            self._update_ball_state_from_vicon(
++                msg,
++                np.asarray(msg.pos_vicon, dtype=np.float64).reshape(-1)[:3],
++                received_monotonic_s=received,
++            )
+             return
+ 
+-        if name != "g1pelvis":
++        if name not in {"g1pelvis", "table"} or track_id != 0:
++            self._latch_vicon_fault(
++                ViconInputFault.VICON_SCHEMA_ERROR,
++                received_monotonic_s=received,
++                detail=(
++                    f"invalid v2 subject contract name={name!r} "
++                    f"track_id={track_id}"
++                ),
++            )
+             return
+ 
+-        pos = pos_raw.astype(np.float32)
+-        valid = bool(getattr(msg, "valid", 1)) and not bool(
+-            getattr(msg, "occluded", 0)
+-        )
+-        first_valid_pose = False
+         with self._hitter_ball_state_lock:
++            self._last_any_vicon_monotonic_s = received
++            if name == "table":
++                return
++
++            pos = np.asarray(msg.pos_vicon, dtype=np.float32).reshape(-1)[:3]
++            quat = np.asarray(msg.quat_vicon, dtype=np.float32).reshape(-1)[:4]
++            valid = bool(getattr(msg, "valid", 1)) and not bool(
++                getattr(msg, "occluded", 0)
++            )
++            was_valid = bool(self.base_pose_valid_tmp)
+             if (
+                 not valid
+                 or pos.shape != (3,)
+                 or quat.shape != (4,)
+                 or not np.isfinite(pos).all()
+                 or not np.isfinite(quat).all()
+             ):
+                 self.base_pose_valid_tmp = False
++                self.base_pose_valid = False
++                if was_valid:
++                    self._enqueue_vicon_event_locked(
++                        ViconEventReason.BASE_POSE_INVALID,
++                        track_id=None,
++                        detail="G1Pelvis pose became invalid",
++                    )
+                 return
+ 
+-            if not self.firstReceiveVicon:
+-                self.firstReceiveVicon = True
+-                first_valid_pose = True
++            first_valid_pose = not self.firstReceiveVicon
++            self.firstReceiveVicon = True
+             self.root_trans_world_tmp = pos.copy()
+             self.root_quat_world_tmp = quat.copy()
+             self.base_pose_valid_tmp = True
+         if first_valid_pose:
+             logger.info('Vicon root information received!')
+             logger.info(f'Root Translation World: {pos}')
+ 
+-    def _update_ball_state_from_vicon(self, msg, pos: np.ndarray) -> None:
+-        valid = bool(getattr(msg, "valid", 1)) and not bool(getattr(msg, "occluded", 0))
+-        received_monotonic_s = time.monotonic()
++    def _update_ball_state_from_vicon(
++        self,
++        msg,
++        pos: np.ndarray,
++        *,
++        received_monotonic_s: float | None = None,
++    ) -> None:
++        received = (
++            time.monotonic()
++            if received_monotonic_s is None
++            else float(received_monotonic_s)
++        )
++        track_id = int(getattr(msg, "track_id", 0) or 0)
++        source_frame = int(getattr(msg, "vicon_frame_number", 0) or 0)
++        valid = bool(getattr(msg, "valid", 1)) and not bool(
++            getattr(msg, "occluded", 0)
++        )
++        notification = None
+         bounce_detected = False
+         first_ball_position = None
++        conflict = False
+         with self._hitter_ball_state_lock:
++            previous_any_vicon_monotonic_s = (
++                self._last_any_vicon_monotonic_s
++            )
++            self._last_any_vicon_monotonic_s = received
+             if not valid:
+-                self._clear_ball_tracking_locked(advance_track_id=True)
+-                notification = self._prepare_ball_snapshot_locked(
+-                    msg,
+-                    received_monotonic_s=received_monotonic_s,
++                if self.active_ball_track_id == track_id:
++                    self._end_active_ball_locked(
++                        now_monotonic_s=received,
++                        event_reason=ViconEventReason.TRACK_ENDED,
++                        detail="authoritative ball track ended",
++                    )
++                elif self.active_ball_track_id is not None:
++                    self._latch_vicon_fault(
++                        ViconInputFault.VICON_SCHEMA_ERROR,
++                        received_monotonic_s=received,
++                        detail=(
++                            "invalid ball end ID does not match active ID: "
++                            f"{track_id} != {self.active_ball_track_id}"
++                        ),
++                        track_id=track_id,
++                    )
++                return
++
++            position = np.asarray(pos, dtype=np.float64).reshape(-1)[:3]
++            if position.shape != (3,) or not np.isfinite(position).all():
++                self._latch_vicon_fault(
++                    ViconInputFault.VICON_SCHEMA_ERROR,
++                    received_monotonic_s=received,
++                    detail="ball position must contain three finite values",
++                    track_id=track_id,
+                 )
+-            else:
++                return
++
++            is_new_track = track_id not in self.seen_ball_track_ids
++            if not is_new_track:
++                last_frame = self.ball_track_last_frames[track_id]
++                if source_frame <= last_frame:
++                    return
++
++            old_active = self.active_ball_track_id
++            if is_new_track:
++                self._clear_ball_tracking_locked()
++                stream_was_fresh = bool(
++                    previous_any_vicon_monotonic_s is not None
++                    and received - previous_any_vicon_monotonic_s
++                    <= self.vicon_consumer_settings.stream_timeout_s
++                )
++                no_ball_long_enough = bool(
++                    self._no_ball_since_monotonic_s is not None
++                    and received - self._no_ball_since_monotonic_s
++                    >= self.vicon_consumer_settings.new_serve_no_ball_s
++                )
++                conflict = old_active is not None and old_active != track_id
++                admitted = bool(
++                    not conflict
++                    and old_active is None
++                    and self._hitter_policy_session_open
++                    and self.vicon_fault_latched is None
++                    and stream_was_fresh
++                    and self.base_pose_valid_tmp
++                    and no_ball_long_enough
++                )
++                self.seen_ball_track_ids.add(track_id)
++                if admitted:
++                    self.admitted_ball_track_ids.add(track_id)
++                else:
++                    self.consumed_ball_track_ids.add(track_id)
++                if conflict:
++                    self.consumed_ball_track_ids.add(old_active)
++            elif old_active != track_id:
++                self._clear_ball_tracking_locked()
++                self.consumed_ball_track_ids.add(track_id)
++
++            self.ball_track_generations[track_id] = (
++                self.ball_track_generations.get(track_id, 0) + 1
++            )
++            self.ball_track_last_frames[track_id] = source_frame
++            self.ball_snapshot_generation = self.ball_track_generations[track_id]
++            self.ball_track_id = track_id
++            self.active_ball_track_id = track_id
++            self.last_ball_track_id = track_id
++            self.ball_visible_tmp = True
++            self._last_ball_vicon_monotonic_s = received
++            self._no_ball_since_monotonic_s = None
++
++            consumed = track_id in self.consumed_ball_track_ids
++            if conflict:
++                self._latch_vicon_fault(
++                    ViconInputFault.TRACK_ID_CONFLICT,
++                    received_monotonic_s=received,
++                    detail=f"overlapping ball track IDs {old_active} and {track_id}",
++                    track_id=track_id,
++                )
++
++            if not consumed:
+                 sample_time = self._ball_estimator_timestamp_from_msg(
+                     msg,
+-                    received_monotonic_s,
++                    received,
+                 )
+-
+-                estimate = self.ball_state_estimator.add_sample(pos, timestamp=sample_time)
+-                self.ball_state_estimator_last_host_time = float(received_monotonic_s)
++                estimate = self.ball_state_estimator.add_sample(
++                    position,
++                    timestamp=sample_time,
++                )
++                self.ball_state_estimator_last_host_time = received
+                 self.ball_pos_world_tmp = estimate.position.astype(np.float32)
+                 self.ball_vel_world_tmp = estimate.velocity.astype(np.float32)
+-                self.ball_visible_tmp = True
+                 self.ball_state_estimator_ready_tmp = bool(estimate.valid)
+-                self.ball_state_estimator_sample_count_tmp = int(estimate.sample_count)
++                self.ball_state_estimator_sample_count_tmp = int(
++                    estimate.sample_count
++                )
+                 bounce_detected = bool(estimate.bounce_detected)
+                 if not self.firstReceiveBall:
+                     self.firstReceiveBall = True
+                     first_ball_position = self.ball_pos_world_tmp.copy()
+-                notification = self._prepare_ball_snapshot_locked(
+-                    msg,
+-                    received_monotonic_s=received_monotonic_s,
+-                )
++            else:
++                self.ball_pos_world_tmp = position.astype(np.float32)
++                self.ball_vel_world_tmp = np.zeros(3, dtype=np.float32)
++
++            notification = self._prepare_ball_snapshot_locked(
++                msg,
++                received_monotonic_s=received,
++                consumed=consumed,
++                new_track=is_new_track,
++            )
+ 
+         self._notify_ball_snapshot_listeners(*notification)
+-        if not valid:
+-            return
+         if bounce_detected:
+             logger.info(
+                 "[RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer."
+             )
+         if first_ball_position is not None:
+             logger.info('Vicon ball information received!')
+             logger.info(f'Ball Position World: {first_ball_position}')
+ 
+     def _joint_state_handler(self, channel, data):
+         msg = body_control_data_lcmt.decode(data)
+diff --git a/deploy/tests/test_real_world_v2_consumer.py b/deploy/tests/test_real_world_v2_consumer.py
+new file mode 100644
+index 0000000..527e5c2
+--- /dev/null
++++ b/deploy/tests/test_real_world_v2_consumer.py
+@@ -0,0 +1,574 @@
++from __future__ import annotations
++
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++
++from simulator import real_world as real_world_module
++from unitree_sdk2.lcm_types.rc_command_lcmt import rc_command_lcmt
++from unitree_sdk2.lcm_types.transformation_t import transformation_t
++from utils import hitter_runtime_factory
++
++
++def ball(
++    *,
++    track_id: int,
++    frame: int,
++    valid: bool = True,
++    position=(1.5, 0.0, 1.0),
++) -> transformation_t:
++    message = transformation_t()
++    message.name = "ball"
++    message.track_id = track_id
++    message.vicon_frame_number = frame
++    message.vicon_time_s = frame / 100.0
++    message.publish_time_us = frame * 10_000
++    message.valid = int(valid)
++    message.occluded = int(not valid)
++    message.pos_vicon = list(position)
++    message.quat_vicon = [0.0, 0.0, 0.0, 1.0]
++    return message
++
++
++def pelvis(
++    *,
++    frame: int,
++    track_id: int = 0,
++    valid: bool = True,
++) -> transformation_t:
++    message = transformation_t()
++    message.name = "G2Pelvis"
++    message.track_id = track_id
++    message.vicon_frame_number = frame
++    message.vicon_time_s = frame / 100.0
++    message.publish_time_us = frame * 10_000
++    message.valid = int(valid)
++    message.occluded = int(not valid)
++    message.pos_vicon = [0.2, 0.0, 0.8]
++    message.quat_vicon = [0.0, 0.0, 0.0, 1.0]
++    return message
++
++
++def table(*, frame: int, track_id: int = 0) -> transformation_t:
++    message = pelvis(frame=frame, track_id=track_id)
++    message.name = "table"
++    return message
++
++
++def encoded_rc(*, r2: bool) -> bytes:
++    message = rc_command_lcmt()
++    message.right_lower_right_switch = int(r2)
++    return message.encode()
++
++
++def ingest_valid_pelvis(world, *, now: float, frame: int = 1) -> None:
++    world._ingest_vicon_v2_message(
++        pelvis(frame=frame),
++        received_monotonic_s=now,
++    )
++
++
++def ingest_valid_pelvis_and_ball(
++    world,
++    *,
++    now: float,
++    track_id: int,
++    frame: int = 10,
++) -> None:
++    ingest_valid_pelvis(world, now=now, frame=frame)
++    world._ingest_vicon_v2_message(
++        ball(track_id=track_id, frame=frame),
++        received_monotonic_s=now,
++    )
++
++
++def open_session(world, *, start: float = 0.0) -> None:
++    ingest_valid_pelvis(world, now=start, frame=1)
++    assert world.begin_hitter_policy_session(now_monotonic_s=start)
++
++
++def admit_ball(
++    world,
++    *,
++    track_id: int = 7,
++    now: float = 0.5,
++    frame: int = 10,
++) -> None:
++    ingest_valid_pelvis(world, now=now - 0.01, frame=frame - 1)
++    world._ingest_vicon_v2_message(
++        ball(track_id=track_id, frame=frame),
++        received_monotonic_s=now,
++    )
++
++
++@pytest.fixture
++def world():
++    simulator = real_world_module.RealWorld.__new__(real_world_module.RealWorld)
++    simulator.cfg = SimpleNamespace(
++        motion={
++            "ball_planner": {
++                "state_estimator_window_size": 3,
++                "state_estimator_min_samples": 3,
++                "state_estimator_sample_rate_hz": 100.0,
++            }
++        }
++    )
++    simulator._init_ball_state()
++    for name in (
++        "left_upper_switch",
++        "left_lower_left_switch",
++        "left_lower_right_switch",
++        "right_upper_switch",
++        "right_lower_left_switch",
++        "right_lower_right_switch",
++        "left_upper_switch_pressed",
++        "left_lower_left_switch_pressed",
++        "left_lower_right_switch_pressed",
++        "right_upper_switch_pressed",
++        "right_lower_left_switch_pressed",
++        "right_lower_right_switch_pressed",
++    ):
++        setattr(simulator, name, 0)
++    simulator.mode = 0
++    simulator.left_stick = [0.0, 0.0]
++    simulator.right_stick = [0.0, 0.0]
++    snapshots = []
++    unregister = simulator.register_hitter_ball_listener(snapshots.append)
++    simulator.test_listener_snapshots = snapshots
++    try:
++        yield simulator
++    finally:
++        unregister()
++        close = getattr(simulator, "close", None)
++        if callable(close) and hasattr(simulator, "_communication_close_lock"):
++            close()
++
++
++def test_same_wire_id_survives_reset_and_rejects_out_of_order_frames(world):
++    open_session(world)
++    admit_ball(world, track_id=7, now=0.5, frame=10)
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11), received_monotonic_s=0.51
++    )
++    generation = world.ball_snapshot_generation
++    samples = world.ball_state_estimator.sample_count
++
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11), received_monotonic_s=0.52
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=9), received_monotonic_s=0.53
++    )
++
++    assert world.ball_snapshot_generation == generation
++    assert world.ball_state_estimator.sample_count == samples
++    world.reset_ball_state_estimator()
++    assert world.active_ball_track_id == 7
++    assert world.last_ball_track_id == 7
++    assert world.seen_ball_track_ids == {7}
++    assert world.ball_snapshot_generation == generation
++
++
++def test_overlapping_new_id_consumes_both_and_latches_conflict(world):
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=1.0
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=8, frame=11), received_monotonic_s=1.01
++    )
++
++    status = world.hitter_vicon_status(now_monotonic_s=1.01)
++    assert {7, 8} <= world.consumed_ball_track_ids
++    assert status.latched_fault is real_world_module.ViconInputFault.TRACK_ID_CONFLICT
++    assert world.ball_state_estimator.sample_count == 0
++    assert [
++        (event.reason, event.track_id)
++        for event in world.drain_hitter_vicon_events()
++    ] == [(real_world_module.ViconEventReason.TRACK_ID_CONFLICT, 8)]
++
++
++def test_bad_fingerprint_latches_schema_error_without_raising(world):
++    world._vicon_state_handler("vicon_state_data_v2", b"bad fingerprint")
++
++    assert (
++        world.vicon_fault_latched
++        is real_world_module.ViconInputFault.VICON_SCHEMA_ERROR
++    )
++    world._remote_controller_handler("rc_command_data", encoded_rc(r2=True))
++    assert world.right_lower_right_switch_pressed is True
++
++
++@pytest.mark.parametrize(
++    ("message", "expected_active"),
++    [
++        (ball(track_id=0, frame=1), None),
++        (ball(track_id=-1, frame=1), None),
++        (pelvis(frame=1, track_id=9), None),
++        (table(frame=1, track_id=9), None),
++    ],
++)
++def test_subject_id_contract_fails_closed_without_estimator_sample(
++    world,
++    message,
++    expected_active,
++):
++    world._ingest_vicon_v2_message(message, received_monotonic_s=1.0)
++
++    assert world.active_ball_track_id is expected_active
++    assert world.ball_state_estimator.sample_count == 0
++    assert (
++        world.vicon_fault_latched
++        is real_world_module.ViconInputFault.VICON_SCHEMA_ERROR
++    )
++    assert [event.reason for event in world.drain_hitter_vicon_events()] == [
++        real_world_module.ViconEventReason.VICON_SCHEMA_ERROR
++    ]
++
++
++def test_schema_fault_is_process_lifetime_and_reentry_cannot_clear_it(world):
++    world._vicon_state_handler("vicon_state_data_v2", b"bad fingerprint")
++    ingest_valid_pelvis(world, now=1.0)
++
++    assert not world.begin_hitter_policy_session(now_monotonic_s=1.0)
++    assert (
++        world.vicon_fault_latched
++        is real_world_module.ViconInputFault.VICON_SCHEMA_ERROR
++    )
++
++
++def test_stream_stale_is_latched_until_policy_reentry(world):
++    ingest_valid_pelvis_and_ball(world, now=1.0, track_id=7)
++
++    status = world.hitter_vicon_status(now_monotonic_s=1.400001)
++    assert status.latched_fault is real_world_module.ViconInputFault.VICON_STREAM_STALE
++    assert status.active_track_id is None
++    assert status.last_track_id == 7
++    ingest_valid_pelvis(world, now=1.41)
++    assert (
++        world.hitter_vicon_status(now_monotonic_s=1.42).latched_fault
++        is real_world_module.ViconInputFault.VICON_STREAM_STALE
++    )
++
++
++def test_stream_freshness_boundary_is_strictly_greater_than_point_four(world):
++    ingest_valid_pelvis(world, now=1.0)
++
++    assert world.hitter_vicon_status(now_monotonic_s=1.4).stream_fresh
++    status = world.hitter_vicon_status(now_monotonic_s=1.400001)
++    assert not status.stream_fresh
++    assert status.latched_fault is real_world_module.ViconInputFault.VICON_STREAM_STALE
++
++
++def test_reentry_clears_recovered_stale_fault_and_accepts_next_id(world):
++    ingest_valid_pelvis_and_ball(world, now=1.0, track_id=7)
++    world.hitter_vicon_status(now_monotonic_s=1.400001)
++    ingest_valid_pelvis(world, now=1.41)
++
++    assert world.begin_hitter_policy_session(now_monotonic_s=1.42)
++    ingest_valid_pelvis(world, now=1.91, frame=19)
++    assert world.hitter_vicon_status(now_monotonic_s=1.92).ready_for_new_serve
++    world._ingest_vicon_v2_message(
++        ball(track_id=8, frame=20), received_monotonic_s=1.921
++    )
++    assert world.active_ball_track_id == 8
++    assert 8 not in world.consumed_ball_track_ids
++
++
++def test_reentry_rejects_unrecovered_stale_stream(world):
++    ingest_valid_pelvis_and_ball(world, now=1.0, track_id=7)
++    world.hitter_vicon_status(now_monotonic_s=1.400001)
++
++    assert not world.begin_hitter_policy_session(now_monotonic_s=1.402)
++    assert (
++        world.vicon_fault_latched
++        is real_world_module.ViconInputFault.VICON_STREAM_STALE
++    )
++
++
++def test_invalid_ball_emits_one_direct_track_end_event_and_preserves_history(world):
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=1.0
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11, valid=False),
++        received_monotonic_s=1.01,
++    )
++    generation = world.ball_track_generations[7]
++    source_frame = world.ball_track_last_frames[7]
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=12, valid=False),
++        received_monotonic_s=1.02,
++    )
++
++    status = world.hitter_vicon_status(now_monotonic_s=1.02)
++    assert status.active_track_id is None
++    assert status.last_track_id == 7
++    assert not status.visible
++    assert world.ball_track_generations[7] == generation
++    assert world.ball_track_last_frames[7] == source_frame
++    assert [(event.reason, event.track_id) for event in world.drain_hitter_vicon_events()] == [
++        (real_world_module.ViconEventReason.TRACK_ENDED, 7)
++    ]
++    assert world.drain_hitter_vicon_events() == ()
++
++
++def test_invalid_base_transition_emits_once_without_becoming_schema_fault(world):
++    ingest_valid_pelvis(world, now=1.0)
++    invalid = pelvis(frame=2, valid=False)
++    world._ingest_vicon_v2_message(invalid, received_monotonic_s=1.01)
++    world._ingest_vicon_v2_message(invalid, received_monotonic_s=1.02)
++
++    assert not world.base_pose_valid_tmp
++    assert world.vicon_fault_latched is None
++    assert [event.reason for event in world.drain_hitter_vicon_events()] == [
++        real_world_module.ViconEventReason.BASE_POSE_INVALID
++    ]
++
++
++def test_per_id_generation_starts_at_one_and_invalid_does_not_advance_it(world):
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=1.0
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11, valid=False), received_monotonic_s=1.01
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=8, frame=20), received_monotonic_s=1.51
++    )
++
++    assert world.ball_track_generations == {7: 1, 8: 1}
++    assert world.ball_track_last_frames == {7: 10, 8: 20}
++
++
++def test_ball_freshness_boundary_ends_active_track_and_emits_once(world):
++    open_session(world)
++    admit_ball(world, now=0.5)
++
++    ingest_valid_pelvis(world, now=0.9, frame=90)
++    assert world.hitter_vicon_status(now_monotonic_s=0.9).ball_fresh
++    ingest_valid_pelvis(world, now=0.900001, frame=91)
++    status = world.hitter_vicon_status(now_monotonic_s=0.900001)
++    assert not status.ball_fresh
++    assert status.active_track_id is None
++    assert status.latched_fault is real_world_module.ViconInputFault.BALL_MESSAGE_STALE
++    assert [event.reason for event in world.drain_hitter_vicon_events()] == [
++        real_world_module.ViconEventReason.BALL_MESSAGE_STALE
++    ]
++
++
++def test_startup_visible_id_is_quarantined_and_never_notifies_planner(world):
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=1.0
++    )
++
++    assert world.active_ball_track_id == 7
++    assert world.ball_visible_tmp
++    assert world.consumed_ball_track_ids == {7}
++    assert world.ball_state_estimator.sample_count == 0
++    assert world.latest_ball_snapshot.consumed
++    assert world.latest_ball_snapshot.new_track
++    assert world.test_listener_snapshots == []
++
++
++def test_early_new_id_is_consumed_and_does_not_revive_after_gate_time(world):
++    open_session(world)
++    ingest_valid_pelvis(world, now=0.48, frame=8)
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=0.49
++    )
++
++    assert world.consumed_ball_track_ids == {7}
++    assert world.ball_state_estimator.sample_count == 0
++    ingest_valid_pelvis(world, now=0.98, frame=98)
++    status = world.hitter_vicon_status(now_monotonic_s=0.99)
++    assert not status.ready_for_new_serve
++    assert status.active_track_id is None
++    assert status.latched_fault is real_world_module.ViconInputFault.BALL_MESSAGE_STALE
++    assert world.test_listener_snapshots == []
++
++
++def test_admitted_listener_snapshots_expose_true_new_and_consumed_flags(world):
++    open_session(world)
++    admit_ball(world, now=0.5, frame=10)
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11), received_monotonic_s=0.51
++    )
++
++    assert [snapshot.generation for snapshot in world.test_listener_snapshots] == [1, 2]
++    assert [snapshot.new_track for snapshot in world.test_listener_snapshots] == [True, False]
++    assert [snapshot.consumed for snapshot in world.test_listener_snapshots] == [False, False]
++
++    assert world.consume_hitter_track(7)
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=12), received_monotonic_s=0.52
++    )
++    assert len(world.test_listener_snapshots) == 2
++    assert world.latest_ball_snapshot.consumed
++
++
++def test_new_track_estimator_window_never_contains_previous_track_samples(world):
++    open_session(world)
++    admit_ball(world, track_id=7, now=0.5, frame=10)
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11, position=(1.4, 0.0, 0.95)),
++        received_monotonic_s=0.51,
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=12, position=(1.3, 0.0, 0.9)),
++        received_monotonic_s=0.52,
++    )
++    assert world.ball_state_estimator.sample_count == 3
++    assert world.ball_state_estimator_ready_tmp
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=13, valid=False),
++        received_monotonic_s=0.53,
++    )
++    ingest_valid_pelvis(world, now=1.02, frame=102)
++    world._ingest_vicon_v2_message(
++        ball(track_id=8, frame=20, position=(2.0, 0.2, 1.2)),
++        received_monotonic_s=1.03,
++    )
++
++    assert world.active_ball_track_id == 8
++    assert world.ball_snapshot_generation == 1
++    assert world.ball_state_estimator.sample_count == 1
++    assert not world.ball_state_estimator_ready_tmp
++    np.testing.assert_allclose(
++        world.ball_state_estimator._samples[0][1],
++        [2.0, 0.2, 1.2],
++    )
++
++
++def test_quarantined_new_track_cuts_old_window_without_adding_own_sample(world):
++    open_session(world)
++    admit_ball(world, track_id=7, now=0.5, frame=10)
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11), received_monotonic_s=0.51
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=12), received_monotonic_s=0.52
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=13, valid=False), received_monotonic_s=0.53
++    )
++    ingest_valid_pelvis(world, now=0.79, frame=79)
++    world._ingest_vicon_v2_message(
++        ball(track_id=8, frame=20), received_monotonic_s=0.80
++    )
++
++    assert world.consumed_ball_track_ids == {8}
++    assert world.active_ball_track_id == 8
++    assert world.ball_state_estimator.sample_count == 0
++    assert not world.ball_state_estimator_ready_tmp
++
++
++def test_seen_and_consumed_sets_survive_estimator_and_policy_reset(world):
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=1.0
++    )
++    world.reset_ball_state_estimator()
++    ingest_valid_pelvis(world, now=1.01)
++    assert world.begin_hitter_policy_session(now_monotonic_s=1.01)
++
++    assert world.seen_ball_track_ids == {7}
++    assert world.consumed_ball_track_ids == {7}
++
++
++def test_ready_gate_requires_exact_half_second_and_a_fresh_base(world):
++    open_session(world)
++    ingest_valid_pelvis(world, now=0.49, frame=49)
++
++    assert not world.hitter_vicon_status(now_monotonic_s=0.49).ready_for_new_serve
++    ingest_valid_pelvis(world, now=0.50, frame=50)
++    assert world.hitter_vicon_status(now_monotonic_s=0.50).ready_for_new_serve
++
++
++def test_every_valid_ball_clears_no_ball_timer_even_when_quarantined(world):
++    open_session(world)
++    ingest_valid_pelvis(world, now=0.20, frame=20)
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=0.20
++    )
++
++    assert world._no_ball_since_monotonic_s is None
++    assert 7 in world.consumed_ball_track_ids
++
++
++def test_reentry_quarantines_current_visible_id(world):
++    ingest_valid_pelvis_and_ball(world, now=1.0, track_id=7)
++
++    assert world.begin_hitter_policy_session(now_monotonic_s=1.01)
++    assert world.active_ball_track_id == 7
++    assert 7 in world.consumed_ball_track_ids
++    assert world.ball_state_estimator.sample_count == 0
++    assert not world.hitter_vicon_status(now_monotonic_s=1.01).ready_for_new_serve
++
++
++def test_event_queue_preserves_sequence_and_drains_atomically(world):
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=10), received_monotonic_s=1.0
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=7, frame=11, valid=False), received_monotonic_s=1.01
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=8, frame=20), received_monotonic_s=1.02
++    )
++    world._ingest_vicon_v2_message(
++        ball(track_id=8, frame=21, valid=False), received_monotonic_s=1.03
++    )
++
++    events = world.drain_hitter_vicon_events()
++    assert [event.sequence for event in events] == [1, 2]
++    assert [(event.reason, event.track_id) for event in events] == [
++        (real_world_module.ViconEventReason.TRACK_ENDED, 7),
++        (real_world_module.ViconEventReason.TRACK_ENDED, 8),
++    ]
++    assert world.drain_hitter_vicon_events() == ()
++
++
++def test_communication_subscribes_only_to_validated_v2_channel(world):
++    class FakeLcm:
++        def __init__(self):
++            self.channels = []
++            self.unsubscribed = []
++
++        def subscribe(self, channel, callback):
++            token = (channel, callback)
++            self.channels.append(channel)
++            return token
++
++        def unsubscribe(self, subscription):
++            self.unsubscribed.append(subscription)
++
++    world.lc = FakeLcm()
++    world._init_communication()
++    try:
++        assert "vicon_state_data_v2" in world.lc.channels
++        assert "vicon_state_data" not in world.lc.channels
++    finally:
++        assert world.close()
++
++
++@pytest.mark.parametrize(
++    ("config", "match"),
++    [
++        ({"channel": "vicon_state_data"}, "exactly vicon_state_data_v2"),
++        ({"stream_timeout_s": float("nan")}, "finite and positive"),
++        ({"ball_timeout_s": float("inf")}, "finite and positive"),
++        ({"new_serve_no_ball_s": 0.0}, "finite and positive"),
++    ],
++)
++def test_vicon_consumer_settings_reject_unsafe_values(config, match):
++    with pytest.raises(ValueError, match=match):
++        hitter_runtime_factory.resolve_vicon_consumer_settings(config)
++
++
++def test_vicon_consumer_settings_defaults_are_exact():
++    settings = hitter_runtime_factory.resolve_vicon_consumer_settings({})
++
++    assert settings.channel == "vicon_state_data_v2"
++    assert settings.stream_timeout_s == 0.40
++    assert settings.ball_timeout_s == 0.40
++    assert settings.new_serve_no_ball_s == 0.50
+diff --git a/deploy/utils/hitter_runtime_factory.py b/deploy/utils/hitter_runtime_factory.py
+index d92f208..404cf17 100644
+--- a/deploy/utils/hitter_runtime_factory.py
++++ b/deploy/utils/hitter_runtime_factory.py
+@@ -191,20 +191,54 @@ class HitterRuntimeSettings:
+     waiting_tts_s: float
+     arm_tts_s: float
+     minimum_arm_tts_s: float
+     maximum_policy_tts_s: float
+     swing_duration_range_s: tuple[float, float]
+     hitter_seed: int | None
+     control_tick_s: float
+     obs_clip_value: float | None
+ 
+ 
++@dataclass(frozen=True)
++class ViconConsumerSettings:
++    channel: str
++    stream_timeout_s: float
++    ball_timeout_s: float
++    new_serve_no_ball_s: float
++
++
++def resolve_vicon_consumer_settings(
++    config: Mapping[str, object],
++) -> ViconConsumerSettings:
++    """Validate the fail-closed authoritative v2 consumer boundary."""
++    channel = str(config.get("channel", "vicon_state_data_v2"))
++    if channel != "vicon_state_data_v2":
++        raise ValueError(
++            "HITTER Vicon channel must be exactly vicon_state_data_v2."
++        )
++
++    values = {
++        "stream_timeout_s": float(config.get("stream_timeout_s", 0.40)),
++        "ball_timeout_s": float(config.get("ball_timeout_s", 0.40)),
++        "new_serve_no_ball_s": float(
++            config.get("new_serve_no_ball_s", 0.50)
++        ),
++    }
++    for name, value in values.items():
++        if not np.isfinite(value) or value <= 0.0:
++            raise ValueError(
++                f"HITTER Vicon {name} must be finite and positive."
++            )
++
++    return ViconConsumerSettings(channel=channel, **values)
++
++
+ def _range_from_value(
+     name: str,
+     value: object,
+ ) -> tuple[float, float]:
+     if len(value) != 2:
+         raise ValueError(
+             f"HITTER motion range `{name}` must contain two values, "
+             f"got {value!r}."
+         )
+     low, high = float(value[0]), float(value[1])
+@@ -322,16 +356,18 @@ def build_hitter_command_lifecycle(
+         waiting_tts=settings.waiting_tts_s,
+         arm_tts=settings.arm_tts_s,
+         minimum_arm_tts=settings.minimum_arm_tts_s,
+         maximum_policy_tts=settings.maximum_policy_tts_s,
+         swing_duration_sampler=sample_swing_duration,
+     )
+ 
+ 
+ __all__ = [
+     "HitterRuntimeSettings",
++    "ViconConsumerSettings",
+     "build_ball_state_estimator",
+     "build_hitter_command_lifecycle",
+     "build_hitter_system_planner",
+     "forced_strike_type",
+     "resolve_hitter_runtime_settings",
++    "resolve_vicon_consumer_settings",
+ ]

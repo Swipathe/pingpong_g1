@@ -1,0 +1,131 @@
+# Review package: 479e97f..c7e1e85
+
+## Commits
+c7e1e85 fix: log HITTER strike at epsilon boundary
+
+## Files changed
+ deploy/envs/hitter.py                             |  2 +-
+ deploy/tests/test_hitter_strike_target_logging.py | 68 +++++++++++++++++++++++
+ 2 files changed, 69 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index f60bb0c..4468d9f 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -936,21 +936,21 @@ class HitterEnv(BaseEnv):
+         previous_phase: CommandPhase,
+         previous_active: PlannerResultSnapshot | None,
+         previous_command_end_deadline_s: float | None,
+         *,
+         now: float,
+     ) -> None:
+         current_phase = self.hitter_command_lifecycle.phase
+         crossed_strike = bool(
+             previous_phase == CommandPhase.ARMED
+             and previous_active is not None
+-            and now >= previous_active.strike_deadline_monotonic_s
++            and current_phase != CommandPhase.ARMED
+         )
+         if crossed_strike:
+             self._log_hitter_strike_target(previous_active)
+             logger.info(
+                 "HITTER lifecycle transition: {} -> {}",
+                 CommandPhase.ARMED.value,
+                 CommandPhase.RECOVERY.value,
+             )
+             if current_phase != CommandPhase.RECOVERY:
+                 logger.info(
+diff --git a/deploy/tests/test_hitter_strike_target_logging.py b/deploy/tests/test_hitter_strike_target_logging.py
+index 1365786..5eb8b10 100644
+--- a/deploy/tests/test_hitter_strike_target_logging.py
++++ b/deploy/tests/test_hitter_strike_target_logging.py
+@@ -199,20 +199,88 @@ class StrikeTargetPayloadTests(unittest.TestCase):
+             for message in messages
+             if message.startswith(
+                 "Failed to log HITTER strike target:"
+             )
+         ]
+         self.assertEqual(len(warnings), 1)
+         self.assertIn("missing a command", warnings[0])
+ 
+ 
+ class StrikeTargetBoundaryTests(unittest.TestCase):
++    def test_epsilon_boundary_logs_original_target_exactly_once(self):
++        env = minimal_env()
++        lifecycle = configured_lifecycle()
++        env.hitter_command_lifecycle = lifecycle
++
++        result = planner_result(
++            epoch=31,
++            generation=401,
++            deadline=10.90,
++            command=fake_command(marker=3.0),
++        )
++        self.assertEqual(lifecycle.ingest(result, now=10.00), "armed")
++
++        previous_phase = lifecycle.phase
++        previous_active = lifecycle.active_result
++        previous_end = lifecycle.command_end_deadline_s
++        self.assertIs(previous_active, result)
++        boundary_now = float(
++            np.nextafter(
++                result.strike_deadline_monotonic_s,
++                -np.inf,
++            )
++        )
++        self.assertLess(
++            boundary_now,
++            result.strike_deadline_monotonic_s,
++        )
++
++        lifecycle.advance(boundary_now)
++        self.assertEqual(lifecycle.phase, CommandPhase.RECOVERY)
++
++        with captured_log_messages() as messages:
++            env._log_hitter_advance_transitions(
++                previous_phase,
++                previous_active,
++                previous_end,
++                now=boundary_now,
++            )
++
++            next_previous_phase = lifecycle.phase
++            next_previous_active = lifecycle.active_result
++            next_previous_end = lifecycle.command_end_deadline_s
++            next_now = float(
++                np.nextafter(
++                    result.strike_deadline_monotonic_s,
++                    np.inf,
++                )
++            )
++            lifecycle.advance(next_now)
++            env._log_hitter_advance_transitions(
++                next_previous_phase,
++                next_previous_active,
++                next_previous_end,
++                now=next_now,
++            )
++
++        target_messages = [
++            message
++            for message in messages
++            if message.startswith("HITTER strike target:")
++        ]
++        self.assertEqual(len(target_messages), 1)
++        self.assertIn("epoch=31 generation=401", target_messages[0])
++        self.assertIn(
++            "v_ball_out_w_mps=[3.0000,3.0000,3.0000]",
++            target_messages[0],
++        )
++
+     def test_late_advance_logs_latest_override_exactly_once(self):
+         env = minimal_env()
+         lifecycle = configured_lifecycle()
+         env.hitter_command_lifecycle = lifecycle
+ 
+         first = planner_result(
+             epoch=27,
+             generation=1,
+             deadline=10.90,
+             command=fake_command(marker=1.0),

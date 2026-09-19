@@ -1,0 +1,17 @@
+defaults:
+  - robot: g1_hitter_racket
+  - obs: hitter
+  - sim: real_world
+  - env: hitter
+  - agent: hitter
+  - mimic: hitter
+  - _self_
+
+device: cpu
+
+robot:
+  control:
+    use_teleop: false
+    viewer: true
+    real_time: true
+    terminate_on_r2: false

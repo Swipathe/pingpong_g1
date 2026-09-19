@@ -1,0 +1,216 @@
+# Task 1 worktree review package
+# Base/Head: c6abd3a plus uncommitted worktree changes
+ M deploy/config/hitter.yaml
+ M deploy/envs/hitter.py
+?? deploy/tests/test_mujoco_physical_table_tennis.py
+ deploy/config/hitter.yaml | 12 ------------
+ deploy/envs/hitter.py     | 24 +-----------------------
+ 2 files changed, 1 insertion(+), 35 deletions(-)
+diff --git a/deploy/config/hitter.yaml b/deploy/config/hitter.yaml
+index 5ea8802..770a2fb 100644
+--- a/deploy/config/hitter.yaml
++++ b/deploy/config/hitter.yaml
+@@ -9,22 +9,10 @@ defaults:
+ 
+ device: cpu
+ 
+ sim:
+   config:
+     motion: ${mimic.motion}
+     table_tennis:
+       enabled: true
+       ball_body_name: hitter_ball
+       ball_joint_name: hitter_ball_freejoint
+-      ball_geom_name: hitter_ball_geom
+-      racket_face_geom_name: right_racket_face_collision
+-      use_analytic_table_bounce: true
+-      use_analytic_racket_hit: true
+-      table_center_xy_w: ${mimic.motion.ball_planner.table_center_xy_w}
+-      table_height: ${mimic.motion.ball_planner.table_height}
+-      table_length: ${mimic.motion.ball_planner.table_length}
+-      table_width: ${mimic.motion.ball_planner.table_width}
+-      ball_radius: ${mimic.motion.ball_planner.ball_radius}
+-      drag_coefficient: ${mimic.motion.ball_planner.drag_coefficient}
+-      vertical_restitution: ${mimic.motion.ball_planner.vertical_restitution}
+-      horizontal_restitution: ${mimic.motion.ball_planner.horizontal_restitution}
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index d63d172..8c26689 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -279,21 +279,20 @@ class HitterEnv(BaseEnv):
+         self.hitter_waiting_base_target_pos_w = np.asarray(
+             [
+                 waiting_base_target_xy_w[0],
+                 waiting_base_target_xy_w[1],
+                 self.hitter_base_target_z_w,
+             ],
+             dtype=np.float32,
+         )
+         self.hitter_racket_target_pos_w_fixed = np.zeros(3, dtype=np.float32)
+         self.hitter_racket_target_vel_w = np.zeros(3, dtype=np.float32)
+-        self.hitter_ball_out_vel_w = np.zeros(3, dtype=np.float32)
+ 
+     def _new_hitter_command_lifecycle(self) -> HitterCommandLifecycle:
+         planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
+ 
+         def sample_swing_duration() -> float:
+             return self._sample_range_from_cfg(
+                 planner_cfg,
+                 "swing_duration_range",
+                 tuple(self.motion_cfg.get("swing_duration_range", (1.75, 1.95))),
+             )
+@@ -460,21 +459,21 @@ class HitterEnv(BaseEnv):
+             dt=float(planner_cfg.get("prediction_dt", 0.005)),
+             table_height=float(planner_cfg.get("table_height", 0.76)),
+             table_center_xy=table_center_xy,
+             table_length=float(planner_cfg.get("table_length", 2.74)),
+             table_width=float(planner_cfg.get("table_width", 1.525)),
+             ball_radius=float(planner_cfg.get("ball_radius", 0.02)),
+         )
+         table_height = float(planner_cfg.get("table_height", 0.76))
+         maximum_hit_height = round(
+             table_height
+-            + float(planner_cfg.get("maximum_hit_height_above_table_m", 0.50)),
++            + float(planner_cfg.get("maximum_hit_height_above_table_m", 0.69)),
+             12,
+         )
+         strike_planner = StrikePlanner(
+             predictor=predictor,
+             virtual_hit_plane_x=float(planner_cfg.get("virtual_hit_plane_x", 0.0)),
+             desired_landing_point=planner_cfg.get("desired_landing_point_w", [2.05, 0.0, 0.78]),
+             post_hit_flight_time=float(planner_cfg.get("post_hit_flight_time", 0.55)),
+             racket_restitution=float(planner_cfg.get("racket_restitution", 0.85)),
+             prediction_horizon_s=float(planner_cfg.get("prediction_horizon_s", 2.0)),
+             maximum_prediction_horizon_s=float(
+@@ -565,74 +564,53 @@ class HitterEnv(BaseEnv):
+         racket_velocity = self._validated_vector(
+             command.v_racket_target_w,
+             name="v_racket_target_w",
+             size=3,
+         )
+         ball_in_velocity = self._validated_vector(
+             strike_plan.v_ball_in,
+             name="strike_plan.v_ball_in",
+             size=3,
+         )
+-        ball_out_velocity = self._validated_vector(
+-            strike_plan.v_ball_out,
+-            name="strike_plan.v_ball_out",
+-            size=3,
+-        )
+         base_height = float(self._hitter_target_base_height_w())
+         if not np.isfinite(base_height):
+             raise ValueError("HITTER target base height must be finite.")
+         return {
+             "strike_type": strike_type,
+             "strike_type_index": 0 if strike_type == "forehand" else 1,
+             "time_to_strike": time_to_strike,
+             "base_target": base_target,
+             "base_height": np.float32(base_height),
+             "racket_target": racket_target,
+             "racket_velocity": racket_velocity,
+             "ball_in_velocity": ball_in_velocity,
+-            "ball_out_velocity": ball_out_velocity,
+         }
+ 
+     def _copy_hitter_command(self, command, *, validated: dict | None = None) -> None:
+         fields = (
+             self._validated_hitter_command_fields(command)
+             if validated is None
+             else validated
+         )
+         self.hitter_strike_type = fields["strike_type_index"]
+         self.hitter_base_target_xy_w = fields["base_target"].copy()
+         self.hitter_base_target_z_w = fields["base_height"]
+         self.hitter_racket_target_pos_w_fixed = fields["racket_target"].copy()
+         self.hitter_racket_target_vel_w = fields["racket_velocity"].copy()
+-        self.hitter_ball_out_vel_w = fields["ball_out_velocity"].copy()
+         self.hitter_strike_elapsed_s = 0.0
+         self.hitter_strike_time_s = fields["time_to_strike"]
+         self.hitter_strike_duration_s = max(
+             fields["time_to_strike"]
+             + float(self.hitter_command_lifecycle.recovery_duration_s),
+             fields["time_to_strike"],
+         )
+ 
+-        analytic_hit = getattr(
+-            self.simulator,
+-            "set_hitter_analytic_racket_hit",
+-            None,
+-        )
+-        if callable(analytic_hit):
+-            try:
+-                analytic_hit(
+-                    self.hitter_racket_target_pos_w_fixed,
+-                    self.hitter_ball_out_vel_w,
+-                )
+-            except Exception as exc:
+-                logger.warning("Failed to update analytic HITTER racket hit: {}", exc)
+-
+     def _plan_hitter_snapshot(self, snapshot: BallEstimateSnapshot):
+         if not snapshot.visible:
+             if getattr(self.simulator, "is_real", False):
+                 self.hitter_incoming_track_confirmation.reset()
+             raise RuntimeError(TRACK_ENDED_ERROR)
+         if not snapshot.ready:
+             raise ValueError("HITTER ball estimator is not ready.")
+         if not snapshot.base_valid:
+             raise ValueError("HITTER base pose is not valid.")
+ 
+diff --git a/deploy/tests/test_mujoco_physical_table_tennis.py b/deploy/tests/test_mujoco_physical_table_tennis.py
+new file mode 100644
+index 0000000..0281349
+--- /dev/null
++++ b/deploy/tests/test_mujoco_physical_table_tennis.py
+@@ -0,0 +1,51 @@
++from __future__ import annotations
++
++import unittest
++from pathlib import Path
++from types import SimpleNamespace
++
++import numpy as np
++import yaml
++
++from envs.hitter import HitterEnv
++
++
++DEPLOY_DIR = Path(__file__).resolve().parents[1]
++
++
++class RecordingSimulator:
++    def __init__(self):
++        self.analytic_hit_calls = 0
++
++    def set_hitter_analytic_racket_hit(self, _target_pos, _outgoing_vel):
++        self.analytic_hit_calls += 1
++
++
++class AnalyticOverrideRemovalTests(unittest.TestCase):
++    def test_hitter_config_contains_no_analytic_ball_override_options(self):
++        config = yaml.safe_load((DEPLOY_DIR / "config" / "hitter.yaml").read_text())
++        table_tennis = config["sim"]["config"]["table_tennis"]
++        for key in (
++            "use_analytic_table_bounce",
++            "use_analytic_racket_hit",
++            "ball_geom_name",
++            "racket_face_geom_name",
++        ):
++            self.assertNotIn(key, table_tennis)
++
++    def test_copying_planner_command_does_not_call_analytic_hit_setter(self):
++        env = HitterEnv.__new__(HitterEnv)
++        env.simulator = RecordingSimulator()
++        env.hitter_command_lifecycle = SimpleNamespace(recovery_duration_s=0.5)
++        fields = {
++            "strike_type_index": 0,
++            "time_to_strike": 0.85,
++            "base_target": np.array([-0.4, 0.0], dtype=np.float32),
++            "base_height": np.float32(0.793),
++            "racket_target": np.array([0.0, 0.1, 1.0], dtype=np.float32),
++            "racket_velocity": np.array([2.8, 0.0, 0.5], dtype=np.float32),
++        }
++
++        env._copy_hitter_command(SimpleNamespace(), validated=fields)
++
++        self.assertEqual(env.simulator.analytic_hit_calls, 0)

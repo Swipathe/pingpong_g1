@@ -1,0 +1,293 @@
+# Review package: 45fdc0ba90df4abf2ebf0b94c09e12fc63b04357..661659c68f480315d75f4395f5b1998ebb88e2b5
+
+## Commits
+661659c fix: retain cross-attempt planner replacements
+
+## Files changed
+ deploy/diagnostics/export_hitter_task_csv.py |  19 ++-
+ deploy/tests/test_hitter_task_csv_export.py  | 177 ++++++++++++++++++++++++++-
+ 2 files changed, 193 insertions(+), 3 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/export_hitter_task_csv.py b/deploy/diagnostics/export_hitter_task_csv.py
+index 1cc281e..5718372 100644
+--- a/deploy/diagnostics/export_hitter_task_csv.py
++++ b/deploy/diagnostics/export_hitter_task_csv.py
+@@ -87,26 +87,41 @@ def scan_planner_events(
+ 
+     with Path(events_path).open("r", encoding="utf-8") as stream:
+         for line in stream:
+             event = json.loads(line)
+             if not isinstance(event, Mapping):
+                 raise ValueError("planner event must be a mapping")
+             attempt_value = event.get("attempt_id")
+             if attempt_value is None:
+                 continue
+             attempt_id = int(attempt_value)
++            kind = event.get("kind")
++            payload = event.get("payload")
++            if (
++                kind == "planner_trace"
++                and isinstance(payload, Mapping)
++                and payload.get("trace_kind") == "pending_replaced"
++                and payload.get("replaced_attempt_id") is not None
++            ):
++                replaced_attempt_id = int(payload["replaced_attempt_id"])
++                if replaced_attempt_id in selected_attempt_ids:
++                    pending_replaced_keys.add(
++                        _planner_key(
++                            replaced_attempt_id,
++                            payload.get("replaced_snapshot_key"),
++                            field="replaced_snapshot_key",
++                        )
++                    )
+             if attempt_id not in selected_attempt_ids:
+                 continue
+-            kind = event.get("kind")
+             if kind not in ("planner_submit", "planner_trace"):
+                 continue
+-            payload = event.get("payload")
+             if not isinstance(payload, Mapping):
+                 raise ValueError("planner event payload must be a mapping")
+             key = _planner_key(
+                 attempt_id,
+                 payload.get("snapshot_key"),
+                 field="snapshot_key",
+             )
+             monotonic_s = float(event["monotonic_s"])
+             event_content = (monotonic_s, dict(payload))
+ 
+diff --git a/deploy/tests/test_hitter_task_csv_export.py b/deploy/tests/test_hitter_task_csv_export.py
+index 02edd66..e91e54b 100644
+--- a/deploy/tests/test_hitter_task_csv_export.py
++++ b/deploy/tests/test_hitter_task_csv_export.py
+@@ -58,31 +58,61 @@ def planner_trace_event(
+             **payload,
+         },
+     }
+ 
+ 
+ def pending_replaced_event(
+     *,
+     attempt_id: int,
+     generation: int,
+     replaced_generation: int,
++    replaced_attempt_id=None,
+     t: float,
+ ):
+-    return planner_trace_event(
++    event = planner_trace_event(
+         attempt_id=attempt_id,
+         generation=generation,
+         trace_kind="pending_replaced",
+         t=t,
+         replaced_snapshot_key=snapshot_key(
+             generation=replaced_generation,
+         ),
+     )
++    if replaced_attempt_id is not None:
++        event["payload"]["replaced_attempt_id"] = replaced_attempt_id
++    return event
++
++
++def planner_trace_replaced_event(
++    *,
++    replaced_attempt_id: int,
++    replaced_generation: int,
++    replacing_attempt_id: int,
++    replacing_generation: int,
++    t: float,
++):
++    return {
++        "schema_version": 1,
++        "kind": "planner_trace_replaced",
++        "monotonic_s": t,
++        "attempt_id": replaced_attempt_id,
++        "payload": {
++            "trace_kind": "pending_replaced",
++            "replaced_snapshot_key": snapshot_key(
++                generation=replaced_generation,
++            ),
++            "replacing_snapshot_key": snapshot_key(
++                generation=replacing_generation,
++            ),
++            "replacing_attempt_id": replacing_attempt_id,
++        },
++    }
+ 
+ 
+ def planner_start_event(
+     *,
+     attempt_id: int,
+     generation: int,
+     t: float,
+ ):
+     return planner_trace_event(
+         attempt_id=attempt_id,
+@@ -120,21 +150,166 @@ def planner_complete_event(
+     )
+ 
+ 
+ def write_json_lines(path: Path, rows) -> None:
+     with path.open("w", encoding="utf-8") as stream:
+         for row in rows:
+             stream.write(json.dumps(row, separators=(",", ":")))
+             stream.write("\n")
+ 
+ 
++def cross_attempt_pending_replacement_events():
++    return [
++        planner_submit_event(
++            attempt_id=1,
++            generation=10,
++            t=1.0,
++        ),
++        planner_submit_event(
++            attempt_id=2,
++            generation=11,
++            t=1.01,
++        ),
++        pending_replaced_event(
++            attempt_id=2,
++            generation=11,
++            replaced_generation=10,
++            replaced_attempt_id=1,
++            t=1.011,
++        ),
++        planner_start_event(
++            attempt_id=2,
++            generation=11,
++            t=1.02,
++        ),
++        planner_complete_event(
++            attempt_id=2,
++            generation=11,
++            source_frame=1011,
++            completed_t=1.03,
++            error_type=None,
++            error_text=None,
++        ),
++        planner_trace_replaced_event(
++            replaced_attempt_id=1,
++            replaced_generation=10,
++            replacing_attempt_id=2,
++            replacing_generation=11,
++            t=1.011,
++        ),
++    ]
++
++
+ class PlannerEventScanTests(unittest.TestCase):
++    def test_scan_keeps_cross_attempt_pending_key_when_replacer_is_unselected(
++        self,
++    ):
++        with tempfile.TemporaryDirectory() as directory:
++            events_path = Path(directory) / "events.jsonl"
++            write_json_lines(
++                events_path,
++                cross_attempt_pending_replacement_events(),
++            )
++
++            try:
++                scan = scan_planner_events(events_path, [1])
++            except ValueError as exc:
++                self.fail(
++                    "selected replaced attempt must remain classified: "
++                    "{}".format(exc)
++                )
++
++            self.assertEqual(
++                {
++                    (key.attempt_id, key.generation)
++                    for key in scan.submitted_keys
++                },
++                {(1, 10)},
++            )
++            self.assertEqual(
++                {
++                    (key.attempt_id, key.generation)
++                    for key in scan.pending_replaced_keys
++                },
++                {(1, 10)},
++            )
++            self.assertEqual(scan.completed_calls, ())
++
++    def test_scan_keeps_cross_attempt_replacer_when_replaced_is_unselected(
++        self,
++    ):
++        with tempfile.TemporaryDirectory() as directory:
++            events_path = Path(directory) / "events.jsonl"
++            write_json_lines(
++                events_path,
++                cross_attempt_pending_replacement_events(),
++            )
++
++            scan = scan_planner_events(events_path, [2])
++
++            self.assertEqual(
++                {
++                    (key.attempt_id, key.generation)
++                    for key in scan.submitted_keys
++                },
++                {(2, 11)},
++            )
++            self.assertEqual(scan.pending_replaced_keys, frozenset())
++            self.assertEqual(
++                [
++                    (call.key.attempt_id, call.key.generation)
++                    for call in scan.completed_calls
++                ],
++                [(2, 11)],
++            )
++            self.assertEqual(
++                (
++                    scan.completed_calls[0].pending_replaced_key.attempt_id,
++                    scan.completed_calls[0].pending_replaced_key.generation,
++                ),
++                (1, 10),
++            )
++
++    def test_scan_closes_cross_attempt_replacement_when_both_are_selected(
++        self,
++    ):
++        with tempfile.TemporaryDirectory() as directory:
++            events_path = Path(directory) / "events.jsonl"
++            write_json_lines(
++                events_path,
++                cross_attempt_pending_replacement_events(),
++            )
++
++            scan = scan_planner_events(events_path, [1, 2])
++
++            self.assertEqual(
++                {
++                    (key.attempt_id, key.generation)
++                    for key in scan.submitted_keys
++                },
++                {(1, 10), (2, 11)},
++            )
++            self.assertEqual(
++                {
++                    (key.attempt_id, key.generation)
++                    for key in scan.pending_replaced_keys
++                },
++                {(1, 10)},
++            )
++            self.assertEqual(
++                [
++                    (call.key.attempt_id, call.key.generation)
++                    for call in scan.completed_calls
++                ],
++                [(2, 11)],
++            )
++
+     def test_scan_keeps_only_calls_that_started_and_completed(self):
+         with tempfile.TemporaryDirectory() as directory:
+             events_path = Path(directory) / "events.jsonl"
+             events = [
+                 planner_submit_event(
+                     attempt_id=1,
+                     generation=10,
+                     t=1.0,
+                 ),
+                 planner_submit_event(

@@ -1,0 +1,10 @@
+{
+  "name": "hitter-ready-pose-editor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:unit",
+    "test:unit": "node --test $(find web/tests -name '*.test.mjs' ! -name 'live_fk.test.mjs' -print)",
+    "test:live": "node --test web/tests/live_fk.test.mjs"
+  }
+}

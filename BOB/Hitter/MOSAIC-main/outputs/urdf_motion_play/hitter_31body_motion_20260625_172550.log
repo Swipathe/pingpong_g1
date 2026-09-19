@@ -1,0 +1,1702 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/sijie/third_party/IsaacLab/apps/isaaclab.python.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/home/sijie/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /home/sijie/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260625_172550.log
+2026-06-25 09:25:50 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-06-25 09:25:50 [2ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/home/sijie/third_party/IsaacLab/apps/rendering_modes' or '/home/sijie/third_party/IsaacLab/apps/rendering_modes/config'
+[0.039s] [ext: omni.kit.async_engine-0.0.1] startup
+[0.175s] [ext: omni.metrics.core-0.0.1] startup
+[0.175s] [ext: omni.client.lib-1.0.0] startup
+[0.191s] [ext: omni.blobkey-1.1.2] startup
+[0.191s] [ext: omni.stats-1.0.1] startup
+[0.191s] [ext: omni.datastore-0.0.0] startup
+[0.196s] [ext: omni.client-1.2.2] startup
+[0.199s] [ext: omni.ujitso.default-1.0.0] startup
+[0.201s] [ext: omni.hsscclient-1.1.1] startup
+2026-06-25 09:25:50 [183ms] [Warning] [omni.datastore] OmniHub is inaccessible
+[0.204s] [ext: omni.gpu_foundation.shadercache.vulkan-1.0.0] startup
+[0.206s] [ext: omni.assets.plugins-0.0.0] startup
+[0.207s] [ext: omni.gpu_foundation-0.0.0] startup
+[0.213s] [ext: carb.windowing.plugins-1.0.0] startup
+2026-06-25 09:25:51 [439ms] [Warning] [carb.windowing-glfw.gamepad] Joystick with unknown remapping detected (will be ignored):  Mouse passthrough (absolute) [03000000efbe0000adde000011010000]
+2026-06-25 09:25:51 [439ms] [Warning] [carb.windowing-glfw.gamepad] Joystick with unknown remapping detected (will be ignored):  Telink Xiaomi Wireless Keyboard and Mouse Combo 2 Consumer Control [03000000172700005550000011010000]
+[0.458s] [ext: omni.kit.renderer.init-0.0.0] startup
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 580.159.03    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 4090          | Yes: 0 |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2684      | 61102075.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 22.04.5 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.5, Kernel: 6.8.0-111-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101004 (1.21.1.4)
+| Processor: Intel(R) Core(TM) i9-14900K
+| Cores: 24 | Logical Cores: 32
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 128551 | Free Memory: 99037
+| Total Page/Swap (MB): 2047 | Free Page/Swap: 1172
+|---------------------------------------------------------------------------------------------|
+2026-06-25 09:25:51 [962ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+[1.092s] [ext: omni.kit.pipapi-0.0.0] startup
+[1.093s] [ext: omni.materialx.libs-1.0.6] startup
+[1.098s] [ext: omni.kit.pip_archive-0.0.0] startup
+[1.098s] [ext: omni.usd.config-1.0.5] startup
+[1.101s] [ext: omni.gpucompute.plugins-0.0.0] startup
+[1.102s] [ext: omni.usd.libs-1.0.1] startup
+[1.156s] [ext: omni.mdl-55.0.1] startup
+[1.167s] [ext: omni.iray.libs-0.0.0] startup
+[1.170s] [ext: omni.mdl.neuraylib-0.2.10] startup
+[1.172s] [ext: omni.kit.usd.mdl-1.0.7] startup
+[1.236s] [ext: omni.kit.loop-isaac-1.2.1] startup
+[1.237s] [ext: omni.kit.test-1.1.2] startup
+[1.263s] [ext: omni.kit.telemetry-0.5.1] startup
+[1.279s] [ext: omni.appwindow-1.1.9] startup
+[2.275s] [ext: omni.kit.renderer.core-1.0.2] startup
+[9.454s] [ext: omni.kit.renderer.capture-0.0.0] startup
+[9.456s] [ext: omni.kit.renderer.imgui-1.0.2] startup
+[9.504s] [ext: omni.ui-2.26.5] startup
+[9.516s] [ext: omni.kit.mainwindow-1.0.3] startup
+[9.517s] [ext: carb.audio-0.1.0] startup
+[9.520s] [ext: omni.uiaudio-1.0.0] startup
+[9.522s] [ext: omni.kit.uiapp-0.0.0] startup
+[9.522s] [ext: omni.usd.schema.metrics.assembler-106.5.0] startup
+[9.533s] [ext: isaacsim.robot.schema-3.1.2] startup
+[9.540s] [ext: omni.usd.schema.omnigraph-1.0.0] startup
+[9.544s] [ext: omni.usd.schema.audio-0.0.0] startup
+[9.547s] [ext: omni.usd.schema.omniscripting-1.0.0] startup
+[9.550s] [ext: omni.usd.schema.anim-0.0.0] startup
+[9.564s] [ext: omni.usd.schema.forcefield-106.5.7] startup
+[9.571s] [ext: omni.usd.schema.physx-106.5.7] startup
+[9.590s] [ext: omni.usd.schema.semantics-0.0.0] startup
+[9.592s] [ext: omni.usd.schema.geospatial-0.0.0] startup
+[9.594s] [ext: omni.kit.window.popup_dialog-2.0.24] startup
+[9.596s] [ext: omni.resourcemonitor-107.0.0] startup
+[9.598s] [ext: omni.activity.core-1.0.1] startup
+[9.599s] [ext: omni.timeline-1.0.11] startup
+[9.600s] [ext: omni.usd_resolver-1.0.0] startup
+[9.603s] [ext: omni.kit.widget.nucleus_connector-1.1.10] startup
+[9.604s] [ext: usdrt.scenegraph-7.5.1] startup
+[9.633s] [ext: omni.usd.core-1.4.2] startup
+[9.635s] [ext: omni.kit.usd_undo-0.1.8] startup
+[9.635s] [ext: omni.graph.exec-0.9.4] startup
+[9.635s] [ext: omni.kit.actions.core-1.0.0] startup
+[9.637s] [ext: omni.kit.audiodeviceenum-1.0.1] startup
+[9.638s] [ext: omni.kit.exec.core-0.13.4] startup
+[9.640s] [ext: omni.kit.commands-1.4.9] startup
+[9.642s] [ext: omni.hydra.usdrt_delegate-7.5.1] startup
+[9.652s] [ext: omni.hydra.scene_delegate-0.3.3] startup
+[9.656s] [ext: omni.usd-1.12.4] startup
+[9.689s] [ext: omni.kit.asset_converter-2.8.3] startup
+[9.697s] [ext: omni.volume-0.5.0] startup
+[9.702s] [ext: omni.ujitso.processor.texture-1.0.0] startup
+[9.702s] [ext: omni.index.libs-380600.1777.0] startup
+[9.702s] [ext: omni.ujitso.client-0.0.0] startup
+[9.703s] [ext: omni.index-1.0.1] startup
+[9.703s] [ext: omni.hydra.rtx.shadercache.vulkan-1.0.0] startup
+[9.704s] [ext: omni.ui.scene-1.11.2] startup
+[9.707s] [ext: omni.hydra.rtx-1.0.0] startup
+2026-06-25 09:26:00 [9,694ms] [Warning] [omni.log] Source: omni.hydra was already registered.
+[9.724s] [ext: omni.kit.menu.core-1.1.2] startup
+[9.725s] [ext: omni.kit.viewport.scene_camera_model-1.0.5] startup
+[9.728s] [ext: omni.kit.hydra_texture-1.4.0] startup
+[9.731s] [ext: omni.kit.menu.utils-1.7.7] startup
+[9.735s] [ext: omni.kit.widget.viewport-107.0.7] startup
+[9.738s] [ext: omni.kit.viewport.registry-104.0.6] startup
+[9.738s] [ext: omni.kit.clipboard-1.0.5] startup
+[9.739s] [ext: omni.kit.notification_manager-1.0.9] startup
+[9.740s] [ext: omni.kit.helper.file_utils-0.1.9] startup
+[9.741s] [ext: omni.kit.widget.path_field-2.0.11] startup
+[9.741s] [ext: omni.kit.widget.options_menu-1.1.6] startup
+[9.743s] [ext: omni.kit.widget.context_menu-1.2.4] startup
+[9.744s] [ext: omni.kit.widget.filebrowser-2.10.52] startup
+[9.746s] [ext: omni.kit.widget.browser_bar-2.0.10] startup
+[9.747s] [ext: omni.kit.viewport.legacy_gizmos-1.0.16] startup
+[9.749s] [ext: omni.kit.widget.options_button-1.0.3] startup
+[9.749s] [ext: omni.kit.widget.searchable_combobox-1.0.6] startup
+[9.750s] [ext: omni.kit.usd.layers-2.2.0] startup
+[9.756s] [ext: omni.kit.window.filepicker-2.11.7] startup
+[9.764s] [ext: omni.kit.widget.settings-1.2.2] startup
+[9.765s] [ext: omni.kit.context_menu-1.8.3] startup
+[9.767s] [ext: omni.kit.window.file_importer-1.1.14] startup
+[9.769s] [ext: omni.kit.window.preferences-1.7.0] startup
+[9.773s] [ext: omni.kit.window.drop_support-1.0.4] startup
+[9.774s] [ext: omni.kit.raycast.query-1.0.5] startup
+[9.777s] [ext: omni.kit.material.library-1.5.15] startup
+[9.781s] [ext: omni.hydra.engine.stats-1.0.3] startup
+[9.783s] [ext: isaacsim.core.throttling-2.0.2] startup
+[9.784s] [ext: omni.kit.viewport.window-107.0.8] startup
+[9.794s] [ext: omni.inspect-1.0.1] startup
+[9.796s] [ext: omni.kit.widget.filter-1.1.4] startup
+[9.796s] [ext: omni.graph.core-2.181.8] startup
+[9.799s] [ext: omni.kit.window.content_browser_registry-0.0.6] startup
+[9.800s] [ext: isaacsim.core.deprecation_manager-0.2.2] startup
+[9.801s] [ext: omni.kvdb-106.5.7] startup
+[9.802s] [ext: omni.kit.viewport.utility-1.0.18] startup
+[9.803s] [ext: omni.kit.selection-0.1.5] startup
+[9.804s] [ext: omni.kit.window.file_exporter-1.0.31] startup
+[9.804s] [ext: omni.kit.stage_template.core-1.1.22] startup
+[9.805s] [ext: isaacsim.core.version-2.0.2] startup
+[9.805s] [ext: omni.localcache-106.5.7] startup
+[9.806s] [ext: omni.kit.menu.edit-1.1.25] startup
+[9.808s] [ext: omni.usdphysics-106.5.7] startup
+[9.811s] [ext: omni.kit.window.file-1.3.57] startup
+[9.812s] [ext: omni.kit.hotkeys.core-1.3.10] startup
+[9.813s] [ext: isaacsim.app.about-2.0.7] startup
+[9.819s] [ext: omni.kit.window.content_browser-2.10.3] startup
+[9.835s] [ext: omni.convexdecomposition-106.5.7] startup
+[9.840s] [ext: omni.kit.widget.highlight_label-1.0.3] startup
+[9.841s] [ext: omni.kit.widget.searchfield-1.1.8] startup
+[9.842s] [ext: omni.kit.property.adapter.core-1.0.2] startup
+[9.845s] [ext: omni.physx.foundation-106.5.7] startup
+[9.848s] [ext: omni.kit.window.property-1.11.5] startup
+[9.850s] [ext: omni.kit.widget.stage-2.11.6] startup
+[9.861s] [ext: omni.kit.property.adapter.usd-1.0.2] startup
+[9.862s] [ext: omni.kit.property.adapter.fabric-1.0.3] startup
+[9.863s] [ext: omni.physx.cooking-106.5.7] startup
+[9.873s] [ext: omni.kit.property.usd-4.2.16] startup
+[9.882s] [ext: omni.physx-106.5.7] startup
+[9.898s] [ext: isaacsim.gui.property-1.0.4] startup
+[9.948s] [ext: omni.physx.stageupdate-106.5.7] startup
+[9.951s] [ext: omni.kit.numpy.common-0.1.2] startup
+[9.952s] [ext: omni.physics.tensors-106.5.7] startup
+[9.961s] [ext: omni.warp.core-1.5.0] startup
+[10.107s] [ext: omni.isaac.dynamic_control-1.3.15] startup
+2026-06-25 09:26:00 [10,096ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+[10.115s] [ext: isaacsim.storage.native-1.0.6] startup
+[10.115s] [ext: omni.physx.tensors-106.5.7] startup
+[10.120s] [ext: isaacsim.core.utils-2.2.8] startup
+[10.123s] [ext: semantics.schema.editor-0.3.10] startup
+[10.126s] [ext: isaacsim.core.simulation_manager-0.3.3] startup
+[11.379s] [ext: semantics.schema.property-1.0.5] startup
+[11.380s] [ext: isaacsim.core.cloner-1.3.4] startup
+[11.381s] [ext: omni.sensors.nv.common-2.5.0-coreapi] startup
+[11.398s] [ext: omni.graph.tools-1.79.1] startup
+[11.415s] [ext: omni.sensors.nv.materials-1.4.0-coreapi] startup
+[11.421s] [ext: omni.graph-1.140.2] startup
+[11.451s] [ext: omni.kit.manipulator.viewport-107.0.1] startup
+[11.452s] [ext: omni.sensors.nv.ids-1.4.0-coreapi] startup
+[11.456s] [ext: omni.sensors.nv.lidar-2.6.3-coreapi] startup
+[11.464s] [ext: omni.graph.visualization.nodes-2.1.1] startup
+[11.471s] [ext: omni.kit.widget.graph-1.12.17] startup
+[11.480s] [ext: omni.ui_query-1.1.7] startup
+[11.482s] [ext: omni.kit.widget.text_editor-1.0.2] startup
+[11.485s] [ext: omni.kit.graph.delegate.default-1.2.2] startup
+[11.487s] [ext: omni.kit.ui_test-1.3.3] startup
+[11.491s] [ext: omni.graph.scriptnode-1.40.1] startup
+[11.493s] [ext: omni.kit.graph.editor.core-1.5.3] startup
+[11.496s] [ext: omni.kit.graph.usd.commands-1.3.1] startup
+[11.498s] [ext: omni.kit.widget.material_preview-1.0.16] startup
+[11.501s] [ext: omni.graph.action_core-1.1.7] startup
+[11.507s] [ext: omni.graph.image.core-0.6.0] startup
+[11.509s] [ext: omni.kit.window.material_graph-1.8.19] startup
+[11.532s] [ext: omni.graph.action_nodes-1.40.1] startup
+[11.535s] [ext: omni.graph.image.nodes-1.3.0] startup
+[11.537s] [ext: omni.kit.viewport.menubar.core-107.1.2] startup
+[11.551s] [ext: omni.kit.primitive.mesh-1.0.17] startup
+[11.554s] [ext: omni.graph.action-1.120.0] startup
+[11.555s] [ext: omni.graph.nodes-1.162.1] startup
+[11.564s] [ext: omni.syntheticdata-0.6.10] startup
+[11.574s] [ext: omni.kit.stage_templates-1.2.6] startup
+[11.579s] [ext: isaacsim.core.prims-0.3.7] startup
+[11.627s] [ext: omni.warp-1.5.0] startup
+[11.632s] [ext: omni.kit.window.extensions-1.4.25] startup
+[11.641s] [ext: omni.sensors.nv.wpm-2.4.0-coreapi] startup
+[11.644s] [ext: isaacsim.core.api-4.2.16] startup
+[11.678s] [ext: omni.replicator.core-1.11.35] startup
+2026-06-25 09:26:02 [11,783ms] [Warning] [omni.replicator.core.scripts.extension] No material configuration file, adding configuration to material settings directly.
+[11.803s] [ext: isaacsim.gui.components-1.0.9] startup
+[11.807s] [ext: omni.sensors.nv.radar-2.6.1-coreapi] startup
+[11.816s] [ext: omni.kit.widget.prompt-1.0.7] startup
+[11.818s] [ext: isaacsim.core.nodes-2.1.4] startup
+[11.826s] [ext: isaacsim.robot.surface_gripper-2.0.6] startup
+[11.830s] [ext: isaacsim.util.debug_draw-2.0.2] startup
+[11.837s] [ext: omni.sensors.tiled-0.0.6] startup
+[11.843s] [ext: omni.kit.tool.asset_importer-2.12.2] startup
+[11.860s] [ext: omni.kit.menu.create-1.0.17] startup
+[11.870s] [ext: isaacsim.robot.manipulators-3.0.4] startup
+[11.877s] [ext: isaacsim.sensors.physx-2.2.4] startup
+[11.890s] [ext: isaacsim.sensors.rtx-13.6.3] startup
+[11.914s] [ext: isaacsim.asset.importer.mjcf-2.3.3] startup
+[11.982s] [ext: omni.anim.curve.core-1.2.0] startup
+[11.998s] [ext: omni.kit.scripting-106.5.2] startup
+[12.006s] [ext: omni.graph.ui_nodes-1.40.1] startup
+[12.013s] [ext: omni.kit.manipulator.transform-106.0.1] startup
+[12.020s] [ext: omni.kit.widget.toolbar-1.7.3] startup
+[12.043s] [ext: omni.kit.manipulator.camera-106.0.3] startup
+[12.049s] [ext: isaacsim.replicator.behavior-1.0.8] startup
+[12.052s] [ext: isaacsim.simulation_app-2.4.2] startup
+[12.053s] [ext: omni.kit.manipulator.selector-1.1.1] startup
+[12.065s] [ext: omni.kit.manipulator.tool.snap-1.5.12] startup
+[12.072s] [ext: omni.kit.widget.stage_icons-1.0.6] startup
+[12.073s] [ext: omni.kit.menu.file-1.1.15] startup
+[12.078s] [ext: omni.physx.commands-106.5.7] startup
+[12.082s] [ext: omni.kit.widget.layers-1.8.2] startup
+[12.100s] [ext: omni.kit.viewport.manipulator.transform-107.0.4] startup
+[12.102s] [ext: omni.kit.window.stage-2.5.11] startup
+[12.107s] [ext: omni.fabric.commands-1.1.5] startup
+[12.109s] [ext: omni.kit.property.audio-1.0.16] startup
+[12.111s] [ext: omni.kit.usd.collect-2.2.22] startup
+[12.113s] [ext: omni.kit.stagerecorder.core-105.0.5] startup
+[12.116s] [ext: omni.kit.manipulator.prim.core-107.0.7] startup
+[12.122s] [ext: omni.kit.menu.stage-1.2.5] startup
+[12.123s] [ext: omni.kit.property.geometry-1.3.3] startup
+[12.126s] [ext: omni.kit.manipulator.prim.fabric-107.0.4] startup
+[12.128s] [ext: omni.kit.manipulator.prim.usd-107.0.3] startup
+[12.128s] [ext: omni.kit.property.render-1.1.3] startup
+[12.130s] [ext: omni.kit.widget.zoombar-1.0.5] startup
+[12.132s] [ext: omni.kit.viewport.actions-107.0.0] startup
+[12.136s] [ext: omni.hydra.scene_api-0.1.2] startup
+[12.143s] [ext: omni.debugdraw-0.1.3] startup
+[12.147s] [ext: omni.kit.manipulator.prim-107.0.0] startup
+[12.147s] [ext: omni.kit.manipulator.selection-106.0.1] startup
+[12.149s] [ext: omni.kit.browser.core-2.3.11] startup
+[12.153s] [ext: omni.kit.viewport.menubar.display-107.0.3] startup
+[12.156s] [ext: omni.kit.property.transform-1.5.10] startup
+[12.160s] [ext: omni.kit.property.material-1.10.17] startup
+[12.166s] [ext: omni.kit.property.light-1.0.11] startup
+[12.168s] [ext: omni.kit.property.camera-1.0.9] startup
+[12.170s] [ext: omni.kit.browser.folder.core-1.10.1] startup
+[12.176s] [ext: omni.usdphysics.ui-106.5.7] startup
+[12.209s] [ext: omni.kit.property.bundle-1.3.2] startup
+[12.212s] [ext: omni.kit.tool.collect-2.2.16] startup
+[12.214s] [ext: omni.kit.stagerecorder.ui-105.0.6] startup
+[12.218s] [ext: isaacsim.sensors.physics-0.3.5] startup
+[12.225s] [ext: isaacsim.examples.browser-0.1.8] startup
+[12.230s] [ext: omni.physx.ui-106.5.7] startup
+[12.264s] [ext: omni.kit.viewport.menubar.camera-107.0.2] startup
+[12.271s] [ext: omni.kit.stagerecorder.bundle-105.0.2] startup
+[12.272s] [ext: isaacsim.robot.policy.examples-4.0.3] startup
+[12.273s] [ext: isaacsim.asset.importer.urdf-2.3.10] startup
+[12.300s] [ext: omni.kit.viewport.menubar.lighting-106.0.2] startup
+[12.304s] [ext: omni.physx.demos-106.5.7] startup
+[12.324s] [ext: omni.kit.property.physx-106.5.7] startup
+[12.373s] [ext: omni.kit.viewport.menubar.render-107.0.8] startup
+[12.376s] [ext: omni.kit.window.toolbar-1.6.2] startup
+[12.379s] [ext: isaacsim.robot.wheeled_robots-4.0.3] startup
+[12.384s] [ext: omni.physx.vehicle-106.5.7] startup
+[12.400s] [ext: omni.physx.graph-106.5.7] startup
+[12.417s] [ext: omni.physx.supportui-106.5.7] startup
+[12.444s] [ext: omni.physx.telemetry-106.5.7] startup
+[12.450s] [ext: omni.physx.camera-106.5.7] startup
+[12.464s] [ext: omni.physx.cct-106.5.7] startup
+[12.480s] [ext: omni.rtx.window.settings-0.6.17] startup
+[12.490s] [ext: omni.usd.metrics.assembler-106.5.0] startup
+[12.505s] [ext: omni.kit.window.status_bar-0.1.7] startup
+[12.510s] [ext: omni.kit.viewport.menubar.settings-107.0.3] startup
+[12.515s] [ext: omni.physx.bundle-106.5.7] startup
+[12.516s] [ext: omni.replicator.replicator_yaml-2.0.10] startup
+[12.531s] [ext: omni.rtx.settings.core-0.6.3] startup
+[12.536s] [ext: omni.usd.metrics.assembler.ui-106.5.0] startup
+[12.542s] [ext: isaacsim.asset.browser-1.3.4] startup
+[12.589s] [ext: isaacsim.gui.menu-2.0.9] startup
+2026-06-25 09:26:03 [12,575ms] [Warning] [omni.kit.menu.utils.app_menu] add_menu_items: menu [<MenuItemDescription name:'New'>, <MenuItemDescription name:'Open'>, <MenuItemDescription name:'Re-open with New Edit Layer'>, <MenuItemDescription name:'Save'>, <MenuItemDescription name:'Save With Options'>, <MenuItemDescription name:'Save As...'>, <MenuItemDescription name:'Save Flattened As...'>, <MenuItemDescription name:'Add Reference'>, <MenuItemDescription name:'Add Payload'>, <MenuItemDescription name:'Exit'>] cannot change delegate
+[12.596s] [ext: omni.kit.ui.actions-1.0.2] startup
+[12.598s] [ext: omni.kit.window.console-0.2.14] startup
+[12.608s] [ext: isaacsim.sensors.camera-0.2.9] startup
+[12.617s] [ext: isaaclab-0.36.21] startup
+[12.742s] [ext: isaaclab_assets-0.2.2] startup
+[12.873s] [ext: isaaclab_tasks-0.10.31] startup
+[13.790s] [ext: omni.kit.menu.common-1.1.9] startup
+[13.791s] [ext: isaaclab_rl-0.1.4] startup
+[13.792s] [ext: isaaclab_mimic-1.0.7] startup
+[13.793s] [ext: isaaclab.python-2.1.0] startup
+[13.794s] Simulation App Starting
+[14.226s] app ready
+2026-06-25 09:26:04 [14,256ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 7508933632
+2026-06-25 09:26:04 [14,256ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid false, within: false
+2026-06-25 09:26:04 [14,256ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : decrement: 167690, decrement size: 7433845248
+2026-06-25 09:26:04 [14,256ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : New limit 9574251 (slope: 447, intercept: 13179904)
+2026-06-25 09:26:04 [14,256ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 4287216384
+2026-06-25 09:26:04 [14,256ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid true, within: true
+2026-06-25 09:26:04 [14,356ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
+[16.757s] Simulation App Startup Complete
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+2026-06-25 09:26:07 [17,355ms] [Warning] [isaaclab.envs.manager_based_env] Seed not set for the environment. The environment creation may not be deterministic.
+[17.404s] [ext: omni.physx.fabric-106.5.7] startup
+[2026-06-25 17:26:07,968][ogn_registration][INFO] - Looking for Python nodes to register in omni.physx.fabric-106.5.7
+[2026-06-25 17:26:07,968][ogn_registration][INFO] -  -> Registered nodes from module omni.physxfabric at /home/sijie/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/extsPhysics/omni.physx.fabric
+[2026-06-25 17:26:07,968][ogn_registration][INFO] - Registering nodes in /home/sijie/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/extsPhysics/omni.physx.fabric imported as omni.physxfabric with AutoNode config {}
+[2026-06-25 17:26:07,968][ogn_registration][INFO] - Registering Python Node Types from omni.physxfabric at /home/sijie/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/extsPhysics/omni.physx.fabric in omni.physx.fabric
+[2026-06-25 17:26:07,968][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-25 17:26:07,969][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.physx.fabric
+[2026-06-25 17:26:07,969][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-25 17:26:07,969][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.physxfabric - No nodes in this module, do not remember it
+[2026-06-25 17:26:07,969][ogn_registration][INFO] - Destroying registration record for omni.physx.fabric
+[2026-06-25 17:26:07,970][ogn_registration][INFO] - OGN register omni.physx.fabric-106.5.7 took 1245906.000000
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : None
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+[INFO]: Time taken for scene creation : 1.587496 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 1
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+2026-06-25 09:26:11 [20,667ms] [Warning] [omni.hydra.scene_delegate.plugin] Calling getBypassRenderSkelMeshProcessing for prim /World/envs/env_0/Robot/left_ankle_pitch_link/visuals.proto_mesh_id0 that has not been populated
+[INFO]: Time taken for simulation start : 1.787079 seconds
+[MultiMotionLoader] Motion group distribution:
+  - backhand: 1 motions
+  - forehand: 1 motions
+[MultiMotionCommand] Registered motion groups: ['backhand', 'forehand']
+[MultiMotionCommand]   - Group 'backhand': 1 motions
+[MultiMotionCommand]   - Group 'forehand': 1 motions
+[INFO] Command Manager:  <CommandManager> contains 1 active terms.
++----------------------------------------+
+|          Active Command Terms          |
++-------+--------+-----------------------+
+| Index | Name   |          Type         |
++-------+--------+-----------------------+
+|   0   | motion | HitterStrikingCommand |
++-------+--------+-----------------------+
+
+[INFO] Event Manager:  <EventManager> contains 0 active terms.
+
+[INFO] Recorder Manager:  <RecorderManager> contains 0 active terms.
++---------------------+
+| Active Recorder Terms |
++-----------+---------+
+|   Index   | Name    |
++-----------+---------+
++-----------+---------+
+
+[INFO] Action Manager:  <ActionManager> contains 1 active terms.
++------------------------------------+
+|  Active Action Terms (shape: 29)   |
++--------+-------------+-------------+
+| Index  | Name        |   Dimension |
++--------+-------------+-------------+
+|   0    | joint_pos   |          29 |
++--------+-------------+-------------+
+
+[INFO] Observation Manager: <ObservationManager> contains 2 groups.
++---------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (105,)) |
++-----------+---------------------------------+-----------+
+|   Index   | Name                            |   Shape   |
++-----------+---------------------------------+-----------+
+|     0     | base_ang_vel                    |    (3,)   |
+|     1     | projected_gravity               |    (3,)   |
+|     2     | base_forward_xy                 |    (2,)   |
+|     3     | base_target_pos                 |    (3,)   |
+|     4     | racket_target_pos               |    (3,)   |
+|     5     | racket_target_vel               |    (3,)   |
+|     6     | time_to_strike                  |    (1,)   |
+|     7     | joint_pos                       |   (29,)   |
+|     8     | joint_vel                       |   (29,)   |
+|     9     | actions                         |   (29,)   |
++-----------+---------------------------------+-----------+
++------------------------------------------------------------+
+| Active Observation Terms in Group: 'critic' (shape: (302,)) |
++----------+------------------------------------+------------+
+|  Index   | Name                               |   Shape    |
++----------+------------------------------------+------------+
+|    0     | base_ang_vel                       |    (3,)    |
+|    1     | projected_gravity                  |    (3,)    |
+|    2     | base_forward_xy                    |    (2,)    |
+|    3     | motion_anchor_pos_b                |    (3,)    |
+|    4     | motion_anchor_ori_b                |    (6,)    |
+|    5     | base_target_pos                    |    (3,)    |
+|    6     | racket_target_pos                  |    (3,)    |
+|    7     | racket_target_vel                  |    (3,)    |
+|    8     | time_to_strike                     |    (1,)    |
+|    9     | joint_pos                          |   (29,)    |
+|    10    | joint_vel                          |   (29,)    |
+|    11    | actions                            |   (29,)    |
+|    12    | base_lin_vel                       |    (3,)    |
+|    13    | body_pose                          |   (126,)   |
+|    14    | time_left                          |    (1,)    |
+|    15    | reference_joint_state              |   (58,)    |
++----------+------------------------------------+------------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 0 active terms.
++----------------------------+
+|  Active Termination Terms  |
++--------+-------+-----------+
+| Index  | Name  |  Time Out |
++--------+-------+-----------+
++--------+-------+-----------+
+
+[INFO] Reward Manager:  <RewardManager> contains 22 active terms.
++------------------------------------------------+
+|              Active Reward Terms               |
++-------+-----------------------------+----------+
+| Index | Name                        |   Weight |
++-------+-----------------------------+----------+
+|   0   | motion_global_anchor_pos    |      0.5 |
+|   1   | motion_global_anchor_ori    |      0.5 |
+|   2   | motion_body_pos             |      1.0 |
+|   3   | motion_body_ori             |      1.0 |
+|   4   | motion_body_lin_vel         |      1.5 |
+|   5   | motion_body_ang_vel         |      1.5 |
+|   6   | motion_anchor_lin_vel       |      1.0 |
+|   7   | base_pos                    |      5.0 |
+|   8   | racket_pos                  |    120.0 |
+|   9   | racket_vel                  |    120.0 |
+|   10  | racket_ori                  |     30.0 |
+|   11  | torso_forward_lean_l2       |     -2.0 |
+|   12  | base_ang_vel_xy_l2          |     -0.4 |
+|   13  | undesired_contacts          |    -0.05 |
+|   14  | hitter_foot_slip_l2         |     -2.0 |
+|   15  | hitter_hit_unstable_support |     -6.0 |
+|   16  | hitter_foot_edge_drag       |     -1.0 |
+|   17  | hip_yaw_default             |      2.0 |
+|   18  | action_rate_l2              |     -0.1 |
+|   19  | joint_limit                 |    -10.0 |
+|   20  | joint_acc                   | -2.5e-07 |
+|   21  | joint_torque                |   -1e-05 |
++-------+-----------------------------+----------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 0 active terms.
++----------------------+
+| Active Curriculum Terms |
++-----------+----------+
+|   Index   | Name     |
++-----------+----------+
++-----------+----------+
+
+Creating window for environment.
+[INFO]: Completed setting up the environment...
+[ReferenceReplay] started
+[ReferenceReplay] task=Hitter-Striking-PlannerDomain-Flat-G1-v0
+[ReferenceReplay] motion=/home/sijie/Hitter/MOSAIC-main/data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean
+[ReferenceReplay] motion_indices=[1]
+[ReferenceReplay] env0_motion_file=/home/sijie/Hitter/MOSAIC-main/data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean/forehand_manual_019_c4ef15be_16.902_18.545_expanded_16.784_18.663_50fps__unitree_g1.npz
+[ReferenceReplay] start_frame=0, speed=0.8
+[ReferenceReplay] step=25 frame=25
+[ReferenceReplay] step=50 frame=50
+[ReferenceReplay] step=75 frame=75
+[ReferenceReplay] step=100 frame=6
+[ReferenceReplay] step=125 frame=31
+[ReferenceReplay] step=150 frame=56
+[ReferenceReplay] step=175 frame=81
+[ReferenceReplay] step=200 frame=12
+[ReferenceReplay] step=225 frame=37
+[ReferenceReplay] step=250 frame=62
+[ReferenceReplay] step=275 frame=87
+[ReferenceReplay] step=300 frame=18
+[ReferenceReplay] step=325 frame=43
+[ReferenceReplay] step=350 frame=68
+[ReferenceReplay] step=375 frame=93
+[ReferenceReplay] step=400 frame=24
+[ReferenceReplay] step=425 frame=49
+[ReferenceReplay] step=450 frame=74
+[ReferenceReplay] step=475 frame=5
+[ReferenceReplay] step=500 frame=30
+[ReferenceReplay] step=525 frame=55
+[ReferenceReplay] step=550 frame=80
+[ReferenceReplay] step=575 frame=11
+[ReferenceReplay] step=600 frame=36
+[ReferenceReplay] step=625 frame=61
+[ReferenceReplay] step=650 frame=86
+[ReferenceReplay] step=675 frame=17
+[ReferenceReplay] step=700 frame=42
+[ReferenceReplay] step=725 frame=67
+[ReferenceReplay] step=750 frame=92
+[ReferenceReplay] step=775 frame=23
+[ReferenceReplay] step=800 frame=48
+[ReferenceReplay] step=825 frame=73
+[ReferenceReplay] step=850 frame=4
+[ReferenceReplay] step=875 frame=29
+[ReferenceReplay] step=900 frame=54
+[ReferenceReplay] step=925 frame=79
+[ReferenceReplay] step=950 frame=10
+[ReferenceReplay] step=975 frame=35
+[ReferenceReplay] step=1000 frame=60
+[ReferenceReplay] step=1025 frame=85
+[ReferenceReplay] step=1050 frame=16
+[ReferenceReplay] step=1075 frame=41
+[ReferenceReplay] step=1100 frame=66
+[ReferenceReplay] step=1125 frame=91
+[ReferenceReplay] step=1150 frame=22
+[ReferenceReplay] step=1175 frame=47
+[ReferenceReplay] step=1200 frame=72
+[ReferenceReplay] step=1225 frame=3
+[ReferenceReplay] step=1250 frame=28
+[ReferenceReplay] step=1275 frame=53
+[ReferenceReplay] step=1300 frame=78
+[ReferenceReplay] step=1325 frame=9
+[ReferenceReplay] step=1350 frame=34
+[ReferenceReplay] step=1375 frame=59
+[ReferenceReplay] step=1400 frame=84
+[ReferenceReplay] step=1425 frame=15
+[ReferenceReplay] step=1450 frame=40
+[ReferenceReplay] step=1475 frame=65
+[ReferenceReplay] step=1500 frame=90
+[ReferenceReplay] step=1525 frame=21
+[ReferenceReplay] step=1550 frame=46
+[ReferenceReplay] step=1575 frame=71
+[ReferenceReplay] step=1600 frame=2
+[ReferenceReplay] step=1625 frame=27
+[ReferenceReplay] step=1650 frame=52
+[ReferenceReplay] step=1675 frame=77
+[ReferenceReplay] step=1700 frame=8
+[ReferenceReplay] step=1725 frame=33
+[ReferenceReplay] step=1750 frame=58
+[ReferenceReplay] step=1775 frame=83
+[ReferenceReplay] step=1800 frame=14
+[ReferenceReplay] step=1825 frame=39
+[ReferenceReplay] step=1850 frame=64
+[ReferenceReplay] step=1875 frame=89
+[ReferenceReplay] step=1900 frame=20
+[ReferenceReplay] step=1925 frame=45
+[ReferenceReplay] step=1950 frame=70
+[ReferenceReplay] step=1975 frame=1
+[ReferenceReplay] step=2000 frame=26
+[ReferenceReplay] step=2025 frame=51
+[ReferenceReplay] step=2050 frame=76
+[ReferenceReplay] step=2075 frame=7
+[ReferenceReplay] step=2100 frame=32
+[ReferenceReplay] step=2125 frame=57
+[ReferenceReplay] step=2150 frame=82
+[ReferenceReplay] step=2175 frame=13
+[ReferenceReplay] step=2200 frame=38
+[ReferenceReplay] step=2225 frame=63
+[ReferenceReplay] step=2250 frame=88
+[ReferenceReplay] step=2275 frame=19
+[ReferenceReplay] step=2300 frame=44
+[ReferenceReplay] step=2325 frame=69
+[ReferenceReplay] step=2350 frame=0
+[ReferenceReplay] step=2375 frame=25
+[ReferenceReplay] step=2400 frame=50
+[ReferenceReplay] step=2425 frame=75
+[ReferenceReplay] step=2450 frame=6
+[ReferenceReplay] step=2475 frame=31
+[ReferenceReplay] step=2500 frame=56
+[ReferenceReplay] step=2525 frame=81
+[ReferenceReplay] step=2550 frame=12
+[ReferenceReplay] step=2575 frame=37
+[ReferenceReplay] step=2600 frame=62
+[ReferenceReplay] step=2625 frame=87
+[ReferenceReplay] step=2650 frame=18
+[ReferenceReplay] step=2675 frame=43
+[ReferenceReplay] step=2700 frame=68
+[ReferenceReplay] step=2725 frame=93
+[ReferenceReplay] step=2750 frame=24
+[ReferenceReplay] step=2775 frame=49
+[ReferenceReplay] step=2800 frame=74
+[ReferenceReplay] step=2825 frame=5
+[ReferenceReplay] step=2850 frame=30
+[ReferenceReplay] step=2875 frame=55
+[ReferenceReplay] step=2900 frame=80
+[ReferenceReplay] step=2925 frame=11
+[ReferenceReplay] step=2950 frame=36
+[ReferenceReplay] step=2975 frame=61
+[ReferenceReplay] step=3000 frame=86
+[ReferenceReplay] step=3025 frame=17
+[ReferenceReplay] step=3050 frame=42
+[ReferenceReplay] step=3075 frame=67
+[ReferenceReplay] step=3100 frame=92
+[ReferenceReplay] step=3125 frame=23
+[ReferenceReplay] step=3150 frame=48
+[ReferenceReplay] step=3175 frame=73
+[ReferenceReplay] step=3200 frame=4
+[ReferenceReplay] step=3225 frame=29
+[ReferenceReplay] step=3250 frame=54
+[ReferenceReplay] step=3275 frame=79
+[ReferenceReplay] step=3300 frame=10
+[ReferenceReplay] step=3325 frame=35
+[ReferenceReplay] step=3350 frame=60
+[ReferenceReplay] step=3375 frame=85
+[ReferenceReplay] step=3400 frame=16
+[ReferenceReplay] step=3425 frame=41
+[ReferenceReplay] step=3450 frame=66
+[ReferenceReplay] step=3475 frame=91
+[ReferenceReplay] step=3500 frame=22
+[ReferenceReplay] step=3525 frame=47
+[ReferenceReplay] step=3550 frame=72
+[ReferenceReplay] step=3575 frame=3
+[ReferenceReplay] step=3600 frame=28
+[ReferenceReplay] step=3625 frame=53
+[ReferenceReplay] step=3650 frame=78
+[ReferenceReplay] step=3675 frame=9
+[ReferenceReplay] step=3700 frame=34
+[ReferenceReplay] step=3725 frame=59
+[ReferenceReplay] step=3750 frame=84
+[ReferenceReplay] step=3775 frame=15
+[ReferenceReplay] step=3800 frame=40
+[ReferenceReplay] step=3825 frame=65
+[ReferenceReplay] step=3850 frame=90
+[ReferenceReplay] step=3875 frame=21
+[ReferenceReplay] step=3900 frame=46
+[ReferenceReplay] step=3925 frame=71
+[ReferenceReplay] step=3950 frame=2
+[ReferenceReplay] step=3975 frame=27
+[ReferenceReplay] step=4000 frame=52
+[ReferenceReplay] step=4025 frame=77
+[ReferenceReplay] step=4050 frame=8
+[ReferenceReplay] step=4075 frame=33
+[ReferenceReplay] step=4100 frame=58
+[ReferenceReplay] step=4125 frame=83
+[ReferenceReplay] step=4150 frame=14
+[ReferenceReplay] step=4175 frame=39
+[ReferenceReplay] step=4200 frame=64
+[ReferenceReplay] step=4225 frame=89
+[ReferenceReplay] step=4250 frame=20
+[ReferenceReplay] step=4275 frame=45
+[ReferenceReplay] step=4300 frame=70
+[ReferenceReplay] step=4325 frame=1
+[ReferenceReplay] step=4350 frame=26
+[ReferenceReplay] step=4375 frame=51
+[ReferenceReplay] step=4400 frame=76
+[ReferenceReplay] step=4425 frame=7
+[ReferenceReplay] step=4450 frame=32
+[ReferenceReplay] step=4475 frame=57
+[ReferenceReplay] step=4500 frame=82
+[ReferenceReplay] step=4525 frame=13
+[ReferenceReplay] step=4550 frame=38
+[ReferenceReplay] step=4575 frame=63
+[ReferenceReplay] step=4600 frame=88
+[ReferenceReplay] step=4625 frame=19
+[ReferenceReplay] step=4650 frame=44
+[ReferenceReplay] step=4675 frame=69
+[ReferenceReplay] step=4700 frame=0
+[ReferenceReplay] step=4725 frame=25
+[ReferenceReplay] step=4750 frame=50
+[ReferenceReplay] step=4775 frame=75
+[ReferenceReplay] step=4800 frame=6
+[ReferenceReplay] step=4825 frame=31
+[ReferenceReplay] step=4850 frame=56
+[ReferenceReplay] step=4875 frame=81
+[ReferenceReplay] step=4900 frame=12
+[ReferenceReplay] step=4925 frame=37
+[ReferenceReplay] step=4950 frame=62
+[ReferenceReplay] step=4975 frame=87
+[ReferenceReplay] step=5000 frame=18
+[ReferenceReplay] step=5025 frame=43
+[ReferenceReplay] step=5050 frame=68
+[ReferenceReplay] step=5075 frame=93
+[ReferenceReplay] step=5100 frame=24
+[ReferenceReplay] step=5125 frame=49
+[ReferenceReplay] step=5150 frame=74
+[ReferenceReplay] step=5175 frame=5
+[ReferenceReplay] step=5200 frame=30
+[ReferenceReplay] step=5225 frame=55
+[ReferenceReplay] step=5250 frame=80
+[ReferenceReplay] step=5275 frame=11
+[ReferenceReplay] step=5300 frame=36
+[ReferenceReplay] step=5325 frame=61
+[ReferenceReplay] step=5350 frame=86
+[ReferenceReplay] step=5375 frame=17
+[ReferenceReplay] step=5400 frame=42
+[ReferenceReplay] step=5425 frame=67
+[ReferenceReplay] step=5450 frame=92
+[ReferenceReplay] step=5475 frame=23
+[ReferenceReplay] step=5500 frame=48
+[ReferenceReplay] step=5525 frame=73
+[ReferenceReplay] step=5550 frame=4
+[ReferenceReplay] step=5575 frame=29
+[ReferenceReplay] step=5600 frame=54
+[ReferenceReplay] step=5625 frame=79
+[ReferenceReplay] step=5650 frame=10
+[ReferenceReplay] step=5675 frame=35
+[ReferenceReplay] step=5700 frame=60
+[ReferenceReplay] step=5725 frame=85
+[ReferenceReplay] step=5750 frame=16
+[ReferenceReplay] step=5775 frame=41
+[ReferenceReplay] step=5800 frame=66
+[ReferenceReplay] step=5825 frame=91
+[ReferenceReplay] step=5850 frame=22
+[ReferenceReplay] step=5875 frame=47
+[ReferenceReplay] step=5900 frame=72
+[ReferenceReplay] step=5925 frame=3
+[ReferenceReplay] step=5950 frame=28
+[ReferenceReplay] step=5975 frame=53
+[ReferenceReplay] step=6000 frame=78
+[ReferenceReplay] step=6025 frame=9
+[ReferenceReplay] step=6050 frame=34
+[ReferenceReplay] step=6075 frame=59
+[ReferenceReplay] step=6100 frame=84
+[ReferenceReplay] step=6125 frame=15
+[ReferenceReplay] step=6150 frame=40
+[ReferenceReplay] step=6175 frame=65
+[ReferenceReplay] step=6200 frame=90
+[ReferenceReplay] step=6225 frame=21
+[ReferenceReplay] step=6250 frame=46
+[ReferenceReplay] step=6275 frame=71
+[ReferenceReplay] step=6300 frame=2
+[ReferenceReplay] step=6325 frame=27
+[ReferenceReplay] step=6350 frame=52
+[ReferenceReplay] step=6375 frame=77
+[ReferenceReplay] step=6400 frame=8
+[ReferenceReplay] step=6425 frame=33
+[ReferenceReplay] step=6450 frame=58
+[ReferenceReplay] step=6475 frame=83
+[ReferenceReplay] step=6500 frame=14
+[ReferenceReplay] step=6525 frame=39
+[ReferenceReplay] step=6550 frame=64
+[ReferenceReplay] step=6575 frame=89
+[ReferenceReplay] step=6600 frame=20
+[ReferenceReplay] step=6625 frame=45
+[ReferenceReplay] step=6650 frame=70
+[ReferenceReplay] step=6675 frame=1
+[ReferenceReplay] step=6700 frame=26
+[ReferenceReplay] step=6725 frame=51
+[ReferenceReplay] step=6750 frame=76
+[ReferenceReplay] step=6775 frame=7
+[ReferenceReplay] step=6800 frame=32
+[ReferenceReplay] step=6825 frame=57
+[ReferenceReplay] step=6850 frame=82
+[ReferenceReplay] step=6875 frame=13
+[ReferenceReplay] step=6900 frame=38
+[ReferenceReplay] step=6925 frame=63
+[ReferenceReplay] step=6950 frame=88
+[ReferenceReplay] step=6975 frame=19
+[ReferenceReplay] step=7000 frame=44
+[ReferenceReplay] step=7025 frame=69
+[ReferenceReplay] step=7050 frame=0
+[ReferenceReplay] step=7075 frame=25
+[ReferenceReplay] step=7100 frame=50
+[ReferenceReplay] step=7125 frame=75
+[ReferenceReplay] step=7150 frame=6
+[ReferenceReplay] step=7175 frame=31
+[ReferenceReplay] step=7200 frame=56
+[ReferenceReplay] step=7225 frame=81
+[ReferenceReplay] step=7250 frame=12
+[ReferenceReplay] step=7275 frame=37
+[ReferenceReplay] step=7300 frame=62
+[ReferenceReplay] step=7325 frame=87
+[ReferenceReplay] step=7350 frame=18
+[ReferenceReplay] step=7375 frame=43
+[ReferenceReplay] step=7400 frame=68
+[ReferenceReplay] step=7425 frame=93
+[ReferenceReplay] step=7450 frame=24
+[ReferenceReplay] step=7475 frame=49
+[ReferenceReplay] step=7500 frame=74
+[ReferenceReplay] step=7525 frame=5
+[ReferenceReplay] step=7550 frame=30
+[ReferenceReplay] step=7575 frame=55
+[ReferenceReplay] step=7600 frame=80
+[ReferenceReplay] step=7625 frame=11
+[ReferenceReplay] step=7650 frame=36
+[ReferenceReplay] step=7675 frame=61
+[ReferenceReplay] step=7700 frame=86
+[ReferenceReplay] step=7725 frame=17
+[ReferenceReplay] step=7750 frame=42
+[ReferenceReplay] step=7775 frame=67
+[ReferenceReplay] step=7800 frame=92
+[ReferenceReplay] step=7825 frame=23
+[ReferenceReplay] step=7850 frame=48
+[ReferenceReplay] step=7875 frame=73
+[ReferenceReplay] step=7900 frame=4
+[ReferenceReplay] step=7925 frame=29
+[ReferenceReplay] step=7950 frame=54
+[ReferenceReplay] step=7975 frame=79
+[ReferenceReplay] step=8000 frame=10
+[ReferenceReplay] step=8025 frame=35
+[ReferenceReplay] step=8050 frame=60
+[ReferenceReplay] step=8075 frame=85
+[ReferenceReplay] step=8100 frame=16
+[ReferenceReplay] step=8125 frame=41
+[ReferenceReplay] step=8150 frame=66
+[ReferenceReplay] step=8175 frame=91
+[ReferenceReplay] step=8200 frame=22
+[ReferenceReplay] step=8225 frame=47
+[ReferenceReplay] step=8250 frame=72
+[ReferenceReplay] step=8275 frame=3
+[ReferenceReplay] step=8300 frame=28
+[ReferenceReplay] step=8325 frame=53
+[ReferenceReplay] step=8350 frame=78
+[ReferenceReplay] step=8375 frame=9
+[ReferenceReplay] step=8400 frame=34
+[ReferenceReplay] step=8425 frame=59
+[ReferenceReplay] step=8450 frame=84
+[ReferenceReplay] step=8475 frame=15
+[ReferenceReplay] step=8500 frame=40
+[ReferenceReplay] step=8525 frame=65
+[ReferenceReplay] step=8550 frame=90
+[ReferenceReplay] step=8575 frame=21
+[ReferenceReplay] step=8600 frame=46
+[ReferenceReplay] step=8625 frame=71
+[ReferenceReplay] step=8650 frame=2
+[ReferenceReplay] step=8675 frame=27
+[ReferenceReplay] step=8700 frame=52
+[ReferenceReplay] step=8725 frame=77
+[ReferenceReplay] step=8750 frame=8
+[ReferenceReplay] step=8775 frame=33
+[ReferenceReplay] step=8800 frame=58
+[ReferenceReplay] step=8825 frame=83
+[ReferenceReplay] step=8850 frame=14
+[ReferenceReplay] step=8875 frame=39
+[ReferenceReplay] step=8900 frame=64
+[ReferenceReplay] step=8925 frame=89
+[ReferenceReplay] step=8950 frame=20
+[ReferenceReplay] step=8975 frame=45
+[ReferenceReplay] step=9000 frame=70
+[ReferenceReplay] step=9025 frame=1
+[ReferenceReplay] step=9050 frame=26
+[ReferenceReplay] step=9075 frame=51
+[ReferenceReplay] step=9100 frame=76
+[ReferenceReplay] step=9125 frame=7
+[ReferenceReplay] step=9150 frame=32
+[ReferenceReplay] step=9175 frame=57
+[ReferenceReplay] step=9200 frame=82
+[ReferenceReplay] step=9225 frame=13
+[ReferenceReplay] step=9250 frame=38
+[ReferenceReplay] step=9275 frame=63
+[ReferenceReplay] step=9300 frame=88
+[ReferenceReplay] step=9325 frame=19
+[ReferenceReplay] step=9350 frame=44
+[ReferenceReplay] step=9375 frame=69
+[ReferenceReplay] step=9400 frame=0
+[ReferenceReplay] step=9425 frame=25
+[ReferenceReplay] step=9450 frame=50
+[ReferenceReplay] step=9475 frame=75
+[ReferenceReplay] step=9500 frame=6
+[ReferenceReplay] step=9525 frame=31
+[ReferenceReplay] step=9550 frame=56
+[ReferenceReplay] step=9575 frame=81
+[ReferenceReplay] step=9600 frame=12
+[ReferenceReplay] step=9625 frame=37
+[ReferenceReplay] step=9650 frame=62
+[ReferenceReplay] step=9675 frame=87
+[ReferenceReplay] step=9700 frame=18
+[ReferenceReplay] step=9725 frame=43
+[ReferenceReplay] step=9750 frame=68
+[ReferenceReplay] step=9775 frame=93
+[ReferenceReplay] step=9800 frame=24
+[ReferenceReplay] step=9825 frame=49
+[ReferenceReplay] step=9850 frame=74
+[ReferenceReplay] step=9875 frame=5
+[ReferenceReplay] step=9900 frame=30
+[ReferenceReplay] step=9925 frame=55
+[ReferenceReplay] step=9950 frame=80
+[ReferenceReplay] step=9975 frame=11
+[ReferenceReplay] step=10000 frame=36
+[ReferenceReplay] step=10025 frame=61
+[ReferenceReplay] step=10050 frame=86
+[ReferenceReplay] step=10075 frame=17
+[ReferenceReplay] step=10100 frame=42
+[ReferenceReplay] step=10125 frame=67
+[ReferenceReplay] step=10150 frame=92
+[ReferenceReplay] step=10175 frame=23
+[ReferenceReplay] step=10200 frame=48
+[ReferenceReplay] step=10225 frame=73
+[ReferenceReplay] step=10250 frame=4
+[ReferenceReplay] step=10275 frame=29
+[ReferenceReplay] step=10300 frame=54
+[ReferenceReplay] step=10325 frame=79
+[ReferenceReplay] step=10350 frame=10
+[ReferenceReplay] step=10375 frame=35
+[ReferenceReplay] step=10400 frame=60
+[ReferenceReplay] step=10425 frame=85
+[ReferenceReplay] step=10450 frame=16
+[ReferenceReplay] step=10475 frame=41
+[ReferenceReplay] step=10500 frame=66
+[ReferenceReplay] step=10525 frame=91
+[ReferenceReplay] step=10550 frame=22
+[ReferenceReplay] step=10575 frame=47
+[ReferenceReplay] step=10600 frame=72
+[ReferenceReplay] step=10625 frame=3
+[ReferenceReplay] step=10650 frame=28
+[ReferenceReplay] step=10675 frame=53
+[ReferenceReplay] step=10700 frame=78
+[ReferenceReplay] step=10725 frame=9
+[ReferenceReplay] step=10750 frame=34
+[ReferenceReplay] step=10775 frame=59
+[ReferenceReplay] step=10800 frame=84
+[ReferenceReplay] step=10825 frame=15
+[ReferenceReplay] step=10850 frame=40
+[ReferenceReplay] step=10875 frame=65
+[ReferenceReplay] step=10900 frame=90
+[ReferenceReplay] step=10925 frame=21
+[ReferenceReplay] step=10950 frame=46
+[ReferenceReplay] step=10975 frame=71
+[ReferenceReplay] step=11000 frame=2
+[ReferenceReplay] step=11025 frame=27
+[ReferenceReplay] step=11050 frame=52
+[ReferenceReplay] step=11075 frame=77
+[ReferenceReplay] step=11100 frame=8
+[ReferenceReplay] step=11125 frame=33
+[ReferenceReplay] step=11150 frame=58
+[ReferenceReplay] step=11175 frame=83
+[ReferenceReplay] step=11200 frame=14
+[ReferenceReplay] step=11225 frame=39
+[ReferenceReplay] step=11250 frame=64
+[ReferenceReplay] step=11275 frame=89
+[ReferenceReplay] step=11300 frame=20
+[ReferenceReplay] step=11325 frame=45
+[ReferenceReplay] step=11350 frame=70
+[ReferenceReplay] step=11375 frame=1
+[ReferenceReplay] step=11400 frame=26
+[ReferenceReplay] step=11425 frame=51
+[ReferenceReplay] step=11450 frame=76
+[ReferenceReplay] step=11475 frame=7
+[ReferenceReplay] step=11500 frame=32
+[ReferenceReplay] step=11525 frame=57
+[ReferenceReplay] step=11550 frame=82
+[ReferenceReplay] step=11575 frame=13
+[ReferenceReplay] step=11600 frame=38
+[ReferenceReplay] step=11625 frame=63
+[ReferenceReplay] step=11650 frame=88
+[ReferenceReplay] step=11675 frame=19
+[ReferenceReplay] step=11700 frame=44
+[ReferenceReplay] step=11725 frame=69
+[ReferenceReplay] step=11750 frame=0
+[ReferenceReplay] step=11775 frame=25
+[ReferenceReplay] step=11800 frame=50
+[ReferenceReplay] step=11825 frame=75
+[ReferenceReplay] step=11850 frame=6
+[ReferenceReplay] step=11875 frame=31
+[ReferenceReplay] step=11900 frame=56
+[ReferenceReplay] step=11925 frame=81
+[ReferenceReplay] step=11950 frame=12
+[ReferenceReplay] step=11975 frame=37
+[ReferenceReplay] step=12000 frame=62
+[ReferenceReplay] step=12025 frame=87
+[ReferenceReplay] step=12050 frame=18
+[ReferenceReplay] step=12075 frame=43
+[ReferenceReplay] step=12100 frame=68
+[ReferenceReplay] step=12125 frame=93
+[ReferenceReplay] step=12150 frame=24
+[ReferenceReplay] step=12175 frame=49
+[ReferenceReplay] step=12200 frame=74
+[ReferenceReplay] step=12225 frame=5
+[ReferenceReplay] step=12250 frame=30
+[ReferenceReplay] step=12275 frame=55
+[ReferenceReplay] step=12300 frame=80
+[ReferenceReplay] step=12325 frame=11
+[ReferenceReplay] step=12350 frame=36
+[ReferenceReplay] step=12375 frame=61
+[ReferenceReplay] step=12400 frame=86
+[ReferenceReplay] step=12425 frame=17
+[ReferenceReplay] step=12450 frame=42
+[ReferenceReplay] step=12475 frame=67
+[ReferenceReplay] step=12500 frame=92
+[ReferenceReplay] step=12525 frame=23
+[ReferenceReplay] step=12550 frame=48
+[ReferenceReplay] step=12575 frame=73
+[ReferenceReplay] step=12600 frame=4
+[ReferenceReplay] step=12625 frame=29
+[ReferenceReplay] step=12650 frame=54
+[ReferenceReplay] step=12675 frame=79
+[ReferenceReplay] step=12700 frame=10
+[ReferenceReplay] step=12725 frame=35
+[ReferenceReplay] step=12750 frame=60
+[ReferenceReplay] step=12775 frame=85
+[ReferenceReplay] step=12800 frame=16
+[ReferenceReplay] step=12825 frame=41
+[ReferenceReplay] step=12850 frame=66
+[ReferenceReplay] step=12875 frame=91
+[ReferenceReplay] step=12900 frame=22
+[ReferenceReplay] step=12925 frame=47
+[ReferenceReplay] step=12950 frame=72
+[ReferenceReplay] step=12975 frame=3
+[ReferenceReplay] step=13000 frame=28
+[ReferenceReplay] step=13025 frame=53
+[ReferenceReplay] step=13050 frame=78
+[ReferenceReplay] step=13075 frame=9
+[ReferenceReplay] step=13100 frame=34
+[ReferenceReplay] step=13125 frame=59
+[ReferenceReplay] step=13150 frame=84
+[ReferenceReplay] step=13175 frame=15
+[ReferenceReplay] step=13200 frame=40
+[ReferenceReplay] step=13225 frame=65
+[ReferenceReplay] step=13250 frame=90
+[ReferenceReplay] step=13275 frame=21
+[ReferenceReplay] step=13300 frame=46
+[ReferenceReplay] step=13325 frame=71
+[ReferenceReplay] step=13350 frame=2
+[ReferenceReplay] step=13375 frame=27
+[ReferenceReplay] step=13400 frame=52
+[ReferenceReplay] step=13425 frame=77
+[ReferenceReplay] step=13450 frame=8
+[ReferenceReplay] step=13475 frame=33
+[ReferenceReplay] step=13500 frame=58
+[ReferenceReplay] step=13525 frame=83
+[ReferenceReplay] step=13550 frame=14
+[ReferenceReplay] step=13575 frame=39
+[ReferenceReplay] step=13600 frame=64
+[ReferenceReplay] step=13625 frame=89
+[ReferenceReplay] step=13650 frame=20
+[ReferenceReplay] step=13675 frame=45
+[ReferenceReplay] step=13700 frame=70
+[ReferenceReplay] step=13725 frame=1
+[ReferenceReplay] step=13750 frame=26
+[ReferenceReplay] step=13775 frame=51
+[ReferenceReplay] step=13800 frame=76
+[ReferenceReplay] step=13825 frame=7
+[ReferenceReplay] step=13850 frame=32
+[ReferenceReplay] step=13875 frame=57
+[ReferenceReplay] step=13900 frame=82
+[ReferenceReplay] step=13925 frame=13
+[ReferenceReplay] step=13950 frame=38
+[ReferenceReplay] step=13975 frame=63
+[ReferenceReplay] step=14000 frame=88
+[ReferenceReplay] step=14025 frame=19
+[ReferenceReplay] step=14050 frame=44
+[ReferenceReplay] step=14075 frame=69
+[ReferenceReplay] step=14100 frame=0
+[ReferenceReplay] step=14125 frame=25
+[ReferenceReplay] step=14150 frame=50
+[ReferenceReplay] step=14175 frame=75
+[ReferenceReplay] step=14200 frame=6
+[ReferenceReplay] step=14225 frame=31
+[ReferenceReplay] step=14250 frame=56
+[ReferenceReplay] step=14275 frame=81
+[ReferenceReplay] step=14300 frame=12
+[ReferenceReplay] step=14325 frame=37
+[ReferenceReplay] step=14350 frame=62
+[ReferenceReplay] step=14375 frame=87
+[ReferenceReplay] step=14400 frame=18
+[ReferenceReplay] step=14425 frame=43
+[ReferenceReplay] step=14450 frame=68
+[ReferenceReplay] step=14475 frame=93
+[ReferenceReplay] step=14500 frame=24
+[ReferenceReplay] step=14525 frame=49
+[ReferenceReplay] step=14550 frame=74
+[ReferenceReplay] step=14575 frame=5
+[ReferenceReplay] step=14600 frame=30
+[ReferenceReplay] step=14625 frame=55
+[ReferenceReplay] step=14650 frame=80
+[ReferenceReplay] step=14675 frame=11
+[ReferenceReplay] step=14700 frame=36
+[ReferenceReplay] step=14725 frame=61
+[ReferenceReplay] step=14750 frame=86
+[ReferenceReplay] step=14775 frame=17
+[ReferenceReplay] step=14800 frame=42
+[ReferenceReplay] step=14825 frame=67
+[ReferenceReplay] step=14850 frame=92
+[ReferenceReplay] step=14875 frame=23
+[ReferenceReplay] step=14900 frame=48
+[ReferenceReplay] step=14925 frame=73
+[ReferenceReplay] step=14950 frame=4
+[ReferenceReplay] step=14975 frame=29
+[ReferenceReplay] step=15000 frame=54
+[ReferenceReplay] step=15025 frame=79
+[ReferenceReplay] step=15050 frame=10
+[ReferenceReplay] step=15075 frame=35
+[ReferenceReplay] step=15100 frame=60
+[ReferenceReplay] step=15125 frame=85
+[ReferenceReplay] step=15150 frame=16
+[ReferenceReplay] step=15175 frame=41
+[ReferenceReplay] step=15200 frame=66
+[ReferenceReplay] step=15225 frame=91
+[ReferenceReplay] step=15250 frame=22
+[ReferenceReplay] step=15275 frame=47
+[ReferenceReplay] step=15300 frame=72
+[ReferenceReplay] step=15325 frame=3
+[ReferenceReplay] step=15350 frame=28
+[ReferenceReplay] step=15375 frame=53
+[ReferenceReplay] step=15400 frame=78
+[ReferenceReplay] step=15425 frame=9
+[ReferenceReplay] step=15450 frame=34
+[ReferenceReplay] step=15475 frame=59
+[ReferenceReplay] step=15500 frame=84
+[ReferenceReplay] step=15525 frame=15
+[ReferenceReplay] step=15550 frame=40
+[ReferenceReplay] step=15575 frame=65
+[ReferenceReplay] step=15600 frame=90
+[ReferenceReplay] step=15625 frame=21
+[ReferenceReplay] step=15650 frame=46
+[ReferenceReplay] step=15675 frame=71
+[ReferenceReplay] step=15700 frame=2
+[ReferenceReplay] step=15725 frame=27
+[ReferenceReplay] step=15750 frame=52
+[ReferenceReplay] step=15775 frame=77
+[ReferenceReplay] step=15800 frame=8
+[ReferenceReplay] step=15825 frame=33
+[ReferenceReplay] step=15850 frame=58
+[ReferenceReplay] step=15875 frame=83
+[ReferenceReplay] step=15900 frame=14
+[ReferenceReplay] step=15925 frame=39
+[ReferenceReplay] step=15950 frame=64
+[ReferenceReplay] step=15975 frame=89
+[ReferenceReplay] step=16000 frame=20
+[ReferenceReplay] step=16025 frame=45
+[ReferenceReplay] step=16050 frame=70
+[ReferenceReplay] step=16075 frame=1
+[ReferenceReplay] step=16100 frame=26
+[ReferenceReplay] step=16125 frame=51
+[ReferenceReplay] step=16150 frame=76
+[ReferenceReplay] step=16175 frame=7
+[ReferenceReplay] step=16200 frame=32
+[ReferenceReplay] step=16225 frame=57
+[ReferenceReplay] step=16250 frame=82
+[ReferenceReplay] step=16275 frame=13
+[ReferenceReplay] step=16300 frame=38
+[ReferenceReplay] step=16325 frame=63
+[ReferenceReplay] step=16350 frame=88
+[ReferenceReplay] step=16375 frame=19
+[ReferenceReplay] step=16400 frame=44
+[ReferenceReplay] step=16425 frame=69
+[ReferenceReplay] step=16450 frame=0
+[ReferenceReplay] step=16475 frame=25
+[ReferenceReplay] step=16500 frame=50
+[ReferenceReplay] step=16525 frame=75
+[ReferenceReplay] step=16550 frame=6
+[ReferenceReplay] step=16575 frame=31
+[ReferenceReplay] step=16600 frame=56
+[ReferenceReplay] step=16625 frame=81
+[ReferenceReplay] step=16650 frame=12
+[ReferenceReplay] step=16675 frame=37
+[ReferenceReplay] step=16700 frame=62
+[ReferenceReplay] step=16725 frame=87
+[ReferenceReplay] step=16750 frame=18
+[ReferenceReplay] step=16775 frame=43
+[ReferenceReplay] step=16800 frame=68
+[ReferenceReplay] step=16825 frame=93
+[ReferenceReplay] step=16850 frame=24
+[ReferenceReplay] step=16875 frame=49
+[ReferenceReplay] step=16900 frame=74
+[ReferenceReplay] step=16925 frame=5
+[ReferenceReplay] step=16950 frame=30
+[ReferenceReplay] step=16975 frame=55
+[ReferenceReplay] step=17000 frame=80
+[ReferenceReplay] step=17025 frame=11
+[ReferenceReplay] step=17050 frame=36
+[ReferenceReplay] step=17075 frame=61
+[ReferenceReplay] step=17100 frame=86
+[ReferenceReplay] step=17125 frame=17
+[ReferenceReplay] step=17150 frame=42
+[ReferenceReplay] step=17175 frame=67
+[ReferenceReplay] step=17200 frame=92
+[ReferenceReplay] step=17225 frame=23
+[ReferenceReplay] step=17250 frame=48
+[ReferenceReplay] step=17275 frame=73
+[ReferenceReplay] step=17300 frame=4
+[ReferenceReplay] step=17325 frame=29
+[ReferenceReplay] step=17350 frame=54
+[ReferenceReplay] step=17375 frame=79
+[ReferenceReplay] step=17400 frame=10
+[ReferenceReplay] step=17425 frame=35
+[ReferenceReplay] step=17450 frame=60
+[ReferenceReplay] step=17475 frame=85
+[ReferenceReplay] step=17500 frame=16
+[ReferenceReplay] step=17525 frame=41
+[ReferenceReplay] step=17550 frame=66
+[ReferenceReplay] step=17575 frame=91
+[ReferenceReplay] step=17600 frame=22
+[ReferenceReplay] step=17625 frame=47
+[ReferenceReplay] step=17650 frame=72
+[ReferenceReplay] step=17675 frame=3
+[ReferenceReplay] step=17700 frame=28
+[ReferenceReplay] step=17725 frame=53
+[ReferenceReplay] step=17750 frame=78
+[ReferenceReplay] step=17775 frame=9
+[ReferenceReplay] step=17800 frame=34
+[ReferenceReplay] step=17825 frame=59
+[ReferenceReplay] step=17850 frame=84
+[ReferenceReplay] step=17875 frame=15
+[ReferenceReplay] step=17900 frame=40
+[ReferenceReplay] step=17925 frame=65
+[ReferenceReplay] step=17950 frame=90
+[ReferenceReplay] step=17975 frame=21
+[ReferenceReplay] step=18000 frame=46
+[ReferenceReplay] step=18025 frame=71
+[ReferenceReplay] step=18050 frame=2
+[ReferenceReplay] step=18075 frame=27
+[ReferenceReplay] step=18100 frame=52
+[ReferenceReplay] step=18125 frame=77
+[ReferenceReplay] step=18150 frame=8
+[ReferenceReplay] step=18175 frame=33
+[ReferenceReplay] step=18200 frame=58
+[ReferenceReplay] step=18225 frame=83
+[ReferenceReplay] step=18250 frame=14
+[ReferenceReplay] step=18275 frame=39
+[ReferenceReplay] step=18300 frame=64
+[ReferenceReplay] step=18325 frame=89
+[ReferenceReplay] step=18350 frame=20
+[ReferenceReplay] step=18375 frame=45
+[ReferenceReplay] step=18400 frame=70
+[ReferenceReplay] step=18425 frame=1
+[ReferenceReplay] step=18450 frame=26
+[ReferenceReplay] step=18475 frame=51
+[ReferenceReplay] step=18500 frame=76
+[ReferenceReplay] step=18525 frame=7
+[ReferenceReplay] step=18550 frame=32
+[ReferenceReplay] step=18575 frame=57
+[ReferenceReplay] step=18600 frame=82
+[ReferenceReplay] step=18625 frame=13
+[ReferenceReplay] step=18650 frame=38
+[ReferenceReplay] step=18675 frame=63
+[ReferenceReplay] step=18700 frame=88
+[ReferenceReplay] step=18725 frame=19
+[ReferenceReplay] step=18750 frame=44
+[ReferenceReplay] step=18775 frame=69
+[ReferenceReplay] step=18800 frame=0
+[ReferenceReplay] step=18825 frame=25
+[ReferenceReplay] step=18850 frame=50
+[ReferenceReplay] step=18875 frame=75
+[ReferenceReplay] step=18900 frame=6
+[ReferenceReplay] step=18925 frame=31
+[ReferenceReplay] step=18950 frame=56
+[ReferenceReplay] step=18975 frame=81
+[ReferenceReplay] step=19000 frame=12
+[ReferenceReplay] step=19025 frame=37
+[ReferenceReplay] step=19050 frame=62
+[ReferenceReplay] step=19075 frame=87
+[ReferenceReplay] step=19100 frame=18
+[ReferenceReplay] step=19125 frame=43
+[ReferenceReplay] step=19150 frame=68
+[ReferenceReplay] step=19175 frame=93
+[ReferenceReplay] step=19200 frame=24
+[ReferenceReplay] step=19225 frame=49
+[ReferenceReplay] step=19250 frame=74
+[ReferenceReplay] step=19275 frame=5
+[ReferenceReplay] step=19300 frame=30
+[ReferenceReplay] step=19325 frame=55
+[ReferenceReplay] step=19350 frame=80
+[ReferenceReplay] step=19375 frame=11
+[ReferenceReplay] step=19400 frame=36
+[ReferenceReplay] step=19425 frame=61
+[ReferenceReplay] step=19450 frame=86
+[ReferenceReplay] step=19475 frame=17
+[ReferenceReplay] step=19500 frame=42
+[ReferenceReplay] step=19525 frame=67
+[ReferenceReplay] step=19550 frame=92
+[ReferenceReplay] step=19575 frame=23
+[ReferenceReplay] step=19600 frame=48
+[ReferenceReplay] step=19625 frame=73
+[ReferenceReplay] step=19650 frame=4
+[ReferenceReplay] step=19675 frame=29
+[ReferenceReplay] step=19700 frame=54
+[ReferenceReplay] step=19725 frame=79
+[ReferenceReplay] step=19750 frame=10
+[ReferenceReplay] step=19775 frame=35
+[ReferenceReplay] step=19800 frame=60
+[ReferenceReplay] step=19825 frame=85
+[ReferenceReplay] step=19850 frame=16
+[ReferenceReplay] step=19875 frame=41
+[ReferenceReplay] step=19900 frame=66
+[ReferenceReplay] step=19925 frame=91
+[ReferenceReplay] step=19950 frame=22
+[ReferenceReplay] step=19975 frame=47
+[ReferenceReplay] step=20000 frame=72
+[ReferenceReplay] step=20025 frame=3
+[ReferenceReplay] step=20050 frame=28
+[ReferenceReplay] step=20075 frame=53
+[ReferenceReplay] step=20100 frame=78
+[ReferenceReplay] step=20125 frame=9
+[ReferenceReplay] step=20150 frame=34
+[ReferenceReplay] step=20175 frame=59
+[ReferenceReplay] step=20200 frame=84
+[ReferenceReplay] step=20225 frame=15
+[ReferenceReplay] step=20250 frame=40
+[ReferenceReplay] step=20275 frame=65
+[ReferenceReplay] step=20300 frame=90
+[ReferenceReplay] step=20325 frame=21
+[ReferenceReplay] step=20350 frame=46
+[ReferenceReplay] step=20375 frame=71
+[ReferenceReplay] step=20400 frame=2
+[ReferenceReplay] step=20425 frame=27
+[ReferenceReplay] step=20450 frame=52
+[ReferenceReplay] step=20475 frame=77
+[ReferenceReplay] step=20500 frame=8
+[ReferenceReplay] step=20525 frame=33
+[ReferenceReplay] step=20550 frame=58
+[ReferenceReplay] step=20575 frame=83
+[ReferenceReplay] step=20600 frame=14
+[ReferenceReplay] step=20625 frame=39
+[ReferenceReplay] step=20650 frame=64
+[ReferenceReplay] step=20675 frame=89
+[ReferenceReplay] step=20700 frame=20
+[ReferenceReplay] step=20725 frame=45
+[ReferenceReplay] step=20750 frame=70
+[ReferenceReplay] step=20775 frame=1
+[ReferenceReplay] step=20800 frame=26
+[ReferenceReplay] step=20825 frame=51
+[ReferenceReplay] step=20850 frame=76
+[ReferenceReplay] step=20875 frame=7
+[ReferenceReplay] step=20900 frame=32
+[ReferenceReplay] step=20925 frame=57
+[ReferenceReplay] step=20950 frame=82
+[ReferenceReplay] step=20975 frame=13
+[ReferenceReplay] step=21000 frame=38
+[ReferenceReplay] step=21025 frame=63
+[ReferenceReplay] step=21050 frame=88
+[ReferenceReplay] step=21075 frame=19
+[ReferenceReplay] step=21100 frame=44
+[ReferenceReplay] step=21125 frame=69
+[ReferenceReplay] step=21150 frame=0
+[ReferenceReplay] step=21175 frame=25
+[ReferenceReplay] step=21200 frame=50
+[ReferenceReplay] step=21225 frame=75
+[ReferenceReplay] step=21250 frame=6
+[ReferenceReplay] step=21275 frame=31
+[ReferenceReplay] step=21300 frame=56
+[ReferenceReplay] step=21325 frame=81
+[ReferenceReplay] step=21350 frame=12
+[ReferenceReplay] step=21375 frame=37
+[ReferenceReplay] step=21400 frame=62
+[ReferenceReplay] step=21425 frame=87
+[ReferenceReplay] step=21450 frame=18
+[ReferenceReplay] step=21475 frame=43
+[ReferenceReplay] step=21500 frame=68
+[ReferenceReplay] step=21525 frame=93
+[ReferenceReplay] step=21550 frame=24
+[ReferenceReplay] step=21575 frame=49
+[ReferenceReplay] step=21600 frame=74
+[ReferenceReplay] step=21625 frame=5
+[ReferenceReplay] step=21650 frame=30
+[ReferenceReplay] step=21675 frame=55
+[ReferenceReplay] step=21700 frame=80
+[ReferenceReplay] step=21725 frame=11
+[ReferenceReplay] step=21750 frame=36
+[ReferenceReplay] step=21775 frame=61
+[ReferenceReplay] step=21800 frame=86
+[ReferenceReplay] step=21825 frame=17
+[ReferenceReplay] step=21850 frame=42
+[ReferenceReplay] step=21875 frame=67
+[ReferenceReplay] step=21900 frame=92
+[ReferenceReplay] step=21925 frame=23
+[ReferenceReplay] step=21950 frame=48
+[ReferenceReplay] step=21975 frame=73
+[ReferenceReplay] step=22000 frame=4
+[ReferenceReplay] step=22025 frame=29
+[ReferenceReplay] step=22050 frame=54
+[ReferenceReplay] step=22075 frame=79
+[ReferenceReplay] step=22100 frame=10
+[ReferenceReplay] step=22125 frame=35
+[ReferenceReplay] step=22150 frame=60
+[ReferenceReplay] step=22175 frame=85
+[ReferenceReplay] step=22200 frame=16
+[ReferenceReplay] step=22225 frame=41
+[ReferenceReplay] step=22250 frame=66
+[ReferenceReplay] step=22275 frame=91
+[ReferenceReplay] step=22300 frame=22
+[ReferenceReplay] step=22325 frame=47
+[ReferenceReplay] step=22350 frame=72
+[ReferenceReplay] step=22375 frame=3
+[ReferenceReplay] step=22400 frame=28
+[ReferenceReplay] step=22425 frame=53
+[ReferenceReplay] step=22450 frame=78
+[ReferenceReplay] step=22475 frame=9
+[ReferenceReplay] step=22500 frame=34
+[ReferenceReplay] step=22525 frame=59
+[ReferenceReplay] step=22550 frame=84
+[ReferenceReplay] step=22575 frame=15
+[ReferenceReplay] step=22600 frame=40
+[ReferenceReplay] step=22625 frame=65
+[ReferenceReplay] step=22650 frame=90
+[ReferenceReplay] step=22675 frame=21
+[ReferenceReplay] step=22700 frame=46
+[ReferenceReplay] step=22725 frame=71
+[ReferenceReplay] step=22750 frame=2
+[ReferenceReplay] step=22775 frame=27
+[ReferenceReplay] step=22800 frame=52
+[ReferenceReplay] step=22825 frame=77
+[ReferenceReplay] step=22850 frame=8
+[ReferenceReplay] step=22875 frame=33
+[ReferenceReplay] step=22900 frame=58
+[ReferenceReplay] step=22925 frame=83
+[ReferenceReplay] step=22950 frame=14
+[ReferenceReplay] step=22975 frame=39
+[ReferenceReplay] step=23000 frame=64
+[ReferenceReplay] step=23025 frame=89
+[ReferenceReplay] step=23050 frame=20
+[ReferenceReplay] step=23075 frame=45
+[ReferenceReplay] step=23100 frame=70
+[ReferenceReplay] step=23125 frame=1
+[ReferenceReplay] step=23150 frame=26
+[ReferenceReplay] step=23175 frame=51
+[ReferenceReplay] step=23200 frame=76
+[ReferenceReplay] step=23225 frame=7
+[ReferenceReplay] step=23250 frame=32
+[ReferenceReplay] step=23275 frame=57
+[ReferenceReplay] step=23300 frame=82
+[ReferenceReplay] step=23325 frame=13
+[ReferenceReplay] step=23350 frame=38
+[ReferenceReplay] step=23375 frame=63
+[ReferenceReplay] step=23400 frame=88
+[ReferenceReplay] step=23425 frame=19
+[ReferenceReplay] step=23450 frame=44
+[ReferenceReplay] step=23475 frame=69
+[ReferenceReplay] step=23500 frame=0
+[ReferenceReplay] step=23525 frame=25
+[ReferenceReplay] step=23550 frame=50
+[ReferenceReplay] step=23575 frame=75
+[ReferenceReplay] step=23600 frame=6
+[ReferenceReplay] step=23625 frame=31
+[ReferenceReplay] step=23650 frame=56
+[ReferenceReplay] step=23675 frame=81
+[ReferenceReplay] step=23700 frame=12
+[ReferenceReplay] step=23725 frame=37
+[ReferenceReplay] step=23750 frame=62
+[ReferenceReplay] step=23775 frame=87
+[ReferenceReplay] step=23800 frame=18
+[ReferenceReplay] step=23825 frame=43
+[ReferenceReplay] step=23850 frame=68
+[ReferenceReplay] step=23875 frame=93
+[ReferenceReplay] step=23900 frame=24
+[ReferenceReplay] step=23925 frame=49
+[ReferenceReplay] step=23950 frame=74
+[ReferenceReplay] step=23975 frame=5
+[ReferenceReplay] step=24000 frame=30
+[ReferenceReplay] step=24025 frame=55
+[ReferenceReplay] step=24050 frame=80
+[ReferenceReplay] step=24075 frame=11
+[ReferenceReplay] step=24100 frame=36
+[ReferenceReplay] step=24125 frame=61
+[ReferenceReplay] step=24150 frame=86
+[ReferenceReplay] step=24175 frame=17
+[ReferenceReplay] step=24200 frame=42
+[ReferenceReplay] step=24225 frame=67
+[ReferenceReplay] step=24250 frame=92
+[ReferenceReplay] step=24275 frame=23
+[ReferenceReplay] step=24300 frame=48
+[ReferenceReplay] step=24325 frame=73
+[ReferenceReplay] step=24350 frame=4
+[ReferenceReplay] step=24375 frame=29
+[ReferenceReplay] step=24400 frame=54
+[ReferenceReplay] step=24425 frame=79
+[ReferenceReplay] step=24450 frame=10
+[ReferenceReplay] step=24475 frame=35
+[ReferenceReplay] step=24500 frame=60
+[ReferenceReplay] step=24525 frame=85
+[ReferenceReplay] step=24550 frame=16
+[ReferenceReplay] step=24575 frame=41
+[ReferenceReplay] step=24600 frame=66
+[ReferenceReplay] step=24625 frame=91
+[ReferenceReplay] step=24650 frame=22
+[ReferenceReplay] step=24675 frame=47
+[ReferenceReplay] step=24700 frame=72
+[ReferenceReplay] step=24725 frame=3
+[ReferenceReplay] step=24750 frame=28
+[ReferenceReplay] step=24775 frame=53
+[ReferenceReplay] step=24800 frame=78
+[ReferenceReplay] step=24825 frame=9
+[ReferenceReplay] step=24850 frame=34
+[ReferenceReplay] step=24875 frame=59
+[ReferenceReplay] step=24900 frame=84
+[ReferenceReplay] step=24925 frame=15
+[ReferenceReplay] step=24950 frame=40
+[ReferenceReplay] step=24975 frame=65
+[ReferenceReplay] step=25000 frame=90
+[ReferenceReplay] step=25025 frame=21
+[ReferenceReplay] step=25050 frame=46
+[ReferenceReplay] step=25075 frame=71
+[ReferenceReplay] step=25100 frame=2
+[ReferenceReplay] step=25125 frame=27
+[ReferenceReplay] step=25150 frame=52
+[ReferenceReplay] step=25175 frame=77
+[ReferenceReplay] step=25200 frame=8
+[ReferenceReplay] step=25225 frame=33
+[ReferenceReplay] step=25250 frame=58
+[ReferenceReplay] step=25275 frame=83
+[ReferenceReplay] step=25300 frame=14
+[ReferenceReplay] step=25325 frame=39
+[ReferenceReplay] step=25350 frame=64
+[ReferenceReplay] step=25375 frame=89
+[ReferenceReplay] step=25400 frame=20
+[ReferenceReplay] step=25425 frame=45
+[ReferenceReplay] step=25450 frame=70
+[ReferenceReplay] step=25475 frame=1
+[ReferenceReplay] step=25500 frame=26
+[ReferenceReplay] step=25525 frame=51
+[ReferenceReplay] step=25550 frame=76
+[ReferenceReplay] step=25575 frame=7
+[ReferenceReplay] step=25600 frame=32
+[ReferenceReplay] step=25625 frame=57
+[ReferenceReplay] step=25650 frame=82
+[ReferenceReplay] step=25675 frame=13
+[ReferenceReplay] step=25700 frame=38
+[ReferenceReplay] step=25725 frame=63
+[ReferenceReplay] step=25750 frame=88
+[ReferenceReplay] step=25775 frame=19
+[ReferenceReplay] step=25800 frame=44
+[ReferenceReplay] step=25825 frame=69
+[ReferenceReplay] step=25850 frame=0
+[ReferenceReplay] step=25875 frame=25
+[ReferenceReplay] step=25900 frame=50
+[ReferenceReplay] step=25925 frame=75
+[ReferenceReplay] step=25950 frame=6
+[ReferenceReplay] step=25975 frame=31
+[ReferenceReplay] step=26000 frame=56
+[ReferenceReplay] step=26025 frame=81
+[ReferenceReplay] step=26050 frame=12
+[ReferenceReplay] step=26075 frame=37
+[ReferenceReplay] step=26100 frame=62
+[ReferenceReplay] step=26125 frame=87
+[ReferenceReplay] step=26150 frame=18
+[ReferenceReplay] step=26175 frame=43
+[ReferenceReplay] step=26200 frame=68
+[ReferenceReplay] step=26225 frame=93
+[ReferenceReplay] step=26250 frame=24
+[ReferenceReplay] step=26275 frame=49
+[ReferenceReplay] step=26300 frame=74
+[ReferenceReplay] step=26325 frame=5
+[ReferenceReplay] step=26350 frame=30
+[ReferenceReplay] step=26375 frame=55
+[ReferenceReplay] step=26400 frame=80
+[ReferenceReplay] step=26425 frame=11
+[ReferenceReplay] step=26450 frame=36
+[ReferenceReplay] step=26475 frame=61
+[ReferenceReplay] step=26500 frame=86
+[ReferenceReplay] step=26525 frame=17
+[ReferenceReplay] step=26550 frame=42
+[ReferenceReplay] step=26575 frame=67
+[ReferenceReplay] step=26600 frame=92
+[ReferenceReplay] step=26625 frame=23
+[ReferenceReplay] step=26650 frame=48
+[ReferenceReplay] step=26675 frame=73
+[ReferenceReplay] step=26700 frame=4
+[ReferenceReplay] step=26725 frame=29
+[ReferenceReplay] step=26750 frame=54
+[ReferenceReplay] step=26775 frame=79
+[ReferenceReplay] step=26800 frame=10
+[ReferenceReplay] step=26825 frame=35
+[ReferenceReplay] step=26850 frame=60
+[ReferenceReplay] step=26875 frame=85
+[ReferenceReplay] step=26900 frame=16
+[ReferenceReplay] step=26925 frame=41
+[ReferenceReplay] step=26950 frame=66
+[ReferenceReplay] step=26975 frame=91
+[ReferenceReplay] step=27000 frame=22
+[ReferenceReplay] step=27025 frame=47
+[ReferenceReplay] step=27050 frame=72
+[ReferenceReplay] step=27075 frame=3
+[ReferenceReplay] step=27100 frame=28
+[ReferenceReplay] step=27125 frame=53
+[ReferenceReplay] step=27150 frame=78
+[ReferenceReplay] step=27175 frame=9
+[ReferenceReplay] step=27200 frame=34
+[ReferenceReplay] step=27225 frame=59
+[ReferenceReplay] step=27250 frame=84
+[ReferenceReplay] step=27275 frame=15
+[ReferenceReplay] step=27300 frame=40
+[ReferenceReplay] step=27325 frame=65
+[ReferenceReplay] step=27350 frame=90
+[ReferenceReplay] step=27375 frame=21
+[ReferenceReplay] step=27400 frame=46
+[ReferenceReplay] step=27425 frame=71
+[ReferenceReplay] step=27450 frame=2
+[ReferenceReplay] step=27475 frame=27
+[ReferenceReplay] step=27500 frame=52
+[ReferenceReplay] step=27525 frame=77
+[ReferenceReplay] step=27550 frame=8
+[ReferenceReplay] step=27575 frame=33
+[ReferenceReplay] step=27600 frame=58
+[ReferenceReplay] step=27625 frame=83
+[ReferenceReplay] step=27650 frame=14
+[ReferenceReplay] step=27675 frame=39
+[ReferenceReplay] step=27700 frame=64
+[ReferenceReplay] step=27725 frame=89
+[ReferenceReplay] step=27750 frame=20
+[ReferenceReplay] step=27775 frame=45
+[ReferenceReplay] step=27800 frame=70
+[ReferenceReplay] step=27825 frame=1
+[ReferenceReplay] step=27850 frame=26
+[ReferenceReplay] step=27875 frame=51
+[ReferenceReplay] step=27900 frame=76
+[ReferenceReplay] step=27925 frame=7
+[ReferenceReplay] step=27950 frame=32
+[ReferenceReplay] step=27975 frame=57
+[ReferenceReplay] step=28000 frame=82
+[ReferenceReplay] step=28025 frame=13
+[ReferenceReplay] step=28050 frame=38
+[ReferenceReplay] step=28075 frame=63
+[ReferenceReplay] step=28100 frame=88
+[ReferenceReplay] step=28125 frame=19
+[ReferenceReplay] step=28150 frame=44
+[ReferenceReplay] step=28175 frame=69
+[ReferenceReplay] step=28200 frame=0
+[ReferenceReplay] step=28225 frame=25
+[ReferenceReplay] step=28250 frame=50
+[ReferenceReplay] step=28275 frame=75
+[ReferenceReplay] step=28300 frame=6
+[ReferenceReplay] step=28325 frame=31
+[ReferenceReplay] step=28350 frame=56
+[ReferenceReplay] step=28375 frame=81
+[ReferenceReplay] step=28400 frame=12
+[ReferenceReplay] step=28425 frame=37
+[ReferenceReplay] step=28450 frame=62
+[ReferenceReplay] step=28475 frame=87
+[ReferenceReplay] step=28500 frame=18
+[ReferenceReplay] step=28525 frame=43
+[ReferenceReplay] step=28550 frame=68
+[ReferenceReplay] step=28575 frame=93
+[ReferenceReplay] step=28600 frame=24
+[ReferenceReplay] step=28625 frame=49
+[ReferenceReplay] step=28650 frame=74
+[ReferenceReplay] step=28675 frame=5
+[ReferenceReplay] step=28700 frame=30
+[ReferenceReplay] step=28725 frame=55
+[ReferenceReplay] step=28750 frame=80
+[ReferenceReplay] step=28775 frame=11
+[ReferenceReplay] step=28800 frame=36
+[ReferenceReplay] step=28825 frame=61
+[ReferenceReplay] step=28850 frame=86
+[ReferenceReplay] step=28875 frame=17
+[ReferenceReplay] step=28900 frame=42
+[ReferenceReplay] step=28925 frame=67
+[ReferenceReplay] step=28950 frame=92
+[ReferenceReplay] step=28975 frame=23
+[ReferenceReplay] step=29000 frame=48
+[ReferenceReplay] step=29025 frame=73
+[ReferenceReplay] step=29050 frame=4
+[ReferenceReplay] step=29075 frame=29
+[ReferenceReplay] step=29100 frame=54
+[ReferenceReplay] step=29125 frame=79
+[ReferenceReplay] step=29150 frame=10
+[ReferenceReplay] step=29175 frame=35
+[ReferenceReplay] step=29200 frame=60
+[ReferenceReplay] step=29225 frame=85
+[ReferenceReplay] step=29250 frame=16
+[ReferenceReplay] step=29275 frame=41
+[ReferenceReplay] step=29300 frame=66
+[ReferenceReplay] step=29325 frame=91
+[ReferenceReplay] step=29350 frame=22
+[ReferenceReplay] step=29375 frame=47
+[ReferenceReplay] step=29400 frame=72
+[ReferenceReplay] step=29425 frame=3
+[ReferenceReplay] step=29450 frame=28
+[ReferenceReplay] step=29475 frame=53
+[ReferenceReplay] step=29500 frame=78
+[ReferenceReplay] step=29525 frame=9
+[ReferenceReplay] step=29550 frame=34
+[ReferenceReplay] step=29575 frame=59
+[ReferenceReplay] step=29600 frame=84
+[ReferenceReplay] step=29625 frame=15
+[ReferenceReplay] step=29650 frame=40
+[ReferenceReplay] step=29675 frame=65
+[ReferenceReplay] step=29700 frame=90
+[ReferenceReplay] step=29725 frame=21
+[ReferenceReplay] step=29750 frame=46
+[ReferenceReplay] step=29775 frame=71
+[ReferenceReplay] step=29800 frame=2
+[ReferenceReplay] step=29825 frame=27
+[ReferenceReplay] step=29850 frame=52
+[ReferenceReplay] step=29875 frame=77
+[ReferenceReplay] step=29900 frame=8
+[ReferenceReplay] step=29925 frame=33
+[ReferenceReplay] step=29950 frame=58
+[ReferenceReplay] step=29975 frame=83
+[ReferenceReplay] step=30000 frame=14
+[ReferenceReplay] step=30025 frame=39
+[ReferenceReplay] step=30050 frame=64
+[ReferenceReplay] step=30075 frame=89
+[ReferenceReplay] step=30100 frame=20
+[ReferenceReplay] step=30125 frame=45
+[ReferenceReplay] step=30150 frame=70
+[ReferenceReplay] step=30175 frame=1
+[ReferenceReplay] step=30200 frame=26
+[ReferenceReplay] step=30225 frame=51
+[ReferenceReplay] step=30250 frame=76
+[ReferenceReplay] step=30275 frame=7
+[ReferenceReplay] step=30300 frame=32
+[ReferenceReplay] step=30325 frame=57
+[ReferenceReplay] step=30350 frame=82
+[ReferenceReplay] step=30375 frame=13
+[ReferenceReplay] step=30400 frame=38
+[ReferenceReplay] step=30425 frame=63
+[ReferenceReplay] step=30450 frame=88
+[ReferenceReplay] step=30475 frame=19
+[ReferenceReplay] step=30500 frame=44
+[ReferenceReplay] step=30525 frame=69
+[ReferenceReplay] step=30550 frame=0
+[ReferenceReplay] step=30575 frame=25
+[ReferenceReplay] step=30600 frame=50
+[ReferenceReplay] step=30625 frame=75

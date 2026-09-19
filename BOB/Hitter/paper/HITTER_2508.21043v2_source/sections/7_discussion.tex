@@ -1,0 +1,25 @@
+\section{Discussion}
+\label{disc-sec}
+\subsection{System Design}
+Our system adopts two orthogonal combinations: (1) a high-level planner with a low-level controller, and (2) a model-based method with a learning-based method. The first combination modularizes the architecture, separating long-horizon prediction and planning from short-horizon whole-body control.
+This modularization enables the two modules to be independently evaluated and progressively improved, for instance, by quantifying the planner’s prediction accuracy (Fig.\ref{fig:prediction_error}) and the controller’s agility (Fig.\ref{fig:agility_test}).
+
+The second combination leverages the strengths of model-based and learning-based methods, while mitigating their respective shortcomings.
+In table tennis setting, where rewards are sparse and delayed, end-to-end RL often struggles with exploration and suffers from low sample efficiency. 
+Purely model-based approaches, in contrast, rely on highly accurate dynamics and perception models, which are difficult to obtain for humanoids with many degrees of freedom and frequent ground contacts. 
+Our hierarchical design bridges this gap: it improves sample efficiency, increases robustness to perception errors, and adapts effectively to real-world conditions. Consequently, the system can react in real time to the sub-second dynamics of the game, and simultaneously generate agile strike motion and footwork, achieving a high rate of successful returns.
+
+\subsection{Limitations}
+Despite demonstrating promising results in humanoid table tennis, several limitations remain.
+
+\textbf{Virtual hitting plane.} The current system assumes a fixed hitting plane at the end of the table, which constrains striking strategies and reduces effectiveness against very short or deep balls. As a result, when playing against the humanoid, a human opponent must avoid hitting overly short balls that the robot cannot reach. Relaxing this assumption could enable more diverse contact points and improve table coverage.
+
+\textbf{External motion capture.} Ball position and robot base pose are provided by a motion capture system, restricting deployment to controlled environments. Incorporating vision-based sensing would alleviate this dependency and allow operation in more natural and diverse settings.
+
+\textbf{Spin handling and stroke repertoire.} The system assumes negligible spin and relies on a flat push to return the ball. Professional-level play, however, involves heavy spin and diverse strokes, e.g., top-spin loops, back-spin chops, side-spin blocks. Extending the system to perceive spin and generate appropriate counter-strokes would bring humanoid performance closer to expert human play.
+
+\subsection{Future Work}
+\textbf{Multi-agent training and serving.} In our current humanoid-humanoid experiments, both robots were equipped with the same policy without any joint training of different policies. Even under this simple setting, they were able to sustain a table tennis game. Future work could explore explicit multi-agent training frameworks to further improve competitiveness. Another point is that our robots are not yet capable of serving; in both humanoid-human and humanoid-humanoid settings, a human player is required to initiate the rally. Enabling autonomous serving thus represents another important direction for future work.
+
+
+\textbf{Learning to play against skilled opponents.} We believe that we have established a strong baseline for the making of table tennis shots by humanoid robots. In the future, we expect these humanoids to learn to play against skilled opponents. The additional characteristics that are required to play against skilled opponents include learning their characteristics by watching them play (strategic learning), and then adapting the stroke making in real time to specific characteristics of the opponent (tactical learning). We have begun a program to determine the intent of the opponent in \cite{etaat2025latte}. We hope to integrate these methods along with recent advances in Markov games \cite{KMS2025} to have championship-quality humanoid robot players. 

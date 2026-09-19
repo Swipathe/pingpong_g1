@@ -1,0 +1,4053 @@
+# Review package: 3b76db22f77d68c16ae6d23442b67801b2b52fa7..b37ede9e73b7f16b5da2e681e0aaed8a0da388fa
+
+## Commits
+b37ede9 chore: keep SDD task report local
+b65e24b docs: finalize task 4 delivery report
+0ad658d refactor: make track id the HITTER runtime identity
+
+## Files changed
+ deploy/diagnostics/hitter_task_attempts.py         |  18 +--
+ deploy/diagnostics/hitter_task_events.py           |   4 +-
+ deploy/diagnostics/hitter_task_models.py           |  23 +---
+ deploy/diagnostics/hitter_task_monitor.py          |   6 +-
+ deploy/diagnostics/hitter_task_pipeline.py         |  62 ++++-----
+ deploy/diagnostics/hitter_task_replay.py           |  16 +--
+ deploy/diagnostics/static/hitter_task_monitor.html |   2 +-
+ deploy/envs/hitter.py                              | 106 ++++++++-------
+ deploy/simulator/real_world.py                     |  16 +--
+ deploy/tests/test_hitter_runtime_factory.py        |   2 +-
+ deploy/tests/test_hitter_runtime_identity_types.py |  73 ++++++++++
+ deploy/tests/test_hitter_strike_target_logging.py  |  22 +--
+ deploy/tests/test_hitter_task_attempts.py          |   7 +-
+ .../test_hitter_task_diagnostics_integration.py    |   6 +-
+ deploy/tests/test_hitter_task_events.py            |   4 +-
+ deploy/tests/test_hitter_task_frontend.py          |   4 +-
+ deploy/tests/test_hitter_task_input_adapter.py     |  20 +--
+ deploy/tests/test_hitter_task_monitor.py           |  18 +--
+ deploy/tests/test_hitter_task_pipeline.py          | 150 ++++++++++-----------
+ deploy/tests/test_hitter_task_replay.py            |   4 +-
+ deploy/tests/test_mujoco_hitter_track_id_v2.py     |  49 +++++++
+ deploy/utils/hitter_realtime.py                    |  88 ++++++------
+ deploy/utils/hitter_runtime_types.py               |  22 +++
+ 23 files changed, 428 insertions(+), 294 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_attempts.py b/deploy/diagnostics/hitter_task_attempts.py
+index 4e0cc38..92320ed 100644
+--- a/deploy/diagnostics/hitter_task_attempts.py
++++ b/deploy/diagnostics/hitter_task_attempts.py
+@@ -91,21 +91,21 @@ class AttemptTracker:
+         self._max_bindings = int(max_bindings)
+         self._max_timeline_per_attempt = int(max_timeline_per_attempt)
+         self._next_attempt_id = 1
+         self._next_segment_id = 1
+         self._attempts: "OrderedDict[int, _AttemptState]" = OrderedDict()
+         self._bindings: "OrderedDict[SnapshotKey, AttemptBinding]" = OrderedDict()
+         self._active_attempt_id: Optional[int] = None
+         self._current_segment: Optional[_SegmentState] = None
+         self._latest_binding: Optional[AttemptBinding] = None
+         self._grace_deadline_s: Optional[float] = None
+-        self._pending_reset_epoch: Optional[int] = None
++        self._pending_reset_track_id: Optional[int] = None
+         self._pending_reset_segment: Optional[_SegmentState] = None
+         self._last_lifecycle_stage: Dict[int, str] = {}
+ 
+     @_synchronized
+     def observe_ball_sample(
+         self,
+         sample: NormalizedMocapSample,
+         *,
+         snapshot_key: SnapshotKey,
+     ) -> Tuple[AttemptTransition, ...]:
+@@ -126,21 +126,21 @@ class AttemptTracker:
+             elif self._current_segment is None or not self._current_segment.open:
+                 transitions.append(
+                     self._start_segment(
+                         snapshot_key=snapshot_key,
+                         monotonic_s=sample.received_monotonic_s,
+                     )
+                 )
+             else:
+                 self._store_binding(snapshot_key, self._current_segment)
+             self._grace_deadline_s = None
+-            self._pending_reset_epoch = None
++            self._pending_reset_track_id = None
+             self._pending_reset_segment = None
+             return tuple(transitions)
+ 
+         if self._active_attempt_id is None:
+             return tuple(transitions)
+ 
+         segment = self._segment_for_invisible(snapshot_key)
+         if segment is not None:
+             self._store_binding(snapshot_key, segment)
+         if self._current_segment is not None and self._current_segment.open:
+@@ -150,40 +150,40 @@ class AttemptTracker:
+                     monotonic_s=sample.received_monotonic_s,
+                     snapshot_key=snapshot_key,
+                 )
+             )
+         return tuple(transitions)
+ 
+     @_synchronized
+     def observe_production_reset(
+         self,
+         *,
+-        previous_track_epoch: int,
+-        new_track_epoch: int,
++        previous_track_id: int,
++        new_track_id: int,
+         reason: str,
+         monotonic_s: float,
+     ) -> Tuple[AttemptTransition, ...]:
+         """End the production segment on invalid or strike-deadline reset."""
+         transitions: List[AttemptTransition] = list(self._expire_grace(monotonic_s))
+         if self._active_attempt_id is None or self._current_segment is None:
+             return tuple(transitions)
+-        self._pending_reset_epoch = new_track_epoch
++        self._pending_reset_track_id = new_track_id
+         self._pending_reset_segment = self._current_segment
+         if self._current_segment.open:
+             transitions.append(
+                 self._end_segment(
+                     reason_code=reason,
+                     monotonic_s=monotonic_s,
+                     snapshot_key=None,
+                     values={
+-                        "previous_track_epoch": previous_track_epoch,
+-                        "new_track_epoch": new_track_epoch,
++                        "previous_track_id": previous_track_id,
++                        "new_track_id": new_track_id,
+                     },
+                 )
+             )
+         return tuple(transitions)
+ 
+     @_synchronized
+     def bind_snapshot(
+         self,
+         *,
+         snapshot_key: SnapshotKey,
+@@ -415,21 +415,21 @@ class AttemptTracker:
+         while len(self._bindings) > self._max_bindings:
+             self._bindings.popitem(last=False)
+         self._latest_binding = binding
+         return binding
+ 
+     def _segment_for_invisible(
+         self,
+         snapshot_key: SnapshotKey,
+     ) -> Optional[_SegmentState]:
+         if (
+-            self._pending_reset_epoch == snapshot_key.track_epoch
++            self._pending_reset_track_id == snapshot_key.track_id
+             and self._pending_reset_segment is not None
+         ):
+             return self._pending_reset_segment
+         return self._current_segment
+ 
+     def _end_segment(
+         self,
+         *,
+         reason_code: str,
+         monotonic_s: float,
+@@ -477,21 +477,21 @@ class AttemptTracker:
+         )
+         attempt.timeline.append(transition)
+         attempt.closed = True
+         attempt.terminal_status = status
+         attempt.terminal_blocker = blocker
+         attempt.terminal_stage = transition.stage
+         self._active_attempt_id = None
+         self._current_segment = None
+         self._latest_binding = None
+         self._grace_deadline_s = None
+-        self._pending_reset_epoch = None
++        self._pending_reset_track_id = None
+         self._pending_reset_segment = None
+         self._trim_attempts()
+         return (transition,)
+ 
+     def _validate_binding(self, binding: AttemptBinding) -> None:
+         known = self._bindings.get(binding.snapshot_key)
+         if known != binding:
+             raise ValueError("binding does not match immutable snapshot ownership")
+         self._bindings.move_to_end(binding.snapshot_key)
+ 
+diff --git a/deploy/diagnostics/hitter_task_events.py b/deploy/diagnostics/hitter_task_events.py
+index 289eb17..76eaeae 100644
+--- a/deploy/diagnostics/hitter_task_events.py
++++ b/deploy/diagnostics/hitter_task_events.py
+@@ -192,21 +192,21 @@ def _view(payload: Mapping[str, JsonValue], nested_key: str) -> Mapping[str, Any
+         return nested
+     return payload
+ 
+ 
+ def _snapshot_key(value: Any) -> Optional[SnapshotKey]:
+     if value is None:
+         return None
+     if not isinstance(value, Mapping):
+         raise _InvalidDraft("snapshot key must be a mapping")
+     return SnapshotKey(
+-        track_epoch=int(value["track_epoch"]),
++        track_id=int(value["track_id"]),
+         generation=int(value["generation"]),
+     )
+ 
+ 
+ def _health(payload: Mapping[str, JsonValue]) -> HealthSnapshot:
+     value = _view(payload, "health")
+     try:
+         return HealthSnapshot(
+             lcm_connected=bool(value["lcm_connected"]),
+             message_rate_hz_by_subject=value["message_rate_hz_by_subject"],
+@@ -310,21 +310,21 @@ def _ball_diagnostic(value: object) -> BallDiagnosticState:
+             ),
+             incoming_required_count=value.get(
+                 "ball_only_incoming_required",
+                 value.get("incoming_required_count"),
+             ),
+             incoming_status=str(
+                 value.get("incoming_status", "UNKNOWN")
+             ),
+             blocker=value.get("blocker"),
+             source_frame=value.get("source_frame"),
+-            track_epoch=value.get("track_epoch"),
++            track_id=value.get("track_id"),
+             generation=value.get("generation"),
+             raw_position_w=value.get("raw_position_w"),
+             estimated_position_w=value.get("estimated_position_w"),
+             observed_monotonic_s=value.get("observed_monotonic_s"),
+             age_s=value.get("age_s"),
+             last_estimator_reset_reason=value.get(
+                 "last_estimator_reset_reason"
+             ),
+         )
+     except (KeyError, TypeError, ValueError) as exc:
+diff --git a/deploy/diagnostics/hitter_task_models.py b/deploy/diagnostics/hitter_task_models.py
+index dab405c..29d2c9b 100644
+--- a/deploy/diagnostics/hitter_task_models.py
++++ b/deploy/diagnostics/hitter_task_models.py
+@@ -1,19 +1,21 @@
+ from __future__ import annotations
+ 
+ from dataclasses import dataclass
+ import math
+ from types import MappingProxyType
+ from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
+ 
+ import numpy as np
+ 
++from utils.hitter_runtime_types import SnapshotKey
++
+ 
+ SCHEMA_VERSION = 1
+ LIVE_SNAPSHOT_SCHEMA_VERSION = 2
+ 
+ JsonScalar = Union[None, bool, int, float, str]
+ JsonValue = Union[
+     JsonScalar,
+     Tuple["JsonValue", ...],
+     Mapping[str, "JsonValue"],
+ ]
+@@ -143,37 +145,20 @@ class NormalizedMocapSample:
+             "occluded": self.occluded,
+             "source_frame": self.source_frame,
+             "source_time_s": self.source_time_s,
+             "publish_time_us": self.publish_time_us,
+             "received_monotonic_s": self.received_monotonic_s,
+             "wall_time_us": self.wall_time_us,
+             "payload_size": self.payload_size,
+         })
+ 
+ 
+-@dataclass(frozen=True, order=True)
+-class SnapshotKey:
+-    track_epoch: int
+-    generation: int
+-
+-    def __post_init__(self) -> None:
+-        if self.track_epoch < 0 or self.generation < 0:
+-            raise ValueError("snapshot identity values must be non-negative")
+-
+-    def to_json_dict(self) -> Dict[str, Any]:
+-        return _json_dict({
+-            "schema_version": SCHEMA_VERSION,
+-            "track_epoch": self.track_epoch,
+-            "generation": self.generation,
+-        })
+-
+-
+ @dataclass(frozen=True)
+ class AttemptBinding:
+     attempt_id: int
+     track_segment_id: int
+     role: str
+     snapshot_key: SnapshotKey
+ 
+     def __post_init__(self) -> None:
+         if self.attempt_id <= 0 or self.track_segment_id <= 0:
+             raise ValueError("attempt and segment ids must be positive")
+@@ -365,21 +350,21 @@ class BallDiagnosticState:
+     status: str
+     estimator_sample_count: Optional[int]
+     estimator_window_size: Optional[int]
+     speed_mps: Optional[float]
+     velocity_world_mps: Optional[Tuple[float, float, float]]
+     incoming_count: Optional[int]
+     incoming_required_count: Optional[int]
+     incoming_status: str
+     blocker: Optional[str]
+     source_frame: Optional[int] = None
+-    track_epoch: Optional[int] = None
++    track_id: Optional[int] = None
+     generation: Optional[int] = None
+     raw_position_w: Optional[Tuple[float, float, float]] = None
+     estimated_position_w: Optional[Tuple[float, float, float]] = None
+     observed_monotonic_s: Optional[float] = None
+     age_s: Optional[float] = None
+     last_estimator_reset_reason: Optional[str] = None
+ 
+     def __post_init__(self) -> None:
+         for field_name in (
+             "velocity_world_mps",
+@@ -448,21 +433,21 @@ class BallDiagnosticState:
+         ):
+             return None
+         return bool(
+             self.incoming_count >= self.incoming_required_count
+         )
+ 
+     def to_live_json_dict(self) -> Dict[str, Any]:
+         return _json_dict({
+             "status": self.status,
+             "source_frame": self.source_frame,
+-            "track_epoch": self.track_epoch,
++            "track_id": self.track_id,
+             "generation": self.generation,
+             "raw_position_w": self.raw_position_w,
+             "estimated_position_w": self.estimated_position_w,
+             "estimated_velocity_w": self.estimated_velocity_w,
+             "speed_mps": self.speed_mps,
+             "velocity_x_mps": self.velocity_x_mps,
+             "estimator_sample_count": self.estimator_sample_count,
+             "estimator_window_size": self.estimator_window_size,
+             "estimator_ready": self.estimator_ready,
+             "last_estimator_reset_reason": (
+diff --git a/deploy/diagnostics/hitter_task_monitor.py b/deploy/diagnostics/hitter_task_monitor.py
+index 81e69a1..755497e 100644
+--- a/deploy/diagnostics/hitter_task_monitor.py
++++ b/deploy/diagnostics/hitter_task_monitor.py
+@@ -1190,21 +1190,21 @@ class HitterTaskMonitor:
+                     0.01,
+                 )
+             )
+             if (
+                 last is not None
+                 and received - last < interval - 1.0e-12
+             ):
+                 return
+             self._last_planner_input_received_s = received
+         key = SnapshotKey(
+-            int(snapshot.track_epoch),
++            int(snapshot.track_id),
+             int(snapshot.generation),
+         )
+         binding = self.pipeline.attempt_tracker.binding_for_result(key)
+         if binding is None:
+             return
+         value = {
+             "snapshot_key": key.to_json_dict(),
+             "source_frame": int(snapshot.source_frame),
+             "source_time_s": float(snapshot.source_time_s),
+             "received_monotonic_s": received,
+@@ -1964,31 +1964,31 @@ class HitterTaskMonitor:
+         )
+         required = (
+             None
+             if configured_required is None
+             else int(configured_required)
+         )
+         pelvis = subjects["g1pelvis"]
+         pelvis_ready = bool(
+             pelvis.status == "LIVE" and pelvis.valid is True
+         )
+-        incoming_track_epoch = getattr(incoming, "track_epoch", None)
++        incoming_track_id = getattr(incoming, "track_id", None)
+         incoming_count = int(
+             getattr(incoming, "consecutive_count", 0)
+         )
+         incoming_confirmed = bool(
+             getattr(incoming, "confirmed", False)
+         )
+         if not pelvis_ready or ball.estimator_ready is not True:
+             production_incoming_status = "NOT_EVALUATED"
+             production_incoming_count = None
+-        elif incoming_track_epoch is None:
++        elif incoming_track_id is None:
+             production_incoming_status = "NOT_EVALUATED"
+             production_incoming_count = None
+         elif incoming_confirmed:
+             production_incoming_status = "CONFIRMED"
+             production_incoming_count = incoming_count
+         elif incoming_count > 0:
+             production_incoming_status = "CONFIRMING"
+             production_incoming_count = incoming_count
+         else:
+             production_incoming_status = "REJECTED"
+diff --git a/deploy/diagnostics/hitter_task_pipeline.py b/deploy/diagnostics/hitter_task_pipeline.py
+index caf8e47..cbafbf8 100644
+--- a/deploy/diagnostics/hitter_task_pipeline.py
++++ b/deploy/diagnostics/hitter_task_pipeline.py
+@@ -50,22 +50,22 @@ def _readonly_float32(value, *, shape: Tuple[int, ...], field: str) -> np.ndarra
+     immutable = np.frombuffer(
+         array.tobytes(order="C"),
+         dtype=np.float32,
+     ).reshape(shape)
+     immutable.setflags(write=False)
+     return immutable
+ 
+ 
+ @dataclass(frozen=True)
+ class ProductionReset:
+-    previous_track_epoch: int
+-    new_track_epoch: int
++    previous_track_id: int
++    new_track_id: int
+     reason: str
+ 
+ 
+ @dataclass(frozen=True)
+ class LatestPelvisPose:
+     position_w: np.ndarray
+     quaternion_xyzw: np.ndarray
+     valid: bool
+     occluded: bool
+     source_frame: int
+@@ -160,21 +160,21 @@ class MocapFrameAdapter:
+         if (
+             not np.isfinite(self.clock_offset_threshold_s)
+             or self.clock_offset_threshold_s < 0.0
+             or not np.isfinite(self.clock_rate_tolerance_s)
+             or self.clock_rate_tolerance_s < 0.0
+         ):
+             raise ValueError("clock warning thresholds must be nonnegative")
+ 
+         self.lock = threading.RLock()
+         self.ball_state_estimator = build_ball_state_estimator(config)
+-        self.track_epoch = 0
++        self.track_id = 1
+         self.ball_snapshot_generation = 0
+         self.latest_ball_snapshot: Optional[BallEstimateSnapshot] = None
+         self.fallback_estimator_time_s: Optional[float] = None
+         self._next_input_seq = 0
+         self._ball_position_w = np.zeros(3, dtype=np.float32)
+         self._ball_velocity_w = np.zeros(3, dtype=np.float32)
+         self._ball_visible = False
+         self._ball_ready = False
+         self._accepted_pelvis_position_w = np.zeros(
+             3,
+@@ -219,35 +219,35 @@ class MocapFrameAdapter:
+         publish_time_us: int,
+     ) -> float:
+         if self._positive_finite(source_time_s):
+             return float(source_time_s)
+         if publish_time_us > 0:
+             publish_time_s = float(publish_time_us) * 1.0e-6
+             if self._positive_finite(publish_time_s):
+                 return publish_time_s
+         return self._next_fallback_timestamp_locked()
+ 
+-    def _clear_ball_tracking_locked(self, *, advance_epoch: bool) -> None:
++    def _clear_ball_tracking_locked(self, *, advance_track_id: bool) -> None:
+         self.ball_state_estimator.reset()
+         self.fallback_estimator_time_s = None
+         self._ball_visible = False
+         self._ball_ready = False
+-        if advance_epoch:
+-            self.track_epoch += 1
++        if advance_track_id:
++            self.track_id += 1
+ 
+     def _make_snapshot_locked(
+         self,
+         sample: NormalizedMocapSample,
+     ) -> BallEstimateSnapshot:
+         self.ball_snapshot_generation += 1
+         snapshot = BallEstimateSnapshot(
+-            track_epoch=int(self.track_epoch),
++            track_id=int(self.track_id),
+             generation=int(self.ball_snapshot_generation),
+             source_frame=int(sample.source_frame),
+             source_time_s=float(sample.source_time_s or 0.0),
+             received_monotonic_s=float(sample.received_monotonic_s),
+             position_w=self._ball_position_w.astype(
+                 np.float32,
+                 copy=True,
+             ),
+             velocity_w=self._ball_velocity_w.astype(
+                 np.float32,
+@@ -385,29 +385,29 @@ class MocapFrameAdapter:
+             self._append_warning(warnings, "PELVIS_INVALID")
+ 
+     def _update_ball_locked(
+         self,
+         sample: NormalizedMocapSample,
+         warnings,
+     ):
+         self._pelvis_warnings_for_ball_locked(sample, warnings)
+         effective_valid = bool(sample.valid and not sample.occluded)
+         if not effective_valid:
+-            previous_epoch = int(self.track_epoch)
+-            self._clear_ball_tracking_locked(advance_epoch=True)
++            previous_track_id = int(self.track_id)
++            self._clear_ball_tracking_locked(advance_track_id=True)
+             self._append_warning(
+                 warnings,
+                 "BALL_INVALID_OR_OCCLUDED",
+             )
+             reset = ProductionReset(
+-                previous_track_epoch=previous_epoch,
+-                new_track_epoch=int(self.track_epoch),
++                previous_track_id=previous_track_id,
++                new_track_id=int(self.track_id),
+                 reason="BALL_INVALID_OR_OCCLUDED",
+             )
+             return (
+                 self._make_snapshot_locked(sample),
+                 False,
+                 reset,
+             )
+ 
+         timestamp = self._estimator_timestamp_locked(
+             source_time_s=float(sample.source_time_s or 0.0),
+@@ -506,24 +506,24 @@ class MocapFrameAdapter:
+                 snapshot=snapshot,
+                 warnings=tuple(warnings),
+                 estimator_sample_count=int(
+                     self.ball_state_estimator.sample_count
+                 ),
+                 bounce_detected=bounce_detected,
+                 reset_transition=reset_transition,
+             )
+ 
+     def reset_estimator_after_strike(self) -> int:
+-        """Match RealWorld reset: clear estimator and advance track epoch."""
++        """Match RealWorld reset: clear estimator and advance track id."""
+         with self.lock:
+-            self._clear_ball_tracking_locked(advance_epoch=True)
+-            return int(self.track_epoch)
++            self._clear_ball_tracking_locked(advance_track_id=True)
++            return int(self.track_id)
+ 
+     def copy_latest_pelvis(self) -> LatestPelvisPose:
+         """Atomically copy accepted pose plus latest validity and timing."""
+         with self.lock:
+             return LatestPelvisPose(
+                 position_w=self._accepted_pelvis_position_w,
+                 quaternion_xyzw=(
+                     self._accepted_pelvis_quaternion_xyzw
+                 ),
+                 valid=bool(self._pelvis_valid),
+@@ -667,38 +667,38 @@ class BallDiagnosticTracker:
+ 
+     def observe(
+         self,
+         snapshot: BallEstimateSnapshot,
+         *,
+         estimator_sample_count: Optional[int],
+         raw_position_w: Optional[object] = None,
+         last_estimator_reset_reason: Optional[str] = None,
+     ) -> BallDiagnosticState:
+         key = SnapshotKey(
+-            int(snapshot.track_epoch),
++            int(snapshot.track_id),
+             int(snapshot.generation),
+         )
+         raw_position = np.asarray(
+             (
+                 snapshot.position_w
+                 if raw_position_w is None
+                 else raw_position_w
+             ),
+             dtype=np.float64,
+         ).reshape(-1)
+         estimated_position = np.asarray(
+             snapshot.position_w,
+             dtype=np.float64,
+         ).reshape(-1)
+         observation_fields = {
+             "source_frame": int(snapshot.source_frame),
+-            "track_epoch": int(snapshot.track_epoch),
++            "track_id": int(snapshot.track_id),
+             "generation": int(snapshot.generation),
+             "raw_position_w": (
+                 tuple(float(value) for value in raw_position)
+                 if (
+                     raw_position.shape == (3,)
+                     and np.isfinite(raw_position).all()
+                 )
+                 else None
+             ),
+             "estimated_position_w": (
+@@ -709,28 +709,28 @@ class BallDiagnosticTracker:
+                 )
+                 else None
+             ),
+             "observed_monotonic_s": float(
+                 snapshot.received_monotonic_s
+             ),
+         }
+         with self._lock:
+             latest = self._latest_key
+             if latest is not None:
+-                if key.track_epoch < latest.track_epoch:
++                if key.track_id < latest.track_id:
+                     return self._state
+                 if (
+-                    key.track_epoch == latest.track_epoch
++                    key.track_id == latest.track_id
+                     and key.generation <= latest.generation
+                 ):
+                     return self._state
+-                if key.track_epoch != latest.track_epoch:
++                if key.track_id != latest.track_id:
+                     self._incoming_count = 0
+             self._latest_key = key
+             if last_estimator_reset_reason is not None:
+                 self._last_estimator_reset_reason = str(
+                     last_estimator_reset_reason
+                 )
+ 
+             if not bool(snapshot.visible):
+                 self._incoming_count = 0
+                 self._state = self._unavailable_state(
+@@ -929,28 +929,28 @@ class ShadowTaskPipeline:
+                 self.plan_snapshot,
+                 trace_listener=self._on_worker_trace,
+             )
+             if worker is None
+             else worker
+         )
+ 
+     @staticmethod
+     def _snapshot_key(snapshot: BallEstimateSnapshot) -> SnapshotKey:
+         return SnapshotKey(
+-            int(snapshot.track_epoch),
++            int(snapshot.track_id),
+             int(snapshot.generation),
+         )
+ 
+     @staticmethod
+     def _result_key(result: PlannerResultSnapshot) -> SnapshotKey:
+         return SnapshotKey(
+-            int(result.track_epoch),
++            int(result.track_id),
+             int(result.source_generation),
+         )
+ 
+     @property
+     def planner_results_overwritten_before_consume(self) -> int:
+         with self._state_lock:
+             return int(
+                 self._planner_results_overwritten_before_consume
+             )
+ 
+@@ -983,21 +983,21 @@ class ShadowTaskPipeline:
+             snapshot.position_w,
+             name="snapshot.position_w",
+             size=3,
+         )
+         ball_velocity = self._validated_vector(
+             snapshot.velocity_w,
+             name="snapshot.velocity_w",
+             size=3,
+         )
+         if not self.incoming.observe(
+-            track_epoch=snapshot.track_epoch,
++            track_id=snapshot.track_id,
+             velocity_x_mps=float(ball_velocity[0]),
+         ):
+             raise ValueError(
+                 "HITTER ball track is not stably incoming: "
+                 "vx={:.3f} m/s.".format(float(ball_velocity[0]))
+             )
+         base_position = self._validated_vector(
+             snapshot.base_position_w,
+             name="snapshot.base_position_w",
+             size=3,
+@@ -1150,24 +1150,24 @@ class ShadowTaskPipeline:
+             sample = output.sample
+             snapshot = output.snapshot
+             binding = None
+             transitions = []
+             if sample.subject == "ball" and snapshot is not None:
+                 key = self._snapshot_key(snapshot)
+                 reset = output.reset_transition
+                 if reset is not None:
+                     transitions.extend(
+                         self.attempt_tracker.observe_production_reset(
+-                            previous_track_epoch=(
+-                                reset.previous_track_epoch
++                            previous_track_id=(
++                                reset.previous_track_id
+                             ),
+-                            new_track_epoch=reset.new_track_epoch,
++                            new_track_id=reset.new_track_id,
+                             reason=reset.reason,
+                             monotonic_s=sample.received_monotonic_s,
+                         )
+                     )
+                 transitions.extend(
+                     self.attempt_tracker.observe_ball_sample(
+                         sample,
+                         snapshot_key=key,
+                     )
+                 )
+@@ -1346,21 +1346,21 @@ class ShadowTaskPipeline:
+                 )
+             incoming = self.incoming.snapshot()
+             required = int(
+                 self.settings.incoming_confirmation_snapshots
+             )
+             if (
+                 binding is not None
+                 and bool(trace.snapshot.visible)
+                 and bool(trace.snapshot.ready)
+                 and bool(trace.snapshot.base_valid)
+-                and incoming.track_epoch == key.track_epoch
++                and incoming.track_id == key.track_id
+             ):
+                 count = int(incoming.consecutive_count)
+                 incoming_values = {
+                     "count": count,
+                     "required": required,
+                 }
+                 if bool(incoming.confirmed):
+                     self._record_stage_once(
+                         binding=binding,
+                         identity=(
+@@ -1372,21 +1372,21 @@ class ShadowTaskPipeline:
+                         wall_time_us=0,
+                         reason_code=None,
+                         values=incoming_values,
+                     )
+                 elif 0 < count < required:
+                     self._record_stage_once(
+                         binding=binding,
+                         identity=(
+                             "INCOMING_CONFIRMING",
+                             binding.attempt_id,
+-                            incoming.track_epoch,
++                            incoming.track_id,
+                             count,
+                         ),
+                         stage="INCOMING_CONFIRMING",
+                         monotonic_s=started_s,
+                         wall_time_us=0,
+                         reason_code=None,
+                         values=incoming_values,
+                     )
+             frozen = trace.result
+             if frozen is not None:
+@@ -1663,21 +1663,21 @@ class ShadowTaskPipeline:
+         result_key = self._result_key(result)
+         if not self._result_bundle_matches(result, frozen):
+             return "mismatch", ("OBS_COMMAND_MISMATCH",)
+         if result_key == self._last_result_key:
+             return "duplicate", ()
+         self._last_result_key = result_key
+         self._store_frozen_result(frozen)
+         if result.command is None or result.error is not None:
+             reason = planner_reason_code(frozen)
+             if reason == "TRACK_ENDED":
+-                self.lifecycle.mark_track_ended(result.track_epoch)
++                self.lifecycle.mark_track_ended(result.track_id)
+                 return "track-ended", ()
+             return "failed", ()
+         if not self._required_command_fields(frozen.command_fields):
+             return "malformed", ("OBS_COMMAND_MISMATCH",)
+         return self.lifecycle.ingest(result, now=now), ()
+ 
+     def _binding_for_lifecycle_result(
+         self,
+         result: Optional[PlannerResultSnapshot],
+     ) -> Optional[AttemptBinding]:
+@@ -1778,28 +1778,28 @@ class ShadowTaskPipeline:
+                     advance_decision = "armed"
+                 elif self.lifecycle.phase == CommandPhase.TRACKING:
+                     advance_decision = "tracking"
+                 else:
+                     advance_decision = "waiting"
+             if (
+                 previous_phase == CommandPhase.ARMED
+                 and previous_active is not None
+                 and self.lifecycle.phase != CommandPhase.ARMED
+             ):
+-                new_epoch = self.adapter.reset_estimator_after_strike()
++                new_track_id = self.adapter.reset_estimator_after_strike()
+                 self.ball_diagnostics.reset(
+                     blocker="STRIKE_DEADLINE_RESET"
+                 )
+                 transitions = (
+                     self.attempt_tracker.observe_production_reset(
+-                        previous_track_epoch=int(new_epoch) - 1,
+-                        new_track_epoch=int(new_epoch),
++                        previous_track_id=int(new_track_id) - 1,
++                        new_track_id=int(new_track_id),
+                         reason="STRIKE_DEADLINE_RESET",
+                         monotonic_s=lifecycle_now,
+                     )
+                 )
+                 for transition in transitions:
+                     self._publish_transition(
+                         transition,
+                         wall_time_us=wall_time_us,
+                     )
+ 
+diff --git a/deploy/diagnostics/hitter_task_replay.py b/deploy/diagnostics/hitter_task_replay.py
+index 33c155a..10f2d0d 100644
+--- a/deploy/diagnostics/hitter_task_replay.py
++++ b/deploy/diagnostics/hitter_task_replay.py
+@@ -303,37 +303,37 @@ def _json_number(value: Any) -> float:
+ def _json_optional_number(value: Any) -> Optional[float]:
+     return None if value is None else _json_number(value)
+ 
+ 
+ def _snapshot_key_from_json(value: Any) -> Optional[SnapshotKey]:
+     if value is None:
+         return None
+     if not isinstance(value, Mapping):
+         raise TypeError("snapshot key must be a mapping")
+     return SnapshotKey(
+-        track_epoch=int(value["track_epoch"]),
++        track_id=int(value["track_id"]),
+         generation=int(value["generation"]),
+     )
+ 
+ 
+ def _canonical_stage_identity(
+     transition: AttemptTransition,
+ ) -> Optional[Tuple[Any, ...]]:
+     stage = str(transition.stage)
+     if stage == "ESTIMATOR_READY":
+         return (stage,)
+     if stage == "INCOMING_CONFIRMING":
+         return (
+             stage,
+             None
+             if transition.snapshot_key is None
+-            else transition.snapshot_key.track_epoch,
++            else transition.snapshot_key.track_id,
+             transition.values.get("count"),
+         )
+     if stage == "INCOMING_CONFIRMED":
+         return (stage,)
+     if stage in ("PLANNER_SUCCEEDED", "PLANNER_REJECTED"):
+         return (stage, transition.snapshot_key)
+     if stage in ("ARMED", "LATE_SKIP"):
+         return (stage,)
+     if stage == "TASK_OBS_FAILED":
+         return (stage, transition.reason_code)
+@@ -1785,21 +1785,21 @@ class _ReplayWorkerFacade:
+ 
+ class _ReplayEventSink:
+     def __init__(self) -> None:
+         self.transitions = []
+ 
+     @staticmethod
+     def _key(value: Any) -> Optional[SnapshotKey]:
+         if value is None:
+             return None
+         return SnapshotKey(
+-            int(value["track_epoch"]),
++            int(value["track_id"]),
+             int(value["generation"]),
+         )
+ 
+     def offer(self, draft: EventDraft) -> bool:
+         if draft.kind != "attempt_transition":
+             return True
+         payload = draft.payload
+         self.transitions.append(
+             AttemptTransition(
+                 attempt_id=int(draft.attempt_id),
+@@ -1851,26 +1851,26 @@ def _command_json_value(value: Any) -> Any:
+ 
+ 
+ def _freeze_command_fields(command: object) -> Mapping[str, JsonValue]:
+     converted = _command_json_value(command)
+     if not isinstance(converted, Mapping):
+         converted = {"value": converted}
+     return _frozen_mapping(converted)
+ 
+ 
+ def _snapshot_key(snapshot: BallEstimateSnapshot) -> SnapshotKey:
+-    return SnapshotKey(int(snapshot.track_epoch), int(snapshot.generation))
++    return SnapshotKey(int(snapshot.track_id), int(snapshot.generation))
+ 
+ 
+ def _result_key(result: PlannerResultSnapshot) -> SnapshotKey:
+     return SnapshotKey(
+-        int(result.track_epoch),
++        int(result.track_id),
+         int(result.source_generation),
+     )
+ 
+ 
+ def _adapter_output(
+     adapter: MocapFrameAdapter,
+     sample: NormalizedMocapSample,
+ ) -> AdapterOutput:
+     message = SimpleNamespace(
+         name=sample.subject,
+@@ -2069,21 +2069,21 @@ def _replay_attempt(
+     )
+     adapter_config = to_builtin_json(bundle.planner_config)
+     if not isinstance(adapter_config, Mapping):
+         raise TypeError("planner_config must be a mapping")
+     adapter = MocapFrameAdapter(
+         adapter_config,
+         estimator_sample_rate_hz=settings.estimator_sample_rate_hz,
+     )
+     initial_key = _initial_online_snapshot_key(bundle.online_baseline)
+     if initial_key is not None:
+-        adapter.track_epoch = int(initial_key.track_epoch)
++        adapter.track_id = int(initial_key.track_id)
+         adapter.ball_snapshot_generation = max(
+             0,
+             int(initial_key.generation) - 1,
+         )
+     event_sink = _ReplayEventSink()
+     pending: Optional[_PendingPlan] = None
+     in_flight: Optional[_PendingPlan] = None
+     start_scheduled = False
+     current_event_s = 0.0
+     planner_calls = []
+@@ -2283,21 +2283,21 @@ def _replay_attempt(
+                     0.0,
+                 )
+                 incoming_after = pipeline.incoming.snapshot()
+                 incoming_required = int(
+                     pipeline.incoming.required_consecutive_snapshots
+                 )
+                 incoming_count = int(
+                     incoming_after.consecutive_count
+                 )
+                 confirming_identity = (
+-                    incoming_after.track_epoch,
++                    incoming_after.track_id,
+                     incoming_count,
+                 )
+                 if (
+                     incoming_count
+                     != int(incoming_before.consecutive_count)
+                     and 0 < incoming_count < incoming_required
+                     and confirming_identity
+                     not in incoming_confirming_seen
+                 ):
+                     incoming_confirming_seen.add(confirming_identity)
+@@ -2396,21 +2396,21 @@ def _replay_attempt(
+             )
+             previous_result = worker.bundle[1]
+             latest_replaced_key = (
+                 None
+                 if previous_result is None
+                 else previous_result.snapshot_key
+             )
+             if previous_result is not None:
+                 overwritten_latest += 1
+             result = PlannerResultSnapshot(
+-                track_epoch=int(snapshot.track_epoch),
++                track_id=int(snapshot.track_id),
+                 source_generation=int(snapshot.generation),
+                 source_frame=int(snapshot.source_frame),
+                 strike_deadline_monotonic_s=strike_deadline_s,
+                 completed_monotonic_s=event.at_s,
+                 command=command,
+                 error=(
+                     None
+                     if job.error_type is None
+                     else "{}: {}".format(
+                         job.error_type,
+diff --git a/deploy/diagnostics/static/hitter_task_monitor.html b/deploy/diagnostics/static/hitter_task_monitor.html
+index 7e17d8e..037369e 100644
+--- a/deploy/diagnostics/static/hitter_task_monitor.html
++++ b/deploy/diagnostics/static/hitter_task_monitor.html
+@@ -1009,21 +1009,21 @@
+       );
+       setText(
+         byId('ball-speed-value'),
+         speedAvailable || vxAvailable
+           ? formatNumber(ball.speed_mps, 3, ' m/s')
+             + ' · vx ' + formatNumber(ball.velocity_x_mps, 3, ' m/s')
+           : '—',
+       );
+       setText(
+         byId('ball-identity-value'),
+-        'track ' + formatOptional(ball.track_epoch, (item) => String(item))
++        'track ' + formatOptional(ball.track_id, (item) => String(item))
+           + ' · gen ' + formatOptional(ball.generation, (item) => String(item))
+           + ' · frame ' + formatOptional(
+             ball.source_frame,
+             (item) => String(item),
+           )
+           + ' · age ' + formatNumber(ball.age_s, 3, ' s'),
+       );
+ 
+       const pelvisStatus = statusText(gate.pelvis_status);
+       setCardStatus('gate-pelvis-card', pelvisStatus);
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index 4c51b99..49b5f38 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -404,21 +404,21 @@ class HitterEnv(BaseEnv):
+         if self._mujoco_next_serve_index == 0:
+             self.simulator.reset_hitter_ball()
+             if not self.simulator.capture_hitter_ball_launch_state():
+                 raise RuntimeError(
+                     "Failed to capture the first MuJoCo ball launch state."
+                 )
+         elif not self.simulator.restore_hitter_ball_launch_state():
+             raise RuntimeError("Failed to restore the MuJoCo ball launch state.")
+ 
+         self._mujoco_next_serve_index += 1
+-        self._hitter_sync_track_epoch += 1
++        self._hitter_sync_track_id += 1
+         self._hitter_sync_generation = 0
+         self.hitter_ball_sequence_needs_reset = False
+         logger.info(
+             "MuJoCo HITTER serve {}/{} at simulation time {:.3f} s.",
+             self._mujoco_next_serve_index,
+             len(self._mujoco_serve_times_s),
+             sim_time_s,
+         )
+         return True
+ 
+@@ -426,58 +426,58 @@ class HitterEnv(BaseEnv):
+         return build_hitter_command_lifecycle(
+             self.hitter_runtime_settings,
+             rng=self.hitter_rng,
+         )
+ 
+     def _init_hitter_lifecycle_state(self) -> None:
+         self.hitter_command_lifecycle = self._new_hitter_command_lifecycle()
+         self.hitter_planner_worker = None
+         self._unregister_ball_listener = None
+         self._hitter_last_result_key = None
+-        self._hitter_minimum_track_epoch = int(
+-            getattr(self.simulator, "ball_track_epoch", 0)
++        self._hitter_minimum_track_id = int(
++            getattr(self.simulator, "ball_track_id", 0)
+         )
+         self._hitter_minimum_generation = 0
+-        self._hitter_observed_track_epoch = None
+-        self._hitter_sync_track_epoch = 0
++        self._hitter_observed_track_id = None
++        self._hitter_sync_track_id = 0
+         self._hitter_sync_generation = 0
+         self._hitter_last_logged_phase = self.hitter_command_lifecycle.phase
+         self._hitter_last_status_log_monotonic_s = None
+         self._hitter_closed = False
+         self._hitter_simulator_closed = False
+ 
+     def _reset_hitter_lifecycle_state(self) -> None:
+         self.hitter_command_lifecycle = self._new_hitter_command_lifecycle()
+         self._hitter_last_result_key = None
+-        self._hitter_observed_track_epoch = None
++        self._hitter_observed_track_id = None
+         self._hitter_last_logged_phase = self.hitter_command_lifecycle.phase
+         self._hitter_last_status_log_monotonic_s = None
+         self._hitter_last_planner_submit_monotonic_s = None
+ 
+         if getattr(self.simulator, "is_real", False):
+             reset_estimator = getattr(
+                 self.simulator,
+                 "reset_ball_state_estimator",
+                 None,
+             )
+             if callable(reset_estimator):
+                 reset_estimator()
+-            self._hitter_minimum_track_epoch = int(
+-                getattr(self.simulator, "ball_track_epoch", 0)
++            self._hitter_minimum_track_id = int(
++                getattr(self.simulator, "ball_track_id", 0)
+             )
+             self._hitter_minimum_generation = int(
+                 getattr(self.simulator, "ball_snapshot_generation", 0)
+             ) + 1
+         else:
+-            self._hitter_sync_track_epoch += 1
++            self._hitter_sync_track_id += 1
+             self._hitter_sync_generation = 0
+-            self._hitter_minimum_track_epoch = self._hitter_sync_track_epoch
++            self._hitter_minimum_track_id = self._hitter_sync_track_id
+             self._hitter_minimum_generation = 0
+ 
+     def _initialize_hitter_realtime_runtime(self) -> None:
+         if not getattr(self.simulator, "is_real", False):
+             self.hitter_planner_worker = None
+             return
+         register_listener = getattr(
+             self.simulator,
+             "register_hitter_ball_listener",
+             None,
+@@ -667,25 +667,25 @@ class HitterEnv(BaseEnv):
+             command = active_result.command
+             fields = self._validated_hitter_command_fields(command)
+             ball_in_velocity = fields["ball_in_velocity"].copy()
+             ball_out_velocity = self._validated_vector(
+                 command.strike_plan.v_ball_out,
+                 name="strike_plan.v_ball_out",
+                 size=3,
+             )
+             racket_velocity = fields["racket_velocity"].copy()
+             logger.info(
+-                "HITTER strike target: epoch={} generation={} type={} "
++                "HITTER strike target: track_id={} generation={} type={} "
+                 "v_ball_in_w_mps={} speed_ball_in_mps={:.4f} "
+                 "v_ball_out_w_mps={} speed_ball_out_mps={:.4f} "
+                 "v_racket_target_w_mps={} speed_racket_mps={:.4f}",
+-                int(active_result.track_epoch),
++                int(active_result.track_id),
+                 int(active_result.source_generation),
+                 fields["strike_type"],
+                 self._format_hitter_velocity_log_vector(
+                     ball_in_velocity
+                 ),
+                 float(np.linalg.norm(ball_in_velocity)),
+                 self._format_hitter_velocity_log_vector(
+                     ball_out_velocity
+                 ),
+                 float(np.linalg.norm(ball_out_velocity)),
+@@ -737,21 +737,21 @@ class HitterEnv(BaseEnv):
+             name="snapshot.position_w",
+             size=3,
+         )
+         ball_vel_w = self._validated_snapshot_vector(
+             snapshot.velocity_w,
+             name="snapshot.velocity_w",
+             size=3,
+         )
+         if getattr(self.simulator, "is_real", False):
+             confirmed = self.hitter_incoming_track_confirmation.observe(
+-                track_epoch=snapshot.track_epoch,
++                track_id=snapshot.track_id,
+                 velocity_x_mps=float(ball_vel_w[0]),
+             )
+             if not confirmed:
+                 raise ValueError(
+                     "HITTER ball track is not stably incoming: "
+                     f"vx={float(ball_vel_w[0]):.3f} m/s."
+                 )
+         base_pos_w = self._validated_snapshot_vector(
+             snapshot.base_position_w,
+             name="snapshot.base_position_w",
+@@ -773,154 +773,156 @@ class HitterEnv(BaseEnv):
+             current_base_xy_w=base_pos_w,
+             base_forward_xy_w=base_forward_xy_w,
+             strike_type=self._forced_strike_type_name(),
+         )
+ 
+     def _mujoco_planner_result(self, *, now: float) -> PlannerResultSnapshot:
+         if self._mujoco_serve_schedule_enabled():
+             self._update_mujoco_serve_schedule()
+         elif self.hitter_ball_sequence_needs_reset:
+             self._reset_hitter_ball_sequence_if_needed()
+-            self._hitter_sync_track_epoch += 1
++            self._hitter_sync_track_id += 1
+             self._hitter_sync_generation = 0
+         self.simulator.get_state()
+         self._hitter_sync_generation += 1
+         snapshot = BallEstimateSnapshot(
+-            track_epoch=self._hitter_sync_track_epoch,
++            track_id=self._hitter_sync_track_id,
+             generation=self._hitter_sync_generation,
+             source_frame=self._hitter_sync_generation,
+             source_time_s=float(
+                 getattr(getattr(self.simulator, "mujoco_data", None), "time", now)
+             ),
+             received_monotonic_s=now,
+             position_w=np.asarray(self.simulator.ball_pos_world).copy(),
+             velocity_w=np.asarray(self.simulator.ball_vel_world).copy(),
+             base_position_w=np.asarray(self.simulator.root_trans_world).copy(),
+             base_quaternion_xyzw=np.asarray(self.simulator.root_quat_world).copy(),
+             base_valid=bool(getattr(self.simulator, "base_pose_valid", True)),
+             visible=bool(getattr(self.simulator, "ball_visible", False)),
+             ready=bool(
+                 getattr(self.simulator, "ball_state_estimator_ready", False)
+             ),
+         )
+         try:
+             command = self._plan_hitter_snapshot(snapshot)
+             deadline = now + float(command.time_to_strike)
+             return PlannerResultSnapshot(
+-                track_epoch=snapshot.track_epoch,
++                track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=deadline,
+                 completed_monotonic_s=now,
+                 command=command,
+             )
+         except Exception as exc:
+             return PlannerResultSnapshot(
+-                track_epoch=snapshot.track_epoch,
++                track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=float("nan"),
+                 completed_monotonic_s=now,
+                 command=None,
+                 error=f"{type(exc).__name__}: {exc}",
+             )
+ 
+     def _hitter_result_is_before_reset(self, result: PlannerResultSnapshot) -> bool:
+-        epoch = int(result.track_epoch)
++        track_id = int(result.track_id)
+         generation = int(result.source_generation)
+-        return epoch < self._hitter_minimum_track_epoch or (
+-            epoch == self._hitter_minimum_track_epoch
++        return track_id < self._hitter_minimum_track_id or (
++            track_id == self._hitter_minimum_track_id
+             and generation < self._hitter_minimum_generation
+         )
+ 
+-    def _observe_hitter_track_epoch(self, track_epoch: int) -> None:
+-        epoch = int(track_epoch)
++    def _observe_hitter_track_id(self, track_id: int) -> None:
++        track_id = int(track_id)
+         if (
+-            self._hitter_observed_track_epoch is None
+-            or epoch > self._hitter_observed_track_epoch
++            self._hitter_observed_track_id is None
++            or track_id > self._hitter_observed_track_id
+         ):
+-            self._hitter_observed_track_epoch = epoch
++            self._hitter_observed_track_id = track_id
+ 
+     def _mark_hitter_track_ended(self, result: PlannerResultSnapshot) -> bool:
+-        invalid_epoch = int(result.track_epoch)
++        invalid_track_id = int(result.track_id)
+         active = self.hitter_command_lifecycle.active_result
+-        active_epoch = None if active is None else int(active.track_epoch)
+-        current_epochs = [
+-            epoch
+-            for epoch in (self._hitter_observed_track_epoch, active_epoch)
+-            if epoch is not None
++        active_track_id = None if active is None else int(active.track_id)
++        current_track_ids = [
++            track_id
++            for track_id in (self._hitter_observed_track_id, active_track_id)
++            if track_id is not None
+         ]
+-        current_epoch = max(current_epochs) if current_epochs else None
+-        if current_epoch is not None and invalid_epoch < current_epoch:
++        current_track_id = max(current_track_ids) if current_track_ids else None
++        if current_track_id is not None and invalid_track_id < current_track_id:
+             return False
+-        ended_epoch = invalid_epoch if current_epoch is None else current_epoch
+-        self.hitter_command_lifecycle.mark_track_ended(int(ended_epoch))
+-        self._observe_hitter_track_epoch(invalid_epoch)
++        ended_track_id = (
++            invalid_track_id if current_track_id is None else current_track_id
++        )
++        self.hitter_command_lifecycle.mark_track_ended(int(ended_track_id))
++        self._observe_hitter_track_id(invalid_track_id)
+         logger.info(
+-            "HITTER track ended: ended_epoch={} invalid_epoch={} generation={}",
+-            ended_epoch,
+-            result.track_epoch,
++            "HITTER track ended: ended_track_id={} invalid_track_id={} generation={}",
++            ended_track_id,
++            result.track_id,
+             result.source_generation,
+         )
+         return True
+ 
+     def _consume_hitter_planner_result(
+         self,
+         result: PlannerResultSnapshot | None,
+         *,
+         now: float,
+     ) -> str:
+         if result is None:
+             return "none"
+-        key = (int(result.track_epoch), int(result.source_generation))
++        key = (int(result.track_id), int(result.source_generation))
+         if key == self._hitter_last_result_key:
+             return "duplicate"
+         self._hitter_last_result_key = key
+         if self._hitter_result_is_before_reset(result):
+             return "stale"
+         if result.command is None or result.error is not None:
+             if result.error == TRACK_ENDED_RESULT_ERROR:
+                 return (
+                     "track-ended"
+                     if self._mark_hitter_track_ended(result)
+                     else "stale-track-end"
+                 )
+-            self._observe_hitter_track_epoch(result.track_epoch)
++            self._observe_hitter_track_id(result.track_id)
+             return "failed"
+ 
+         try:
+             fields = self._validated_hitter_command_fields(result.command)
+         except Exception as exc:
+             logger.warning(
+-                "Ignored malformed HITTER planner result epoch={} generation={}: {}",
+-                result.track_epoch,
++                "Ignored malformed HITTER planner result track_id={} generation={}: {}",
++                result.track_id,
+                 result.source_generation,
+                 exc,
+             )
+             return "malformed"
+ 
+-        self._observe_hitter_track_epoch(result.track_epoch)
++        self._observe_hitter_track_id(result.track_id)
+         decision = self.hitter_command_lifecycle.ingest(result, now=now)
+         if decision in {"armed", "overridden"}:
+             self._copy_hitter_command(result.command, validated=fields)
+             logger.info(
+-                "HITTER command {}: epoch={} generation={} type={} tts={:.3f}s",
++                "HITTER command {}: track_id={} generation={} type={} tts={:.3f}s",
+                 decision,
+-                result.track_epoch,
++                result.track_id,
+                 result.source_generation,
+                 fields["strike_type"],
+                 self.hitter_command_lifecycle.policy_tts(now=now),
+             )
+         elif decision == "skipped":
+             logger.info(
+-                "HITTER command skipped as late: epoch={} generation={}",
+-                result.track_epoch,
++                "HITTER command skipped as late: track_id={} generation={}",
++                result.track_id,
+                 result.source_generation,
+             )
+         return decision
+ 
+     def _log_hitter_lifecycle_transition(self, previous_phase: CommandPhase) -> None:
+         current_phase = self.hitter_command_lifecycle.phase
+         if current_phase != previous_phase:
+             logger.info(
+                 "HITTER lifecycle transition: {} -> {}",
+                 previous_phase.value,
+@@ -989,28 +991,28 @@ class HitterEnv(BaseEnv):
+         self._hitter_last_status_log_monotonic_s = now
+         result = worker.latest_result()
+         result_age = (
+             float("nan")
+             if result is None
+             else max(now - float(result.completed_monotonic_s), 0.0)
+         )
+         stats = worker.stats
+         logger.info(
+             "HITTER realtime status: phase={} submitted={} completed={} failed={} "
+-            "dropped={} result_age_s={:.3f} epoch={} generation={} policy_tts={:.3f}",
++            "dropped={} result_age_s={:.3f} track_id={} generation={} policy_tts={:.3f}",
+             self.hitter_command_lifecycle.phase.value,
+             stats.submitted,
+             stats.completed,
+             stats.failed,
+             stats.dropped_pending,
+             result_age,
+-            None if result is None else result.track_epoch,
++            None if result is None else result.track_id,
+             None if result is None else result.source_generation,
+             self.hitter_command_lifecycle.policy_tts(now=now),
+         )
+ 
+     def _update_hitter_command(self, *, now: float | None = None) -> None:
+         now = time.monotonic() if now is None else float(now)
+         previous_phase = self.hitter_command_lifecycle.phase
+         previous_active = self.hitter_command_lifecycle.active_result
+         previous_command_end_deadline_s = (
+             self.hitter_command_lifecycle.command_end_deadline_s
+@@ -1039,22 +1041,22 @@ class HitterEnv(BaseEnv):
+             previous_active,
+             previous_command_end_deadline_s,
+             now=now,
+         )
+         current_active = self.hitter_command_lifecycle.active_result
+ 
+         if current_active is not None and current_active is not previous_active:
+             fields = self._validated_hitter_command_fields(current_active.command)
+             self._copy_hitter_command(current_active.command, validated=fields)
+             logger.info(
+-                "HITTER cached command armed after recovery: epoch={} generation={}",
+-                current_active.track_epoch,
++                "HITTER cached command armed after recovery: track_id={} generation={}",
++                current_active.track_id,
+                 current_active.source_generation,
+             )
+         elif previous_active is not None and current_active is None:
+             self.hitter_ball_sequence_needs_reset = True
+ 
+         if getattr(self.simulator, "is_real", False):
+             result = (
+                 None
+                 if self.hitter_planner_worker is None
+                 else self.hitter_planner_worker.latest_result()
+diff --git a/deploy/simulator/real_world.py b/deploy/simulator/real_world.py
+index 24cb6db..41d3f0f 100755
+--- a/deploy/simulator/real_world.py
++++ b/deploy/simulator/real_world.py
+@@ -103,21 +103,21 @@ class RealWorld(BaseSim):
+         self.ball_visible = False
+         self.ball_visible_tmp = False
+         self.base_pose_valid = False
+         self.base_pose_valid_tmp = False
+         self.firstReceiveBall = False
+         self._hitter_ball_listener_lock = threading.Lock()
+         self._hitter_ball_listeners: list[
+             tuple[object, Callable[[BallEstimateSnapshot], None]]
+         ] = []
+         self.ball_snapshot_generation = 0
+-        self.ball_track_epoch = 0
++        self.ball_track_id = 1
+         self.latest_ball_snapshot = None
+         self._last_base_pose_wait_log_monotonic_s = None
+         planner_cfg = {}
+         motion_cfg = getattr(self.cfg, "motion", None)
+         if motion_cfg is not None:
+             planner_cfg = motion_cfg.get("ball_planner", {}) or {}
+         self.ball_state_estimator_sample_rate_hz = float(planner_cfg.get("state_estimator_sample_rate_hz", 300.0))
+         self.ball_state_estimator_time = None
+         self.ball_state_estimator_last_host_time = None
+         self.ball_state_estimator = build_ball_state_estimator(
+@@ -155,21 +155,21 @@ class RealWorld(BaseSim):
+         received_monotonic_s: float,
+     ) -> tuple[
+         BallEstimateSnapshot,
+         tuple[Callable[[BallEstimateSnapshot], None], ...],
+     ]:
+         source_frame = int(getattr(msg, "vicon_frame_number", 0) or 0)
+         source_time_s = float(getattr(msg, "vicon_time_s", 0.0) or 0.0)
+         with self._hitter_ball_listener_lock:
+             self.ball_snapshot_generation += 1
+             snapshot = BallEstimateSnapshot(
+-                track_epoch=int(self.ball_track_epoch),
++                track_id=int(self.ball_track_id),
+                 generation=int(self.ball_snapshot_generation),
+                 source_frame=source_frame,
+                 source_time_s=source_time_s,
+                 received_monotonic_s=float(received_monotonic_s),
+                 position_w=self.ball_pos_world_tmp,
+                 velocity_w=self.ball_vel_world_tmp,
+                 base_position_w=self.root_trans_world_tmp,
+                 base_quaternion_xyzw=self.root_quat_world_tmp,
+                 base_valid=bool(self.base_pose_valid_tmp),
+                 visible=bool(self.ball_visible_tmp),
+@@ -206,49 +206,49 @@ class RealWorld(BaseSim):
+     def reset_ball_state_estimator(self) -> None:
+         self._clear_ball_tracking()
+         logger.info("[RealWorld] ball state estimator reset.")
+ 
+     def _clear_ball_tracking(
+         self,
+         *,
+         emit_snapshot: bool = False,
+         source_message=None,
+         received_monotonic_s: float | None = None,
+-        advance_epoch: bool = True,
++        advance_track_id: bool = True,
+     ) -> None:
+         notification = None
+         with self._hitter_ball_state_lock:
+-            self._clear_ball_tracking_locked(advance_epoch=advance_epoch)
++            self._clear_ball_tracking_locked(advance_track_id=advance_track_id)
+             if emit_snapshot:
+                 if source_message is None:
+                     raise ValueError("source_message is required when emitting a snapshot")
+                 if received_monotonic_s is None:
+                     received_monotonic_s = time.monotonic()
+                 notification = self._prepare_ball_snapshot_locked(
+                     source_message,
+                     received_monotonic_s=received_monotonic_s,
+                 )
+         if notification is not None:
+             self._notify_ball_snapshot_listeners(*notification)
+ 
+-    def _clear_ball_tracking_locked(self, *, advance_epoch: bool) -> None:
++    def _clear_ball_tracking_locked(self, *, advance_track_id: bool) -> None:
+         self.ball_state_estimator.reset()
+         self.ball_state_estimator_time = None
+         self.ball_state_estimator_last_host_time = None
+         self.ball_state_estimator_ready = False
+         self.ball_state_estimator_ready_tmp = False
+         self.ball_state_estimator_sample_count = 0
+         self.ball_state_estimator_sample_count_tmp = 0
+         self.ball_visible = False
+         self.ball_visible_tmp = False
+-        if advance_epoch:
+-            self.ball_track_epoch += 1
++        if advance_track_id:
++            self.ball_track_id += 1
+ 
+     def _ball_estimator_timestamp_from_msg(self, msg, host_time: float) -> float:
+         with self._hitter_ball_state_lock:
+             vicon_time = float(getattr(msg, "vicon_time_s", 0.0) or 0.0)
+             if np.isfinite(vicon_time) and vicon_time > 0.0:
+                 return vicon_time
+ 
+             publish_time_us = int(getattr(msg, "publish_time_us", 0) or 0)
+             if publish_time_us > 0:
+                 return float(publish_time_us) * 1.0e-6
+@@ -348,21 +348,21 @@ class RealWorld(BaseSim):
+             logger.info('Vicon root information received!')
+             logger.info(f'Root Translation World: {pos}')
+ 
+     def _update_ball_state_from_vicon(self, msg, pos: np.ndarray) -> None:
+         valid = bool(getattr(msg, "valid", 1)) and not bool(getattr(msg, "occluded", 0))
+         received_monotonic_s = time.monotonic()
+         bounce_detected = False
+         first_ball_position = None
+         with self._hitter_ball_state_lock:
+             if not valid:
+-                self._clear_ball_tracking_locked(advance_epoch=True)
++                self._clear_ball_tracking_locked(advance_track_id=True)
+                 notification = self._prepare_ball_snapshot_locked(
+                     msg,
+                     received_monotonic_s=received_monotonic_s,
+                 )
+             else:
+                 sample_time = self._ball_estimator_timestamp_from_msg(
+                     msg,
+                     received_monotonic_s,
+                 )
+ 
+diff --git a/deploy/tests/test_hitter_runtime_factory.py b/deploy/tests/test_hitter_runtime_factory.py
+index 6446327..d88a87d 100644
+--- a/deploy/tests/test_hitter_runtime_factory.py
++++ b/deploy/tests/test_hitter_runtime_factory.py
+@@ -261,21 +261,21 @@ def assert_system_planner_equal(
+         "default_base_z",
+     ):
+         testcase.assertEqual(
+             getattr(actual_base, name),
+             getattr(expected_base, name),
+         )
+ 
+ 
+ def armed_recovery_duration(lifecycle, sequence_number: int) -> float:
+     result = PlannerResultSnapshot(
+-        track_epoch=sequence_number,
++        track_id=sequence_number,
+         source_generation=1,
+         source_frame=sequence_number,
+         strike_deadline_monotonic_s=10.92,
+         completed_monotonic_s=10.0,
+         command=object(),
+         error=None,
+     )
+     decision = lifecycle.ingest(result, now=10.0)
+     if decision != "armed":
+         raise AssertionError(f"expected lifecycle to arm, got {decision!r}")
+diff --git a/deploy/tests/test_hitter_runtime_identity_types.py b/deploy/tests/test_hitter_runtime_identity_types.py
+new file mode 100644
+index 0000000..81052be
+--- /dev/null
++++ b/deploy/tests/test_hitter_runtime_identity_types.py
+@@ -0,0 +1,73 @@
++from __future__ import annotations
++
++import numpy as np
++import pytest
++
++from diagnostics.hitter_task_models import SnapshotKey as DiagnosticSnapshotKey
++from utils.hitter_realtime import BallEstimateSnapshot, PlannerResultSnapshot
++from utils.hitter_runtime_types import SnapshotKey
++
++
++@pytest.fixture
++def snapshot() -> BallEstimateSnapshot:
++    return BallEstimateSnapshot(
++        track_id=9,
++        generation=1,
++        source_frame=1,
++        source_time_s=1.0,
++        received_monotonic_s=2.0,
++        position_w=np.array([1.5, 0.0, 1.0]),
++        velocity_w=np.array([-1.0, 0.0, 0.0]),
++        base_position_w=np.array([0.0, 0.0, 0.8]),
++        base_quaternion_xyzw=np.array([0.0, 0.0, 0.0, 1.0]),
++        base_valid=True,
++        visible=True,
++        ready=True,
++        consumed=False,
++        new_track=True,
++    )
++
++
++def test_snapshot_key_requires_positive_track_id():
++    assert SnapshotKey(track_id=9, generation=0).to_json_dict() == {
++        "schema_version": 2,
++        "track_id": 9,
++        "generation": 0,
++    }
++    with pytest.raises(ValueError, match="track_id must be positive"):
++        SnapshotKey(track_id=0, generation=0)
++
++
++def test_diagnostics_reexports_the_canonical_snapshot_key():
++    assert DiagnosticSnapshotKey is SnapshotKey
++
++
++@pytest.mark.parametrize(
++    ("kwargs", "message"),
++    [
++        ({"track_id": True, "generation": 0}, "track_id must be positive"),
++        ({"track_id": 9, "generation": -1}, "generation must be a non-negative integer"),
++        ({"track_id": 9, "generation": True}, "generation must be a non-negative integer"),
++    ],
++)
++def test_snapshot_key_rejects_noncanonical_identity_values(kwargs, message):
++    with pytest.raises(ValueError, match=message):
++        SnapshotKey(**kwargs)
++
++
++def test_runtime_snapshots_expose_no_epoch_attribute(snapshot):
++    assert snapshot.track_id == 9
++    assert snapshot.consumed is False
++    assert snapshot.new_track is True
++    assert not hasattr(snapshot, "track_epoch")
++
++    result = PlannerResultSnapshot(
++        track_id=9,
++        source_generation=1,
++        source_frame=1,
++        strike_deadline_monotonic_s=3.0,
++        completed_monotonic_s=2.1,
++        command=None,
++    )
++    assert result.track_id == 9
++    assert not hasattr(result, "track_epoch")
+diff --git a/deploy/tests/test_hitter_strike_target_logging.py b/deploy/tests/test_hitter_strike_target_logging.py
+index 5eb8b10..26bf7bd 100644
+--- a/deploy/tests/test_hitter_strike_target_logging.py
++++ b/deploy/tests/test_hitter_strike_target_logging.py
+@@ -50,29 +50,29 @@ def fake_command(
+         strike_plan=SimpleNamespace(
+             p_racket_target=np.array([0.0, 0.1, 1.0], dtype=np.float64),
+             v_ball_in=np.asarray(ball_in, dtype=np.float64),
+             v_ball_out=np.asarray(ball_out, dtype=np.float64),
+         ),
+     )
+ 
+ 
+ def planner_result(
+     *,
+-    epoch: int = 7,
++    track_id: int = 7,
+     generation: int = 11,
+     deadline: float = 10.90,
+     command=None,
+ ):
+     if command is None:
+         command = fake_command()
+     return PlannerResultSnapshot(
+-        track_epoch=epoch,
++        track_id=track_id,
+         source_generation=generation,
+         source_frame=generation,
+         strike_deadline_monotonic_s=deadline,
+         completed_monotonic_s=10.01,
+         command=command,
+         error=None,
+     )
+ 
+ 
+ def configured_lifecycle() -> HitterCommandLifecycle:
+@@ -88,53 +88,53 @@ def configured_lifecycle() -> HitterCommandLifecycle:
+ def minimal_env() -> HitterEnv:
+     env = HitterEnv.__new__(HitterEnv)
+     env.motion_cfg = {
+         "ball_planner": {
+             "target_base_height_w": 0.78,
+         }
+     }
+     env.hitter_command_lifecycle = configured_lifecycle()
+     env._hitter_last_logged_phase = CommandPhase.ARMED
+     env._hitter_last_result_key = None
+-    env._hitter_minimum_track_epoch = 0
++    env._hitter_minimum_track_id = 0
+     env._hitter_minimum_generation = 0
+-    env._hitter_observed_track_epoch = None
++    env._hitter_observed_track_id = None
+     return env
+ 
+ 
+ class StrikeTargetPayloadTests(unittest.TestCase):
+     def test_logs_all_world_velocity_vectors_and_norms(self):
+         env = minimal_env()
+         ball_in = np.array([-3.0, 0.4, -1.2], dtype=np.float64)
+         ball_out = np.array([4.2708, -0.5, 1.8], dtype=np.float64)
+         racket_velocity = np.array([1.4, -0.1, 0.7], dtype=np.float64)
+         result = planner_result(
+-            epoch=27,
++            track_id=27,
+             generation=8103,
+             command=fake_command(
+                 ball_in=ball_in,
+                 ball_out=ball_out,
+                 racket_velocity=racket_velocity,
+             ),
+         )
+ 
+         with captured_log_messages() as messages:
+             env._log_hitter_strike_target(result)
+ 
+         target_messages = [
+             message
+             for message in messages
+             if message.startswith("HITTER strike target:")
+         ]
+         self.assertEqual(len(target_messages), 1)
+         message = target_messages[0]
+-        self.assertIn("epoch=27 generation=8103 type=backhand", message)
++        self.assertIn("track_id=27 generation=8103 type=backhand", message)
+         self.assertIn(
+             "v_ball_in_w_mps=[-3.0000,0.4000,-1.2000]",
+             message,
+         )
+         self.assertIn(
+             f"speed_ball_in_mps={np.linalg.norm(ball_in):.4f}",
+             message,
+         )
+         self.assertIn(
+             "v_ball_out_w_mps=[4.2708,-0.5000,1.8000]",
+@@ -205,21 +205,21 @@ class StrikeTargetPayloadTests(unittest.TestCase):
+         self.assertIn("missing a command", warnings[0])
+ 
+ 
+ class StrikeTargetBoundaryTests(unittest.TestCase):
+     def test_epsilon_boundary_logs_original_target_exactly_once(self):
+         env = minimal_env()
+         lifecycle = configured_lifecycle()
+         env.hitter_command_lifecycle = lifecycle
+ 
+         result = planner_result(
+-            epoch=31,
++            track_id=31,
+             generation=401,
+             deadline=10.90,
+             command=fake_command(marker=3.0),
+         )
+         self.assertEqual(lifecycle.ingest(result, now=10.00), "armed")
+ 
+         previous_phase = lifecycle.phase
+         previous_active = lifecycle.active_result
+         previous_end = lifecycle.command_end_deadline_s
+         self.assertIs(previous_active, result)
+@@ -261,44 +261,44 @@ class StrikeTargetBoundaryTests(unittest.TestCase):
+                 next_previous_end,
+                 now=next_now,
+             )
+ 
+         target_messages = [
+             message
+             for message in messages
+             if message.startswith("HITTER strike target:")
+         ]
+         self.assertEqual(len(target_messages), 1)
+-        self.assertIn("epoch=31 generation=401", target_messages[0])
++        self.assertIn("track_id=31 generation=401", target_messages[0])
+         self.assertIn(
+             "v_ball_out_w_mps=[3.0000,3.0000,3.0000]",
+             target_messages[0],
+         )
+ 
+     def test_late_advance_logs_latest_override_exactly_once(self):
+         env = minimal_env()
+         lifecycle = configured_lifecycle()
+         env.hitter_command_lifecycle = lifecycle
+ 
+         first = planner_result(
+-            epoch=27,
++            track_id=27,
+             generation=1,
+             deadline=10.90,
+             command=fake_command(marker=1.0),
+         )
+         self.assertEqual(
+             lifecycle.ingest(first, now=10.00),
+             "armed",
+         )
+ 
+         final_override = planner_result(
+-            epoch=27,
++            track_id=27,
+             generation=2,
+             deadline=10.88,
+             command=fake_command(marker=2.0),
+         )
+         self.assertEqual(
+             lifecycle.ingest(final_override, now=10.02),
+             "overridden",
+         )
+ 
+         previous_phase = lifecycle.phase
+@@ -322,21 +322,21 @@ class StrikeTargetBoundaryTests(unittest.TestCase):
+                 now=late_now + 0.01,
+             )
+ 
+         target_messages = [
+             message
+             for message in messages
+             if message.startswith("HITTER strike target:")
+         ]
+         self.assertEqual(len(target_messages), 1)
+         message = target_messages[0]
+-        self.assertIn("epoch=27 generation=2", message)
++        self.assertIn("track_id=27 generation=2", message)
+         self.assertIn(
+             "v_ball_out_w_mps=[2.0000,2.0000,2.0000]",
+             message,
+         )
+         self.assertNotIn(
+             "v_ball_out_w_mps=[1.0000,1.0000,1.0000]",
+             message,
+         )
+ 
+     def test_non_strike_transition_does_not_log_target(self):
+diff --git a/deploy/tests/test_hitter_task_attempts.py b/deploy/tests/test_hitter_task_attempts.py
+index 1a775dc..9f39a15 100644
+--- a/deploy/tests/test_hitter_task_attempts.py
++++ b/deploy/tests/test_hitter_task_attempts.py
+@@ -342,21 +342,22 @@ class ImmutableModelTests(unittest.TestCase):
+             planner_inputs=(),
+             planner_results=(),
+             task_observation_pre_clip=None,
+             task_observation_post_clip=None,
+             task_observation_clip_count=None,
+             variant_outcomes=(),
+             ab_deltas={},
+         )
+         page = AttemptPage(items=(summary,), has_more=False, next_before=None)
+ 
+-        for model in (key, binding, transition, health, lifecycle, summary, detail, page):
++        self.assertEqual(key.to_json_dict()["schema_version"], 2)
++        for model in (binding, transition, health, lifecycle, summary, detail, page):
+             payload = model.to_json_dict()
+             self.assertEqual(payload["schema_version"], 1)
+             json.dumps(payload, allow_nan=False)
+ 
+ 
+ class AttemptTrackerTests(unittest.TestCase):
+     def test_visible_edges_allocate_globally_monotonic_attempt_and_segment_ids(self) -> None:
+         tracker = AttemptTracker(reacquire_grace_s=0.20)
+         key_1 = SnapshotKey(5, 31)
+         transitions = tracker.observe_ball_sample(_sample(1.0), snapshot_key=key_1)
+@@ -401,22 +402,22 @@ class AttemptTrackerTests(unittest.TestCase):
+         self.assertEqual([item.stage for item in reacquired], ["DETECTED"])
+         self.assertEqual(
+             tracker.binding_for_result(reacquired_key),
+             AttemptBinding(1, 2, "PRIMARY", reacquired_key),
+         )
+ 
+     def test_production_reset_closes_display_segment_without_invoking_production(self) -> None:
+         tracker = AttemptTracker(reacquire_grace_s=0.20)
+         tracker.observe_ball_sample(_sample(4.0), snapshot_key=SnapshotKey(9, 10))
+         events = tracker.observe_production_reset(
+-            previous_track_epoch=9,
+-            new_track_epoch=10,
++            previous_track_id=9,
++            new_track_id=10,
+             reason="STRIKE_DEADLINE_RESET",
+             monotonic_s=4.1,
+         )
+         self.assertEqual([item.stage for item in events], ["REACQUIRE_GRACE"])
+         invisible_key = SnapshotKey(10, 11)
+         self.assertEqual(
+             tracker.observe_ball_sample(
+                 _sample(4.11, valid=False),
+                 snapshot_key=invisible_key,
+             ),
+diff --git a/deploy/tests/test_hitter_task_diagnostics_integration.py b/deploy/tests/test_hitter_task_diagnostics_integration.py
+index fe0305c..9733e55 100644
+--- a/deploy/tests/test_hitter_task_diagnostics_integration.py
++++ b/deploy/tests/test_hitter_task_diagnostics_integration.py
+@@ -127,47 +127,47 @@ class _ImmediateWorker:
+         completed_s = float(snapshot.received_monotonic_s) + 0.0001
+         error_type = None
+         error_text = None
+         try:
+             command = self.pipeline.plan_snapshot(snapshot)
+             deadline_s = (
+                 float(snapshot.received_monotonic_s)
+                 + float(command.time_to_strike)
+             )
+             result = PlannerResultSnapshot(
+-                track_epoch=snapshot.track_epoch,
++                track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=deadline_s,
+                 completed_monotonic_s=completed_s,
+                 command=command,
+             )
+             command_fields = freeze_planner_command_fields(command)
+             self.completed += 1
+         except Exception as exc:
+             error_type = type(exc).__name__
+             error_text = str(exc)
+             result = PlannerResultSnapshot(
+-                track_epoch=snapshot.track_epoch,
++                track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=float("nan"),
+                 completed_monotonic_s=completed_s,
+                 command=None,
+                 error="{}: {}".format(error_type, error_text),
+             )
+             deadline_s = float("nan")
+             command_fields = None
+             self.failed += 1
+         frozen = FrozenPlannerResult(
+             snapshot_key=SnapshotKey(
+-                int(snapshot.track_epoch),
++                int(snapshot.track_id),
+                 int(snapshot.generation),
+             ),
+             source_frame=int(snapshot.source_frame),
+             strike_deadline_monotonic_s=deadline_s,
+             completed_monotonic_s=completed_s,
+             command_fields=command_fields,
+             error_type=error_type,
+             error_text=error_text,
+         )
+         previous_frozen = self.bundle[1]
+diff --git a/deploy/tests/test_hitter_task_events.py b/deploy/tests/test_hitter_task_events.py
+index 798e2c1..a4292d6 100644
+--- a/deploy/tests/test_hitter_task_events.py
++++ b/deploy/tests/test_hitter_task_events.py
+@@ -116,21 +116,21 @@ def _live_payload(
+             status="READY",
+             estimator_sample_count=31,
+             estimator_window_size=31,
+             speed_mps=1.0,
+             velocity_world_mps=(-1.0, 0.0, 0.0),
+             incoming_count=3,
+             incoming_required_count=3,
+             incoming_status="INCOMING",
+             blocker=None,
+             source_frame=10,
+-            track_epoch=1,
++            track_id=1,
+             generation=2,
+             raw_position_w=(1.0, 0.0, 1.0),
+             estimated_position_w=(1.0, 0.0, 1.0),
+             observed_monotonic_s=10.0,
+             age_s=0.0,
+         ),
+         production_gate=ProductionGateState(
+             pelvis_status="READY",
+             production_incoming_status="CONFIRMED",
+             production_incoming_count=3,
+@@ -406,21 +406,21 @@ class EventHubTests(unittest.TestCase):
+                     "rate_hz": 0.0,
+                     "age_s": 1.0,
+                     "source_frame": 70,
+                     "valid": True,
+                     "occluded": False,
+                 },
+             },
+             "ball": {
+                 "status": "READY",
+                 "source_frame": 77,
+-                "track_epoch": 4,
++                "track_id": 4,
+                 "generation": 12,
+                 "raw_position_w": [1.0, 2.0, 3.0],
+                 "estimated_position_w": [1.1, 2.1, 3.1],
+                 "estimated_velocity_w": [-0.45, 0.0, 0.0],
+                 "speed_mps": 0.45,
+                 "velocity_x_mps": -0.45,
+                 "estimator_sample_count": 31,
+                 "estimator_window_size": 31,
+                 "estimator_ready": True,
+                 "last_estimator_reset_reason": None,
+diff --git a/deploy/tests/test_hitter_task_frontend.py b/deploy/tests/test_hitter_task_frontend.py
+index 77c0bb8..1df2175 100644
+--- a/deploy/tests/test_hitter_task_frontend.py
++++ b/deploy/tests/test_hitter_task_frontend.py
+@@ -77,21 +77,21 @@ def _subject(
+         "source_frame": source_frame,
+         "valid": valid,
+         "occluded": occluded,
+     }
+ 
+ 
+ def _ball_state(**overrides):
+     value = {
+         "status": "NOT_SEEN",
+         "source_frame": None,
+-        "track_epoch": None,
++        "track_id": None,
+         "generation": None,
+         "raw_position_w": None,
+         "estimated_position_w": None,
+         "estimated_velocity_w": None,
+         "speed_mps": None,
+         "velocity_x_mps": None,
+         "estimator_sample_count": None,
+         "estimator_window_size": None,
+         "estimator_ready": None,
+         "last_estimator_reset_reason": None,
+@@ -538,21 +538,21 @@ class HitterTaskFrontendContractTest(unittest.TestCase):
+                     rate_hz=119.4,
+                     age_s=0.013,
+                     source_frame=901,
+                     valid=True,
+                     occluded=False,
+                 ),
+             },
+             ball=_ball_state(
+                 status="READY",
+                 source_frame=901,
+-                track_epoch=8,
++                track_id=8,
+                 generation=31,
+                 raw_position_w=[1.0, 2.0, 3.0],
+                 estimated_position_w=[1.1, 2.1, 3.1],
+                 estimated_velocity_w=[-0.45, 0.02, 0.03],
+                 speed_mps=0.452,
+                 velocity_x_mps=-0.45,
+                 estimator_sample_count=31,
+                 estimator_window_size=31,
+                 estimator_ready=True,
+                 ball_only_incoming_count=2,
+diff --git a/deploy/tests/test_hitter_task_input_adapter.py b/deploy/tests/test_hitter_task_input_adapter.py
+index 5d630f5..6d9b775 100644
+--- a/deploy/tests/test_hitter_task_input_adapter.py
++++ b/deploy/tests/test_hitter_task_input_adapter.py
+@@ -343,61 +343,61 @@ class MocapFrameAdapterInputTests(unittest.TestCase):
+             _message(
+                 "ball",
+                 position=(0.0, 0.0, 0.0),
+                 frame=2,
+                 source_time_s=1.01,
+                 valid=False,
+             ),
+             received_s=1.01,
+         )
+ 
+-        self.assertEqual(visible.snapshot.track_epoch, 0)
++        self.assertEqual(visible.snapshot.track_id, 1)
+         self.assertEqual(visible.snapshot.generation, 1)
+-        self.assertEqual(invalid.snapshot.track_epoch, 1)
++        self.assertEqual(invalid.snapshot.track_id, 2)
+         self.assertEqual(invalid.snapshot.generation, 2)
+         self.assertFalse(invalid.snapshot.visible)
+         self.assertFalse(invalid.snapshot.ready)
+         np.testing.assert_array_equal(
+             invalid.snapshot.position_w,
+             visible.snapshot.position_w,
+         )
+         np.testing.assert_array_equal(
+             invalid.snapshot.velocity_w,
+             visible.snapshot.velocity_w,
+         )
+         self.assertEqual(invalid.estimator_sample_count, 0)
+         self.assertEqual(
+             invalid.reset_transition,
+-            ProductionReset(0, 1, "BALL_INVALID_OR_OCCLUDED"),
++            ProductionReset(1, 2, "BALL_INVALID_OR_OCCLUDED"),
+         )
+         self.assertIn("BALL_INVALID_OR_OCCLUDED", invalid.warnings)
+         self.assertFalse(hasattr(adapter, "incoming"))
+         self.assertFalse(hasattr(adapter, "lifecycle"))
+ 
+-    def test_strike_reset_only_advances_epoch_and_preserves_latest_snapshot(self) -> None:
++    def test_strike_reset_only_advances_track_id_and_preserves_latest_snapshot(self) -> None:
+         adapter = _adapter(min_samples=1)
+         first = _ingest(
+             adapter,
+             _message("ball", frame=1),
+             received_s=1.0,
+         )
+ 
+-        new_epoch = adapter.reset_estimator_after_strike()
++        new_track_id = adapter.reset_estimator_after_strike()
+ 
+-        self.assertEqual(new_epoch, 1)
++        self.assertEqual(new_track_id, 2)
+         self.assertIs(adapter.latest_ball_snapshot, first.snapshot)
+         second = _ingest(
+             adapter,
+             _message("ball", frame=2, source_time_s=2.0),
+             received_s=2.0,
+         )
+-        self.assertEqual(second.snapshot.track_epoch, 1)
++        self.assertEqual(second.snapshot.track_id, 2)
+         self.assertEqual(second.snapshot.generation, 2)
+         self.assertEqual(second.estimator_sample_count, 1)
+ 
+     def test_bounce_resets_fit_buffer_without_advancing_epoch(self) -> None:
+         adapter = _adapter(min_samples=3)
+         positions = (
+             (1.4, 0.0, 0.95),
+             (1.4, 0.0, 0.90),
+             (1.4, 0.0, 0.79),
+         )
+@@ -410,21 +410,21 @@ class MocapFrameAdapterInputTests(unittest.TestCase):
+                     frame=index,
+                     source_time_s=float(index),
+                 ),
+                 received_s=float(index),
+             )
+             for index, position in enumerate(positions, start=1)
+         ]
+ 
+         self.assertTrue(outputs[-1].bounce_detected)
+         self.assertEqual(outputs[-1].estimator_sample_count, 1)
+-        self.assertEqual(outputs[-1].snapshot.track_epoch, 0)
++        self.assertEqual(outputs[-1].snapshot.track_id, 1)
+         self.assertIn("BOUNCE_RESET", outputs[-1].warnings)
+ 
+     def test_estimator_becomes_ready_on_the_thirty_first_sample(self) -> None:
+         adapter = _adapter(min_samples=31)
+         outputs = []
+         for index in range(31):
+             outputs.append(
+                 _ingest(
+                     adapter,
+                     _message(
+@@ -495,27 +495,27 @@ class MocapFrameAdapterInputTests(unittest.TestCase):
+             ),
+             received_s=2.0,
+         )
+ 
+         self.assertTrue(math.isnan(output.sample.position_w[0]))
+         self.assertIsNone(output.snapshot)
+         self.assertIn("ESTIMATE_NONFINITE", output.warnings)
+         self.assertEqual(output.estimator_sample_count, 1)
+         self.assertIsNone(output.reset_transition)
+         self.assertIs(adapter.latest_ball_snapshot, before.snapshot)
+-        self.assertEqual(adapter.track_epoch, 0)
++        self.assertEqual(adapter.track_id, 1)
+ 
+     def test_adapter_serializes_ingest_reset_and_pelvis_reads_with_one_rlock(self) -> None:
+         adapter = _adapter(min_samples=1)
+         self.assertIsInstance(adapter.lock, type(threading.RLock()))
+         with adapter.lock:
+             _ingest(
+                 adapter,
+                 _message("g1pelvis", frame=1),
+                 received_s=1.0,
+             )
+             adapter.copy_latest_pelvis()
+-            self.assertEqual(adapter.reset_estimator_after_strike(), 1)
++            self.assertEqual(adapter.reset_estimator_after_strike(), 2)
+ 
+ 
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/deploy/tests/test_hitter_task_monitor.py b/deploy/tests/test_hitter_task_monitor.py
+index e14d8f6..bd25f74 100644
+--- a/deploy/tests/test_hitter_task_monitor.py
++++ b/deploy/tests/test_hitter_task_monitor.py
+@@ -804,21 +804,21 @@ class HitterTaskMonitorTest(unittest.TestCase):
+ 
+             def diagnostic_snapshot():
+                 diagnostic_reads.append(True)
+                 return diagnostic_state
+ 
+             pipeline.ball_diagnostics = SimpleNamespace(
+                 snapshot=diagnostic_snapshot
+             )
+             pipeline.incoming = SimpleNamespace(
+                 snapshot=lambda: SimpleNamespace(
+-                    track_epoch=None,
++                    track_id=None,
+                     consecutive_count=0,
+                     confirmed=False,
+                 )
+             )
+             monitor.runtime_settings = SimpleNamespace(
+                 incoming_confirmation_snapshots=3,
+                 arm_tts_s=0.35,
+             )
+             monitor._arrival.record(
+                 subject="ball",
+@@ -911,21 +911,21 @@ class HitterTaskMonitorTest(unittest.TestCase):
+                 status="READY",
+                 estimator_sample_count=31,
+                 estimator_window_size=31,
+                 speed_mps=1.0,
+                 velocity_world_mps=(-1.0, 0.0, 0.0),
+                 incoming_count=1,
+                 incoming_required_count=3,
+                 incoming_status="INCOMING",
+                 blocker=None,
+                 source_frame=101,
+-                track_epoch=4,
++                track_id=4,
+                 generation=11,
+                 raw_position_w=(1.1, 1.2, 1.3),
+                 estimated_position_w=(1.4, 1.5, 1.6),
+                 observed_monotonic_s=5.0,
+             )
+             pipeline.ball_diagnostics = SimpleNamespace(
+                 snapshot=lambda: canonical
+             )
+             pipeline.attempt_tracker.binding_for_result = (
+                 lambda _key: None
+@@ -934,21 +934,21 @@ class HitterTaskMonitorTest(unittest.TestCase):
+                 sample=SimpleNamespace(
+                     subject="ball",
+                     source_frame=102,
+                     position_w=(2.1, 2.2, 2.3),
+                     received_monotonic_s=5.005,
+                     valid=True,
+                     occluded=False,
+                 ),
+                 snapshot=SimpleNamespace(
+                     source_frame=102,
+-                    track_epoch=4,
++                    track_id=4,
+                     generation=12,
+                     position_w=(2.4, 2.5, 2.6),
+                     velocity_w=(-2.0, 0.0, 0.0),
+                     received_monotonic_s=5.005,
+                 ),
+                 warnings=(),
+                 estimator_sample_count=32,
+                 bounce_detected=False,
+                 reset_transition=None,
+             )
+@@ -965,21 +965,21 @@ class HitterTaskMonitorTest(unittest.TestCase):
+                     obs_now_s=5.006,
+                     incoming=pipeline.incoming.snapshot(),
+                 )
+             finally:
+                 monitor.close(timeout_s=0.0)
+                 transport.close_fds()
+ 
+         self.assertEqual(
+             (
+                 captured.source_frame,
+-                captured.track_epoch,
++                captured.track_id,
+                 captured.generation,
+                 captured.raw_position_w,
+                 captured.estimated_position_w,
+                 captured.velocity_world_mps,
+                 captured.estimator_sample_count,
+                 captured.incoming_count,
+             ),
+             (
+                 101,
+                 4,
+@@ -1150,21 +1150,21 @@ class HitterTaskMonitorTest(unittest.TestCase):
+                     status="READY",
+                     estimator_sample_count=31,
+                     estimator_window_size=31,
+                     speed_mps=1.0,
+                     velocity_world_mps=(-1.0, 0.0, 0.0),
+                     incoming_count=1,
+                     incoming_required_count=3,
+                     incoming_status="INCOMING",
+                     blocker=None,
+                     source_frame=17,
+-                    track_epoch=1,
++                    track_id=1,
+                     generation=1,
+                     raw_position_w=(1.0, 0.0, 1.0),
+                     estimated_position_w=(1.0, 0.0, 1.0),
+                     observed_monotonic_s=11.0,
+                 )
+ 
+             pipeline.ingest_adapter_output = ingest_and_commit_ball
+             publication_lock_states = []
+             original_offer = lane.offer
+ 
+@@ -1461,26 +1461,26 @@ class HitterTaskMonitorTest(unittest.TestCase):
+             missing_pelvis = replace(
+                 live_pelvis,
+                 status="NEVER_SEEN",
+                 rate_hz=None,
+                 age_s=None,
+                 source_frame=None,
+                 valid=None,
+                 occluded=None,
+             )
+             confirmed = SimpleNamespace(
+-                track_epoch=1,
++                track_id=1,
+                 consecutive_count=3,
+                 confirmed=True,
+             )
+             confirming = SimpleNamespace(
+-                track_epoch=1,
++                track_id=1,
+                 consecutive_count=1,
+                 confirmed=False,
+             )
+             ready_command = SimpleNamespace(
+                 strike_deadline_monotonic_s=12.0,
+                 error_type=None,
+                 error_text=None,
+                 command_fields={"strike_type": 0},
+             )
+             rejected_command = SimpleNamespace(
+@@ -1673,21 +1673,21 @@ class HitterTaskMonitorTest(unittest.TestCase):
+             )
+             pelvis = SubjectHealth(
+                 status="LIVE",
+                 rate_hz=360.0,
+                 age_s=0.001,
+                 source_frame=1,
+                 valid=True,
+                 occluded=False,
+             )
+             incoming = SimpleNamespace(
+-                track_epoch=None,
++                track_id=None,
+                 consecutive_count=0,
+                 confirmed=False,
+             )
+             tick_result = SimpleNamespace(
+                 phase="armed",
+                 command_result=None,
+                 task_observation=None,
+                 task_pass=False,
+                 errors=(),
+             )
+@@ -2233,21 +2233,21 @@ class HitterTaskMonitorTest(unittest.TestCase):
+             pipeline.tick = stale_tick
+             monitor._remember_closed_attempt(1)
+             try:
+                 monitor._tick_once()
+                 pipeline.attempt_tracker.binding_for_result = (
+                     lambda _key: stale_result.active_binding
+                 )
+                 monitor._remember_planner_input(
+                     SimpleNamespace(
+                         snapshot=SimpleNamespace(
+-                            track_epoch=1,
++                            track_id=1,
+                             generation=2,
+                             source_frame=2,
+                             source_time_s=1.0,
+                             received_monotonic_s=1.0,
+                             position_w=(1.0, 2.0, 3.0),
+                             velocity_w=(4.0, 5.0, 6.0),
+                             base_position_w=(0.0, 0.0, 0.8),
+                             base_quaternion_xyzw=(0.0, 0.0, 0.0, 1.0),
+                             base_valid=True,
+                             visible=True,
+diff --git a/deploy/tests/test_hitter_task_pipeline.py b/deploy/tests/test_hitter_task_pipeline.py
+index aabca18..cfa070e 100644
+--- a/deploy/tests/test_hitter_task_pipeline.py
++++ b/deploy/tests/test_hitter_task_pipeline.py
+@@ -86,24 +86,24 @@ class _RecursiveCommand(dict):
+ 
+ 
+ def _snapshot(
+     generation: int,
+     *,
+     received_s: float = 0.0,
+     visible: bool = True,
+     ready: bool = True,
+     base_valid: bool = True,
+     velocity=(-1.0, 0.0, 0.0),
+-    epoch: int = 0,
++    track_id: int = 1,
+ ) -> BallEstimateSnapshot:
+     return BallEstimateSnapshot(
+-        track_epoch=epoch,
++        track_id=track_id,
+         generation=generation,
+         source_frame=generation,
+         source_time_s=float(generation) / 360.0,
+         received_monotonic_s=received_s,
+         position_w=np.array([1.5, 0.0, 1.0], dtype=np.float32),
+         velocity_w=np.array(velocity, dtype=np.float32),
+         base_position_w=np.array([0.0, 0.0, 0.8], dtype=np.float32),
+         base_quaternion_xyzw=np.array(
+             [0.0, 0.0, 0.0, 1.0],
+             dtype=np.float32,
+@@ -138,32 +138,32 @@ def _sample(
+ 
+ 
+ def _output(
+     generation: int,
+     *,
+     received_s: float,
+     visible: bool = True,
+     ready: bool = True,
+     base_valid: bool = True,
+     velocity=(-1.0, 0.0, 0.0),
+-    epoch: int = 0,
++    track_id: int = 1,
+     estimator_sample_count=None,
+     bounce_detected: bool = False,
+ ) -> AdapterOutput:
+     snapshot = _snapshot(
+         generation,
+         received_s=received_s,
+         visible=visible,
+         ready=ready,
+         base_valid=base_valid,
+         velocity=velocity,
+-        epoch=epoch,
++        track_id=track_id,
+     )
+     return AdapterOutput(
+         sample=_sample(
+             generation,
+             received_s=received_s,
+             visible=visible,
+         ),
+         snapshot=snapshot,
+         warnings=(),
+         estimator_sample_count=(
+@@ -265,21 +265,21 @@ class _LockOrderProbeWorker(_FakeWorker):
+         self.submissions.append(snapshot)
+ 
+     def wait_callbacks(self) -> bool:
+         for thread in self._callback_threads:
+             thread.join(1.0)
+         return all(not thread.is_alive() for thread in self._callback_threads)
+ 
+ 
+ class _FakeAdapter:
+     def __init__(self) -> None:
+-        self.track_epoch = 0
++        self.track_id = 1
+         self.reset_calls = 0
+         self.ball_state_estimator = type(
+             "_FakeBallStateEstimator",
+             (),
+             {"window_size": 31},
+         )()
+         self.pose = LatestPelvisPose(
+             position_w=np.array([1.0, 2.0, 0.8], dtype=np.float32),
+             quaternion_xyzw=np.array(
+                 [0.0, 0.0, np.sqrt(0.5), np.sqrt(0.5)],
+@@ -292,22 +292,22 @@ class _FakeAdapter:
+             publish_time_us=1_000_000,
+             received_monotonic_s=1.0,
+             wall_time_us=1,
+         )
+ 
+     def copy_latest_pelvis(self):
+         return self.pose
+ 
+     def reset_estimator_after_strike(self) -> int:
+         self.reset_calls += 1
+-        self.track_epoch += 1
+-        return self.track_epoch
++        self.track_id += 1
++        return self.track_id
+ 
+ 
+ class PlannerWorkerTraceTests(unittest.TestCase):
+     def test_trace_listener_delivery_is_strictly_ordered_when_first_callback_blocks(self) -> None:
+         first_entered = threading.Event()
+         release_first = threading.Event()
+         second_delivered = threading.Event()
+         planned = threading.Event()
+         delivered = []
+ 
+@@ -477,21 +477,21 @@ class PlannerWorkerTraceTests(unittest.TestCase):
+         self.assertTrue(
+             any(
+                 trace.kind == "latest_result_replaced"
+                 and trace.replaced_result.snapshot_key.generation == 1
+                 and trace.result.snapshot_key.generation == 3
+                 for trace in all_traces
+             )
+         )
+         result, frozen = worker.latest_result_bundle()
+         self.assertEqual(result.source_generation, 3)
+-        self.assertEqual(frozen.snapshot_key, SnapshotKey(0, 3))
++        self.assertEqual(frozen.snapshot_key, SnapshotKey(1, 3))
+         self.assertEqual(
+             frozen.command_fields["strike_plan"]["p_racket_target"],
+             (0.1, 0.2, 1.1),
+         )
+         with self.assertRaises(TypeError):
+             frozen.command_fields["other"] = 1
+         with self.assertRaises(TypeError):
+             frozen.command_fields["strike_plan"]["other"] = 1
+         self.assertEqual(worker.stats.dropped_pending, 1)
+ 
+@@ -511,36 +511,36 @@ class PlannerWorkerTraceTests(unittest.TestCase):
+             plan,
+             trace_listener=broken_listener,
+         )
+         worker.submit(_snapshot(1))
+         self.assertTrue(started.wait(2.0))
+         self.assertFalse(worker.close(timeout_s=0.0))
+         release.set()
+         self.assertTrue(worker.close(timeout_s=2.0))
+         result, frozen = worker.latest_result_bundle()
+         self.assertIsNone(result.error)
+-        self.assertEqual(frozen.snapshot_key, SnapshotKey(0, 1))
++        self.assertEqual(frozen.snapshot_key, SnapshotKey(1, 1))
+         self.assertGreaterEqual(worker.trace_listener_failures, 2)
+ 
+     def test_incoming_snapshot_is_immutable_and_tracks_latched_state(self) -> None:
+         incoming = IncomingTrackConfirmation(
+             minimum_speed_x_mps=0.2,
+             required_consecutive_snapshots=2,
+         )
+         self.assertFalse(
+-            incoming.observe(track_epoch=7, velocity_x_mps=-1.0)
++            incoming.observe(track_id=7, velocity_x_mps=-1.0)
+         )
+         first = incoming.snapshot()
+-        self.assertEqual((first.track_epoch, first.consecutive_count), (7, 1))
++        self.assertEqual((first.track_id, first.consecutive_count), (7, 1))
+         self.assertFalse(first.confirmed)
+         self.assertTrue(
+-            incoming.observe(track_epoch=7, velocity_x_mps=-1.0)
++            incoming.observe(track_id=7, velocity_x_mps=-1.0)
+         )
+         self.assertTrue(incoming.snapshot().confirmed)
+         with self.assertRaises(FrozenInstanceError):
+             first.confirmed = True
+ 
+ 
+ class ShadowTaskPipelineTests(unittest.TestCase):
+     def _pipeline(
+         self,
+         *,
+@@ -662,41 +662,41 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         self.assertTrue(all(binding is not None for _, binding in raw.items))
+ 
+     def test_throttled_ingest_keeps_one_canonical_ball_observation(self) -> None:
+         pipeline, _worker, _adapter, _raw, _events = self._pipeline(
+             required=3
+         )
+         first = _output(
+             11,
+             received_s=5.0,
+             velocity=(-1.0, 0.1, 0.2),
+-            epoch=4,
++            track_id=4,
+             estimator_sample_count=31,
+         )
+         first = replace(
+             first,
+             sample=replace(
+                 first.sample,
+                 source_frame=101,
+                 position_w=np.array([1.1, 1.2, 1.3]),
+             ),
+             snapshot=replace(
+                 first.snapshot,
+                 source_frame=101,
+                 position_w=np.array([1.4, 1.5, 1.6]),
+             ),
+         )
+         throttled = _output(
+             12,
+             received_s=5.005,
+             velocity=(-2.0, 2.1, 2.2),
+-            epoch=4,
++            track_id=4,
+             estimator_sample_count=32,
+         )
+         throttled = replace(
+             throttled,
+             sample=replace(
+                 throttled.sample,
+                 source_frame=102,
+                 position_w=np.array([2.1, 2.2, 2.3]),
+             ),
+             snapshot=replace(
+@@ -706,21 +706,21 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+             ),
+         )
+ 
+         pipeline.ingest_adapter_output(first)
+         pipeline.ingest_adapter_output(throttled)
+ 
+         state = self._ball_diagnostics(pipeline).snapshot()
+         self.assertEqual(
+             (
+                 state.source_frame,
+-                state.track_epoch,
++                state.track_id,
+                 state.generation,
+                 state.estimator_sample_count,
+                 state.incoming_count,
+             ),
+             (101, 4, 11, 31, 1),
+         )
+         np.testing.assert_allclose(
+             state.raw_position_w,
+             (1.1, 1.2, 1.3),
+         )
+@@ -835,42 +835,42 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+                 self._ball_diagnostics(
+                     pipeline
+                 ).snapshot().incoming_count
+             )
+ 
+         self.assertEqual(observed_counts, [1, 1, 2, 3])
+         diagnostic = self._ball_diagnostics(pipeline).snapshot()
+         self.assertEqual(diagnostic.incoming_status, "INCOMING")
+         self.assertEqual(diagnostic.incoming_required_count, 3)
+         production = pipeline.incoming.snapshot()
+-        self.assertIsNone(production.track_epoch)
++        self.assertIsNone(production.track_id)
+         self.assertEqual(production.consecutive_count, 0)
+         self.assertFalse(production.confirmed)
+ 
+     def test_ball_diagnostics_deduplicates_nonadjacent_generation_per_epoch(self) -> None:
+         pipeline, _worker, _adapter, _raw, _events = self._pipeline(
+             required=3
+         )
+         observed_counts = []
+-        for epoch, generation, received_s in (
+-            (0, 1, 0.02),
+-            (0, 2, 0.04),
+-            (0, 1, 0.06),
+-            (1, 1, 0.08),
++        for track_id, generation, received_s in (
++            (1, 1, 0.02),
++            (1, 2, 0.04),
++            (1, 1, 0.06),
++            (2, 1, 0.08),
+         ):
+             pipeline.ingest_adapter_output(
+                 _output(
+                     generation,
+                     received_s=received_s,
+                     base_valid=False,
+                     velocity=(-1.0, 0.0, 0.0),
+-                    epoch=epoch,
++                    track_id=track_id,
+                 )
+             )
+             observed_counts.append(
+                 self._ball_diagnostics(
+                     pipeline
+                 ).snapshot().incoming_count
+             )
+ 
+         self.assertEqual(observed_counts, [1, 2, 2, 1])
+ 
+@@ -972,42 +972,42 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+                 velocity=(-1.0, 0.0, 0.0),
+             )
+         )
+         pipeline.ingest_adapter_output(
+             _output(
+                 2,
+                 received_s=0.04,
+                 visible=False,
+                 ready=False,
+                 base_valid=False,
+-                epoch=1,
++                track_id=2,
+                 estimator_sample_count=0,
+             )
+         )
+ 
+         ended = self._ball_diagnostics(pipeline).snapshot()
+         self.assertEqual(ended.status, "TRACK_ENDED")
+         self.assertIsNone(ended.estimator_sample_count)
+         self.assertEqual(ended.estimator_window_size, 31)
+         self.assertIsNone(ended.speed_mps)
+         self.assertIsNone(ended.velocity_world_mps)
+         self.assertIsNone(ended.incoming_count)
+         self.assertEqual(ended.incoming_status, "TRACK_ENDED")
+         self.assertEqual(ended.blocker, "BALL_NOT_VISIBLE")
+ 
+         pipeline.ingest_adapter_output(
+             _output(
+                 3,
+                 received_s=0.06,
+                 base_valid=False,
+                 velocity=(-1.0, 0.0, 0.0),
+-                epoch=1,
++                track_id=2,
+                 estimator_sample_count=1,
+             )
+         )
+         restarted = self._ball_diagnostics(pipeline).snapshot()
+         self.assertEqual(restarted.incoming_count, 1)
+         self.assertEqual(restarted.incoming_status, "INCOMING")
+ 
+     def test_ball_diagnostics_observes_final_invisible_sample_inside_throttle(self) -> None:
+         pipeline, worker, _adapter, _raw, _events = self._pipeline(
+             required=3
+@@ -1020,21 +1020,21 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+                 velocity=(-1.0, 0.0, 0.0),
+             )
+         )
+         pipeline.ingest_adapter_output(
+             _output(
+                 2,
+                 received_s=1.005,
+                 visible=False,
+                 ready=False,
+                 base_valid=False,
+-                epoch=1,
++                track_id=2,
+                 estimator_sample_count=0,
+             )
+         )
+ 
+         terminal = self._ball_diagnostics(pipeline).snapshot()
+         self.assertEqual(terminal.status, "TRACK_ENDED")
+         self.assertEqual(terminal.incoming_status, "TRACK_ENDED")
+         self.assertEqual(terminal.blocker, "BALL_NOT_VISIBLE")
+         self.assertIsNone(terminal.incoming_count)
+         self.assertEqual(
+@@ -1160,21 +1160,21 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+             self._worker_trace(
+                 trace_seq=1,
+                 kind="start",
+                 monotonic_s=0.001,
+                 snapshot=first,
+             )
+         )
+         with self.assertRaisesRegex(ValueError, "stably incoming"):
+             pipeline.plan_snapshot(first)
+         first_result = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=float("nan"),
+             completed_monotonic_s=0.002,
+             command_fields=None,
+             error_type="ValueError",
+             error_text="HITTER ball track is not stably incoming.",
+         )
+         first_complete = self._worker_trace(
+             trace_seq=2,
+             kind="complete",
+@@ -1190,21 +1190,21 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         pipeline._on_worker_trace(
+             self._worker_trace(
+                 trace_seq=3,
+                 kind="start",
+                 monotonic_s=0.021,
+                 snapshot=second,
+             )
+         )
+         command = pipeline.plan_snapshot(second)
+         second_result = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 2),
++            snapshot_key=SnapshotKey(1, 2),
+             source_frame=2,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.022,
+             command_fields=_command_fields(command),
+             error_type=None,
+             error_text=None,
+         )
+         second_complete = self._worker_trace(
+             trace_seq=4,
+             kind="complete",
+@@ -1251,59 +1251,59 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         self.assertEqual(canonical[2].monotonic_s, 0.002)
+         self.assertEqual(
+             canonical[3].payload["values"],
+             {"count": 2, "required": 2},
+         )
+         self.assertEqual(canonical[3].monotonic_s, 0.021)
+         self.assertEqual(canonical[4].monotonic_s, 0.022)
+         self.assertEqual(
+             [draft.payload["snapshot_key"] for draft in canonical[-2:]],
+             [
+-                SnapshotKey(0, 2).to_json_dict(),
+-                SnapshotKey(0, 2).to_json_dict(),
++                SnapshotKey(1, 2).to_json_dict(),
++                SnapshotKey(1, 2).to_json_dict(),
+             ],
+         )
+ 
+     def test_latest_result_replacement_after_tick_consumption_is_not_counted(
+         self,
+     ) -> None:
+         pipeline, worker, _adapter, _raw, _events = self._pipeline(required=1)
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         pipeline.ingest_adapter_output(_output(2, received_s=0.02))
+         first_command = _command(time_to_strike=2.0)
+         first_result = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=2.0,
+             completed_monotonic_s=0.001,
+             command=first_command,
+         )
+         first_frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=2.0,
+             completed_monotonic_s=0.001,
+             command_fields=_command_fields(first_command),
+             error_type=None,
+             error_text=None,
+         )
+         worker.bundle = (first_result, first_frozen)
+         pipeline.tick(
+             lifecycle_now_s=0.0,
+             obs_now_s=0.01,
+             wall_time_us=1,
+         )
+ 
+         second_frozen = replace(
+             first_frozen,
+-            snapshot_key=SnapshotKey(0, 2),
++            snapshot_key=SnapshotKey(1, 2),
+             source_frame=2,
+             completed_monotonic_s=0.021,
+         )
+         pipeline._on_worker_trace(
+             self._worker_trace(
+                 trace_seq=2,
+                 kind="latest_result_replaced",
+                 monotonic_s=0.021,
+                 snapshot=_snapshot(2, received_s=0.02),
+                 result=second_frozen,
+@@ -1317,46 +1317,46 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         )
+ 
+     def test_two_completions_between_ticks_count_one_unconsumed_replacement(
+         self,
+     ) -> None:
+         pipeline, worker, _adapter, _raw, _events = self._pipeline(required=1)
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         pipeline.ingest_adapter_output(_output(2, received_s=0.02))
+         first_command = _command(time_to_strike=2.0)
+         first_frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=2.0,
+             completed_monotonic_s=0.001,
+             command_fields=_command_fields(first_command),
+             error_type=None,
+             error_text=None,
+         )
+         second_frozen = replace(
+             first_frozen,
+-            snapshot_key=SnapshotKey(0, 2),
++            snapshot_key=SnapshotKey(1, 2),
+             source_frame=2,
+             completed_monotonic_s=0.021,
+         )
+         replacement = self._worker_trace(
+             trace_seq=2,
+             kind="latest_result_replaced",
+             monotonic_s=0.021,
+             snapshot=_snapshot(2, received_s=0.02),
+             result=second_frozen,
+             replaced_result=first_frozen,
+         )
+         pipeline._on_worker_trace(replacement)
+         pipeline._on_worker_trace(replacement)
+         second_result = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=2,
+             source_frame=2,
+             strike_deadline_monotonic_s=2.0,
+             completed_monotonic_s=0.021,
+             command=first_command,
+         )
+         worker.bundle = (second_result, second_frozen)
+         pipeline.tick(
+             lifecycle_now_s=0.02,
+             obs_now_s=0.03,
+@@ -1386,21 +1386,21 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         )
+         with self.assertRaisesRegex(ValueError, "base pose"):
+             pipeline.plan_snapshot(snapshot)
+         pipeline._on_worker_trace(
+             self._worker_trace(
+                 trace_seq=2,
+                 kind="complete",
+                 monotonic_s=1.002,
+                 snapshot=snapshot,
+                 result=FrozenPlannerResult(
+-                    snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+                     source_frame=1,
+                     strike_deadline_monotonic_s=float("nan"),
+                     completed_monotonic_s=1.002,
+                     command_fields=None,
+                     error_type="ValueError",
+                     error_text="HITTER base pose is not valid.",
+                 ),
+             )
+         )
+         pipeline.ingest_adapter_output(
+@@ -1410,29 +1410,29 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+ 
+         summary = pipeline.attempt_tracker.summary_for_attempt(1)
+         self.assertEqual(summary.primary_blocker, "PELVIS_UNAVAILABLE")
+ 
+     def test_tick_records_late_skip_once(self) -> None:
+         pipeline, worker, _adapter, _raw, events = self._pipeline(required=1)
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         command = _command(time_to_strike=0.5)
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=0,
++            track_id=1,
+                 source_generation=1,
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.5,
+                 completed_monotonic_s=0.01,
+                 command=command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.5,
+                 completed_monotonic_s=0.01,
+                 command_fields=_command_fields(command),
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+ 
+         first = pipeline.tick(
+@@ -1462,29 +1462,29 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         command = replace(
+             _command(time_to_strike=0.85),
+             v_racket_target_w=np.array(
+                 [400.0, 500.0, 600.0],
+                 dtype=np.float64,
+             ),
+         )
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=0,
++            track_id=1,
+                 source_generation=1,
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command=command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command_fields=_command_fields(command),
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+ 
+         first = pipeline.tick(
+@@ -1524,49 +1524,49 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+             ("OBS_CLIPPED",),
+         )
+         self.assertEqual(relevant[1].monotonic_s, 0.1)
+ 
+     def test_tick_arms_with_same_source_fields_and_latest_pelvis_then_resets_at_strike(self) -> None:
+         pipeline, worker, adapter, _raw, events = self._pipeline(required=1)
+         output = _output(1, received_s=0.0)
+         pipeline.ingest_adapter_output(output)
+         command = _command(time_to_strike=0.85)
+         result = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command=command,
+         )
+         frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command_fields=_command_fields(command),
+             error_type=None,
+             error_text=None,
+         )
+         worker.bundle = (result, frozen)
+ 
+         armed = pipeline.tick(
+             lifecycle_now_s=0.0,
+             obs_now_s=0.10,
+             wall_time_us=100,
+         )
+         self.assertEqual(armed.phase, "armed")
+         self.assertEqual(armed.lifecycle_decision, "armed")
+         self.assertTrue(armed.task_pass)
+         self.assertEqual(
+             armed.active_binding.snapshot_key,
+-            SnapshotKey(0, 1),
++            SnapshotKey(1, 1),
+         )
+         self.assertIs(armed.command_result, frozen)
+         self.assertIs(armed.command_fields_used, frozen.command_fields)
+         np.testing.assert_allclose(
+             armed.task_observation.pre_clip[:2],
+             [0.0, 1.0],
+             atol=1.0e-6,
+         )
+         np.testing.assert_array_equal(
+             armed.task_observation.pre_clip[7:10],
+@@ -1623,58 +1623,58 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+             any(draft.kind == "lifecycle_tick" for draft in events.drafts)
+         )
+ 
+     def test_bundle_identity_mismatch_never_arms_or_passes(self) -> None:
+         pipeline, worker, _adapter_value, _raw, _events = self._pipeline(
+             required=1
+         )
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=0,
++            track_id=1,
+                 source_generation=1,
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command=_command(),
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(0, 99),
++            snapshot_key=SnapshotKey(1, 99),
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command_fields={"time_to_strike": 0.85},
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+         tick = pipeline.tick(
+             lifecycle_now_s=0.0,
+             obs_now_s=0.1,
+             wall_time_us=1,
+         )
+         self.assertFalse(tick.task_pass)
+         self.assertIn("OBS_COMMAND_MISMATCH", tick.errors)
+         self.assertNotEqual(tick.phase, "armed")
+ 
+     def test_bundle_requires_all_source_timing_and_command_facts(self) -> None:
+         command = _command(time_to_strike=0.85)
+         valid_result = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command=command,
+         )
+         valid_frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command_fields=_command_fields(command),
+             error_type=None,
+             error_text=None,
+         )
+         changed_fields = _command_fields(command)
+         changed_fields["p_base_target_xy"] = (-0.399998, 0.2)
+         cases = (
+@@ -1707,29 +1707,29 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+                 self.assertIn("OBS_COMMAND_MISMATCH", tick.errors)
+                 self.assertNotEqual(tick.phase, "armed")
+ 
+     def test_mismatched_bundle_does_not_poison_corrected_same_key(self) -> None:
+         pipeline, worker, _adapter, _raw, _events = self._pipeline(
+             required=1
+         )
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         command = _command(time_to_strike=0.85)
+         result = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command=command,
+         )
+         valid_frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command_fields=_command_fields(command),
+             error_type=None,
+             error_text=None,
+         )
+         worker.bundle = (
+             result,
+             replace(valid_frozen, source_frame=99),
+@@ -1753,75 +1753,75 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+     def test_bundle_rejects_any_float_fact_divergence(self) -> None:
+         pipeline, worker, _adapter, _raw, _events = self._pipeline(
+             required=1
+         )
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         command = _command(time_to_strike=0.85)
+         command_fields = _command_fields(command)
+         command_fields["p_base_target_xy"] = (-0.3999995, 0.2)
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=0,
++            track_id=1,
+                 source_generation=1,
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command=command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.8500005,
+                 completed_monotonic_s=0.0100005,
+                 command_fields=command_fields,
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+         tick = pipeline.tick(
+             lifecycle_now_s=0.0,
+             obs_now_s=0.1,
+             wall_time_us=1,
+         )
+         self.assertIn("OBS_COMMAND_MISMATCH", tick.errors)
+         self.assertFalse(tick.task_pass)
+ 
+     def test_bundle_requires_exact_success_and_failure_identity(self) -> None:
+         command = _command(time_to_strike=0.85)
+         success = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command=command,
+         )
+         success_frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command_fields=_command_fields(command),
+             error_type=None,
+             error_text=None,
+         )
+         failure = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=float("nan"),
+             completed_monotonic_s=0.01,
+             command=None,
+             error="ValueError: scripted failure",
+         )
+         failure_frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=float("nan"),
+             completed_monotonic_s=0.01,
+             command_fields=None,
+             error_type="ValueError",
+             error_text="scripted failure",
+         )
+ 
+         self.assertTrue(
+             ShadowTaskPipeline._result_bundle_matches(
+@@ -1858,62 +1858,62 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         self.assertFalse(
+             ShadowTaskPipeline._result_bundle_matches(
+                 failure,
+                 replace(failure_frozen, error_text="other failure"),
+             )
+         )
+ 
+     def test_bundle_rejects_numeric_string_and_source_frame_coercion(self) -> None:
+         command = _command(time_to_strike=0.85)
+         result = PlannerResultSnapshot(
+-            track_epoch=0,
++            track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+             completed_monotonic_s=0.01,
+             command=command,
+         )
+         fields = _command_fields(command)
+         fields["time_to_strike"] = "0.85"
+         fields["p_base_target_xy"] = ("-0.4", 0.2)
+         frozen = FrozenPlannerResult(
+-            snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+             source_frame=1.9,
+             strike_deadline_monotonic_s="0.85",
+             completed_monotonic_s="0.01",
+             command_fields=fields,
+             error_type=None,
+             error_text=None,
+         )
+ 
+         self.assertFalse(
+             ShadowTaskPipeline._result_bundle_matches(result, frozen)
+         )
+ 
+     def test_planner_replacement_is_also_scoped_to_replaced_attempt(self) -> None:
+         pipeline, _worker, _adapter, _raw, events = self._pipeline()
+-        old_snapshot = _snapshot(1, received_s=0.0, epoch=0)
++        old_snapshot = _snapshot(1, received_s=0.0, track_id=1)
+         pipeline.ingest_adapter_output(
+-            _output(1, received_s=0.0, epoch=0)
++            _output(1, received_s=0.0, track_id=1)
+         )
+         pipeline.ingest_adapter_output(
+             _output(
+                 2,
+                 received_s=0.01,
+                 visible=False,
+-                epoch=0,
++                track_id=1,
+             )
+         )
+         pipeline.attempt_tracker.advance(now_monotonic_s=0.3)
+-        new_snapshot = _snapshot(3, received_s=0.31, epoch=1)
++        new_snapshot = _snapshot(3, received_s=0.31, track_id=2)
+         pipeline.ingest_adapter_output(
+-            _output(3, received_s=0.31, epoch=1)
++            _output(3, received_s=0.31, track_id=2)
+         )
+         events.drafts.clear()
+ 
+         pipeline._on_worker_trace(
+             PlannerWorkerTrace(
+                 trace_seq=10,
+                 kind="pending_replaced",
+                 monotonic_s=0.31,
+                 snapshot=new_snapshot,
+                 result=None,
+@@ -1939,29 +1939,29 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         self.assertEqual(replaced.payload["replacing_attempt_id"], 2)
+ 
+     def test_lifecycle_tracking_tick_uses_latest_result_ownership(self) -> None:
+         pipeline, worker, _adapter, _raw, events = self._pipeline(
+             required=1
+         )
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         command = _command(time_to_strike=2.0)
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=0,
++            track_id=1,
+                 source_generation=1,
+                 source_frame=1,
+                 strike_deadline_monotonic_s=2.0,
+                 completed_monotonic_s=0.01,
+                 command=command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+                 source_frame=1,
+                 strike_deadline_monotonic_s=2.0,
+                 completed_monotonic_s=0.01,
+                 command_fields=_command_fields(command),
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+         tick = pipeline.tick(
+             lifecycle_now_s=0.0,
+@@ -1978,64 +1978,64 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         self.assertEqual(lifecycle_event.attempt_id, 1)
+ 
+     def test_recovery_cached_tick_uses_next_attempt_ownership(self) -> None:
+         pipeline, worker, _adapter, raw, events = self._pipeline(
+             required=1
+         )
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         first_command = _command(time_to_strike=0.85)
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=0,
++            track_id=1,
+                 source_generation=1,
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command=first_command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command_fields=_command_fields(first_command),
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+         pipeline.tick(
+             lifecycle_now_s=0.0,
+             obs_now_s=0.1,
+             wall_time_us=1,
+         )
+         pipeline.tick(
+             lifecycle_now_s=0.851,
+             obs_now_s=0.852,
+             wall_time_us=2,
+         )
+         pipeline.attempt_tracker.advance(now_monotonic_s=1.1)
+         pipeline.ingest_adapter_output(
+-            _output(2, received_s=1.2, epoch=1)
++            _output(2, received_s=1.2, track_id=2)
+         )
+         self.assertEqual(raw.items[-1][1].attempt_id, 2)
+         second_command = _command(time_to_strike=0.8)
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=1,
++                track_id=2,
+                 source_generation=2,
+                 source_frame=2,
+                 strike_deadline_monotonic_s=2.0,
+                 completed_monotonic_s=1.21,
+                 command=second_command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(1, 2),
++                snapshot_key=SnapshotKey(2, 2),
+                 source_frame=2,
+                 strike_deadline_monotonic_s=2.0,
+                 completed_monotonic_s=1.21,
+                 command_fields=_command_fields(second_command),
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+         cached = pipeline.tick(
+             lifecycle_now_s=1.2,
+@@ -2051,29 +2051,29 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         self.assertEqual(lifecycle_event.attempt_id, 2)
+ 
+     def test_recovery_cached_result_rearms_and_preserves_advance_decision(self) -> None:
+         pipeline, worker, _adapter_value, _raw, _events = self._pipeline(
+             required=1
+         )
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         first_command = _command(time_to_strike=0.85)
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=0,
++            track_id=1,
+                 source_generation=1,
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command=first_command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(0, 1),
++            snapshot_key=SnapshotKey(1, 1),
+                 source_frame=1,
+                 strike_deadline_monotonic_s=0.85,
+                 completed_monotonic_s=0.01,
+                 command_fields=_command_fields(first_command),
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+         self.assertEqual(
+             pipeline.tick(
+@@ -2085,37 +2085,37 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         )
+         pipeline.tick(
+             lifecycle_now_s=0.851,
+             obs_now_s=0.852,
+             wall_time_us=2,
+         )
+         self.assertEqual(pipeline.lifecycle.phase.value, "recovery")
+         recovery_end = float(pipeline.lifecycle.command_end_deadline_s)
+ 
+         pipeline.ingest_adapter_output(
+-            _output(2, received_s=0.9, epoch=1)
++            _output(2, received_s=0.9, track_id=2)
+         )
+         second_deadline = recovery_end + 0.85
+         second_command = _command(
+             time_to_strike=second_deadline - 0.9
+         )
+         worker.bundle = (
+             PlannerResultSnapshot(
+-                track_epoch=1,
++                track_id=2,
+                 source_generation=2,
+                 source_frame=2,
+                 strike_deadline_monotonic_s=second_deadline,
+                 completed_monotonic_s=0.91,
+                 command=second_command,
+             ),
+             FrozenPlannerResult(
+-                snapshot_key=SnapshotKey(1, 2),
++                snapshot_key=SnapshotKey(2, 2),
+                 source_frame=2,
+                 strike_deadline_monotonic_s=second_deadline,
+                 completed_monotonic_s=0.91,
+                 command_fields=_command_fields(second_command),
+                 error_type=None,
+                 error_text=None,
+             ),
+         )
+         cached = pipeline.tick(
+             lifecycle_now_s=0.9,
+@@ -2127,21 +2127,21 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+ 
+         rearmed = pipeline.tick(
+             lifecycle_now_s=recovery_end,
+             obs_now_s=recovery_end + 0.01,
+             wall_time_us=4,
+         )
+         self.assertEqual(rearmed.phase, "armed")
+         self.assertEqual(rearmed.lifecycle_decision, "armed")
+         self.assertEqual(
+             rearmed.active_binding.snapshot_key,
+-            SnapshotKey(1, 2),
++            SnapshotKey(2, 2),
+         )
+ 
+     def test_sink_exceptions_are_contained_on_ingest_trace_and_tick(self) -> None:
+         class BrokenSink:
+             def offer(self, _draft):
+                 raise RuntimeError("full")
+ 
+         class BrokenRaw:
+             def __call__(self, *_args):
+                 raise RuntimeError("disk")
+diff --git a/deploy/tests/test_hitter_task_replay.py b/deploy/tests/test_hitter_task_replay.py
+index 6171eab..9bcce4e 100644
+--- a/deploy/tests/test_hitter_task_replay.py
++++ b/deploy/tests/test_hitter_task_replay.py
+@@ -314,21 +314,21 @@ class HitterTaskReplayTest(unittest.TestCase):
+ 
+         capture = ReplayCaptureStore(
+             input_capacity=16,
+             event_capacity=32,
+             attempt_capacity=4,
+         )
+         raw_delegate = RawSink()
+         event_delegate = EventSink()
+         raw = ReplayRawCaptureTee(raw_delegate, capture)
+         events = ReplayEventCaptureTee(event_delegate, capture)
+-        key = SnapshotKey(0, 31)
++        key = SnapshotKey(1, 31)
+         result = {
+             "snapshot_key": key.to_json_dict(),
+             "source_frame": 31,
+             "strike_deadline_monotonic_s": 1.90,
+             "completed_monotonic_s": 1.003,
+             "command_fields": {
+                 "p_base_target_xy": [-0.4, 0.0],
+                 "v_racket_target_w": [1.0, 2.0, 3.0],
+                 "time_to_strike": 0.9,
+                 "strike_plan": {
+@@ -1206,21 +1206,21 @@ class HitterTaskReplayTest(unittest.TestCase):
+                 online_baseline=_online(ticks=(tick,)),
+                 recording_complete=True,
+             ),
+             variant=ReplayVariant("1/100", 100.0, 1),
+             duration_provider=_Duration(0.002),
+             planner_factory=_WorkingPlanner,
+         )
+ 
+         self.assertEqual(
+             trace.policy_ticks[0].active_key,
+-            SnapshotKey(0, 31),
++            SnapshotKey(1, 31),
+         )
+         self.assertIsNotNone(trace.policy_ticks[0].command_fields)
+ 
+     def test_one_frame_early_full_plan_records_offline_measured_duration(self):
+         inputs = _track_inputs()
+         seed_bundle = ReplayInputBundle(
+             attempt_id=1,
+             inputs=inputs,
+             online_baseline=_online(ticks=_policy_ticks()),
+             recording_complete=True,
+diff --git a/deploy/tests/test_mujoco_hitter_track_id_v2.py b/deploy/tests/test_mujoco_hitter_track_id_v2.py
+new file mode 100644
+index 0000000..3aae24a
+--- /dev/null
++++ b/deploy/tests/test_mujoco_hitter_track_id_v2.py
+@@ -0,0 +1,49 @@
++from __future__ import annotations
++
++from types import SimpleNamespace
++
++import numpy as np
++
++from envs.hitter import HitterEnv
++
++
++def _offline_env() -> HitterEnv:
++    simulator = SimpleNamespace(
++        get_state=lambda: None,
++        mujoco_data=SimpleNamespace(time=2.0),
++        ball_pos_world=np.array([1.5, 0.0, 1.0]),
++        ball_vel_world=np.array([-1.0, 0.0, 0.0]),
++        root_trans_world=np.array([0.0, 0.0, 0.8]),
++        root_quat_world=np.array([0.0, 0.0, 0.0, 1.0]),
++        base_pose_valid=True,
++        ball_visible=True,
++        ball_state_estimator_ready=True,
++    )
++    env = HitterEnv.__new__(HitterEnv)
++    env.simulator = simulator
++    env._hitter_sync_track_id = 0
++    env._hitter_sync_generation = 0
++    env.hitter_ball_sequence_needs_reset = True
++    env._mujoco_serve_schedule_enabled = lambda: False
++    env._reset_hitter_ball_sequence_if_needed = lambda: setattr(
++        env,
++        "hitter_ball_sequence_needs_reset",
++        False,
++    )
++    env._plan_hitter_snapshot = lambda _snapshot: SimpleNamespace(
++        time_to_strike=0.9
++    )
++    return env
++
++
++def test_mujoco_local_track_ids_start_at_one_and_stay_with_the_serve():
++    env = _offline_env()
++
++    first = env._mujoco_planner_result(now=1000.0)
++    next_generation = env._mujoco_planner_result(now=1000.01)
++
++    assert first.track_id == 1
++    assert first.source_generation == 1
++    assert next_generation.track_id == 1
++    assert next_generation.source_generation == 2
++    assert not hasattr(first, "track_epoch")
+diff --git a/deploy/utils/hitter_realtime.py b/deploy/utils/hitter_realtime.py
+index 3089b49..33a53f6 100644
+--- a/deploy/utils/hitter_realtime.py
++++ b/deploy/utils/hitter_realtime.py
+@@ -3,87 +3,89 @@ from __future__ import annotations
+ import threading
+ import time
+ from dataclasses import dataclass, fields, is_dataclass
+ from enum import Enum
+ from typing import Any, Callable, Mapping, Optional, Tuple
+ 
+ import numpy as np
+ 
+ from diagnostics.hitter_task_models import (
+     JsonValue,
+-    SnapshotKey,
+     freeze_json_value,
+ )
++from utils.hitter_runtime_types import SnapshotKey
+ 
+ 
+ def _copied_read_only_array(value) -> np.ndarray:
+     array = np.asarray(value).copy()
+     immutable = np.frombuffer(
+         array.tobytes(order="C"),
+         dtype=array.dtype,
+     ).reshape(array.shape)
+     immutable.setflags(write=False)
+     return immutable
+ 
+ 
+ @dataclass(frozen=True)
+ class BallEstimateSnapshot:
+-    track_epoch: int
++    track_id: int
+     generation: int
+     source_frame: int
+     source_time_s: float
+     received_monotonic_s: float
+     position_w: np.ndarray
+     velocity_w: np.ndarray
+     base_position_w: np.ndarray
+     base_quaternion_xyzw: np.ndarray
+     base_valid: bool
+     visible: bool
+     ready: bool
++    consumed: bool = False
++    new_track: bool = False
+ 
+     def __post_init__(self) -> None:
+         for name in (
+             "position_w",
+             "velocity_w",
+             "base_position_w",
+             "base_quaternion_xyzw",
+         ):
+             object.__setattr__(
+                 self,
+                 name,
+                 _copied_read_only_array(getattr(self, name)),
+             )
+ 
+ 
+ @dataclass(frozen=True)
+ class PlannerResultSnapshot:
+-    track_epoch: int
++    track_id: int
+     source_generation: int
+     source_frame: int
+     strike_deadline_monotonic_s: float
+     completed_monotonic_s: float
+     command: object | None
+     error: str | None = None
+ 
+ 
+ @dataclass(frozen=True)
+ class PlannerWorkerStats:
+     submitted: int
+     completed: int
+     failed: int
+     dropped_pending: int
+     trace_listener_failures: int = 0
+ 
+ 
+ @dataclass(frozen=True)
+ class IncomingTrackSnapshot:
+-    track_epoch: Optional[int]
++    track_id: Optional[int]
+     consecutive_count: int
+     confirmed: bool
+ 
+ 
+ def _command_json_value(value: Any) -> Any:
+     if is_dataclass(value):
+         return {
+             field.name: _command_json_value(getattr(value, field.name))
+             for field in fields(value)
+         }
+@@ -147,21 +149,21 @@ class PlannerWorkerTrace:
+     kind: str
+     monotonic_s: float
+     snapshot: BallEstimateSnapshot
+     result: Optional[FrozenPlannerResult]
+     replaced_snapshot: Optional[BallEstimateSnapshot]
+     replaced_result: Optional[FrozenPlannerResult]
+     stats: PlannerWorkerStats
+ 
+ 
+ class IncomingTrackConfirmation:
+-    """Confirm stable fitted incoming motion once per ball track epoch."""
++    """Confirm stable fitted incoming motion once per ball track id."""
+ 
+     def __init__(
+         self,
+         *,
+         minimum_speed_x_mps: float,
+         required_consecutive_snapshots: int,
+     ):
+         self.minimum_speed_x_mps = float(minimum_speed_x_mps)
+         self.required_consecutive_snapshots = int(
+             required_consecutive_snapshots
+@@ -173,29 +175,29 @@ class IncomingTrackConfirmation:
+             raise ValueError("minimum_speed_x_mps must be finite and positive")
+         if self.required_consecutive_snapshots < 1:
+             raise ValueError(
+                 "required_consecutive_snapshots must be positive"
+             )
+         self._lock = threading.RLock()
+         self.reset()
+ 
+     def reset(self) -> None:
+         with self._lock:
+-            self._track_epoch = None
++            self._track_id = None
+             self._consecutive_count = 0
+             self._confirmed = False
+ 
+-    def observe(self, *, track_epoch: int, velocity_x_mps: float) -> bool:
++    def observe(self, *, track_id: int, velocity_x_mps: float) -> bool:
+         with self._lock:
+-            epoch = int(track_epoch)
+-            if self._track_epoch != epoch:
+-                self._track_epoch = epoch
++            track_id = int(track_id)
++            if self._track_id != track_id:
++                self._track_id = track_id
+                 self._consecutive_count = 0
+                 self._confirmed = False
+             if self._confirmed:
+                 return True
+ 
+             velocity_x = float(velocity_x_mps)
+             if (
+                 np.isfinite(velocity_x)
+                 and velocity_x <= -self.minimum_speed_x_mps
+             ):
+@@ -205,21 +207,21 @@ class IncomingTrackConfirmation:
+             if (
+                 self._consecutive_count
+                 >= self.required_consecutive_snapshots
+             ):
+                 self._confirmed = True
+             return self._confirmed
+ 
+     def snapshot(self) -> IncomingTrackSnapshot:
+         with self._lock:
+             return IncomingTrackSnapshot(
+-                track_epoch=self._track_epoch,
++                track_id=self._track_id,
+                 consecutive_count=int(self._consecutive_count),
+                 confirmed=bool(self._confirmed),
+             )
+ 
+ 
+ class LatestOnlyPlannerWorker:
+     """Run a planner off-thread while retaining at most one pending snapshot."""
+ 
+     def __init__(
+         self,
+@@ -399,33 +401,33 @@ class LatestOnlyPlannerWorker:
+ 
+             failed = False
+             error_type = None
+             error_text = None
+             try:
+                 command = self._plan_fn(snapshot)
+                 deadline = snapshot.received_monotonic_s + float(
+                     command.time_to_strike
+                 )
+                 planned = PlannerResultSnapshot(
+-                    track_epoch=snapshot.track_epoch,
++                    track_id=snapshot.track_id,
+                     source_generation=snapshot.generation,
+                     source_frame=snapshot.source_frame,
+                     strike_deadline_monotonic_s=deadline,
+                     completed_monotonic_s=float(self._monotonic_fn()),
+                     command=command,
+                 )
+             except Exception as exc:
+                 failed = True
+                 error_type = type(exc).__name__
+                 error_text = str(exc)
+                 planned = PlannerResultSnapshot(
+-                    track_epoch=snapshot.track_epoch,
++                    track_id=snapshot.track_id,
+                     source_generation=snapshot.generation,
+                     source_frame=snapshot.source_frame,
+                     strike_deadline_monotonic_s=float("nan"),
+                     completed_monotonic_s=float(self._monotonic_fn()),
+                     command=None,
+                     error=f"{type(exc).__name__}: {exc}",
+                 )
+ 
+             frozen = None
+             if self._trace_listener is not None:
+@@ -438,21 +440,21 @@ class LatestOnlyPlannerWorker:
+                             planned.command
+                         )
+                     except Exception as exc:
+                         diagnostic_error_type = "DiagnosticFreezeError"
+                         diagnostic_error_text = "{}: {}".format(
+                             type(exc).__name__,
+                             exc,
+                         )
+                 frozen = FrozenPlannerResult(
+                     snapshot_key=SnapshotKey(
+-                        int(snapshot.track_epoch),
++                        int(snapshot.track_id),
+                         int(snapshot.generation),
+                     ),
+                     source_frame=int(snapshot.source_frame),
+                     strike_deadline_monotonic_s=float(
+                         planned.strike_deadline_monotonic_s
+                     ),
+                     completed_monotonic_s=float(
+                         planned.completed_monotonic_s
+                     ),
+                     command_fields=command_fields,
+@@ -490,21 +492,21 @@ class LatestOnlyPlannerWorker:
+ 
+ 
+ class CommandPhase(str, Enum):
+     WAITING = "waiting"
+     TRACKING = "tracking"
+     ARMED = "armed"
+     RECOVERY = "recovery"
+ 
+ 
+ class HitterCommandLifecycle:
+-    """Pure state machine that binds planner results to one ball track epoch."""
++    """Pure state machine that binds planner results to one ball track id."""
+ 
+     _EPSILON = 1.0e-12
+ 
+     def __init__(
+         self,
+         *,
+         waiting_tts: float = 0.92,
+         arm_tts: float = 0.90,
+         minimum_arm_tts: float = 0.80,
+         maximum_policy_tts: float = 0.92,
+@@ -519,62 +521,62 @@ class HitterCommandLifecycle:
+         self.minimum_arm_tts = float(minimum_arm_tts)
+         self.maximum_policy_tts = float(maximum_policy_tts)
+         self.swing_duration_sampler = swing_duration_sampler
+ 
+         self.phase = CommandPhase.WAITING
+         self.active_result: PlannerResultSnapshot | None = None
+         self.cached_result: PlannerResultSnapshot | None = None
+         self.recovery_duration_s = 0.0
+         self.command_end_deadline_s: float | None = None
+ 
+-        self._current_epoch: int | None = None
++        self._current_track_id: int | None = None
+         self._latest_generation: int | None = None
+-        self._skipped_epochs: set[int] = set()
+-        self._ended_epochs: set[int] = set()
++        self._skipped_track_ids: set[int] = set()
++        self._ended_track_ids: set[int] = set()
+ 
+     def ingest(self, result: PlannerResultSnapshot, *, now: float) -> str:
+         now = float(now)
+         self.advance(now)
+         if result.command is None or result.error is not None:
+             return "ignored"
+         if not np.isfinite(result.strike_deadline_monotonic_s):
+             return "ignored"
+ 
+         if self.phase == CommandPhase.RECOVERY:
+             return self._cache_recovery_result(result)
+         if self.phase == CommandPhase.ARMED:
+             return self._ingest_armed(result, now)
+         return self._ingest_unarmed(result, now)
+ 
+-    def mark_track_ended(self, track_epoch: int | None = None) -> None:
+-        if track_epoch is None:
++    def mark_track_ended(self, track_id: int | None = None) -> None:
++        if track_id is None:
+             if (
+                 self.phase == CommandPhase.RECOVERY
+                 and self.cached_result is not None
+             ):
+-                track_epoch = self.cached_result.track_epoch
++                track_id = self.cached_result.track_id
+             elif self.active_result is not None:
+-                track_epoch = self.active_result.track_epoch
++                track_id = self.active_result.track_id
+             else:
+-                track_epoch = self._current_epoch
+-        if track_epoch is None:
++                track_id = self._current_track_id
++        if track_id is None:
+             return
+-        ended_epoch = int(track_epoch)
+-        self._ended_epochs.add(ended_epoch)
++        ended_track_id = int(track_id)
++        self._ended_track_ids.add(ended_track_id)
+         if (
+             self.cached_result is not None
+-            and self.cached_result.track_epoch == ended_epoch
++            and self.cached_result.track_id == ended_track_id
+         ):
+             self.cached_result = None
+         if (
+             self.phase == CommandPhase.TRACKING
+-            and self._current_epoch == ended_epoch
++            and self._current_track_id == ended_track_id
+         ):
+             self.phase = CommandPhase.WAITING
+ 
+     def advance(self, now: float) -> CommandPhase:
+         now = float(now)
+         if (
+             self.phase == CommandPhase.ARMED
+             and self.active_result is not None
+             and now + self._EPSILON
+             >= self.active_result.strike_deadline_monotonic_s
+@@ -582,21 +584,21 @@ class HitterCommandLifecycle:
+             self.phase = CommandPhase.RECOVERY
+ 
+         if (
+             self.phase == CommandPhase.RECOVERY
+             and self.command_end_deadline_s is not None
+             and now + self._EPSILON >= self.command_end_deadline_s
+         ):
+             previous = self.active_result
+             cached = self.cached_result
+             if previous is not None:
+-                self._ended_epochs.add(previous.track_epoch)
++                self._ended_track_ids.add(previous.track_id)
+             self.active_result = None
+             self.cached_result = None
+             self.command_end_deadline_s = None
+             self.phase = CommandPhase.WAITING
+             if cached is not None:
+                 self._ingest_unarmed(cached, now)
+         return self.phase
+ 
+     def policy_tts(self, *, now: float) -> float:
+         if self.phase in (CommandPhase.WAITING, CommandPhase.TRACKING):
+@@ -604,62 +606,62 @@ class HitterCommandLifecycle:
+         if self.active_result is None:
+             return self.waiting_tts
+         remaining = self.active_result.strike_deadline_monotonic_s - float(now)
+         return float(np.clip(remaining, 0.0, self.maximum_policy_tts))
+ 
+     def _ingest_unarmed(
+         self,
+         result: PlannerResultSnapshot,
+         now: float,
+     ) -> str:
+-        epoch = int(result.track_epoch)
++        track_id = int(result.track_id)
+         generation = int(result.source_generation)
+-        if epoch in self._skipped_epochs or epoch in self._ended_epochs:
++        if track_id in self._skipped_track_ids or track_id in self._ended_track_ids:
+             return "ignored"
+-        if self._current_epoch is not None:
+-            if epoch < self._current_epoch:
++        if self._current_track_id is not None:
++            if track_id < self._current_track_id:
+                 return "ignored"
+-            if epoch == self._current_epoch:
++            if track_id == self._current_track_id:
+                 if (
+                     self._latest_generation is not None
+                     and generation <= self._latest_generation
+                 ):
+                     return "ignored"
+             else:
+-                self._current_epoch = epoch
++                self._current_track_id = track_id
+                 self._latest_generation = None
+         else:
+-            self._current_epoch = epoch
++            self._current_track_id = track_id
+ 
+         self._latest_generation = generation
+         remaining = result.strike_deadline_monotonic_s - now
+         if remaining < self.minimum_arm_tts - self._EPSILON:
+-            self._skipped_epochs.add(epoch)
++            self._skipped_track_ids.add(track_id)
+             self.phase = CommandPhase.WAITING
+             return "skipped"
+         if remaining <= self.arm_tts + self._EPSILON:
+             self._arm(result, now)
+             return "armed"
+         self.phase = CommandPhase.TRACKING
+         return "tracking"
+ 
+     def _ingest_armed(
+         self,
+         result: PlannerResultSnapshot,
+         now: float,
+     ) -> str:
+         active = self.active_result
+         if active is None:
+             return "ignored"
+-        if result.track_epoch != active.track_epoch:
++        if result.track_id != active.track_id:
+             return "ignored"
+-        if result.track_epoch in self._ended_epochs:
++        if result.track_id in self._ended_track_ids:
+             return "ignored"
+         latest_generation = (
+             -1 if self._latest_generation is None else self._latest_generation
+         )
+         if result.source_generation <= latest_generation:
+             return "ignored"
+ 
+         self._latest_generation = int(result.source_generation)
+         remaining = result.strike_deadline_monotonic_s - now
+         if (
+@@ -669,30 +671,30 @@ class HitterCommandLifecycle:
+             return "retained"
+         self.active_result = result
+         self.command_end_deadline_s = (
+             result.strike_deadline_monotonic_s + self.recovery_duration_s
+         )
+         return "overridden"
+ 
+     def _cache_recovery_result(self, result: PlannerResultSnapshot) -> str:
+         if self.active_result is None:
+             return "ignored"
+-        if result.track_epoch <= self.active_result.track_epoch:
++        if result.track_id <= self.active_result.track_id:
+             return "ignored"
+-        if result.track_epoch in self._skipped_epochs or result.track_epoch in self._ended_epochs:
++        if result.track_id in self._skipped_track_ids or result.track_id in self._ended_track_ids:
+             return "ignored"
+         cached = self.cached_result
+         if cached is not None:
+-            if result.track_epoch < cached.track_epoch:
++            if result.track_id < cached.track_id:
+                 return "ignored"
+             if (
+-                result.track_epoch == cached.track_epoch
++                result.track_id == cached.track_id
+                 and result.source_generation <= cached.source_generation
+             ):
+                 return "ignored"
+         self.cached_result = result
+         return "cached"
+ 
+     def _arm(self, result: PlannerResultSnapshot, now: float) -> None:
+         arm_tts = max(result.strike_deadline_monotonic_s - now, 0.0)
+         total_swing_duration = float(self.swing_duration_sampler())
+         self.recovery_duration_s = max(total_swing_duration - arm_tts, 0.0)
+diff --git a/deploy/utils/hitter_runtime_types.py b/deploy/utils/hitter_runtime_types.py
+new file mode 100644
+index 0000000..6c8bf3a
+--- /dev/null
++++ b/deploy/utils/hitter_runtime_types.py
+@@ -0,0 +1,22 @@
++from __future__ import annotations
++
++from dataclasses import dataclass
++
++
++@dataclass(frozen=True, order=True)
++class SnapshotKey:
++    track_id: int
++    generation: int
++
++    def __post_init__(self) -> None:
++        if type(self.track_id) is not int or self.track_id <= 0:
++            raise ValueError("track_id must be positive")
++        if type(self.generation) is not int or self.generation < 0:
++            raise ValueError("generation must be a non-negative integer")
++
++    def to_json_dict(self) -> dict[str, int]:
++        return {
++            "schema_version": 2,
++            "track_id": self.track_id,
++            "generation": self.generation,
++        }

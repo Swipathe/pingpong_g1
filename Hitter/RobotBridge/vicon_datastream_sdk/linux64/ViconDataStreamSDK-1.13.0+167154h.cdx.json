@@ -1,0 +1,101 @@
+{
+  "components": [
+    {
+      "bom-ref": "BomRef.9186289725632273.5905502996876544",
+      "cpe": "cpe:2.3:a:asio:asio:1.18.1:*:*:*:*:*:*:*",
+      "name": "asio",
+      "supplier": {
+        "name": "asio"
+      },
+      "type": "library",
+      "version": "1.18.1"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "BomRef.9186289725632273.5905502996876544"
+    },
+    {
+      "dependsOn": [
+        "BomRef.9186289725632273.5905502996876544"
+      ],
+      "ref": "ViconDataStreamSDK"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "ViconDataStreamSDK",
+      "name": "ViconDataStreamSDK",
+      "supplier": {
+        "name": "Vicon Motion Systems Ltd",
+        "url": [
+          "https://www.vicon.com"
+        ]
+      },
+      "type": "application",
+      "version": "1.13.0+167154h"
+    },
+    "timestamp": "2026-02-25T14:38:19.646361+00:00",
+    "tools": {
+      "components": [
+        {
+          "name": "vicon-SBOM-generator",
+          "type": "application"
+        },
+        {
+          "description": "Python library for CycloneDX",
+          "externalReferences": [
+            {
+              "type": "build-system",
+              "url": "https://github.com/CycloneDX/cyclonedx-python-lib/actions"
+            },
+            {
+              "type": "distribution",
+              "url": "https://pypi.org/project/cyclonedx-python-lib/"
+            },
+            {
+              "type": "documentation",
+              "url": "https://cyclonedx-python-library.readthedocs.io/"
+            },
+            {
+              "type": "issue-tracker",
+              "url": "https://github.com/CycloneDX/cyclonedx-python-lib/issues"
+            },
+            {
+              "type": "license",
+              "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/LICENSE"
+            },
+            {
+              "type": "release-notes",
+              "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/CHANGELOG.md"
+            },
+            {
+              "type": "vcs",
+              "url": "https://github.com/CycloneDX/cyclonedx-python-lib"
+            },
+            {
+              "type": "website",
+              "url": "https://github.com/CycloneDX/cyclonedx-python-lib/#readme"
+            }
+          ],
+          "group": "CycloneDX",
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "name": "cyclonedx-python-lib",
+          "type": "library",
+          "version": "11.6.0"
+        }
+      ]
+    }
+  },
+  "serialNumber": "urn:uuid:1c712cb4-039e-400b-bb0c-3f5662cd345d",
+  "version": 1,
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5"
+}

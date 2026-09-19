@@ -1,0 +1,48 @@
+seed: 42
+device: cuda:0
+num_steps_per_env: 24
+max_iterations: 3000
+empirical_normalization: true
+policy:
+  class_name: ActorCritic
+  init_noise_std: 0.2
+  noise_std_type: scalar
+  actor_hidden_dims:
+  - 512
+  - 256
+  - 128
+  critic_hidden_dims:
+  - 512
+  - 256
+  - 128
+  activation: elu
+algorithm:
+  class_name: PPO
+  num_learning_epochs: 5
+  num_mini_batches: 4
+  learning_rate: 5.0e-05
+  schedule: fixed
+  gamma: 0.99
+  lam: 0.95
+  entropy_coef: 0.001
+  desired_kl: 0.01
+  max_grad_norm: 1.0
+  value_loss_coef: 1.0
+  use_clipped_value_loss: true
+  clip_param: 0.2
+  normalize_advantage_per_mini_batch: false
+  symmetry_cfg: null
+  rnd_cfg: null
+clip_actions: null
+save_interval: 100
+experiment_name: hitter_striking_g1
+run_name: hitter_wbc_cli_pos120_std009_win001_t084088_m8900_skipopt_lr5e5_noise020_swanlab_2xa100_env50000_20260612_092624
+logger: swanlab
+neptune_project: isaaclab
+wandb_project: isaaclab
+resume: true
+load_run: 2026-06-12_01-05-28_hitter_wbc_std010_m5000_swanlab_2xa100_env50000_20260611_170514
+load_checkpoint: model_8900.pt
+reset_noise_std_on_resume: true
+freeze_normalizer_on_resume: true
+swanlab_project: isaaclab

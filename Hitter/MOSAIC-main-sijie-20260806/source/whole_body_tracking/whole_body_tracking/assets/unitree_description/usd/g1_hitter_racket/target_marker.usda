@@ -1,0 +1,23 @@
+#usda 1.0
+(
+    defaultPrim = "target_racket_marker"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "target_racket_marker"
+{
+    def Cylinder "blade"
+    {
+        uniform token axis = "Z"
+        float3[] extent = [(-0.075, -0.075, -0.006), (0.075, 0.075, 0.006)]
+        double height = 0.012
+        color3f[] primvars:displayColor = [(0.0, 1.0, 0.0)] (
+            interpolation = "constant"
+        )
+        double radius = 0.075
+        quatf xformOp:orient = (0.70710678, 0.70710678, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+}

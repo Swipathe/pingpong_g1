@@ -1,0 +1,43 @@
+policy:
+  checkpoint: ./data/model/hitter/hitter.onnx
+  action_beta: 1.0
+  hitter_seed: 0
+  save_video: false
+
+motion:
+  playback_speed: 1.0
+  reset_ball_on_command: true
+  update_command_while_armed: false
+  ball_planner_replan_attempts: 4
+  racket_velocity_clip: [-8.0, 8.0]
+
+  ball_planner:
+    table_center_xy_w: [1.37, 0.0]
+    table_height: 0.76
+    table_length: 2.74
+    table_width: 1.525
+    ball_radius: 0.02
+    virtual_hit_plane_x: 0.0
+    desired_landing_point_w: [2.05, 0.0, 0.78]
+    post_hit_flight_time: 0.48
+    racket_restitution: 0.85
+    prediction_horizon_s: 2.0
+    prediction_dt: 0.005
+    require_future_hit_plane_crossing: true
+    state_estimator_window_size: 31
+    state_estimator_sample_rate_hz: 300.0
+    state_estimator_bounce_height_tolerance: 0.03
+    state_estimator_bounce_velocity_threshold: 0.10
+    state_estimator_bounce_min_separation_s: 0.20
+    vertical_restitution: 0.897474
+    horizontal_restitution: 0.8 #0.764604
+    drag_coefficient: 0.098847
+    target_base_height_w: 0.793
+    racket_x_offset_b: 0.40
+    update_command_while_armed: false
+    replan_attempts: 4
+    racket_velocity_clip: [-8.0, 8.0]
+    swing_duration_range: [1.75, 1.95]
+    force_strike_type: null
+    forehand_nominal_racket_y_b: -0.225
+    backhand_nominal_racket_y_b: 0.0

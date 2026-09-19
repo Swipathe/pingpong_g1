@@ -1,0 +1,46 @@
+# Python / cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Local editor and agent state
+.DS_Store
+.idea/
+.vscode/
+.agents/
+.codex/
+.claude/
+
+# Training/runtime outputs
+logs/
+outputs/
+output/
+runs/
+recordings/
+videos/
+wandb/
+swanlog/
+.neptune/
+cache/
+*.tmp
+*.log
+events.out.tfevents.*
+*.swanlab
+
+# Generated datasets and captures not included in this release copy
+HITTER-main/data/motions/
+HITTER-main/data/hitter_captures/
+
+# Build outputs
+build/
+*/build/
+.cache/
+.cmake/
+_build/
+_repo/
+_isaac_sim*/
+
+# RobotBridge runtime artifacts
+RobotBridge2/deploy/logs/
+RobotBridge2/deploy/MUJOCO_LOG.TXT

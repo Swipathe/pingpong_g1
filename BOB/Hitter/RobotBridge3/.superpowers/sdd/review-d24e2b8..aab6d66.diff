@@ -1,0 +1,580 @@
+# Review package: d24e2b8..aab6d66
+
+## Commits
+aab6d66 test: align legacy bridge tests with pelvis calibration
+c3c5426 feat: apply calibrated ChingMu pelvis orientation
+
+## Files changed
+ deploy/mocap_bridge/chingmu_table_lcm_bridge.py    |  49 +++++--
+ .../tests/test_chingmu_pelvis_orientation.py       | 157 +++++++++++++++++++++
+ .../tests/test_chingmu_table_lcm_bridge.py         |  30 ++--
+ 3 files changed, 211 insertions(+), 25 deletions(-)
+
+## Diff
+diff --git a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+index ac1fd1e..291fc78 100644
+--- a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
++++ b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+@@ -27,23 +27,20 @@ from unitree_sdk2.lcm_types.transformation_t import transformation_t
+ @dataclass(frozen=True)
+ class BridgeConfig:
+     base_subject: str = "G1Pelvis"
+     channel: str = "vicon_state_data"
+     lcm_url: str = "udpm://239.255.76.67:7667?ttl=255"
+     table_length_m: float = 2.730738
+     table_width_m: float = 1.512451
+     table_height_m: float = 0.760000
+     source_rate_hz: float = 360.0
+     corner_exclusion_radius_mm: float = 50.0
+-    # Rigid origin -> MuJoCo pelvis origin, expressed in their shared body axes:
+-    # +X forward, +Y left, +Z up.
+-    pelvis_offset_heading_m: tuple = (0.003145, 0.044074, 0.048231)
+ 
+ 
+ @dataclass(frozen=True)
+ class TableFrame:
+     center_raw_mm: np.ndarray
+     x_axis_raw: np.ndarray
+     y_axis_raw: np.ndarray
+     z_axis_raw: np.ndarray
+     corners_raw_mm: np.ndarray
+     rectangle_score: float
+@@ -231,20 +228,28 @@ def build_arg_parser() -> argparse.ArgumentParser:
+         action="store_false",
+         help="Skip CMTrackerExternTC pose polling; useful for throughput/drop diagnostics.",
+     )
+     parser.add_argument(
+         "--body-pose-poll-hz",
+         type=float,
+         default=60.0,
+         help="Background CMTrackerExternTC polling rate for rigid-body pose.",
+     )
+     parser.add_argument("--table-calib", type=Path)
++    parser.add_argument(
++        "--pelvis-orientation-calib",
++        type=Path,
++        help=(
++            "Saved ChingMu rigid-to-MuJoCo-pelvis orientation "
++            "calibration JSON; required for normal bridge runtime."
++        ),
++    )
+     parser.add_argument("--save-table-calib", type=Path)
+     parser.add_argument("--calib-sec", type=float, default=2.0)
+     parser.add_argument("--duration", type=float, default=0.0)
+     parser.add_argument("--print-hz", type=float, default=10.0)
+     parser.add_argument("--table-length", type=float, default=2.730738)
+     parser.add_argument("--table-width", type=float, default=1.512451)
+     parser.add_argument("--table-height", type=float, default=0.760000)
+     parser.add_argument("--source-rate-hz", type=float, default=360.0)
+     parser.add_argument("--corner-exclusion-radius-mm", type=float, default=50.0)
+     parser.add_argument(
+@@ -785,45 +790,51 @@ def make_message(
+     message.quat_vicon = np.asarray(quaternion_xyzw, dtype=np.float64).reshape(4).tolist()
+     return message
+ 
+ 
+ class ChingMuTableLcmBridge:
+     def __init__(
+         self,
+         *,
+         config: BridgeConfig,
+         table_frame: TableFrame,
++        pelvis_orientation_calibration: PelvisOrientationCalibration,
+     ):
+         self.config = config
+         self.table_frame = table_frame
++        self.pelvis_orientation_calibration = (
++            pelvis_orientation_calibration
++        )
+         self._base_pose_was_valid = False
+         self.ball_tracker = BallTracker()
+ 
+     def process_frame(self, frame, *, publish_time_us: Optional[int] = None):
+         messages = []
+         body_pose = body_pose_to_table_world(
+             frame.body_position_mm,
+             frame.body_quaternion_xyzw,
+             self.table_frame,
+             self.config,
+         )
+         if body_pose is not None:
+-            base_world, base_rotation = body_pose
+-            pelvis_offset_world = base_rotation @ np.asarray(
+-                self.config.pelvis_offset_heading_m,
+-                dtype=np.float64,
++            base_world, rigid_rotation_world = body_pose
++            pelvis_rotation_world = (
++                rigid_rotation_world
++                @ self.pelvis_orientation_calibration.rotation_rigid_from_pelvis
+             )
+             messages.append(
+                 make_message(
+                     self.config.base_subject,
+-                    base_world + pelvis_offset_world,
+-                    quaternion_xyzw_from_rotation(base_rotation),
++                    base_world,
++                    quaternion_xyzw_from_rotation(
++                        pelvis_rotation_world
++                    ),
+                     frame_number=frame.frame_number,
+                     source_time_s=frame.source_time_s,
+                     valid=True,
+                     publish_time_us=publish_time_us,
+                 )
+             )
+             self._base_pose_was_valid = True
+         elif self._base_pose_was_valid:
+             # The consumer ignores the pose when valid=0. Keep the transition
+             # payload finite and schema-correct without fabricating a marker
+@@ -917,20 +928,34 @@ def _config_from_args(args) -> BridgeConfig:
+         channel=args.channel,
+         lcm_url=args.lcm_url,
+         table_length_m=args.table_length,
+         table_width_m=args.table_width,
+         table_height_m=args.table_height,
+         source_rate_hz=args.source_rate_hz,
+         corner_exclusion_radius_mm=args.corner_exclusion_radius_mm,
+     )
+ 
+ 
++def _load_runtime_pelvis_orientation(
++    args,
++    config: BridgeConfig,
++) -> PelvisOrientationCalibration:
++    if args.pelvis_orientation_calib is None:
++        raise ValueError(
++            "--pelvis-orientation-calib is required for normal runtime"
++        )
++    return load_pelvis_orientation_calibration(
++        args.pelvis_orientation_calib,
++        config,
++    )
++
++
+ def _describe_table(table: TableFrame, config: BridgeConfig) -> None:
+     center_m = table.center_raw_mm * 0.001
+     print(
+         "Table calibration: "
+         f"score={table.rectangle_score:.4f} "
+         f"center_raw_m={np.array2string(center_m, precision=4)} "
+         f"x_axis_raw={np.array2string(table.x_axis_raw, precision=4)} "
+         f"y_axis_raw={np.array2string(table.y_axis_raw, precision=4)}",
+         flush=True,
+     )
+@@ -950,20 +975,23 @@ def _describe_table(table: TableFrame, config: BridgeConfig) -> None:
+         )
+ 
+ 
+ def main(argv=None) -> int:
+     args = build_arg_parser().parse_args(argv)
+     config = _config_from_args(args)
+     if config.source_rate_hz <= 0.0:
+         raise ValueError("--source-rate-hz must be positive")
+     if args.body_pose_poll_hz <= 0.0:
+         raise ValueError("--body-pose-poll-hz must be positive")
++    pelvis_orientation_calibration = (
++        _load_runtime_pelvis_orientation(args, config)
++    )
+ 
+     from deploy.mocap_bridge.chingmu_sdk_client import ChingMuSdkClient
+ 
+     client = ChingMuSdkClient(
+         args.sdk_library,
+         server_ip=args.host,
+         body_name=config.base_subject,
+         body_pose_id=args.body_id,
+         poll_body_pose=args.poll_body_pose,
+         body_pose_poll_hz=args.body_pose_poll_hz,
+@@ -1005,20 +1033,23 @@ def main(argv=None) -> int:
+             lc_client = lcm.LCM(config.lcm_url)
+         print(
+             f"{'Publishing' if args.publish else 'Monitoring only'} "
+             f"channel={config.channel} via {config.lcm_url}",
+             flush=True,
+         )
+ 
+         bridge = ChingMuTableLcmBridge(
+             config=config,
+             table_frame=table,
++            pelvis_orientation_calibration=(
++                pelvis_orientation_calibration
++            ),
+         )
+         start = time.monotonic()
+         last_print = start - 10.0
+         frame_count = 0
+         while True:
+             now = time.monotonic()
+             elapsed = now - start
+             if args.duration > 0.0 and elapsed >= args.duration:
+                 break
+             frame = client.next_frame(timeout_s=0.1)
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+index 144c81d..4ac80ec 100644
+--- a/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
++++ b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+@@ -4,24 +4,28 @@ import json
+ import tempfile
+ import unittest
+ from pathlib import Path
+ 
+ import numpy as np
+ from scipy.spatial.transform import Rotation
+ 
+ from deploy.mocap_bridge.chingmu_sdk_client import MocapFrame
+ from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
+     BridgeConfig,
++    ChingMuTableLcmBridge,
+     PelvisOrientationCalibration,
+     TableFrame,
++    _load_runtime_pelvis_orientation,
++    build_arg_parser,
+     calibrate_pelvis_orientation_from_frames,
+     load_pelvis_orientation_calibration,
++    raw_to_table_world,
+     save_pelvis_orientation_calibration,
+ )
+ 
+ 
+ def identity_table() -> TableFrame:
+     return TableFrame(
+         center_raw_mm=np.zeros(3, dtype=np.float64),
+         x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
+         y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
+         z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
+@@ -334,12 +338,165 @@ class PelvisOrientationCalibrationJsonTest(unittest.TestCase):
+                     invalid,
+                     self.config,
+                 )
+ 
+             self.assertEqual(
+                 path.read_text(encoding="utf-8"),
+                 "keep-existing\n",
+             )
+ 
+ 
++class PelvisOrientationRuntimeTest(unittest.TestCase):
++    def setUp(self):
++        self.config = BridgeConfig()
++        self.table = identity_table()
++
++    def base_message(
++        self,
++        bridge: ChingMuTableLcmBridge,
++        frame: MocapFrame,
++    ):
++        return next(
++            message
++            for message in bridge.process_frame(
++                frame,
++                publish_time_us=123,
++            )
++            if message.name == self.config.base_subject
++        )
++
++    def test_position_is_rigid_origin_and_rotation_is_right_multiplied(self):
++        rigid_world = Rotation.from_euler("xyz", [0.31, -0.22, 0.47])
++        rigid_from_pelvis = Rotation.from_euler(
++            "xyz",
++            [-0.18, 0.26, -0.33],
++        )
++        bridge = ChingMuTableLcmBridge(
++            config=self.config,
++            table_frame=self.table,
++            pelvis_orientation_calibration=(
++                valid_orientation_calibration(rigid_from_pelvis)
++            ),
++        )
++        frame = mocap_frame(0, rigid_world)
++
++        base = self.base_message(bridge, frame)
++
++        np.testing.assert_allclose(
++            base.pos_vicon,
++            raw_to_table_world(
++                frame.body_position_mm,
++                self.table,
++                self.config,
++            ),
++            atol=1.0e-12,
++        )
++        published = Rotation.from_quat(base.quat_vicon)
++        expected = rigid_world * rigid_from_pelvis
++        self.assertLess(
++            (published.inv() * expected).magnitude(),
++            1.0e-10,
++        )
++
++    def test_first_frame_keeps_corrected_absolute_yaw(self):
++        correction = Rotation.from_euler("z", -0.4)
++        bridge = ChingMuTableLcmBridge(
++            config=self.config,
++            table_frame=self.table,
++            pelvis_orientation_calibration=(
++                valid_orientation_calibration(correction)
++            ),
++        )
++
++        first = self.base_message(
++            bridge,
++            mocap_frame(0, Rotation.from_euler("z", 0.75)),
++        )
++        second = self.base_message(
++            bridge,
++            mocap_frame(1, Rotation.from_euler("z", 0.90)),
++        )
++
++        first_yaw = Rotation.from_quat(first.quat_vicon).as_euler("xyz")[2]
++        second_yaw = Rotation.from_quat(second.quat_vicon).as_euler("xyz")[2]
++        self.assertAlmostEqual(first_yaw, 0.35, places=10)
++        self.assertAlmostEqual(second_yaw, 0.50, places=10)
++
++    def test_calibrated_left_quarter_turn_points_forward_at_world_y(self):
++        correction = Rotation.from_euler(
++            "xyz",
++            [0.12, -0.08, 0.35],
++        )
++        desired_pelvis_world = Rotation.from_euler("z", 0.5 * np.pi)
++        rigid_world = desired_pelvis_world * correction.inv()
++        bridge = ChingMuTableLcmBridge(
++            config=self.config,
++            table_frame=self.table,
++            pelvis_orientation_calibration=(
++                valid_orientation_calibration(correction)
++            ),
++        )
++
++        base = self.base_message(
++            bridge,
++            mocap_frame(0, rigid_world),
++        )
++
++        published = Rotation.from_quat(base.quat_vicon)
++        forward_world = published.apply([1.0, 0.0, 0.0])
++        np.testing.assert_allclose(
++            forward_world,
++            [0.0, 1.0, 0.0],
++            atol=1.0e-10,
++        )
++
++    def test_valid_pose_loss_still_emits_one_invalid_transition(self):
++        bridge = ChingMuTableLcmBridge(
++            config=self.config,
++            table_frame=self.table,
++            pelvis_orientation_calibration=(
++                valid_orientation_calibration()
++            ),
++        )
++        bridge.process_frame(mocap_frame(0, Rotation.identity()))
++        missing = mocap_frame(1, Rotation.identity())
++        missing = MocapFrame(
++            frame_number=missing.frame_number,
++            source_time_s=missing.source_time_s,
++            body_position_mm=None,
++            body_quaternion_xyzw=None,
++            body_markers_mm={},
++            unlabeled_markers_mm=np.empty((0, 3)),
++        )
++
++        first_loss = bridge.process_frame(missing)
++        second_loss = bridge.process_frame(missing)
++
++        first_base = [
++            message
++            for message in first_loss
++            if message.name == self.config.base_subject
++        ]
++        second_base = [
++            message
++            for message in second_loss
++            if message.name == self.config.base_subject
++        ]
++        self.assertEqual(len(first_base), 1)
++        self.assertEqual(first_base[0].valid, 0)
++        self.assertEqual(second_base, [])
++
++    def test_normal_runtime_requires_orientation_file(self):
++        args = build_arg_parser().parse_args([])
++
++        with self.assertRaisesRegex(
++            ValueError,
++            "--pelvis-orientation-calib is required",
++        ):
++            _load_runtime_pelvis_orientation(
++                args,
++                self.config,
++            )
++
++
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_table_lcm_bridge.py b/deploy/mocap_bridge/tests/test_chingmu_table_lcm_bridge.py
+index 4453ddb..6a10d51 100644
+--- a/deploy/mocap_bridge/tests/test_chingmu_table_lcm_bridge.py
++++ b/deploy/mocap_bridge/tests/test_chingmu_table_lcm_bridge.py
+@@ -4,20 +4,21 @@ from pathlib import Path
+ 
+ import numpy as np
+ from scipy.spatial.transform import Rotation
+ 
+ from deploy.mocap_bridge import chingmu_table_lcm_bridge
+ from deploy.mocap_bridge.chingmu_sdk_client import MocapFrame
+ from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
+     BallTracker,
+     BridgeConfig,
+     ChingMuTableLcmBridge,
++    PelvisOrientationCalibration,
+     build_arg_parser,
+     calibrate_from_frames,
+     emit_messages,
+     infer_table_frame,
+     load_table_frame,
+     make_message,
+     raw_to_table_world,
+     save_table_frame,
+ )
+ from unitree_sdk2.lcm_types.transformation_t import transformation_t
+@@ -407,20 +408,27 @@ class ChingMuBallTrackerTest(unittest.TestCase):
+ class ChingMuTableBridgeTest(unittest.TestCase):
+     def setUp(self):
+         self.config = BridgeConfig()
+         self.table = infer_table_frame(
+             TABLE_CORNERS_MM, ROBOT_RAW_MM, self.config
+         )
+         self.reference = reference_body_markers()
+         self.bridge = ChingMuTableLcmBridge(
+             config=self.config,
+             table_frame=self.table,
++            pelvis_orientation_calibration=PelvisOrientationCalibration(
++                rotation_rigid_from_pelvis=np.eye(3),
++                sample_count=30,
++                source_duration_s=1.0,
++                position_rms_m=0.0,
++                angular_rms_deg=0.0,
++            ),
+         )
+ 
+     def make_frame(
+         self,
+         frame_number,
+         unlabeled,
+         *,
+         source_time_s=None,
+         body_position=ROBOT_RAW_MM,
+         body_quat=(0.0, 0.0, 0.0, 1.0),
+@@ -460,59 +468,55 @@ class ChingMuTableBridgeTest(unittest.TestCase):
+             @ Rotation.from_quat(body_quat).as_matrix()
+         )
+ 
+     def assert_base_rotation_equal(self, quaternion, expected):
+         actual = Rotation.from_quat(quaternion)
+         self.assertLess(
+             (actual.inv() * expected).magnitude(),
+             1.0e-10,
+         )
+ 
+-    def test_applies_pelvis_offset_in_absolute_base_rotation(self):
+-        expected_offset = np.array([0.003145, 0.044074, 0.048231])
++    def test_publishes_rigid_origin_in_absolute_base_rotation(self):
+         expected_rotation = self.expected_base_rotation()
+ 
+         messages = self.bridge.process_frame(
+             self.make_frame(360, []), publish_time_us=1000
+         )
+         base = next(message for message in messages if message.name == "G1Pelvis")
+ 
+         np.testing.assert_allclose(
+             base.pos_vicon,
+-            raw_to_table_world(ROBOT_RAW_MM, self.table, self.config)
+-            + expected_rotation.apply(expected_offset),
++            raw_to_table_world(ROBOT_RAW_MM, self.table, self.config),
+             atol=1.0e-9,
+         )
+         self.assert_base_rotation_equal(base.quat_vicon, expected_rotation)
+ 
+-    def test_rotates_pelvis_offset_with_absolute_base_rotation(self):
+-        expected_offset = np.array([0.003145, 0.044074, 0.048231])
++    def test_rigid_origin_is_unchanged_by_absolute_base_rotation(self):
+         self.bridge.process_frame(self.make_frame(360, []), publish_time_us=1000)
+ 
+         quarter_turn = Rotation.from_euler("z", 0.5 * np.pi)
+         expected_rotation = self.expected_base_rotation(
+             quarter_turn.as_quat()
+         )
+         messages = self.bridge.process_frame(
+             self.make_frame(
+                 361,
+                 [],
+                 body_quat=quarter_turn.as_quat(),
+             ),
+             publish_time_us=2000,
+         )
+         base = next(message for message in messages if message.name == "G1Pelvis")
+ 
+         np.testing.assert_allclose(
+             base.pos_vicon,
+-            raw_to_table_world(ROBOT_RAW_MM, self.table, self.config)
+-            + expected_rotation.apply(expected_offset),
++            raw_to_table_world(ROBOT_RAW_MM, self.table, self.config),
+             atol=1.0e-9,
+         )
+         self.assert_base_rotation_equal(base.quat_vicon, expected_rotation)
+ 
+     def test_publishes_only_canonical_objects_in_existing_order(self):
+         ball_raw = self.raw(
+             [0.5 * self.config.table_length_m, 0.0, 0.96]
+         )
+         expected_rotation = self.expected_base_rotation()
+         frame = self.make_frame(
+@@ -525,24 +529,21 @@ class ChingMuTableBridgeTest(unittest.TestCase):
+         decoded = [
+             transformation_t.decode(message.encode()) for message in messages
+         ]
+ 
+         self.assertEqual(
+             [message.name for message in decoded],
+             ["G1Pelvis", "ball", "table"],
+         )
+         np.testing.assert_allclose(
+             decoded[0].pos_vicon,
+-            raw_to_table_world(ROBOT_RAW_MM, self.table, self.config)
+-            + expected_rotation.apply(
+-                np.asarray(self.config.pelvis_offset_heading_m)
+-            ),
++            raw_to_table_world(ROBOT_RAW_MM, self.table, self.config),
+             atol=1.0e-9,
+         )
+         self.assert_base_rotation_equal(
+             decoded[0].quat_vicon,
+             expected_rotation,
+         )
+         np.testing.assert_allclose(
+             decoded[1].pos_vicon,
+             [0.5 * self.config.table_length_m, 0.0, 0.96],
+             atol=1.0e-9,
+@@ -567,24 +568,21 @@ class ChingMuTableBridgeTest(unittest.TestCase):
+         )
+ 
+         base = next(
+             message
+             for message in self.bridge.process_frame(frame)
+             if message.name == "G1Pelvis"
+         )
+ 
+         np.testing.assert_allclose(
+             base.pos_vicon,
+-            raw_to_table_world(true_root, self.table, self.config)
+-            + expected_rotation.apply(
+-                np.asarray(self.config.pelvis_offset_heading_m)
+-            ),
++            raw_to_table_world(true_root, self.table, self.config),
+             atol=1.0e-9,
+         )
+         self.assert_base_rotation_equal(base.quat_vicon, expected_rotation)
+ 
+     def test_first_and_later_root_rotations_are_absolute(self):
+         first_body_rotation = Rotation.from_euler(
+             "xyz",
+             [0.10, -0.20, 0.40],
+         )
+         second_body_rotation = Rotation.from_euler(

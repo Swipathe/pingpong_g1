@@ -1,0 +1,326 @@
+from __future__ import annotations
+
+import os
+
+from isaaclab.managers import SceneEntityCfg
+from isaaclab.managers import RewardTermCfg as RewTerm
+from isaaclab.utils import configclass
+
+from whole_body_tracking.robots.g1 import G1_ACTION_SCALE, G1_HITTER_RACKET_CFG
+import whole_body_tracking.tasks.hitter.mdp as mdp
+from whole_body_tracking.tasks.hitter.mdp.commands import HitterStrikingCommandCfg
+from whole_body_tracking.tasks.hitter.hitter_env_cfg import (
+    HitterStrikingEnvCfg,
+    VELOCITY_RANGE,
+)
+
+
+G1_HITTER_BODY_NAMES = [
+    "pelvis",
+    "waist_yaw_link",
+    "waist_roll_link",
+    "torso_link",
+    "left_shoulder_pitch_link",
+    "left_shoulder_roll_link",
+    "left_shoulder_yaw_link",
+    "left_elbow_link",
+    "left_wrist_roll_link",
+    "left_wrist_pitch_link",
+    "left_wrist_yaw_link",
+    "right_shoulder_pitch_link",
+    "right_shoulder_roll_link",
+    "right_shoulder_yaw_link",
+    "right_elbow_link",
+    "right_wrist_roll_link",
+    "right_wrist_pitch_link",
+    "right_wrist_yaw_link",
+]
+
+
+def _env_float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None or raw.strip() == "":
+        return float(default)
+    try:
+        return float(raw)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be a float, got {raw!r}") from exc
+
+
+def _env_optional_int(name: str) -> int | None:
+    raw = os.getenv(name)
+    if raw is None or raw.strip() == "":
+        return None
+    try:
+        return int(raw)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be an int, got {raw!r}") from exc
+
+
+@configclass
+class G1HitterPlannerRewardsCfg:
+    """G1 HITTER 规划器域训练运行使用的最终奖励项。"""
+
+    joint_pos = None
+
+    motion_global_anchor_pos = RewTerm(
+        func=mdp.motion_global_anchor_position_error_exp,
+        weight=0.5,
+        params={"command_name": "motion", "std": 0.3},
+    )
+    motion_global_anchor_ori = RewTerm(
+        func=mdp.motion_global_anchor_orientation_error_exp,
+        weight=0.5,
+        params={"command_name": "motion", "std": 0.4},
+    )
+    motion_body_pos = RewTerm(
+        func=mdp.motion_relative_body_position_error_exp,
+        weight=1.0,
+        params={"command_name": "motion", "std": 0.3},
+    )
+    motion_body_ori = RewTerm(
+        func=mdp.motion_relative_body_orientation_error_exp,
+        weight=1.0,
+        params={"command_name": "motion", "std": 0.4},
+    )
+    motion_body_lin_vel = RewTerm(
+        func=mdp.motion_global_body_linear_velocity_error_exp,
+        weight=1.5,
+        params={"command_name": "motion", "std": 1.0},
+    )
+    motion_body_ang_vel = RewTerm(
+        func=mdp.motion_global_body_angular_velocity_error_exp,
+        weight=1.5,
+        params={"command_name": "motion", "std": 3.14},
+    )
+    motion_anchor_lin_vel = RewTerm(
+        func=mdp.motion_anchor_linear_velocity_error_exp,
+        weight=1.0,
+        params={"command_name": "motion", "std": 1.0},
+    )
+
+    base_pos = RewTerm(
+        func=mdp.hitter_base_position_error_exp,
+        weight=_env_float("HITTER_BASE_TARGET_REWARD_WEIGHT", 5.0),
+        params={"command_name": "motion", "std": 0.30},
+    )
+    racket_pos = RewTerm(
+        func=mdp.hitter_racket_position_error_exp,
+        weight=_env_float("HITTER_RACKET_POS_REWARD_WEIGHT", 80.0),
+        params={"command_name": "motion", "std": 0.10, "window_s": 0.01},
+    )
+    racket_vel = RewTerm(
+        func=mdp.hitter_racket_velocity_error_exp,
+        weight=_env_float("HITTER_RACKET_VEL_REWARD_WEIGHT", 30.0),
+        params={"command_name": "motion", "std": 1.8, "window_s": 0.03},
+    )
+    racket_ori = RewTerm(
+        func=mdp.hitter_racket_orientation_error_exp,
+        weight=_env_float("HITTER_RACKET_ORI_REWARD_WEIGHT", 30.0),
+        params={
+            "command_name": "motion",
+            "std": 0.45,
+            "window_s": 0.03,
+            "use_abs_normal_alignment": False,
+        },
+    )
+    torso_forward_lean_l2 = RewTerm(
+        func=mdp.hitter_torso_forward_lean_l2,
+        weight=_env_float("HITTER_TORSO_FORWARD_LEAN_WEIGHT", -2.0),
+        params={
+            "body_cfg": SceneEntityCfg("robot", body_names="torso_link"),
+            "command_name": "motion",
+            "target_forward_z": _env_float("HITTER_TORSO_FORWARD_LEAN_TARGET_Z", -0.10),
+            "roll_weight": _env_float("HITTER_TORSO_FORWARD_LEAN_ROLL_WEIGHT", 1.0),
+            "strike_window_s": _env_float("HITTER_STABILITY_STRIKE_WINDOW_S", 0.25),
+            "strike_scale": _env_float("HITTER_STABILITY_STRIKE_SCALE", 2.0),
+        },
+    )
+    base_ang_vel_xy_l2 = RewTerm(
+        func=mdp.hitter_base_ang_vel_xy_l2,
+        weight=_env_float("HITTER_BASE_ANG_VEL_XY_WEIGHT", -0.4),
+        params={
+            "asset_cfg": SceneEntityCfg("robot"),
+            "command_name": "motion",
+            "strike_window_s": _env_float("HITTER_STABILITY_STRIKE_WINDOW_S", 0.25),
+            "strike_scale": _env_float("HITTER_STABILITY_STRIKE_SCALE", 2.0),
+        },
+    )
+
+    undesired_contacts = RewTerm(
+        func=mdp.undesired_contacts,
+        weight=-0.05,
+        params={
+            "sensor_cfg": SceneEntityCfg(
+                "contact_forces",
+                body_names=[
+                    r"^(?!left_ankle_roll_link$)(?!right_ankle_roll_link$)(?!left_wrist_yaw_link$)(?!right_wrist_yaw_link$)(?!right_racket_link$).+$"
+                ],
+            ),
+            "threshold": 1.0,
+        },
+    )
+    hitter_foot_slip_l2 = RewTerm(
+        func=mdp.hitter_foot_slip_l2,
+        weight=_env_float("HITTER_FOOT_SLIP_WEIGHT", -2.0),
+        params={
+            "sensor_cfg": SceneEntityCfg(
+                "contact_forces",
+                body_names=".*_ankle_roll_link",
+            ),
+            "asset_cfg": SceneEntityCfg(
+                "robot",
+                body_names=".*_ankle_roll_link",
+            ),
+            "threshold": _env_float("HITTER_FOOT_SLIP_CONTACT_THRESHOLD", 1.0),
+        },
+    )
+    hitter_hit_unstable_support = RewTerm(
+        func=mdp.hitter_hit_unstable_support,
+        weight=_env_float("HITTER_HIT_UNSTABLE_SUPPORT_WEIGHT", -6.0),
+        params={
+            "sensor_cfg": SceneEntityCfg(
+                "contact_forces",
+                body_names=".*_ankle_roll_link",
+            ),
+            "command_name": "motion",
+            "window_s": _env_float("HITTER_HIT_UNSTABLE_SUPPORT_WINDOW_S", 0.12),
+            "force_threshold": _env_float("HITTER_HIT_UNSTABLE_SUPPORT_FORCE_THRESHOLD", 1.0),
+            "single_stance_penalty": _env_float("HITTER_HIT_SINGLE_STANCE_PENALTY", 1.0),
+            "both_air_penalty": _env_float("HITTER_HIT_BOTH_AIR_PENALTY", 1.5),
+            "imbalance_weight": _env_float("HITTER_HIT_SUPPORT_IMBALANCE_WEIGHT", 0.5),
+            "max_support_force_ratio": _env_float("HITTER_HIT_MAX_SUPPORT_FORCE_RATIO", 0.85),
+        },
+    )
+    hitter_foot_edge_drag = RewTerm(
+        func=mdp.hitter_foot_edge_drag,
+        weight=_env_float("HITTER_FOOT_EDGE_DRAG_WEIGHT", -1.0),
+        params={
+            "asset_cfg": SceneEntityCfg(
+                "robot",
+                body_names=".*_ankle_roll_link",
+            ),
+            "pelvis_cfg": SceneEntityCfg(
+                "robot",
+                body_names="pelvis",
+            ),
+            "min_clearance": _env_float("HITTER_FOOT_EDGE_DRAG_MIN_CLEARANCE", 0.025),
+            "ground_z": 0.0,
+            "sole_radius": _env_float("HITTER_FOOT_EDGE_DRAG_SOLE_RADIUS", 0.0),
+            "speed_deadzone": _env_float("HITTER_FOOT_EDGE_DRAG_SPEED_DEADZONE", 0.05),
+            "lateral_weight": _env_float("HITTER_FOOT_EDGE_DRAG_LATERAL_WEIGHT", 1.0),
+        },
+    )
+    hip_yaw_default = RewTerm(
+        func=mdp.hitter_joint_default_position_error_exp,
+        weight=_env_float("HITTER_HIP_YAW_DEFAULT_WEIGHT", 2.0),
+        params={
+            "asset_cfg": SceneEntityCfg("robot", joint_names=[".*_hip_yaw_joint"]),
+            "std": _env_float("HITTER_HIP_YAW_DEFAULT_STD", 0.20),
+        },
+    )
+    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.1, params={})
+    joint_limit = RewTerm(
+        func=mdp.joint_pos_limits,
+        weight=-10.0,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*"])},
+    )
+    joint_acc = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7, params={})
+    joint_torque = RewTerm(func=mdp.joint_torques_l2, weight=-1e-5, params={})
+
+
+def _configure_planner_domain(cfg: G1HitterStrikingPlannerDomainFlatEnvCfg) -> None:
+    """配置与 HITTER 规划器一致的全身控制训练域。"""
+
+    command: HitterStrikingCommandCfg = cfg.commands.motion
+    table_half_width = 0.5 * float(command.physical_table_width)
+    command.enable_strike_targets = True
+    command.force_strike_type = None
+    command.motion_group_sampling_ratios = {"forehand": 0.5, "backhand": 0.5}
+    command.racket_orientation_use_abs_normal_alignment = False
+    command.racket_body_name = "right_racket_link"
+    command.racket_pos_offset_in_body_frame = (0.0, 0.0, 0.0)
+    command.racket_normal_axis_in_body_frame = (0.0, -1.0, 0.0)
+    command.racket_target_position_frame = "world_fixed"
+    command.target_base_height_w = 0.78
+    motion_dataset_load_cap = _env_optional_int("HITTER_MOTION_DATASET_LOAD_CAP")
+    if motion_dataset_load_cap is not None:
+        command.motion_dataset_load_cap = motion_dataset_load_cap
+
+    # 保持 reset 扰动较小；虚拟击球平面相对每个 env 的球桌/原点固定。
+    command.pose_range = {
+        "x": (-0.02, 0.02),
+        "y": (-0.02, 0.02),
+        "z": (-0.01, 0.01),
+        "roll": (-0.05, 0.05),
+        "pitch": (-0.05, 0.05),
+        "yaw": (-0.10, 0.10),
+    }
+    command.velocity_range = dict(VELOCITY_RANGE)
+    command.joint_position_range = (-0.05, 0.05)
+
+    # 当前参考动作是 50 Hz、94 帧的重定向击球片段；第 43 帧约为击球时刻。
+    # 按随机采样的接触时间平移参考动作起始相位，使第 43 帧尽量与击球时刻对齐。
+    command.time_to_strike_range = (0.30, 0.92)
+    command.strike_metric_window_s = 0.01
+    command.reference_strike_frame = 43
+    command.align_reference_phase_to_strike_time = True
+
+    # 训练侧保留历史字段名 strike_plane_x；这里实际表示击球时球拍相对 base 的前向偏移。
+    # 物理虚拟击球平面由部署侧 planner 根据球桌坐标单独定义。
+    command.strike_plane_x = 0.40
+    command.base_target_x_offset = 0.0
+
+    # 训练时直接随机采样击球目标；评估/部署侧由外部 planner 根据球的位置和速度算目标。
+    command.swing_duration_range = (1.75, 1.95)
+    # 规划器风格的 3D 速度代理：覆盖低速前向/垂向目标，并统一正反手横向速度范围。
+    command.forehand_racket_velocity_x_range = (0.0, 6.0)
+    command.backhand_racket_velocity_x_range = (0.0, 6.0)
+    command.forehand_racket_velocity_y_range = (-0.5, 0.5)
+    command.backhand_racket_velocity_y_range = (-0.5, 0.5)
+    command.racket_velocity_z_range = (0.0, 6.0)
+
+    # 正/反手类型仍按 0.5/0.5 随机采样；两类击球都覆盖整张球桌宽度。
+    command.forehand_nominal_racket_y_b = -0.5
+    command.backhand_nominal_racket_y_b = 0.22
+    command.forehand_racket_y_offset_range = None
+    command.backhand_racket_y_offset_range = None
+    command.forehand_racket_y_range = (-table_half_width, 0)
+    command.backhand_racket_y_range = (0, table_half_width)
+    command.racket_z_range = (0, 0.5)
+
+    regularization_scale = _env_float("HITTER_REGULARIZATION_SCALE", 1.0)
+    if regularization_scale != 1.0:
+        for term in (
+            cfg.rewards.undesired_contacts,
+            cfg.rewards.hitter_foot_slip_l2,
+            cfg.rewards.hitter_hit_unstable_support,
+            cfg.rewards.hitter_foot_edge_drag,
+            cfg.rewards.torso_forward_lean_l2,
+            cfg.rewards.base_ang_vel_xy_l2,
+            cfg.rewards.hip_yaw_default,
+            cfg.rewards.action_rate_l2,
+            cfg.rewards.joint_limit,
+            cfg.rewards.joint_acc,
+            cfg.rewards.joint_torque,
+        ):
+            term.weight *= regularization_scale
+
+
+@configclass
+class G1HitterStrikingPlannerDomainFlatEnvCfg(HitterStrikingEnvCfg):
+    """用于规划器域训练的 G1 全身控制环境。"""
+
+    rewards: G1HitterPlannerRewardsCfg = G1HitterPlannerRewardsCfg()
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.robot = G1_HITTER_RACKET_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot.init_state.pos = (0.0, 0.0, 0.76)
+        self.terminations.anchor_pos.params["target_height"] = 0.78
+        self.actions.joint_pos.scale = G1_ACTION_SCALE
+        self.commands.motion.anchor_body_name = "pelvis"
+        self.commands.motion.racket_body_name = "right_racket_link"
+        self.commands.motion.racket_pos_offset_in_body_frame = (0.0, 0.0, 0.0)
+        self.commands.motion.body_names = G1_HITTER_BODY_NAMES
+        _configure_planner_domain(self)

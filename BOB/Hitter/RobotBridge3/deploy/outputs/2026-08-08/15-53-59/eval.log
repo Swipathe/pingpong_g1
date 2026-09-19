@@ -1,0 +1,499 @@
+2026-08-08 15:54:00.017 | INFO     | __main__:main:27 - Log saved to /home/loco1/BOB/Hitter/RobotBridge3/deploy/outputs/2026-08-08/15-53-59/eval.log
+2026-08-08 15:54:00.870 | INFO     | utils.motion_lib.torch_humanoid_batch:<module>:41 - Using Humanoid Batch
+2026-08-08 15:54:01.004 | DEBUG    | utils.kinematics:__init__:34 - [MujocoKinematics] loaded model from ./data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+2026-08-08 15:54:01.004 | DEBUG    | utils.kinematics:update_joint_names_subset:94 - [MujocoKinematics] set fk with 29 joints
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_setup:41 - Robot-level Control Frequency Set to 200.0HZ
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_setup:42 - Policy-level Control Frequency Set to 50.0HZ
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-08 15:54:01.005 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_pitch_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_roll_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_roll_joint  Default Angles -0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:56 - Total Number of dof: 29
+2026-08-08 15:54:01.006 | INFO     | simulator.base_sim:_load_asset:57 - Number of Action: 29
+2026-08-08 15:54:01.006 | INFO     | simulator.real_world:_init_low_state:96 - [RealWorld] terminate_on_r2=True
+2026-08-08 15:54:01.008 | INFO     | simulator.real_world:_root_state_handler:299 - State Estimator Information Received!
+2026-08-08 15:54:01.008 | INFO     | simulator.real_world:_root_state_handler:300 - Root Translation: [ 1.90973055 -0.66177672  0.72161907], Root Linear Velocity: [ 3.69582352e-07 -3.78286522e-08 -3.23208860e-06]
+2026-08-08 15:54:01.009 | INFO     | simulator.real_world:_joint_state_handler:402 - Communication build successfully between the policy and the transition layer!
+2026-08-08 15:54:01.009 | INFO     | simulator.real_world:_joint_state_handler:403 - First signal arrives after 0.0020842552185058594s!
+2026-08-08 15:54:01.009 | INFO     | simulator.real_world:_vicon_state_handler:349 - Vicon root information received!
+2026-08-08 15:54:01.009 | INFO     | simulator.real_world:_vicon_state_handler:350 - Root Translation World: [-0.53096277  0.00468897  0.7827298 ]
+2026-08-08 15:54:01.009 | INFO     | utils.history_handler:__init__:19 - History Handler initialized!
+2026-08-08 15:54:01.010 | INFO     | envs.hitter:__init__:108 - HITTER ball planner configured.
+2026-08-08 15:54:01.014 | INFO     | agents.base_agent:load_onnx_policy:22 - Loading ONNX Checkpoint from ./data/model/hitter/hitter_model7400_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_104_20260806.onnx
+2026-08-08 15:54:01.014 | INFO     | envs.hitter:configure_from_modelmeta:159 - Applying HITTER joint configuration from ONNX model.
+2026-08-08 15:54:01.018 | INFO     | envs.hitter:configure_from_modelmeta:201 - HITTER policy metadata configured, 29 degrees of freedom.
+2026-08-08 15:54:01.018 | INFO     | agents.hitter_agent:load_onnx_policy:19 - HITTER policy metadata loaded. Joints: 29 Anchor body: pelvis
+2026-08-08 15:54:01.018 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-08-08 15:54:01.019 | INFO     | simulator.real_world:calibrate:626 - Calibraiting..., Press R2 to continue
+2026-08-08 15:54:13.994 | INFO     | simulator.real_world:calibrate:628 - R2 button pressed, Start Calibrating...
+2026-08-08 15:54:14.216 | INFO     | simulator.real_world:calibrate:646 - Calibration Done. Press R2 to continue
+2026-08-08 15:54:36.453 | INFO     | simulator.real_world:calibrate:651 - R2 pressed again, Communication built between policy layer and transition layer!
+2026-08-08 15:54:36.460 | INFO     | simulator.real_world:reset_heading:267 - [RealWorld] heading reset enabled, yaw0=0.891 rad
+2026-08-08 15:54:36.464 | INFO     | envs.hitter:_capture_hitter_waiting_base_target:562 - HITTER waiting base target captured at world position [-0.4000000059604645, 0.0, 0.699084997177124].
+2026-08-08 15:54:36.468 | INFO     | envs.base_env:_update_obs:92 - Receive observation: ['actions', 'root_quat', 'root_rpy', 'base_ang_vel', 'base_lin_vel', 'dof_pos', 'dof_vel', 'projected_gravity']
+2026-08-08 15:54:36.472 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:41.498 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:41.505 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -5.013939361572266
+2026-08-08 15:54:42.508 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:43.511 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:44.514 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:45.517 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:46.519 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:47.522 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:48.525 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:49.527 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:50.530 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:51.533 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:52.535 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:53.538 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:54.541 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:55.543 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:56.546 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:57.549 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:58.551 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:54:59.554 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:00.557 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:01.559 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:02.562 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:03.565 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:04.567 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:05.570 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:06.573 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:07.576 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:08.578 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:09.581 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:10.584 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:11.586 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:12.589 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:13.592 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:14.595 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:15.597 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:16.600 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:17.603 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:18.605 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:19.608 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:20.611 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:21.614 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:22.616 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:23.619 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:24.622 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:25.624 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:26.627 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:27.630 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:28.632 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:29.635 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:30.638 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:31.640 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:32.643 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:33.646 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:34.648 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:35.651 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:36.654 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:37.656 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:38.659 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:39.662 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:40.665 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:41.667 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:42.670 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:43.673 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:44.675 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:45.678 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:46.681 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:47.683 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:48.686 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:49.689 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:50.692 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:51.694 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:52.697 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:53.700 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:54.702 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:55.705 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:56.708 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:57.710 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:58.713 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:55:59.716 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:56:00.718 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:56:01.721 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:56:02.724 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-08-08 15:56:03.139 | INFO     | simulator.real_world:_update_ball_state_from_vicon:394 - Vicon ball information received!
+2026-08-08 15:56:03.139 | INFO     | simulator.real_world:_update_ball_state_from_vicon:395 - Ball Position World: [ 2.3241324  -0.06304199  1.2801042 ]
+2026-08-08 15:56:03.266 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command armed: epoch=1 generation=38 type=backhand tts=0.780s
+2026-08-08 15:56:03.266 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:924 - HITTER lifecycle transition: waiting -> armed
+2026-08-08 15:56:03.289 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=42 type=backhand tts=0.761s
+2026-08-08 15:56:03.290 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=45 type=backhand tts=0.762s
+2026-08-08 15:56:03.308 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=49 type=backhand tts=0.752s
+2026-08-08 15:56:03.328 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=56 type=backhand tts=0.728s
+2026-08-08 15:56:03.348 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=62 type=backhand tts=0.698s
+2026-08-08 15:56:03.368 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=66 type=backhand tts=0.679s
+2026-08-08 15:56:03.374 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=70 type=backhand tts=0.675s
+2026-08-08 15:56:03.388 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=73 type=backhand tts=0.661s
+2026-08-08 15:56:03.408 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=80 type=backhand tts=0.641s
+2026-08-08 15:56:03.428 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=84 type=backhand tts=0.624s
+2026-08-08 15:56:03.435 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=1 generation=88 type=backhand tts=0.645s
+2026-08-08 15:56:03.504 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.015423517227172851
+2026-08-08 15:56:03.509 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:03.725 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=armed submitted=48 completed=16 failed=32 dropped=0 result_age_s=0.010 epoch=1 generation=171 policy_tts=0.355
+2026-08-08 15:56:03.775 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:04.009 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:04.086 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-08-08 15:56:04.086 | INFO     | envs.hitter:_log_hitter_strike_target:676 - HITTER strike target: epoch=1 generation=88 type=backhand v_ball_in_w_mps=[-1.4845,0.1319,1.6676] speed_ball_in_mps=2.2365 v_ball_out_w_mps=[4.2708,-0.3009,2.0789] speed_ball_out_mps=4.7595 v_racket_target_w_mps=[1.7504,-0.1317,0.1251] speed_racket_mps=1.7598
+2026-08-08 15:56:04.086 | INFO     | envs.hitter:_log_hitter_advance_transitions:947 - HITTER lifecycle transition: armed -> recovery
+2026-08-08 15:56:04.213 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:04.448 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:04.728 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=recovery submitted=133 completed=16 failed=117 dropped=0 result_age_s=0.003 epoch=2 generation=474 policy_tts=0.000
+2026-08-08 15:56:04.762 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:04.992 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:05.189 | INFO     | envs.hitter:_log_hitter_advance_transitions:963 - HITTER lifecycle transition: recovery -> waiting
+2026-08-08 15:56:05.229 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:05.269 | INFO     | envs.hitter:_mark_hitter_track_ended:858 - HITTER track ended: ended_epoch=2 invalid_epoch=3 generation=633
+2026-08-08 15:56:05.731 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=0.475 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:06.733 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=1.478 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:07.736 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=2.481 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:08.739 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=3.484 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:09.741 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=4.486 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:10.744 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=5.489 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:11.747 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=6.492 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:12.750 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=7.494 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:13.752 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=8.497 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:14.755 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=9.500 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:15.757 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=10.502 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:16.760 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=11.505 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:17.763 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=12.508 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:18.765 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=13.510 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:19.768 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=14.513 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:20.771 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=15.516 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:21.773 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=16.518 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:22.776 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=17.521 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:23.779 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=18.524 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:24.782 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=19.526 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:25.784 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=20.529 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:26.787 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=21.532 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:27.789 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=22.534 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:28.792 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=23.537 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:29.795 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=24.540 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:30.797 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=25.542 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:31.800 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=26.545 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:32.803 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=27.548 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:33.805 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=28.550 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:34.808 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=177 completed=16 failed=161 dropped=0 result_age_s=29.553 epoch=3 generation=633 policy_tts=0.920
+2026-08-08 15:56:34.977 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:924 - HITTER lifecycle transition: waiting -> tracking
+2026-08-08 15:56:34.980 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.009114007949829101
+2026-08-08 15:56:35.002 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command armed: epoch=3 generation=687 type=backhand tts=0.908s
+2026-08-08 15:56:35.003 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:924 - HITTER lifecycle transition: tracking -> armed
+2026-08-08 15:56:35.022 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=693 type=backhand tts=0.886s
+2026-08-08 15:56:35.043 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=697 type=backhand tts=0.866s
+2026-08-08 15:56:35.063 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=705 type=backhand tts=0.842s
+2026-08-08 15:56:35.085 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=713 type=backhand tts=0.823s
+2026-08-08 15:56:35.105 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=719 type=backhand tts=0.805s
+2026-08-08 15:56:35.125 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=723 type=backhand tts=0.784s
+2026-08-08 15:56:35.145 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=731 type=backhand tts=0.764s
+2026-08-08 15:56:35.165 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=734 type=backhand tts=0.745s
+2026-08-08 15:56:35.170 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=738 type=backhand tts=0.740s
+2026-08-08 15:56:35.185 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=742 type=backhand tts=0.723s
+2026-08-08 15:56:35.205 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=749 type=backhand tts=0.702s
+2026-08-08 15:56:35.225 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=752 type=backhand tts=0.682s
+2026-08-08 15:56:35.231 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=756 type=backhand tts=0.677s
+2026-08-08 15:56:35.245 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=760 type=backhand tts=0.664s
+2026-08-08 15:56:35.265 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=767 type=backhand tts=0.647s
+2026-08-08 15:56:35.286 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=771 type=backhand tts=0.627s
+2026-08-08 15:56:35.291 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=774 type=backhand tts=0.621s
+2026-08-08 15:56:35.306 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=778 type=backhand tts=0.606s
+2026-08-08 15:56:35.326 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=785 type=backhand tts=0.584s
+2026-08-08 15:56:35.346 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=788 type=backhand tts=0.564s
+2026-08-08 15:56:35.351 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=792 type=backhand tts=0.557s
+2026-08-08 15:56:35.366 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=795 type=backhand tts=0.541s
+2026-08-08 15:56:35.386 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=802 type=backhand tts=0.519s
+2026-08-08 15:56:35.395 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:35.506 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=838 type=backhand tts=0.447s
+2026-08-08 15:56:35.526 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=845 type=backhand tts=0.406s
+2026-08-08 15:56:35.549 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=852 type=backhand tts=0.379s
+2026-08-08 15:56:35.569 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=856 type=backhand tts=0.358s
+2026-08-08 15:56:35.589 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=864 type=backhand tts=0.340s
+2026-08-08 15:56:35.609 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=868 type=backhand tts=0.321s
+2026-08-08 15:56:35.629 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=876 type=backhand tts=0.299s
+2026-08-08 15:56:35.649 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=879 type=backhand tts=0.278s
+2026-08-08 15:56:35.654 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=883 type=backhand tts=0.271s
+2026-08-08 15:56:35.669 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=886 type=backhand tts=0.256s
+2026-08-08 15:56:35.689 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=893 type=backhand tts=0.237s
+2026-08-08 15:56:35.709 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=897 type=backhand tts=0.218s
+2026-08-08 15:56:35.715 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=901 type=backhand tts=0.214s
+2026-08-08 15:56:35.738 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=908 type=backhand tts=0.191s
+2026-08-08 15:56:35.749 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=912 type=backhand tts=0.179s
+2026-08-08 15:56:35.769 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=916 type=backhand tts=0.158s
+2026-08-08 15:56:35.789 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=924 type=backhand tts=0.138s
+2026-08-08 15:56:35.810 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=930 type=backhand tts=0.120s
+2026-08-08 15:56:35.810 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=armed submitted=260 completed=80 failed=180 dropped=0 result_age_s=0.001 epoch=3 generation=930 policy_tts=0.120
+2026-08-08 15:56:35.830 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=934 type=backhand tts=0.099s
+2026-08-08 15:56:35.835 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=937 type=backhand tts=0.095s
+2026-08-08 15:56:35.850 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=941 type=backhand tts=0.081s
+2026-08-08 15:56:35.870 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=948 type=backhand tts=0.060s
+2026-08-08 15:56:35.892 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=955 type=backhand tts=0.038s
+2026-08-08 15:56:35.912 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=958 type=backhand tts=0.019s
+2026-08-08 15:56:35.918 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=3 generation=962 type=backhand tts=0.013s
+2026-08-08 15:56:35.932 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-08-08 15:56:35.932 | INFO     | envs.hitter:_log_hitter_strike_target:676 - HITTER strike target: epoch=3 generation=962 type=backhand v_ball_in_w_mps=[-1.4754,0.1989,-2.0327] speed_ball_in_mps=2.5196 v_ball_out_w_mps=[4.2708,-0.7085,1.7592] speed_ball_out_mps=4.6730 v_racket_target_w_mps=[1.1558,-0.1825,0.7627] speed_racket_mps=1.3967
+2026-08-08 15:56:35.932 | INFO     | envs.hitter:_log_hitter_advance_transitions:947 - HITTER lifecycle transition: armed -> recovery
+2026-08-08 15:56:36.814 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=recovery submitted=311 completed=90 failed=221 dropped=0 result_age_s=0.373 epoch=5 generation=1113 policy_tts=0.000
+2026-08-08 15:56:36.834 | INFO     | envs.hitter:_log_hitter_advance_transitions:963 - HITTER lifecycle transition: recovery -> waiting
+2026-08-08 15:56:37.817 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=1.375 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:38.820 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=2.378 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:39.822 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=3.381 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:40.825 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=4.383 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:41.828 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=5.386 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:42.831 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=6.389 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:43.833 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=7.392 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:44.836 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=8.394 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:45.839 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=311 completed=90 failed=221 dropped=0 result_age_s=9.397 epoch=5 generation=1113 policy_tts=0.920
+2026-08-08 15:56:46.581 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command armed: epoch=6 generation=1154 type=backhand tts=0.706s
+2026-08-08 15:56:46.582 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:924 - HITTER lifecycle transition: waiting -> armed
+2026-08-08 15:56:46.601 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1157 type=backhand tts=0.685s
+2026-08-08 15:56:46.608 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1161 type=backhand tts=0.676s
+2026-08-08 15:56:46.621 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1164 type=backhand tts=0.656s
+2026-08-08 15:56:46.628 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1167 type=backhand tts=0.648s
+2026-08-08 15:56:46.641 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1171 type=backhand tts=0.643s
+2026-08-08 15:56:46.662 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1175 type=backhand tts=0.631s
+2026-08-08 15:56:46.668 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1179 type=backhand tts=0.621s
+2026-08-08 15:56:46.682 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1183 type=backhand tts=0.605s
+2026-08-08 15:56:46.702 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1190 type=backhand tts=0.580s
+2026-08-08 15:56:46.722 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1196 type=backhand tts=0.562s
+2026-08-08 15:56:46.742 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1200 type=backhand tts=0.552s
+2026-08-08 15:56:46.762 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1207 type=backhand tts=0.532s
+2026-08-08 15:56:46.782 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1214 type=backhand tts=0.507s
+2026-08-08 15:56:46.803 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1217 type=backhand tts=0.485s
+2026-08-08 15:56:46.808 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1221 type=backhand tts=0.479s
+2026-08-08 15:56:46.826 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1227 type=backhand tts=0.473s
+2026-08-08 15:56:46.846 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1231 type=backhand tts=0.454s
+2026-08-08 15:56:46.846 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=armed submitted=345 completed=113 failed=232 dropped=0 result_age_s=0.008 epoch=6 generation=1231 policy_tts=0.454
+2026-08-08 15:56:46.866 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1238 type=backhand tts=0.431s
+2026-08-08 15:56:46.886 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1245 type=backhand tts=0.407s
+2026-08-08 15:56:46.907 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1248 type=backhand tts=0.388s
+2026-08-08 15:56:46.911 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1252 type=backhand tts=0.392s
+2026-08-08 15:56:46.928 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1255 type=backhand tts=0.377s
+2026-08-08 15:56:46.933 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1259 type=backhand tts=0.373s
+2026-08-08 15:56:46.948 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1262 type=backhand tts=0.359s
+2026-08-08 15:56:46.968 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1269 type=backhand tts=0.335s
+2026-08-08 15:56:46.988 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1276 type=backhand tts=0.317s
+2026-08-08 15:56:47.008 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1280 type=backhand tts=0.302s
+2026-08-08 15:56:47.014 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1283 type=backhand tts=0.297s
+2026-08-08 15:56:47.028 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1287 type=backhand tts=0.285s
+2026-08-08 15:56:47.039 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:56:47.048 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1291 type=backhand tts=0.263s
+2026-08-08 15:56:47.149 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1324 type=backhand tts=0.152s
+2026-08-08 15:56:47.169 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1330 type=backhand tts=0.131s
+2026-08-08 15:56:47.192 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1337 type=backhand tts=0.107s
+2026-08-08 15:56:47.212 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1341 type=backhand tts=0.088s
+2026-08-08 15:56:47.220 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1344 type=backhand tts=0.081s
+2026-08-08 15:56:47.232 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1347 type=backhand tts=0.068s
+2026-08-08 15:56:47.252 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1354 type=backhand tts=0.047s
+2026-08-08 15:56:47.275 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1358 type=backhand tts=0.026s
+2026-08-08 15:56:47.277 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1362 type=backhand tts=0.022s
+2026-08-08 15:56:47.294 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1365 type=backhand tts=0.006s
+2026-08-08 15:56:47.297 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=6 generation=1368 type=backhand tts=0.003s
+2026-08-08 15:56:47.314 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-08-08 15:56:47.314 | INFO     | envs.hitter:_log_hitter_strike_target:676 - HITTER strike target: epoch=6 generation=1368 type=backhand v_ball_in_w_mps=[-1.9497,0.1633,0.6015] speed_ball_in_mps=2.0469 v_ball_out_w_mps=[4.2708,-0.7064,1.3616] speed_ball_out_mps=4.5379 v_racket_target_w_mps=[1.5267,-0.2134,0.1865] speed_racket_mps=1.5528
+2026-08-08 15:56:47.314 | INFO     | envs.hitter:_log_hitter_advance_transitions:947 - HITTER lifecycle transition: armed -> recovery
+2026-08-08 15:56:47.855 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=recovery submitted=384 completed=144 failed=240 dropped=0 result_age_s=0.559 epoch=6 generation=1368 policy_tts=0.000
+2026-08-08 15:56:48.357 | INFO     | envs.hitter:_log_hitter_advance_transitions:963 - HITTER lifecycle transition: recovery -> waiting
+2026-08-08 15:56:48.858 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=1.562 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:49.861 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=2.564 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:50.863 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=3.567 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:51.866 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=4.570 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:52.869 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=5.572 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:53.871 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=6.575 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:54.874 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=7.578 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:55.876 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=8.580 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:56.879 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=9.583 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:57.882 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=10.586 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:58.884 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=11.588 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:56:59.887 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=12.591 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:00.890 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=13.593 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:01.892 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=14.596 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:02.895 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=15.599 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:03.898 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=16.601 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:04.900 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=17.604 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:05.903 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=18.607 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:06.906 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=19.609 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:07.908 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=384 completed=144 failed=240 dropped=0 result_age_s=20.612 epoch=6 generation=1368 policy_tts=0.920
+2026-08-08 15:57:08.550 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:924 - HITTER lifecycle transition: waiting -> tracking
+2026-08-08 15:57:08.592 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command armed: epoch=8 generation=1423 type=backhand tts=0.914s
+2026-08-08 15:57:08.592 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:924 - HITTER lifecycle transition: tracking -> armed
+2026-08-08 15:57:08.594 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1426 type=backhand tts=0.913s
+2026-08-08 15:57:08.610 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1430 type=backhand tts=0.897s
+2026-08-08 15:57:08.630 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1437 type=backhand tts=0.878s
+2026-08-08 15:57:08.651 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1440 type=backhand tts=0.856s
+2026-08-08 15:57:08.653 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1444 type=backhand tts=0.849s
+2026-08-08 15:57:08.671 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1448 type=backhand tts=0.834s
+2026-08-08 15:57:08.691 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1455 type=backhand tts=0.819s
+2026-08-08 15:57:08.711 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1459 type=backhand tts=0.800s
+2026-08-08 15:57:08.717 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1463 type=backhand tts=0.798s
+2026-08-08 15:57:08.731 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1467 type=backhand tts=0.786s
+2026-08-08 15:57:08.752 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1474 type=backhand tts=0.761s
+2026-08-08 15:57:08.772 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1478 type=backhand tts=0.740s
+2026-08-08 15:57:08.793 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1485 type=backhand tts=0.718s
+2026-08-08 15:57:08.816 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1493 type=backhand tts=0.705s
+2026-08-08 15:57:08.839 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1496 type=backhand tts=0.685s
+2026-08-08 15:57:08.841 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1500 type=backhand tts=0.682s
+2026-08-08 15:57:08.859 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1506 type=backhand tts=0.672s
+2026-08-08 15:57:08.879 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1510 type=backhand tts=0.650s
+2026-08-08 15:57:08.885 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1513 type=backhand tts=0.643s
+2026-08-08 15:57:08.899 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1517 type=backhand tts=0.628s
+2026-08-08 15:57:08.922 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1521 type=backhand tts=0.603s
+2026-08-08 15:57:08.922 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=armed submitted=428 completed=177 failed=251 dropped=0 result_age_s=0.000 epoch=8 generation=1525 policy_tts=0.603
+2026-08-08 15:57:08.924 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1525 type=backhand tts=0.599s
+2026-08-08 15:57:08.941 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1529 type=backhand tts=0.583s
+2026-08-08 15:57:08.947 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1532 type=backhand tts=0.583s
+2026-08-08 15:57:08.961 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1536 type=backhand tts=0.571s
+2026-08-08 15:57:08.965 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:57:09.082 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1570 type=backhand tts=0.498s
+2026-08-08 15:57:09.088 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1574 type=backhand tts=0.478s
+2026-08-08 15:57:09.102 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1578 type=backhand tts=0.453s
+2026-08-08 15:57:09.122 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1585 type=backhand tts=0.431s
+2026-08-08 15:57:09.144 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1588 type=backhand tts=0.416s
+2026-08-08 15:57:09.147 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1592 type=backhand tts=0.415s
+2026-08-08 15:57:09.164 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1595 type=backhand tts=0.399s
+2026-08-08 15:57:09.184 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1603 type=backhand tts=0.370s
+2026-08-08 15:57:09.205 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1606 type=backhand tts=0.348s
+2026-08-08 15:57:09.208 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1610 type=backhand tts=0.352s
+2026-08-08 15:57:09.225 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1614 type=backhand tts=0.336s
+2026-08-08 15:57:09.230 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1617 type=backhand tts=0.332s
+2026-08-08 15:57:09.245 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1620 type=backhand tts=0.313s
+2026-08-08 15:57:09.252 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1623 type=backhand tts=0.305s
+2026-08-08 15:57:09.265 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1627 type=backhand tts=0.291s
+2026-08-08 15:57:09.286 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1634 type=backhand tts=0.278s
+2026-08-08 15:57:09.306 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1638 type=backhand tts=0.260s
+2026-08-08 15:57:09.326 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1646 type=backhand tts=0.236s
+2026-08-08 15:57:09.346 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1650 type=backhand tts=0.217s
+2026-08-08 15:57:09.366 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1657 type=backhand tts=0.202s
+2026-08-08 15:57:09.389 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1665 type=backhand tts=0.177s
+2026-08-08 15:57:09.412 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1672 type=backhand tts=0.154s
+2026-08-08 15:57:09.432 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1675 type=backhand tts=0.137s
+2026-08-08 15:57:09.437 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1679 type=backhand tts=0.133s
+2026-08-08 15:57:09.452 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1682 type=backhand tts=0.120s
+2026-08-08 15:57:09.458 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1685 type=backhand tts=0.113s
+2026-08-08 15:57:09.472 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1689 type=backhand tts=0.098s
+2026-08-08 15:57:09.492 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1695 type=backhand tts=0.079s
+2026-08-08 15:57:09.512 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1702 type=backhand tts=0.062s
+2026-08-08 15:57:09.532 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1705 type=backhand tts=0.043s
+2026-08-08 15:57:09.552 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1713 type=backhand tts=0.020s
+2026-08-08 15:57:09.572 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=8 generation=1720 type=backhand tts=0.001s
+2026-08-08 15:57:09.574 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-08-08 15:57:09.575 | INFO     | envs.hitter:_log_hitter_strike_target:676 - HITTER strike target: epoch=8 generation=1720 type=backhand v_ball_in_w_mps=[-1.3188,0.0669,-2.7416] speed_ball_in_mps=3.0430 v_ball_out_w_mps=[4.2708,-0.2484,2.1850] speed_ball_out_mps=4.8037 v_racket_target_w_mps=[0.9209,-0.0519,0.8117] speed_racket_mps=1.2286
+2026-08-08 15:57:09.575 | INFO     | envs.hitter:_log_hitter_advance_transitions:947 - HITTER lifecycle transition: armed -> recovery
+2026-08-08 15:57:09.933 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=recovery submitted=510 completed=223 failed=287 dropped=0 result_age_s=0.001 epoch=10 generation=1814 policy_tts=0.000
+2026-08-08 15:57:10.042 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:57:10.414 | INFO     | envs.hitter:_log_hitter_advance_transitions:963 - HITTER lifecycle transition: recovery -> waiting
+2026-08-08 15:57:10.936 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=0.640 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:11.938 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=1.643 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:12.941 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=2.646 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:13.944 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=3.648 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:14.946 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=4.651 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:15.949 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=5.654 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:16.952 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=6.656 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:17.954 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=7.659 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:18.957 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=8.661 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:19.960 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=542 completed=223 failed=319 dropped=0 result_age_s=9.664 epoch=10 generation=1923 policy_tts=0.920
+2026-08-08 15:57:20.160 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command armed: epoch=11 generation=1965 type=backhand tts=0.597s
+2026-08-08 15:57:20.160 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:924 - HITTER lifecycle transition: waiting -> armed
+2026-08-08 15:57:20.180 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=1971 type=backhand tts=0.579s
+2026-08-08 15:57:20.201 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=1979 type=backhand tts=0.558s
+2026-08-08 15:57:20.221 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=1983 type=backhand tts=0.538s
+2026-08-08 15:57:20.241 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=1990 type=backhand tts=0.519s
+2026-08-08 15:57:20.261 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=1994 type=backhand tts=0.499s
+2026-08-08 15:57:20.281 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2002 type=backhand tts=0.477s
+2026-08-08 15:57:20.301 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2009 type=backhand tts=0.455s
+2026-08-08 15:57:20.322 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2012 type=backhand tts=0.435s
+2026-08-08 15:57:20.323 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2015 type=backhand tts=0.435s
+2026-08-08 15:57:20.342 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2019 type=backhand tts=0.416s
+2026-08-08 15:57:20.362 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2026 type=backhand tts=0.395s
+2026-08-08 15:57:20.382 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2033 type=backhand tts=0.375s
+2026-08-08 15:57:20.402 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2037 type=backhand tts=0.355s
+2026-08-08 15:57:20.422 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2044 type=backhand tts=0.335s
+2026-08-08 15:57:20.445 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2048 type=backhand tts=0.315s
+2026-08-08 15:57:20.448 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2052 type=backhand tts=0.308s
+2026-08-08 15:57:20.462 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2055 type=backhand tts=0.293s
+2026-08-08 15:57:20.482 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2062 type=backhand tts=0.275s
+2026-08-08 15:57:20.506 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2066 type=backhand tts=0.254s
+2026-08-08 15:57:20.510 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2070 type=backhand tts=0.248s
+2026-08-08 15:57:20.524 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2073 type=backhand tts=0.235s
+2026-08-08 15:57:20.544 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2081 type=backhand tts=0.215s
+2026-08-08 15:57:20.565 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2088 type=backhand tts=0.196s
+2026-08-08 15:57:20.586 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2091 type=backhand tts=0.176s
+2026-08-08 15:57:20.591 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2095 type=backhand tts=0.169s
+2026-08-08 15:57:20.606 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2099 type=backhand tts=0.154s
+2026-08-08 15:57:20.626 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2106 type=backhand tts=0.135s
+2026-08-08 15:57:20.635 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-08 15:57:20.749 | INFO     | envs.hitter:_consume_hitter_planner_result:905 - HITTER command overridden: epoch=11 generation=2143 type=backhand tts=0.009s
+2026-08-08 15:57:20.769 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-08-08 15:57:20.769 | INFO     | envs.hitter:_log_hitter_strike_target:676 - HITTER strike target: epoch=11 generation=2143 type=backhand v_ball_in_w_mps=[-2.1741,0.3548,2.0854] speed_ball_in_mps=3.0334 v_ball_out_w_mps=[4.2708,-0.6253,1.7247] speed_ball_out_mps=4.6482 v_racket_target_w_mps=[1.1990,-0.1823,0.0000] speed_racket_mps=1.2127
+2026-08-08 15:57:20.769 | INFO     | envs.hitter:_log_hitter_advance_transitions:947 - HITTER lifecycle transition: armed -> recovery
+2026-08-08 15:57:20.769 | INFO     | envs.hitter:_mark_hitter_track_ended:858 - HITTER track ended: ended_epoch=11 invalid_epoch=12 generation=2147
+2026-08-08 15:57:20.969 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=recovery submitted=604 completed=265 failed=339 dropped=0 result_age_s=0.211 epoch=12 generation=2147 policy_tts=0.000
+2026-08-08 15:57:21.972 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=recovery submitted=604 completed=265 failed=339 dropped=0 result_age_s=1.213 epoch=12 generation=2147 policy_tts=0.000
+2026-08-08 15:57:22.073 | INFO     | envs.hitter:_log_hitter_advance_transitions:963 - HITTER lifecycle transition: recovery -> waiting
+2026-08-08 15:57:22.975 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=2.216 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:23.977 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=3.219 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:24.980 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=4.221 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:25.983 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=5.224 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:26.985 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=6.227 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:27.988 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=7.229 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:28.991 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=8.232 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:29.993 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=9.235 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:30.996 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=10.237 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:31.998 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=11.240 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:33.001 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=12.243 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:34.004 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=13.245 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:35.006 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=14.248 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:36.009 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=15.250 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:37.012 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=16.253 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:38.014 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=17.256 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:39.017 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=18.258 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:40.020 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=19.261 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:41.022 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=20.264 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:42.025 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=21.266 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:43.028 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=22.269 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:44.030 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=23.272 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:45.033 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=24.274 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:46.036 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=25.277 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:47.038 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=26.280 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:48.041 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=27.282 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:49.044 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=28.285 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:50.046 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=29.288 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:51.049 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=30.290 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:52.051 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=31.293 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:53.054 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=32.296 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:54.057 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=33.298 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:55.059 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=34.301 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:56.062 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=35.304 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:57.065 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=36.306 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:58.067 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=37.309 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:57:59.070 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=38.312 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:58:00.073 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=39.314 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:58:01.075 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=40.317 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:58:02.078 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=41.319 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:58:03.081 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=42.322 epoch=12 generation=2147 policy_tts=0.920
+2026-08-08 15:58:04.083 | INFO     | envs.hitter:_log_hitter_status:997 - HITTER realtime status: phase=waiting submitted=604 completed=265 failed=339 dropped=0 result_age_s=43.325 epoch=12 generation=2147 policy_tts=0.920

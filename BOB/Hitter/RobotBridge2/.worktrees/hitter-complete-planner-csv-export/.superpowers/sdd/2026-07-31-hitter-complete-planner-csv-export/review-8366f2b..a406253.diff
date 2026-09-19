@@ -1,0 +1,2629 @@
+# Review package: 8366f2b3701056859ba713fe5d219225a02e303f..a406253b86aa26abbc803560a74dc701e2738f3f
+
+## Commits
+a406253 feat: export complete HITTER planner diagnostics
+
+## Files changed
+ deploy/diagnostics/export_hitter_task_csv.py | 1837 +++++++++++++++++++++++++-
+ deploy/tests/test_hitter_task_csv_export.py  |  529 ++++++++
+ docs/hitter_complete_planner_csv_export.md   |  109 ++
+ 3 files changed, 2469 insertions(+), 6 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/export_hitter_task_csv.py b/deploy/diagnostics/export_hitter_task_csv.py
+index de385b7..d10962f 100644
+--- a/deploy/diagnostics/export_hitter_task_csv.py
++++ b/deploy/diagnostics/export_hitter_task_csv.py
+@@ -1,16 +1,207 @@
+ from __future__ import annotations
+ 
++import argparse
++import bisect
++import csv
+ from dataclasses import dataclass
++from datetime import datetime, timezone
++import errno
++import hashlib
+ import json
++import math
++import os
+ from pathlib import Path
+-from typing import Any, Dict, FrozenSet, Mapping, Optional, Sequence, Tuple
++import shutil
++import stat
++import sys
++import tempfile
++from typing import (
++    Any,
++    Dict,
++    FrozenSet,
++    Iterable,
++    List,
++    Mapping,
++    Optional,
++    Sequence,
++    Tuple,
++)
++import uuid
++
++
++EXPORT_SCHEMA_VERSION = 1
++TASK_OBSERVATION_DIMENSIONS = 11
++
++_KEY_FIELDS = (
++    "attempt_id",
++    "snapshot_key.schema_version",
++    "snapshot_key.track_epoch",
++    "snapshot_key.generation",
++)
++_SUMMARY_FIELDS = (
++    "schema_version",
++    "attempt_id",
++    "status",
++    "stage",
++    "primary_blocker",
++    "ball_speed_mps",
++    "predicted_strike_time_s",
++    "planner_tts_s",
++    "arm_tts_s",
++    "task_obs_status",
++    "ab_summary",
++    "recording_complete",
++    "estimator_sample_count",
++    "estimator_window_size",
++    "incoming_count",
++    "incoming_required_count",
++    "completed_call_export_complete",
++    "completed_call_count",
++    "pending_replaced_count",
++)
++_SOURCE_RAW_FIELDS = (
++    "input_seq",
++    "attempt_id",
++    "track_segment_id",
++    "channel",
++    "subject",
++    "position_w",
++    "quaternion_xyzw",
++    "valid",
++    "occluded",
++    "source_frame",
++    "source_time_s",
++    "publish_time_us",
++    "received_monotonic_s",
++    "wall_time_us",
++    "payload_size",
++)
++_RAW_LCM_FIELDS = (
++    "schema_version",
++    "interval_attempt_id",
++    "interval_track_segment_id",
++) + _SOURCE_RAW_FIELDS
++_PLANNER_INPUT_FIELDS = _KEY_FIELDS + (
++    "source_frame",
++    "source_time_s",
++    "received_monotonic_s",
++    "position_w",
++    "velocity_w",
++    "base_position_w",
++    "base_quaternion_xyzw",
++    "base_valid",
++    "visible",
++    "ready",
++)
++_PLANNER_CALL_FIELDS = _KEY_FIELDS + (
++    "submitted_monotonic_s",
++    "started_monotonic_s",
++    "completed_monotonic_s",
++    "duration_s",
++    "source_frame",
++    "pending_replaced_key",
++    "latest_replaced_key",
++)
++_PLANNER_RESULT_FIELDS = _KEY_FIELDS + (
++    "source_frame",
++    "strike_deadline_monotonic_s",
++    "completed_monotonic_s",
++    "command_fields",
++    "reason_code",
++    "error_type",
++    "error_text",
++)
++_STAGE_VALUE_FIELDS = (
++    "role",
++    "error_type",
++    "error_text",
++    "count",
++    "required",
++    "previous_track_epoch",
++    "new_track_epoch",
++    "status",
++    "primary_blocker",
++    "arm_tts_s",
++)
++_STAGE_FIELDS = (
++    "attempt_id",
++    "stage_index",
++    "schema_version",
++    "track_segment_id",
++    "stage",
++    "monotonic_s",
++    "reason_code",
++    "snapshot_key.schema_version",
++    "snapshot_key.track_epoch",
++    "snapshot_key.generation",
++) + tuple("values.{}".format(field) for field in _STAGE_VALUE_FIELDS) + (
++    "values_json",
++)
++_POLICY_TICK_FIELDS = (
++    "schema_version",
++    "event_id",
++    "attempt_id",
++    "tick_index",
++    "monotonic_s",
++    "wall_time_us",
++    "scope",
++    "lifecycle_now_s",
++    "obs_now_s",
++    "phase",
++    "decision",
++    "active_key",
++    "cached_key",
++    "command_result",
++    "task_pre_clip",
++    "task_post_clip",
++    "clip_count",
++    "task_pass",
++    "errors",
++    "recovery_duration_s",
++)
++_TASK_OBSERVATION_FIELDS = (
++    ("attempt_id", "clip_count")
++    + tuple(
++        "pre_{}".format(index)
++        for index in range(TASK_OBSERVATION_DIMENSIONS)
++    )
++    + tuple(
++        "post_{}".format(index)
++        for index in range(TASK_OBSERVATION_DIMENSIONS)
++    )
++)
++_CSV_HEADERS = {
++    "summary.csv": _SUMMARY_FIELDS,
++    "raw_lcm.csv": _RAW_LCM_FIELDS,
++    "planner_inputs.csv": _PLANNER_INPUT_FIELDS,
++    "planner_calls.csv": _PLANNER_CALL_FIELDS,
++    "planner_results.csv": _PLANNER_RESULT_FIELDS,
++    "stage_timeline.csv": _STAGE_FIELDS,
++    "policy_ticks.csv": _POLICY_TICK_FIELDS,
++    "task_observations.csv": _TASK_OBSERVATION_FIELDS,
++}
++_REQUIRED_LIFECYCLE_PAYLOAD_FIELDS = frozenset({
++    "lifecycle_now_s",
++    "obs_now_s",
++    "phase",
++    "decision",
++    "active_key",
++    "cached_key",
++    "command_result",
++    "task_pre_clip",
++    "task_post_clip",
++    "clip_count",
++    "task_pass",
++    "errors",
++    "recovery_duration_s",
++})
+ 
+ 
+ @dataclass(frozen=True, order=True)
+ class PlannerExportKey:
+     attempt_id: int
+     schema_version: int
+     track_epoch: int
+     generation: int
+ 
+ 
+@@ -32,20 +223,82 @@ class PlannerEventScan:
+     pending_replaced_keys: FrozenSet[PlannerExportKey]
+     completed_calls: Tuple[CompletedPlannerCall, ...]
+ 
+ 
+ @dataclass(frozen=True)
+ class AlignedPlannerRow:
+     call: CompletedPlannerCall
+     input_row: Mapping[str, Any]
+ 
+ 
++@dataclass(frozen=True)
++class ExportManifest:
++    schema_version: int
++    source_session_dir: str
++    attempt_ids: Tuple[int, ...]
++    source_sha256: Mapping[str, str]
++    source_file_stats: Mapping[str, Mapping[str, int]]
++    row_counts: Mapping[str, int]
++    core_key_sequence_sha256: str
++    submitted_count: int
++    pending_replaced_count: int
++    completed_call_count: int
++    completeness_checks: Mapping[str, bool]
++    exported_at_utc: str
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": self.schema_version,
++            "source_session_dir": self.source_session_dir,
++            "attempt_ids": list(self.attempt_ids),
++            "source_sha256": dict(self.source_sha256),
++            "source_file_stats": {
++                name: dict(values)
++                for name, values in self.source_file_stats.items()
++            },
++            "row_counts": dict(self.row_counts),
++            "core_key_sequence_sha256": (
++                self.core_key_sequence_sha256
++            ),
++            "submitted_count": self.submitted_count,
++            "pending_replaced_count": self.pending_replaced_count,
++            "completed_call_count": self.completed_call_count,
++            "completeness_checks": dict(self.completeness_checks),
++            "exported_at_utc": self.exported_at_utc,
++        }
++
++
++@dataclass(frozen=True)
++class _SourceFingerprint:
++    sha256: str
++    device: int
++    inode: int
++    size: int
++    mtime_ns: int
++
++
++@dataclass(frozen=True)
++class _SegmentInterval:
++    attempt_id: int
++    track_segment_id: Optional[int]
++    first_monotonic_s: float
++    last_monotonic_s: float
++
++
++@dataclass(frozen=True)
++class _EventLogValidation:
++    event_count: int
++    final_event_id: int
++    event_ids_contiguous: bool
++    recorder_event_gap_count: int
++
++
+ def _planner_key_csv_fields(
+     key: PlannerExportKey,
+ ) -> Dict[str, int]:
+     return {
+         "attempt_id": key.attempt_id,
+         "snapshot_key.schema_version": key.schema_version,
+         "snapshot_key.track_epoch": key.track_epoch,
+         "snapshot_key.generation": key.generation,
+     }
+ 
+@@ -471,32 +724,50 @@ def scan_planner_events(
+                 )
+             _remember_unique(
+                 completions,
+                 key,
+                 event_content,
+                 label="planner complete",
+             )
+ 
+     completed_calls = []
+     for key in submissions.keys() & starts.keys() & completions.keys():
+-        submitted_monotonic_s = submissions[key][0]
+-        started_monotonic_s = starts[key][0]
++        submitted_monotonic_s = _require_finite_float(
++            submissions[key][0],
++            field="planner submitted_monotonic_s",
++        )
++        started_monotonic_s = _require_finite_float(
++            starts[key][0],
++            field="planner started_monotonic_s",
++        )
+         completion_payload = completions[key][1]
+         result = dict(completion_payload["result"])
++        completed_monotonic_s = _require_finite_float(
++            result.get("completed_monotonic_s"),
++            field="planner completed_monotonic_s",
++        )
++        if not (
++            submitted_monotonic_s
++            <= started_monotonic_s
++            <= completed_monotonic_s
++        ):
++            raise ValueError(
++                "planner timestamps are out of order for {!r}".format(
++                    key
++                )
++            )
+         completed_calls.append(
+             CompletedPlannerCall(
+                 key=key,
+                 submitted_monotonic_s=submitted_monotonic_s,
+                 started_monotonic_s=started_monotonic_s,
+-                completed_monotonic_s=float(
+-                    result["completed_monotonic_s"]
+-                ),
++                completed_monotonic_s=completed_monotonic_s,
+                 source_frame=int(result["source_frame"]),
+                 result=result,
+                 pending_replaced_key=pending_replacements.get(key),
+                 latest_replaced_key=latest_replacements.get(key),
+             )
+         )
+     completed_calls.sort(
+         key=lambda call: (
+             call.completed_monotonic_s,
+             call.key,
+@@ -519,10 +790,1564 @@ def scan_planner_events(
+         raise ValueError(
+             "submitted keys are neither completed nor pending-replaced: "
+             "missing={!r}, unexpected={!r}".format(missing, unexpected)
+         )
+ 
+     return PlannerEventScan(
+         submitted_keys=submitted_keys,
+         pending_replaced_keys=frozen_pending_replaced_keys,
+         completed_calls=tuple(completed_calls),
+     )
++
++
++def _require_finite_float(value: Any, *, field: str) -> float:
++    if isinstance(value, bool):
++        raise ValueError("{} must be a finite number".format(field))
++    try:
++        result = float(value)
++    except (TypeError, ValueError) as exc:
++        raise ValueError(
++            "{} must be a finite number".format(field)
++        ) from exc
++    if not math.isfinite(result):
++        raise ValueError("{} must be finite".format(field))
++    return result
++
++
++def _require_int(value: Any, *, field: str, minimum: int = 0) -> int:
++    if isinstance(value, bool) or not isinstance(value, int):
++        raise ValueError("{} must be an integer".format(field))
++    result = value
++    if result < minimum:
++        raise ValueError(
++            "{} must be at least {}".format(field, minimum)
++        )
++    return result
++
++
++def _normalize_attempt_ids(
++    attempt_ids: Sequence[int],
++) -> Tuple[int, ...]:
++    normalized: List[int] = []
++    seen = set()
++    for value in attempt_ids:
++        attempt_id = _require_int(
++            value,
++            field="attempt_id",
++            minimum=1,
++        )
++        if attempt_id in seen:
++            raise ValueError(
++                "duplicate attempt_id: {}".format(attempt_id)
++            )
++        seen.add(attempt_id)
++        normalized.append(attempt_id)
++    if not normalized:
++        raise ValueError("at least one attempt_id is required")
++    return tuple(sorted(normalized))
++
++
++def _read_regular_file_bytes(path: Path) -> Tuple[bytes, os.stat_result]:
++    try:
++        before = os.stat(str(path), follow_symlinks=False)
++    except FileNotFoundError as exc:
++        raise ValueError(
++            "required source file is missing: {}".format(path)
++        ) from exc
++    if not stat.S_ISREG(before.st_mode):
++        raise ValueError(
++            "source path must be a regular file: {}".format(path)
++        )
++    flags = os.O_RDONLY
++    flags |= getattr(os, "O_CLOEXEC", 0)
++    flags |= getattr(os, "O_NOFOLLOW", 0)
++    try:
++        descriptor = os.open(str(path), flags)
++    except OSError as exc:
++        if exc.errno == errno.ELOOP:
++            raise ValueError(
++                "source path must not be a symlink: {}".format(path)
++            ) from exc
++        raise
++    try:
++        opened = os.fstat(descriptor)
++        if (
++            not stat.S_ISREG(opened.st_mode)
++            or opened.st_dev != before.st_dev
++            or opened.st_ino != before.st_ino
++        ):
++            raise ValueError(
++                "source file changed while opening: {}".format(path)
++            )
++        chunks = []
++        while True:
++            chunk = os.read(descriptor, 1024 * 1024)
++            if not chunk:
++                break
++            chunks.append(chunk)
++        after = os.fstat(descriptor)
++    finally:
++        os.close(descriptor)
++    if (
++        opened.st_dev != after.st_dev
++        or opened.st_ino != after.st_ino
++        or opened.st_size != after.st_size
++        or opened.st_mtime_ns != after.st_mtime_ns
++    ):
++        raise ValueError(
++            "source file changed while reading: {}".format(path)
++        )
++    return b"".join(chunks), after
++
++
++def _fingerprint_source_file(path: Path) -> _SourceFingerprint:
++    digest = hashlib.sha256()
++    try:
++        before = os.stat(str(path), follow_symlinks=False)
++    except FileNotFoundError as exc:
++        raise ValueError(
++            "required source file is missing: {}".format(path)
++        ) from exc
++    if not stat.S_ISREG(before.st_mode):
++        raise ValueError(
++            "source path must be a regular file: {}".format(path)
++        )
++    flags = os.O_RDONLY
++    flags |= getattr(os, "O_CLOEXEC", 0)
++    flags |= getattr(os, "O_NOFOLLOW", 0)
++    try:
++        descriptor = os.open(str(path), flags)
++    except OSError as exc:
++        if exc.errno == errno.ELOOP:
++            raise ValueError(
++                "source path must not be a symlink: {}".format(path)
++            ) from exc
++        raise
++    try:
++        opened = os.fstat(descriptor)
++        if (
++            not stat.S_ISREG(opened.st_mode)
++            or opened.st_dev != before.st_dev
++            or opened.st_ino != before.st_ino
++        ):
++            raise ValueError(
++                "source file changed while opening: {}".format(path)
++            )
++        while True:
++            chunk = os.read(descriptor, 1024 * 1024)
++            if not chunk:
++                break
++            digest.update(chunk)
++        after = os.fstat(descriptor)
++    finally:
++        os.close(descriptor)
++    if (
++        opened.st_dev != after.st_dev
++        or opened.st_ino != after.st_ino
++        or opened.st_size != after.st_size
++        or opened.st_mtime_ns != after.st_mtime_ns
++    ):
++        raise ValueError(
++            "source file changed while hashing: {}".format(path)
++        )
++    return _SourceFingerprint(
++        sha256=digest.hexdigest(),
++        device=after.st_dev,
++        inode=after.st_ino,
++        size=after.st_size,
++        mtime_ns=after.st_mtime_ns,
++    )
++
++
++def _load_json_mapping(path: Path, *, label: str) -> Mapping[str, Any]:
++    raw, _file_stat = _read_regular_file_bytes(path)
++    try:
++        value = json.loads(raw.decode("utf-8"))
++    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
++        raise ValueError(
++            "{} is not valid UTF-8 JSON: {}".format(label, path)
++        ) from exc
++    if not isinstance(value, Mapping):
++        raise ValueError("{} must be a JSON object".format(label))
++    return value
++
++
++def _validate_session_metadata(
++    session: Mapping[str, Any],
++) -> int:
++    if session.get("schema_version") != EXPORT_SCHEMA_VERSION:
++        raise ValueError("unsupported session schema_version")
++    if session.get("status") != "COMPLETE":
++        raise ValueError("source session status must be COMPLETE")
++    if session.get("recording_complete") is not True:
++        raise ValueError(
++            "source session recording_complete must be true"
++        )
++    if session.get("recorder_healthy") is not True:
++        raise ValueError("source session recorder_healthy must be true")
++    if session.get("last_error") is not None:
++        raise ValueError("source session last_error must be null")
++    if session.get("failure") is not None:
++        raise ValueError("source session failure must be null")
++    dropped = _require_int(
++        session.get("input_samples_dropped"),
++        field="input_samples_dropped",
++        minimum=0,
++    )
++    if dropped != 0:
++        raise ValueError("source session has dropped input samples")
++    persisted = _require_int(
++        session.get("watermark_event_id"),
++        field="watermark_event_id",
++        minimum=0,
++    )
++    observed = _require_int(
++        session.get("observed_watermark_event_id"),
++        field="observed_watermark_event_id",
++        minimum=0,
++    )
++    if persisted != observed:
++        raise ValueError(
++            "source session event watermarks do not match"
++        )
++    return persisted
++
++
++def _load_attempt_details(
++    session_dir: Path,
++    attempt_ids: Sequence[int],
++) -> Mapping[int, Mapping[str, Any]]:
++    details: Dict[int, Mapping[str, Any]] = {}
++    for attempt_id in attempt_ids:
++        path = (
++            session_dir
++            / "attempt_details"
++            / "{}.json".format(attempt_id)
++        )
++        detail = _load_json_mapping(
++            path,
++            label="attempt detail {}".format(attempt_id),
++        )
++        if detail.get("schema_version") != EXPORT_SCHEMA_VERSION:
++            raise ValueError(
++                "unsupported attempt detail schema: {}".format(path)
++            )
++        detail_id = _require_int(
++            detail.get("attempt_id"),
++            field="attempt detail attempt_id",
++            minimum=1,
++        )
++        if detail_id != attempt_id:
++            raise ValueError(
++                "attempt detail id mismatch: path={}, detail={}".format(
++                    attempt_id,
++                    detail_id,
++                )
++            )
++        summary = detail.get("summary")
++        if not isinstance(summary, Mapping):
++            raise ValueError(
++                "attempt detail summary must be a mapping: {}".format(
++                    attempt_id
++                )
++            )
++        summary_id = _require_int(
++            summary.get("attempt_id"),
++            field="attempt summary attempt_id",
++            minimum=1,
++        )
++        if summary_id != attempt_id:
++            raise ValueError(
++                "attempt summary id mismatch: detail={}, summary={}".format(
++                    attempt_id,
++                    summary_id,
++                )
++            )
++        for field in ("segments", "stage_timeline", "planner_inputs"):
++            if not isinstance(detail.get(field), list):
++                raise ValueError(
++                    "{} must be a list for attempt {}".format(
++                        field,
++                        attempt_id,
++                    )
++                )
++        for field in (
++            "task_observation_pre_clip",
++            "task_observation_post_clip",
++            "task_observation_clip_count",
++        ):
++            if field not in detail:
++                raise ValueError(
++                    "{} is missing for attempt {}".format(
++                        field,
++                        attempt_id,
++                    )
++                )
++        details[attempt_id] = detail
++    return details
++
++
++def _merged_segment_intervals(
++    details: Mapping[int, Mapping[str, Any]],
++) -> Tuple[_SegmentInterval, ...]:
++    intervals = []
++    for attempt_id, detail in details.items():
++        segments = detail["segments"]
++        if not segments:
++            raise ValueError(
++                "attempt {} has no track segments".format(attempt_id)
++            )
++        for index, value in enumerate(segments):
++            if not isinstance(value, Mapping):
++                raise ValueError(
++                    "segment must be a mapping: attempt={}, index={}".format(
++                        attempt_id,
++                        index,
++                    )
++                )
++            segment_id = _require_int(
++                value.get("track_segment_id"),
++                field="track_segment_id",
++                minimum=1,
++            )
++            first = _require_finite_float(
++                value.get("first_monotonic_s"),
++                field="segment first_monotonic_s",
++            )
++            last = _require_finite_float(
++                value.get("last_monotonic_s"),
++                field="segment last_monotonic_s",
++            )
++            if first > last:
++                raise ValueError(
++                    "segment first_monotonic_s exceeds "
++                    "last_monotonic_s: attempt={}, segment={}".format(
++                        attempt_id,
++                        segment_id,
++                    )
++                )
++            intervals.append(
++                _SegmentInterval(
++                    attempt_id=attempt_id,
++                    track_segment_id=segment_id,
++                    first_monotonic_s=first,
++                    last_monotonic_s=last,
++                )
++            )
++    intervals.sort(
++        key=lambda value: (
++            value.first_monotonic_s,
++            value.last_monotonic_s,
++            value.attempt_id,
++            (
++                -1
++                if value.track_segment_id is None
++                else value.track_segment_id
++            ),
++        )
++    )
++    merged: List[_SegmentInterval] = []
++    for interval in intervals:
++        if (
++            not merged
++            or interval.first_monotonic_s
++            > merged[-1].last_monotonic_s
++        ):
++            merged.append(interval)
++            continue
++        previous = merged[-1]
++        if previous.attempt_id != interval.attempt_id:
++            raise ValueError(
++                "track segment intervals overlap across attempts: "
++                "{} and {}".format(
++                    previous.attempt_id,
++                    interval.attempt_id,
++                )
++            )
++        merged[-1] = _SegmentInterval(
++            attempt_id=previous.attempt_id,
++            track_segment_id=(
++                previous.track_segment_id
++                if previous.track_segment_id
++                == interval.track_segment_id
++                else None
++            ),
++            first_monotonic_s=previous.first_monotonic_s,
++            last_monotonic_s=max(
++                previous.last_monotonic_s,
++                interval.last_monotonic_s,
++            ),
++        )
++    return tuple(merged)
++
++
++def _interval_for_time(
++    intervals: Sequence[_SegmentInterval],
++    interval_starts: Sequence[float],
++    monotonic_s: float,
++) -> Optional[_SegmentInterval]:
++    index = bisect.bisect_right(interval_starts, monotonic_s) - 1
++    if index < 0:
++        return None
++    interval = intervals[index]
++    if monotonic_s <= interval.last_monotonic_s:
++        return interval
++    return None
++
++
++def _path_is_within(path: Path, parent: Path) -> bool:
++    try:
++        path.relative_to(parent)
++    except ValueError:
++        return False
++    return True
++
++
++def _prepare_output_path(
++    session_dir: Path,
++    output_dir: Path,
++    *,
++    overwrite: bool,
++) -> Tuple[Path, Path]:
++    output = Path(output_dir)
++    if os.path.lexists(str(output)) and output.is_symlink():
++        raise ValueError("output directory must not be a symlink")
++    parent = output.parent
++    parent.mkdir(parents=True, exist_ok=True)
++    if parent.is_symlink():
++        raise ValueError(
++            "output parent directory must not be a symlink"
++        )
++    resolved_output = output.resolve(strict=False)
++    resolved_session = session_dir.resolve(strict=True)
++    if (
++        resolved_output == resolved_session
++        or _path_is_within(resolved_session, resolved_output)
++    ):
++        raise ValueError(
++            "output directory must not equal or contain the source session"
++        )
++    if os.path.lexists(str(output)):
++        output_stat = os.stat(str(output), follow_symlinks=False)
++        if not stat.S_ISDIR(output_stat.st_mode):
++            raise ValueError(
++                "existing output path must be a directory"
++            )
++        if not overwrite:
++            raise FileExistsError(
++                "output directory already exists: {}".format(output)
++            )
++    return output, parent
++
++
++def _write_csv_rows(
++    path: Path,
++    fieldnames: Sequence[str],
++    rows: Iterable[Mapping[str, Any]],
++) -> int:
++    count = 0
++    with path.open(
++        "w",
++        encoding="utf-8",
++        newline="",
++    ) as stream:
++        writer = csv.DictWriter(
++            stream,
++            fieldnames=fieldnames,
++            extrasaction="raise",
++        )
++        writer.writeheader()
++        for row in rows:
++            writer.writerow(row)
++            count += 1
++        stream.flush()
++        os.fsync(stream.fileno())
++    return count
++
++
++def _validate_csv_source_row(
++    row: Mapping[Optional[str], Any],
++    *,
++    fieldnames: Sequence[str],
++    line_number: int,
++    label: str,
++) -> None:
++    if None in row:
++        raise ValueError(
++            "{} row {} has extra columns".format(label, line_number)
++        )
++    missing = [
++        field
++        for field in fieldnames
++        if row.get(field) is None
++    ]
++    if missing:
++        raise ValueError(
++            "{} row {} is missing columns: {!r}".format(
++                label,
++                line_number,
++                missing,
++            )
++        )
++
++
++def _write_raw_lcm_csv(
++    source_path: Path,
++    output_path: Path,
++    intervals: Sequence[_SegmentInterval],
++) -> int:
++    interval_starts = tuple(
++        interval.first_monotonic_s for interval in intervals
++    )
++    count = 0
++    with source_path.open(
++        "r",
++        encoding="utf-8",
++        newline="",
++    ) as source, output_path.open(
++        "w",
++        encoding="utf-8",
++        newline="",
++    ) as target:
++        reader = csv.DictReader(source)
++        if reader.fieldnames != list(_SOURCE_RAW_FIELDS):
++            raise ValueError(
++                "ball_samples.csv header mismatch: expected={!r}, "
++                "actual={!r}".format(
++                    list(_SOURCE_RAW_FIELDS),
++                    reader.fieldnames,
++                )
++            )
++        if len(set(reader.fieldnames)) != len(reader.fieldnames):
++            raise ValueError("ball_samples.csv has duplicate header fields")
++        writer = csv.DictWriter(
++            target,
++            fieldnames=_RAW_LCM_FIELDS,
++            extrasaction="raise",
++        )
++        writer.writeheader()
++        for line_number, row in enumerate(reader, start=2):
++            _validate_csv_source_row(
++                row,
++                fieldnames=_SOURCE_RAW_FIELDS,
++                line_number=line_number,
++                label="ball_samples.csv",
++            )
++            monotonic_s = _require_finite_float(
++                row["received_monotonic_s"],
++                field=(
++                    "ball_samples.csv received_monotonic_s "
++                    "at line {}".format(line_number)
++                ),
++            )
++            interval = _interval_for_time(
++                intervals,
++                interval_starts,
++                monotonic_s,
++            )
++            if interval is None:
++                continue
++            if row["subject"] not in ("ball", "g1pelvis", "table"):
++                continue
++            output_row: Dict[str, Any] = {
++                "schema_version": EXPORT_SCHEMA_VERSION,
++                "interval_attempt_id": interval.attempt_id,
++                "interval_track_segment_id": (
++                    interval.track_segment_id
++                ),
++            }
++            output_row.update(row)
++            for vector_field in (
++                "position_w",
++                "quaternion_xyzw",
++            ):
++                try:
++                    vector_value = json.loads(row[vector_field])
++                except json.JSONDecodeError as exc:
++                    raise ValueError(
++                        "ball_samples.csv {} is invalid JSON at line "
++                        "{}".format(vector_field, line_number)
++                    ) from exc
++                if not isinstance(vector_value, list):
++                    raise ValueError(
++                        "ball_samples.csv {} must be a JSON list at line "
++                        "{}".format(vector_field, line_number)
++                    )
++                output_row[vector_field] = _compact_json(vector_value)
++            writer.writerow(output_row)
++            count += 1
++        target.flush()
++        os.fsync(target.fileno())
++    return count
++
++
++def _policy_tick_csv_row(
++    event: Mapping[str, Any],
++    interval: _SegmentInterval,
++    tick_index: int,
++) -> Mapping[str, Any]:
++    payload = event["payload"]
++    payload_fields = frozenset(payload)
++    if payload_fields != _REQUIRED_LIFECYCLE_PAYLOAD_FIELDS:
++        raise ValueError(
++            "lifecycle_tick payload fields mismatch: "
++            "missing={!r}, unexpected={!r}".format(
++                sorted(
++                    _REQUIRED_LIFECYCLE_PAYLOAD_FIELDS
++                    - payload_fields
++                ),
++                sorted(
++                    payload_fields
++                    - _REQUIRED_LIFECYCLE_PAYLOAD_FIELDS
++                ),
++            )
++        )
++    return {
++        "schema_version": event["schema_version"],
++        "event_id": event["event_id"],
++        "attempt_id": interval.attempt_id,
++        "tick_index": tick_index,
++        "monotonic_s": event["monotonic_s"],
++        "wall_time_us": event["wall_time_us"],
++        "scope": event["scope"],
++        "lifecycle_now_s": payload["lifecycle_now_s"],
++        "obs_now_s": payload["obs_now_s"],
++        "phase": payload["phase"],
++        "decision": payload["decision"],
++        "active_key": _csv_value(payload["active_key"]),
++        "cached_key": _csv_value(payload["cached_key"]),
++        "command_result": _csv_value(payload["command_result"]),
++        "task_pre_clip": _csv_value(payload["task_pre_clip"]),
++        "task_post_clip": _csv_value(payload["task_post_clip"]),
++        "clip_count": payload["clip_count"],
++        "task_pass": payload["task_pass"],
++        "errors": _csv_value(payload["errors"]),
++        "recovery_duration_s": payload["recovery_duration_s"],
++    }
++
++
++def _validate_events_and_write_policy_ticks(
++    source_path: Path,
++    output_path: Path,
++    *,
++    intervals: Sequence[_SegmentInterval],
++    expected_watermark_event_id: int,
++) -> Tuple[int, _EventLogValidation]:
++    interval_starts = tuple(
++        interval.first_monotonic_s for interval in intervals
++    )
++    expected_event_id = 1
++    event_count = 0
++    recorder_event_gap_count = 0
++    policy_count = 0
++    tick_index_by_attempt: Dict[int, int] = {}
++    with source_path.open(
++        "r",
++        encoding="utf-8",
++    ) as source, output_path.open(
++        "w",
++        encoding="utf-8",
++        newline="",
++    ) as target:
++        writer = csv.DictWriter(
++            target,
++            fieldnames=_POLICY_TICK_FIELDS,
++            extrasaction="raise",
++        )
++        writer.writeheader()
++        for line_number, line in enumerate(source, start=1):
++            if not line.strip():
++                raise ValueError(
++                    "events.jsonl has a blank line at {}".format(
++                        line_number
++                    )
++                )
++            try:
++                event = json.loads(line)
++            except json.JSONDecodeError as exc:
++                raise ValueError(
++                    "events.jsonl has invalid JSON at line {}".format(
++                        line_number
++                    )
++                ) from exc
++            if not isinstance(event, Mapping):
++                raise ValueError(
++                    "events.jsonl event must be a mapping at line {}".format(
++                        line_number
++                    )
++                )
++            if event.get("kind") == "RECORDER_EVENT_GAP":
++                recorder_event_gap_count += 1
++                raise ValueError(
++                    "events.jsonl contains RECORDER_EVENT_GAP"
++                )
++            if event.get("schema_version") != EXPORT_SCHEMA_VERSION:
++                raise ValueError(
++                    "unsupported event schema at line {}".format(
++                        line_number
++                    )
++                )
++            event_id = _require_int(
++                event.get("event_id"),
++                field="event_id at line {}".format(line_number),
++                minimum=1,
++            )
++            if event_id != expected_event_id:
++                raise ValueError(
++                    "events.jsonl event_id gap or reorder at line {}: "
++                    "expected={}, actual={}".format(
++                        line_number,
++                        expected_event_id,
++                        event_id,
++                    )
++                )
++            expected_event_id += 1
++            event_count += 1
++            if event.get("kind") != "lifecycle_tick":
++                continue
++            monotonic_s = _require_finite_float(
++                event.get("monotonic_s"),
++                field=(
++                    "lifecycle_tick monotonic_s at line {}".format(
++                        line_number
++                    )
++                ),
++            )
++            interval = _interval_for_time(
++                intervals,
++                interval_starts,
++                monotonic_s,
++            )
++            if interval is None:
++                continue
++            attempt_value = event.get("attempt_id")
++            if attempt_value is None:
++                continue
++            event_attempt_id = _require_int(
++                attempt_value,
++                field="lifecycle_tick attempt_id",
++                minimum=1,
++            )
++            if event_attempt_id != interval.attempt_id:
++                continue
++            payload = event.get("payload")
++            if not isinstance(payload, Mapping):
++                raise ValueError(
++                    "lifecycle_tick payload must be a mapping"
++                )
++            scope = event.get("scope")
++            if scope != "attempt":
++                raise ValueError(
++                    "selected lifecycle_tick scope must be attempt"
++                )
++            _require_int(
++                event.get("wall_time_us"),
++                field="lifecycle_tick wall_time_us",
++                minimum=0,
++            )
++            tick_index = tick_index_by_attempt.get(
++                interval.attempt_id,
++                0,
++            )
++            writer.writerow(
++                _policy_tick_csv_row(
++                    event,
++                    interval,
++                    tick_index,
++                )
++            )
++            tick_index_by_attempt[interval.attempt_id] = tick_index + 1
++            policy_count += 1
++        target.flush()
++        os.fsync(target.fileno())
++    final_event_id = expected_event_id - 1
++    if final_event_id != expected_watermark_event_id:
++        raise ValueError(
++            "events.jsonl final event_id does not match session "
++            "watermark: final={}, watermark={}".format(
++                final_event_id,
++                expected_watermark_event_id,
++            )
++        )
++    return (
++        policy_count,
++        _EventLogValidation(
++            event_count=event_count,
++            final_event_id=final_event_id,
++            event_ids_contiguous=True,
++            recorder_event_gap_count=recorder_event_gap_count,
++        ),
++    )
++
++
++def _write_summary_csv(
++    output_path: Path,
++    *,
++    details: Mapping[int, Mapping[str, Any]],
++    scan: PlannerEventScan,
++) -> int:
++    submitted_by_attempt: Dict[int, int] = {}
++    pending_by_attempt: Dict[int, int] = {}
++    completed_by_attempt: Dict[int, int] = {}
++    for key in scan.submitted_keys:
++        submitted_by_attempt[key.attempt_id] = (
++            submitted_by_attempt.get(key.attempt_id, 0) + 1
++        )
++    for key in scan.pending_replaced_keys:
++        pending_by_attempt[key.attempt_id] = (
++            pending_by_attempt.get(key.attempt_id, 0) + 1
++        )
++    for call in scan.completed_calls:
++        completed_by_attempt[call.key.attempt_id] = (
++            completed_by_attempt.get(call.key.attempt_id, 0) + 1
++        )
++    rows = []
++    expected_summary_fields = set(_SUMMARY_FIELDS) - {
++        "completed_call_export_complete",
++        "completed_call_count",
++        "pending_replaced_count",
++    }
++    for attempt_id in sorted(details):
++        summary = details[attempt_id]["summary"]
++        if set(summary) != expected_summary_fields:
++            raise ValueError(
++                "attempt summary fields mismatch for {}: "
++                "missing={!r}, unexpected={!r}".format(
++                    attempt_id,
++                    sorted(expected_summary_fields - set(summary)),
++                    sorted(set(summary) - expected_summary_fields),
++                )
++            )
++        recording_complete = summary.get("recording_complete")
++        if (
++            recording_complete is not True
++            and recording_complete is not False
++        ):
++            raise ValueError(
++                "attempt summary recording_complete must be boolean"
++            )
++        completed_count = completed_by_attempt.get(attempt_id, 0)
++        pending_count = pending_by_attempt.get(attempt_id, 0)
++        submitted_count = submitted_by_attempt.get(attempt_id, 0)
++        if completed_count + pending_count != submitted_count:
++            raise ValueError(
++                "attempt planner counts do not partition submissions: "
++                "attempt={}".format(attempt_id)
++            )
++        row = dict(summary)
++        row.update({
++            "completed_call_export_complete": True,
++            "completed_call_count": completed_count,
++            "pending_replaced_count": pending_count,
++        })
++        rows.append(row)
++    return _write_csv_rows(output_path, _SUMMARY_FIELDS, rows)
++
++
++def _validate_aligned_rows(
++    aligned: Sequence[AlignedPlannerRow],
++) -> None:
++    expected_input_fields = {
++        "attempt_id",
++        "snapshot_key",
++    } | set(_PLANNER_INPUT_FIELDS[len(_KEY_FIELDS):])
++    expected_result_fields = {
++        "snapshot_key",
++    } | set(_PLANNER_RESULT_FIELDS[len(_KEY_FIELDS):])
++    for row in aligned:
++        input_fields = set(row.input_row)
++        if input_fields != expected_input_fields:
++            raise ValueError(
++                "planner input fields mismatch for {!r}: "
++                "missing={!r}, unexpected={!r}".format(
++                    row.call.key,
++                    sorted(expected_input_fields - input_fields),
++                    sorted(input_fields - expected_input_fields),
++                )
++            )
++        result_fields = set(row.call.result)
++        if result_fields != expected_result_fields:
++            raise ValueError(
++                "planner result fields mismatch for {!r}: "
++                "missing={!r}, unexpected={!r}".format(
++                    row.call.key,
++                    sorted(expected_result_fields - result_fields),
++                    sorted(result_fields - expected_result_fields),
++                )
++            )
++        _require_finite_float(
++            row.input_row.get("source_time_s"),
++            field="planner input source_time_s",
++        )
++        _require_finite_float(
++            row.input_row.get("received_monotonic_s"),
++            field="planner input received_monotonic_s",
++        )
++
++
++def _write_core_csvs(
++    output_dir: Path,
++    aligned: Sequence[AlignedPlannerRow],
++) -> Mapping[str, int]:
++    _validate_aligned_rows(aligned)
++    rows_by_file = {
++        "planner_inputs.csv": planner_input_csv_rows(aligned),
++        "planner_calls.csv": planner_call_csv_rows(aligned),
++        "planner_results.csv": planner_result_csv_rows(aligned),
++    }
++    counts = {}
++    for filename, rows in rows_by_file.items():
++        counts[filename] = _write_csv_rows(
++            output_dir / filename,
++            _CSV_HEADERS[filename],
++            rows,
++        )
++    return counts
++
++
++def _write_stage_timeline_csv(
++    output_path: Path,
++    details: Mapping[int, Mapping[str, Any]],
++) -> int:
++    rows = []
++    expected_fields = {
++        "schema_version",
++        "attempt_id",
++        "track_segment_id",
++        "stage",
++        "monotonic_s",
++        "reason_code",
++        "snapshot_key",
++        "values",
++    }
++    for attempt_id in sorted(details):
++        for stage_index, value in enumerate(
++            details[attempt_id]["stage_timeline"]
++        ):
++            if not isinstance(value, Mapping):
++                raise ValueError(
++                    "stage timeline row must be a mapping: "
++                    "attempt={}, index={}".format(
++                        attempt_id,
++                        stage_index,
++                    )
++                )
++            if set(value) != expected_fields:
++                raise ValueError(
++                    "stage timeline fields mismatch: attempt={}, "
++                    "index={}, missing={!r}, unexpected={!r}".format(
++                        attempt_id,
++                        stage_index,
++                        sorted(expected_fields - set(value)),
++                        sorted(set(value) - expected_fields),
++                    )
++                )
++            row_attempt_id = _require_int(
++                value.get("attempt_id"),
++                field="stage timeline attempt_id",
++                minimum=1,
++            )
++            if row_attempt_id != attempt_id:
++                raise ValueError(
++                    "stage timeline attempt_id mismatch"
++                )
++            if value.get("schema_version") != EXPORT_SCHEMA_VERSION:
++                raise ValueError(
++                    "unsupported stage timeline schema_version"
++                )
++            _require_finite_float(
++                value.get("monotonic_s"),
++                field="stage timeline monotonic_s",
++            )
++            segment_value = value.get("track_segment_id")
++            if segment_value is not None:
++                _require_int(
++                    segment_value,
++                    field="stage timeline track_segment_id",
++                    minimum=1,
++                )
++            snapshot = value.get("snapshot_key")
++            snapshot_key = None
++            if snapshot is not None:
++                snapshot_key = _planner_key(
++                    attempt_id,
++                    snapshot,
++                    field="stage timeline snapshot_key",
++                )
++            values = value.get("values")
++            if not isinstance(values, Mapping):
++                raise ValueError(
++                    "stage timeline values must be a mapping"
++                )
++            row: Dict[str, Any] = {
++                "attempt_id": attempt_id,
++                "stage_index": stage_index,
++                "schema_version": value["schema_version"],
++                "track_segment_id": segment_value,
++                "stage": value["stage"],
++                "monotonic_s": value["monotonic_s"],
++                "reason_code": value["reason_code"],
++                "snapshot_key.schema_version": (
++                    None
++                    if snapshot_key is None
++                    else snapshot_key.schema_version
++                ),
++                "snapshot_key.track_epoch": (
++                    None
++                    if snapshot_key is None
++                    else snapshot_key.track_epoch
++                ),
++                "snapshot_key.generation": (
++                    None
++                    if snapshot_key is None
++                    else snapshot_key.generation
++                ),
++                "values_json": _compact_json(values),
++            }
++            for field in _STAGE_VALUE_FIELDS:
++                row["values.{}".format(field)] = _csv_value(
++                    values.get(field)
++                )
++            rows.append(row)
++    return _write_csv_rows(output_path, _STAGE_FIELDS, rows)
++
++
++def _write_task_observations_csv(
++    output_path: Path,
++    details: Mapping[int, Mapping[str, Any]],
++) -> int:
++    rows = []
++    for attempt_id in sorted(details):
++        detail = details[attempt_id]
++        pre = detail["task_observation_pre_clip"]
++        post = detail["task_observation_post_clip"]
++        clip_count = detail["task_observation_clip_count"]
++        if pre is None and post is None and clip_count is None:
++            pre_values = (None,) * TASK_OBSERVATION_DIMENSIONS
++            post_values = (None,) * TASK_OBSERVATION_DIMENSIONS
++        else:
++            if not isinstance(pre, list) or not isinstance(post, list):
++                raise ValueError(
++                    "task observation pre/post vectors must both be lists "
++                    "for attempt {}".format(attempt_id)
++                )
++            if (
++                len(pre) != TASK_OBSERVATION_DIMENSIONS
++                or len(post) != TASK_OBSERVATION_DIMENSIONS
++            ):
++                raise ValueError(
++                    "task observation vectors must have {} dimensions "
++                    "for attempt {}".format(
++                        TASK_OBSERVATION_DIMENSIONS,
++                        attempt_id,
++                    )
++                )
++            pre_values = tuple(
++                _require_finite_float(
++                    value,
++                    field="task observation pre_clip",
++                )
++                for value in pre
++            )
++            post_values = tuple(
++                _require_finite_float(
++                    value,
++                    field="task observation post_clip",
++                )
++                for value in post
++            )
++            clip_count = _require_int(
++                clip_count,
++                field="task observation clip_count",
++                minimum=0,
++            )
++        row: Dict[str, Any] = {
++            "attempt_id": attempt_id,
++            "clip_count": clip_count,
++        }
++        for index, value in enumerate(pre_values):
++            row["pre_{}".format(index)] = value
++        for index, value in enumerate(post_values):
++            row["post_{}".format(index)] = value
++        rows.append(row)
++    return _write_csv_rows(
++        output_path,
++        _TASK_OBSERVATION_FIELDS,
++        rows,
++    )
++
++
++def _read_and_validate_csv(
++    path: Path,
++    expected_header: Sequence[str],
++    *,
++    read_keys: bool,
++) -> Tuple[int, Tuple[PlannerExportKey, ...]]:
++    count = 0
++    keys = []
++    seen_keys = set()
++    with path.open(
++        "r",
++        encoding="utf-8",
++        newline="",
++    ) as stream:
++        reader = csv.reader(stream)
++        try:
++            header = next(reader)
++        except StopIteration as exc:
++            raise ValueError(
++                "CSV is empty: {}".format(path.name)
++            ) from exc
++        if header != list(expected_header):
++            raise ValueError(
++                "{} header mismatch: expected={!r}, actual={!r}".format(
++                    path.name,
++                    list(expected_header),
++                    header,
++                )
++            )
++        if len(set(header)) != len(header):
++            raise ValueError(
++                "{} has duplicate header fields".format(path.name)
++            )
++        key_indexes = (
++            tuple(header.index(field) for field in _KEY_FIELDS)
++            if read_keys
++            else ()
++        )
++        for record_number, values in enumerate(reader, start=2):
++            if values == header:
++                raise ValueError(
++                    "{} contains a repeated header at record {}".format(
++                        path.name,
++                        record_number,
++                    )
++                )
++            if len(values) != len(header):
++                raise ValueError(
++                    "{} has a ragged row at record {}".format(
++                        path.name,
++                        record_number,
++                    )
++                )
++            count += 1
++            if not read_keys:
++                continue
++            try:
++                key = PlannerExportKey(
++                    attempt_id=int(values[key_indexes[0]]),
++                    schema_version=int(values[key_indexes[1]]),
++                    track_epoch=int(values[key_indexes[2]]),
++                    generation=int(values[key_indexes[3]]),
++                )
++            except (TypeError, ValueError) as exc:
++                raise ValueError(
++                    "{} has an invalid planner key at record {}".format(
++                        path.name,
++                        record_number,
++                    )
++                ) from exc
++            if key in seen_keys:
++                raise ValueError(
++                    "{} has a duplicate planner key: {!r}".format(
++                        path.name,
++                        key,
++                    )
++                )
++            seen_keys.add(key)
++            keys.append(key)
++    return count, tuple(keys)
++
++
++def _core_key_sequence_sha256(
++    keys: Sequence[PlannerExportKey],
++) -> str:
++    serialized = _compact_json([
++        [
++            key.attempt_id,
++            key.schema_version,
++            key.track_epoch,
++            key.generation,
++        ]
++        for key in keys
++    ])
++    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
++
++
++def validate_written_outputs(
++    output_dir: Path,
++    expected_row_counts: Mapping[str, int],
++) -> Tuple[Mapping[str, int], str]:
++    row_counts = {}
++    core_keys = {}
++    core_names = {
++        "planner_inputs.csv",
++        "planner_calls.csv",
++        "planner_results.csv",
++    }
++    for filename, header in _CSV_HEADERS.items():
++        count, keys = _read_and_validate_csv(
++            Path(output_dir) / filename,
++            header,
++            read_keys=filename in core_names,
++        )
++        expected_count = expected_row_counts.get(filename)
++        if expected_count is None:
++            raise ValueError(
++                "missing expected row count for {}".format(filename)
++            )
++        if count != expected_count:
++            raise ValueError(
++                "{} row count mismatch: expected={}, actual={}".format(
++                    filename,
++                    expected_count,
++                    count,
++                )
++            )
++        row_counts[filename] = count
++        if filename in core_names:
++            core_keys[filename] = keys
++    input_keys = core_keys["planner_inputs.csv"]
++    call_keys = core_keys["planner_calls.csv"]
++    result_keys = core_keys["planner_results.csv"]
++    if not (input_keys == call_keys == result_keys):
++        raise ValueError(
++            "core planner CSV key sequences do not match"
++        )
++    if not (
++        row_counts["planner_inputs.csv"]
++        == row_counts["planner_calls.csv"]
++        == row_counts["planner_results.csv"]
++    ):
++        raise ValueError("core planner CSV row counts do not match")
++    return row_counts, _core_key_sequence_sha256(input_keys)
++
++
++def _write_manifest(path: Path, manifest: ExportManifest) -> None:
++    with path.open("w", encoding="utf-8") as stream:
++        json.dump(
++            manifest.to_json_dict(),
++            stream,
++            allow_nan=False,
++            ensure_ascii=False,
++            indent=2,
++            sort_keys=True,
++        )
++        stream.write("\n")
++        stream.flush()
++        os.fsync(stream.fileno())
++    loaded = _load_json_mapping(path, label="export manifest")
++    if loaded != manifest.to_json_dict():
++        raise ValueError("export manifest round-trip validation failed")
++
++
++def _fsync_directory(path: Path) -> None:
++    flags = os.O_RDONLY
++    flags |= getattr(os, "O_CLOEXEC", 0)
++    flags |= getattr(os, "O_DIRECTORY", 0)
++    descriptor = os.open(str(path), flags)
++    try:
++        os.fsync(descriptor)
++    finally:
++        os.close(descriptor)
++
++
++def _unique_backup_path(output_dir: Path) -> Path:
++    for _attempt in range(100):
++        candidate = output_dir.parent / (
++            ".{}-backup-{}".format(
++                output_dir.name,
++                uuid.uuid4().hex,
++            )
++        )
++        if not os.path.lexists(str(candidate)):
++            return candidate
++    raise RuntimeError("could not allocate a unique output backup path")
++
++
++def replace_output_directory(
++    temporary_dir: Path,
++    output_dir: Path,
++    *,
++    overwrite: bool,
++) -> None:
++    temporary = Path(temporary_dir)
++    output = Path(output_dir)
++    if temporary.parent.resolve() != output.parent.resolve():
++        raise ValueError(
++            "temporary and output directories must share a parent"
++        )
++    if temporary.is_symlink() or not temporary.is_dir():
++        raise ValueError(
++            "temporary output must be a real directory"
++        )
++    if os.path.lexists(str(output)) and output.is_symlink():
++        raise ValueError("output directory must not be a symlink")
++    if not os.path.lexists(str(output)):
++        os.replace(str(temporary), str(output))
++        _fsync_directory(output.parent)
++        return
++    output_stat = os.stat(str(output), follow_symlinks=False)
++    if not stat.S_ISDIR(output_stat.st_mode):
++        raise ValueError("existing output path must be a directory")
++    if not overwrite:
++        raise FileExistsError(
++            "output directory already exists: {}".format(output)
++        )
++    backup = _unique_backup_path(output)
++    os.replace(str(output), str(backup))
++    try:
++        os.replace(str(temporary), str(output))
++    except BaseException as install_error:
++        try:
++            os.replace(str(backup), str(output))
++            _fsync_directory(output.parent)
++        except BaseException as restore_error:
++            raise RuntimeError(
++                "failed to install new output ({!r}) and failed to "
++                "restore old output ({!r}); backup preserved at {}".format(
++                    install_error,
++                    restore_error,
++                    backup,
++                )
++            ) from restore_error
++        raise
++    _fsync_directory(output.parent)
++    shutil.rmtree(str(backup))
++    _fsync_directory(output.parent)
++
++
++def _source_files(
++    session_dir: Path,
++    attempt_ids: Sequence[int],
++) -> Mapping[str, Path]:
++    paths: Dict[str, Path] = {
++        "session.json": session_dir / "session.json",
++        "events.jsonl": session_dir / "events.jsonl",
++        "ball_samples.csv": session_dir / "ball_samples.csv",
++    }
++    for attempt_id in attempt_ids:
++        name = "attempt_details/{}.json".format(attempt_id)
++        paths[name] = session_dir / name
++    return paths
++
++
++def _assert_source_files_unchanged(
++    paths: Mapping[str, Path],
++    initial: Mapping[str, _SourceFingerprint],
++) -> None:
++    for name, path in paths.items():
++        final = _fingerprint_source_file(path)
++        if final != initial[name]:
++            raise ValueError(
++                "source file changed during export: {}".format(name)
++            )
++
++
++def export_session_csv(
++    session_dir: Path,
++    attempt_ids: Sequence[int],
++    output_dir: Path,
++    overwrite: bool,
++) -> ExportManifest:
++    attempts = _normalize_attempt_ids(attempt_ids)
++    session = Path(session_dir).resolve(strict=True)
++    if not session.is_dir():
++        raise ValueError("source session must be a directory")
++    output, output_parent = _prepare_output_path(
++        session,
++        Path(output_dir),
++        overwrite=bool(overwrite),
++    )
++    source_paths = _source_files(session, attempts)
++    initial_fingerprints = {
++        name: _fingerprint_source_file(path)
++        for name, path in source_paths.items()
++    }
++    session_metadata = _load_json_mapping(
++        source_paths["session.json"],
++        label="session metadata",
++    )
++    watermark_event_id = _validate_session_metadata(session_metadata)
++    details = _load_attempt_details(session, attempts)
++    intervals = _merged_segment_intervals(details)
++    scan = scan_planner_events(
++        source_paths["events.jsonl"],
++        attempts,
++    )
++    inputs = load_attempt_inputs(session, attempts)
++    aligned = align_completed_calls(scan, inputs)
++    _validate_aligned_rows(aligned)
++
++    temporary = Path(
++        tempfile.mkdtemp(
++            prefix=".hitter-csv-",
++            dir=str(output_parent),
++        )
++    )
++    try:
++        expected_counts: Dict[str, int] = {}
++        expected_counts["summary.csv"] = _write_summary_csv(
++            temporary / "summary.csv",
++            details=details,
++            scan=scan,
++        )
++        expected_counts["raw_lcm.csv"] = _write_raw_lcm_csv(
++            source_paths["ball_samples.csv"],
++            temporary / "raw_lcm.csv",
++            intervals,
++        )
++        expected_counts.update(_write_core_csvs(temporary, aligned))
++        expected_counts["stage_timeline.csv"] = (
++            _write_stage_timeline_csv(
++                temporary / "stage_timeline.csv",
++                details,
++            )
++        )
++        (
++            expected_counts["policy_ticks.csv"],
++            event_validation,
++        ) = _validate_events_and_write_policy_ticks(
++            source_paths["events.jsonl"],
++            temporary / "policy_ticks.csv",
++            intervals=intervals,
++            expected_watermark_event_id=watermark_event_id,
++        )
++        expected_counts["task_observations.csv"] = (
++            _write_task_observations_csv(
++                temporary / "task_observations.csv",
++                details,
++            )
++        )
++        row_counts, core_key_hash = validate_written_outputs(
++            temporary,
++            expected_counts,
++        )
++        _assert_source_files_unchanged(
++            source_paths,
++            initial_fingerprints,
++        )
++        completed_count = len(scan.completed_calls)
++        pending_count = len(scan.pending_replaced_keys)
++        submitted_count = len(scan.submitted_keys)
++        if completed_count + pending_count != submitted_count:
++            raise ValueError(
++                "completed and pending-replaced counts do not partition "
++                "submitted calls"
++            )
++        manifest = ExportManifest(
++            schema_version=EXPORT_SCHEMA_VERSION,
++            source_session_dir=str(session),
++            attempt_ids=attempts,
++            source_sha256={
++                name: fingerprint.sha256
++                for name, fingerprint in initial_fingerprints.items()
++            },
++            source_file_stats={
++                name: {
++                    "device": fingerprint.device,
++                    "inode": fingerprint.inode,
++                    "size": fingerprint.size,
++                    "mtime_ns": fingerprint.mtime_ns,
++                }
++                for name, fingerprint in initial_fingerprints.items()
++            },
++            row_counts=row_counts,
++            core_key_sequence_sha256=core_key_hash,
++            submitted_count=submitted_count,
++            pending_replaced_count=pending_count,
++            completed_call_count=completed_count,
++            completeness_checks={
++                "disk_session_sources_only": True,
++                "session_status_complete": True,
++                "session_recording_complete": True,
++                "recorder_healthy": True,
++                "session_last_error_absent": True,
++                "session_failure_absent": True,
++                "input_samples_not_dropped": True,
++                "watermarks_match": True,
++                "event_ids_contiguous": (
++                    event_validation.event_ids_contiguous
++                ),
++                "final_event_id_matches_watermark": (
++                    event_validation.final_event_id
++                    == watermark_event_id
++                ),
++                "no_recorder_event_gap": (
++                    event_validation.recorder_event_gap_count == 0
++                ),
++                "segments_valid_and_non_overlapping": True,
++                "submitted_partition_complete": True,
++                "completed_pending_disjoint": True,
++                "completed_calls_have_submit_start_complete_input": True,
++                "core_csv_headers_exact": True,
++                "core_csv_key_sequences_equal": True,
++                "core_csv_keys_unique": True,
++                "core_csv_row_counts_equal": True,
++                "source_files_unchanged_during_export": True,
++            },
++            exported_at_utc=datetime.now(timezone.utc).isoformat(),
++        )
++        _write_manifest(
++            temporary / "export_manifest.json",
++            manifest,
++        )
++        _fsync_directory(temporary)
++        replace_output_directory(
++            temporary,
++            output,
++            overwrite=bool(overwrite),
++        )
++        return manifest
++    except BaseException:
++        shutil.rmtree(str(temporary), ignore_errors=True)
++        raise
++
++
++def _argument_parser() -> argparse.ArgumentParser:
++    parser = argparse.ArgumentParser(
++        description=(
++            "Export complete HITTER planner diagnostics from on-disk "
++            "session sources."
++        )
++    )
++    parser.add_argument("--session", type=Path, required=True)
++    parser.add_argument(
++        "--attempts",
++        type=int,
++        nargs="+",
++        required=True,
++    )
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--overwrite", action="store_true")
++    return parser
++
++
++def main(argv: Optional[Sequence[str]] = None) -> int:
++    parser = _argument_parser()
++    arguments = parser.parse_args(argv)
++    try:
++        manifest = export_session_csv(
++            session_dir=arguments.session,
++            attempt_ids=arguments.attempts,
++            output_dir=arguments.output,
++            overwrite=arguments.overwrite,
++        )
++    except Exception as exc:
++        print(
++            "error: {}: {}".format(type(exc).__name__, exc),
++            file=sys.stderr,
++        )
++        return 1
++    print(
++        json.dumps(
++            manifest.to_json_dict(),
++            allow_nan=False,
++            ensure_ascii=False,
++            sort_keys=True,
++        )
++    )
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/deploy/tests/test_hitter_task_csv_export.py b/deploy/tests/test_hitter_task_csv_export.py
+index 6827c7a..1e6f644 100644
+--- a/deploy/tests/test_hitter_task_csv_export.py
++++ b/deploy/tests/test_hitter_task_csv_export.py
+@@ -1,17 +1,22 @@
+ from __future__ import annotations
+ 
++import csv
+ import copy
+ import json
++import os
+ from pathlib import Path
++import subprocess
++import sys
+ import tempfile
+ import unittest
++from unittest import mock
+ 
+ from diagnostics import export_hitter_task_csv as csv_export
+ 
+ 
+ scan_planner_events = csv_export.scan_planner_events
+ 
+ 
+ def snapshot_key(
+     *,
+     generation: int,
+@@ -315,20 +320,292 @@ def write_attempt_detail(
+             else detail_attempt_id
+         ),
+         "planner_inputs": planner_inputs,
+     }
+     (details_dir / "{}.json".format(attempt_id)).write_text(
+         json.dumps(value, separators=(",", ":")),
+         encoding="utf-8",
+     )
+ 
+ 
++def _complete_recorded_event(event, event_id):
++    value = copy.deepcopy(event)
++    value["event_id"] = event_id
++    value.setdefault("wall_time_us", event_id)
++    value.setdefault("scope", "attempt")
++    return value
++
++
++def _lifecycle_tick_event(*, event_id, attempt_id, t):
++    return {
++        "schema_version": 1,
++        "event_id": event_id,
++        "kind": "lifecycle_tick",
++        "monotonic_s": t,
++        "wall_time_us": event_id,
++        "scope": "attempt",
++        "attempt_id": attempt_id,
++        "payload": {
++            "lifecycle_now_s": t,
++            "obs_now_s": t + 0.001,
++            "phase": "striking",
++            "decision": "execute",
++            "active_key": snapshot_key(generation=11),
++            "cached_key": None,
++            "command_result": None,
++            "task_pre_clip": [0.1, 0.2],
++            "task_post_clip": [0.1, 0.2],
++            "clip_count": 0,
++            "task_pass": True,
++            "errors": [],
++            "recovery_duration_s": 0.0,
++        },
++    }
++
++
++def _full_attempt_detail(
++    *,
++    attempt_id,
++    generation,
++    source_frame,
++    first_t,
++    last_t,
++    recording_complete,
++    task_observation,
++):
++    task_pre, task_post, clip_count = task_observation
++    return {
++        "schema_version": 1,
++        "attempt_id": attempt_id,
++        "summary": {
++            "schema_version": 1,
++            "attempt_id": attempt_id,
++            "status": "SUCCESS",
++            "stage": "ATTEMPT_CLOSED",
++            "primary_blocker": None,
++            "ball_speed_mps": 3.5,
++            "predicted_strike_time_s": 0.4,
++            "planner_tts_s": 0.3,
++            "arm_tts_s": 0.2,
++            "task_obs_status": "PASS",
++            "ab_summary": "INCONCLUSIVE",
++            "recording_complete": recording_complete,
++            "estimator_sample_count": 31,
++            "estimator_window_size": 31,
++            "incoming_count": 3,
++            "incoming_required_count": 3,
++        },
++        "segments": [
++            {
++                "track_segment_id": attempt_id,
++                "first_monotonic_s": first_t,
++                "last_monotonic_s": last_t,
++                "role": "PRIMARY",
++            }
++        ],
++        "stage_timeline": [
++            {
++                "schema_version": 1,
++                "attempt_id": attempt_id,
++                "track_segment_id": attempt_id,
++                "stage": "DETECTED",
++                "monotonic_s": first_t,
++                "reason_code": None,
++                "snapshot_key": snapshot_key(generation=generation),
++                "values": {"role": "PRIMARY"},
++            }
++        ],
++        "planner_inputs": [
++            planner_input(
++                attempt_id=attempt_id,
++                generation=generation,
++                source_frame=source_frame,
++                velocity_x=-1.0,
++            )
++        ],
++        "planner_results": [],
++        "task_observation_pre_clip": task_pre,
++        "task_observation_post_clip": task_post,
++        "task_observation_clip_count": clip_count,
++        "variant_outcomes": [],
++        "ab_deltas": {},
++    }
++
++
++def build_complete_session_fixture(root: Path) -> Path:
++    session_dir = root / "session"
++    details_dir = session_dir / "attempt_details"
++    details_dir.mkdir(parents=True)
++
++    details = (
++        _full_attempt_detail(
++            attempt_id=1,
++            generation=11,
++            source_frame=1011,
++            first_t=1.0,
++            last_t=1.5,
++            recording_complete=False,
++            task_observation=(None, None, None),
++        ),
++        _full_attempt_detail(
++            attempt_id=2,
++            generation=21,
++            source_frame=1021,
++            first_t=2.0,
++            last_t=2.5,
++            recording_complete=True,
++            task_observation=(
++                [float(index) for index in range(11)],
++                [float(index) for index in range(11)],
++                0,
++            ),
++        ),
++    )
++    for detail in details:
++        (details_dir / "{}.json".format(detail["attempt_id"])).write_text(
++            json.dumps(detail, separators=(",", ":")),
++            encoding="utf-8",
++        )
++
++    events = [
++        planner_submit_event(attempt_id=1, generation=10, t=1.10),
++        planner_submit_event(attempt_id=1, generation=11, t=1.11),
++        pending_replaced_event(
++            attempt_id=1,
++            generation=11,
++            replaced_generation=10,
++            t=1.12,
++        ),
++        planner_start_event(attempt_id=1, generation=11, t=1.13),
++        planner_complete_event(
++            attempt_id=1,
++            generation=11,
++            source_frame=1011,
++            completed_t=1.14,
++            error_type=None,
++            error_text=None,
++        ),
++        _lifecycle_tick_event(event_id=0, attempt_id=1, t=1.20),
++        planner_submit_event(attempt_id=2, generation=21, t=2.10),
++        planner_start_event(attempt_id=2, generation=21, t=2.11),
++        planner_complete_event(
++            attempt_id=2,
++            generation=21,
++            source_frame=1021,
++            completed_t=2.12,
++            error_type=None,
++            error_text=None,
++        ),
++        _lifecycle_tick_event(event_id=0, attempt_id=2, t=2.20),
++        _lifecycle_tick_event(event_id=0, attempt_id=None, t=3.20),
++    ]
++    recorded_events = [
++        _complete_recorded_event(event, event_id)
++        for event_id, event in enumerate(events, start=1)
++    ]
++    write_json_lines(session_dir / "events.jsonl", recorded_events)
++
++    raw_fields = (
++        "input_seq",
++        "attempt_id",
++        "track_segment_id",
++        "channel",
++        "subject",
++        "position_w",
++        "quaternion_xyzw",
++        "valid",
++        "occluded",
++        "source_frame",
++        "source_time_s",
++        "publish_time_us",
++        "received_monotonic_s",
++        "wall_time_us",
++        "payload_size",
++    )
++    raw_rows = []
++    for input_seq, attempt_id, t in (
++        (1, 1, 1.05),
++        (2, 1, 1.06),
++        (3, 1, 1.07),
++        (4, 2, 2.05),
++        (5, 2, 2.06),
++        (6, 2, 2.07),
++        (7, None, 3.05),
++    ):
++        subject = ("ball", "g1pelvis", "table")[(input_seq - 1) % 3]
++        raw_rows.append({
++            "input_seq": input_seq,
++            "attempt_id": attempt_id if subject == "ball" else None,
++            "track_segment_id": (
++                attempt_id if subject == "ball" else None
++            ),
++            "channel": "vicon_state_data",
++            "subject": subject,
++            "position_w": "[1.0,2.0,3.0]",
++            "quaternion_xyzw": "[0.0,0.0,0.0,1.0]",
++            "valid": True,
++            "occluded": False,
++            "source_frame": 1000 + input_seq,
++            "source_time_s": 100.0 + input_seq,
++            "publish_time_us": 10000 + input_seq,
++            "received_monotonic_s": t,
++            "wall_time_us": 20000 + input_seq,
++            "payload_size": 100,
++        })
++    with (session_dir / "ball_samples.csv").open(
++        "w",
++        encoding="utf-8",
++        newline="",
++    ) as stream:
++        writer = csv.DictWriter(stream, fieldnames=raw_fields)
++        writer.writeheader()
++        writer.writerows(raw_rows)
++
++    event_count = len(recorded_events)
++    (session_dir / "session.json").write_text(
++        json.dumps(
++            {
++                "schema_version": 1,
++                "status": "COMPLETE",
++                "recording_complete": True,
++                "recorder_healthy": True,
++                "last_error": None,
++                "failure": None,
++                "input_samples_dropped": 0,
++                "watermark_event_id": event_count,
++                "observed_watermark_event_id": event_count,
++            },
++            separators=(",", ":"),
++        ),
++        encoding="utf-8",
++    )
++    return session_dir
++
++
++def csv_row_count(path: Path) -> int:
++    with path.open("r", encoding="utf-8", newline="") as stream:
++        return sum(1 for _row in csv.DictReader(stream))
++
++
++def csv_key_sequence(path: Path):
++    with path.open("r", encoding="utf-8", newline="") as stream:
++        return [
++            (
++                int(row["attempt_id"]),
++                int(row["snapshot_key.schema_version"]),
++                int(row["snapshot_key.track_epoch"]),
++                int(row["snapshot_key.generation"]),
++            )
++            for row in csv.DictReader(stream)
++        ]
++
++
+ class PlannerEventScanTests(unittest.TestCase):
+     def test_scan_keeps_cross_attempt_pending_key_when_replacer_is_unselected(
+         self,
+     ):
+         with tempfile.TemporaryDirectory() as directory:
+             events_path = Path(directory) / "events.jsonl"
+             write_json_lines(
+                 events_path,
+                 cross_attempt_pending_replacement_events(),
+             )
+@@ -878,12 +1155,264 @@ class AlignedPlannerRowsTests(unittest.TestCase):
+         with self.assertRaisesRegex(
+             ValueError,
+             "duplicate completed planner call key",
+         ):
+             csv_export.align_completed_calls(
+                 planner_scan((call, call)),
+                 {call.key: input_row},
+             )
+ 
+ 
++class ExportSessionCsvTests(unittest.TestCase):
++    def test_export_writes_complete_aligned_csv_set(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            output_dir = session_dir / "analysis"
++
++            manifest = csv_export.export_session_csv(
++                session_dir=session_dir,
++                attempt_ids=[1, 2],
++                output_dir=output_dir,
++                overwrite=False,
++            )
++
++            self.assertEqual(manifest.completed_call_count, 2)
++            self.assertEqual(manifest.pending_replaced_count, 1)
++            self.assertEqual(csv_row_count(output_dir / "summary.csv"), 2)
++            self.assertEqual(csv_row_count(output_dir / "raw_lcm.csv"), 6)
++            self.assertEqual(
++                csv_row_count(output_dir / "planner_inputs.csv"),
++                2,
++            )
++            self.assertEqual(
++                csv_row_count(output_dir / "planner_calls.csv"),
++                2,
++            )
++            self.assertEqual(
++                csv_row_count(output_dir / "planner_results.csv"),
++                2,
++            )
++            self.assertEqual(
++                csv_row_count(output_dir / "stage_timeline.csv"),
++                2,
++            )
++            self.assertEqual(
++                csv_row_count(output_dir / "policy_ticks.csv"),
++                2,
++            )
++            self.assertEqual(
++                csv_row_count(output_dir / "task_observations.csv"),
++                2,
++            )
++            self.assertEqual(
++                csv_key_sequence(output_dir / "planner_inputs.csv"),
++                csv_key_sequence(output_dir / "planner_calls.csv"),
++            )
++            self.assertEqual(
++                csv_key_sequence(output_dir / "planner_calls.csv"),
++                csv_key_sequence(output_dir / "planner_results.csv"),
++            )
++            self.assertNotIn(
++                (1, 1, 1, 10),
++                csv_key_sequence(output_dir / "planner_calls.csv"),
++            )
++            self.assertTrue((output_dir / "export_manifest.json").is_file())
++            with (output_dir / "summary.csv").open(
++                "r",
++                encoding="utf-8",
++                newline="",
++            ) as stream:
++                summary_rows = list(csv.DictReader(stream))
++            self.assertEqual(summary_rows[0]["recording_complete"], "False")
++            with (output_dir / "raw_lcm.csv").open(
++                "r",
++                encoding="utf-8",
++                newline="",
++            ) as stream:
++                raw_rows = list(csv.DictReader(stream))
++            pelvis_row = next(
++                row for row in raw_rows if row["subject"] == "g1pelvis"
++            )
++            self.assertEqual(pelvis_row["attempt_id"], "")
++            self.assertEqual(pelvis_row["interval_attempt_id"], "1")
++
++    def test_validation_failure_preserves_existing_output(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            detail_path = session_dir / "attempt_details" / "1.json"
++            detail = json.loads(detail_path.read_text(encoding="utf-8"))
++            detail["planner_inputs"] = []
++            detail_path.write_text(
++                json.dumps(detail, separators=(",", ":")),
++                encoding="utf-8",
++            )
++            output_dir = session_dir / "analysis"
++            output_dir.mkdir()
++            sentinel = output_dir / "sentinel.txt"
++            sentinel.write_text("keep-me", encoding="utf-8")
++
++            with self.assertRaisesRegex(ValueError, "has no input"):
++                csv_export.export_session_csv(
++                    session_dir=session_dir,
++                    attempt_ids=[1, 2],
++                    output_dir=output_dir,
++                    overwrite=True,
++                )
++
++            self.assertEqual(
++                sentinel.read_text(encoding="utf-8"),
++                "keep-me",
++            )
++            self.assertEqual(list(output_dir.iterdir()), [sentinel])
++
++    def test_incomplete_source_session_is_rejected(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            session_path = session_dir / "session.json"
++            session = json.loads(session_path.read_text(encoding="utf-8"))
++            session["status"] = "INCOMPLETE"
++            session["recording_complete"] = False
++            session_path.write_text(
++                json.dumps(session, separators=(",", ":")),
++                encoding="utf-8",
++            )
++
++            with self.assertRaisesRegex(
++                ValueError,
++                "status must be COMPLETE",
++            ):
++                csv_export.export_session_csv(
++                    session_dir=session_dir,
++                    attempt_ids=[1, 2],
++                    output_dir=session_dir / "analysis",
++                    overwrite=False,
++                )
++
++            self.assertFalse((session_dir / "analysis").exists())
++
++    def test_core_csv_validation_rereads_and_rejects_key_reordering(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            output_dir = session_dir / "analysis"
++            manifest = csv_export.export_session_csv(
++                session_dir=session_dir,
++                attempt_ids=[1, 2],
++                output_dir=output_dir,
++                overwrite=False,
++            )
++            result_path = output_dir / "planner_results.csv"
++            with result_path.open(
++                "r",
++                encoding="utf-8",
++                newline="",
++            ) as stream:
++                rows = list(csv.reader(stream))
++            with result_path.open(
++                "w",
++                encoding="utf-8",
++                newline="",
++            ) as stream:
++                writer = csv.writer(stream)
++                writer.writerow(rows[0])
++                writer.writerows(reversed(rows[1:]))
++
++            with self.assertRaisesRegex(
++                ValueError,
++                "key sequences do not match",
++            ):
++                csv_export.validate_written_outputs(
++                    output_dir,
++                    manifest.row_counts,
++                )
++
++    def test_cli_help_lists_all_arguments_and_errors_are_nonzero(self):
++        environment = dict(os.environ)
++        environment["PYTHONPATH"] = "."
++        help_result = subprocess.run(
++            [
++                sys.executable,
++                "-m",
++                "diagnostics.export_hitter_task_csv",
++                "--help",
++            ],
++            cwd=str(Path(__file__).resolve().parents[1]),
++            env=environment,
++            text=True,
++            capture_output=True,
++            check=False,
++        )
++        self.assertEqual(help_result.returncode, 0, help_result.stderr)
++        for option in (
++            "--session",
++            "--attempts",
++            "--output",
++            "--overwrite",
++        ):
++            self.assertIn(option, help_result.stdout)
++
++        error_result = subprocess.run(
++            [
++                sys.executable,
++                "-m",
++                "diagnostics.export_hitter_task_csv",
++                "--session",
++                "/definitely/missing/hitter-session",
++                "--attempts",
++                "1",
++                "--output",
++                "/tmp/unused-hitter-export",
++            ],
++            cwd=str(Path(__file__).resolve().parents[1]),
++            env=environment,
++            text=True,
++            capture_output=True,
++            check=False,
++        )
++        self.assertNotEqual(error_result.returncode, 0)
++        self.assertIn("error:", error_result.stderr)
++
++    def test_failed_directory_install_restores_existing_output(self):
++        with tempfile.TemporaryDirectory() as directory:
++            parent = Path(directory)
++            output_dir = parent / "analysis"
++            output_dir.mkdir()
++            (output_dir / "sentinel.txt").write_text(
++                "keep-me",
++                encoding="utf-8",
++            )
++            temporary_dir = parent / ".hitter-csv-test"
++            temporary_dir.mkdir()
++            (temporary_dir / "new.txt").write_text(
++                "new-data",
++                encoding="utf-8",
++            )
++            real_replace = os.replace
++            calls = []
++
++            def fail_second_replace(source, target):
++                calls.append((source, target))
++                if len(calls) == 2:
++                    raise OSError("install failed")
++                return real_replace(source, target)
++
++            with mock.patch.object(
++                csv_export.os,
++                "replace",
++                side_effect=fail_second_replace,
++            ):
++                with self.assertRaisesRegex(OSError, "install failed"):
++                    csv_export.replace_output_directory(
++                        temporary_dir,
++                        output_dir,
++                        overwrite=True,
++                    )
++
++            self.assertEqual(
++                (output_dir / "sentinel.txt").read_text(encoding="utf-8"),
++                "keep-me",
++            )
++            self.assertTrue(temporary_dir.is_dir())
++            self.assertFalse(any(parent.glob(".analysis-backup-*")))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/docs/hitter_complete_planner_csv_export.md b/docs/hitter_complete_planner_csv_export.md
+new file mode 100644
+index 0000000..d6e76c2
+--- /dev/null
++++ b/docs/hitter_complete_planner_csv_export.md
+@@ -0,0 +1,109 @@
++# HITTER 完整 Planner CSV 离线导出
++
++## 适用场景
++
++实时诊断网页和 replay capture 为保护真机进程内存，允许保留有界数据，当前上限为 8192 条。它们适合在线观察，但不能作为长 attempt 的完整分析数据源。
++
++需要完整分析时，必须使用本离线导出器。导出器只读取 session 磁盘事实源：
++
++- `session.json`
++- `events.jsonl`
++- `ball_samples.csv`
++- `attempt_details/<attempt_id>.json`
++
++它不会读取 `ReplayCaptureStore` 或 replay bundle，也不会修改 estimator、planner、policy、控制参数和 recordings 源文件。
++
++## 命令
++
++在 `deploy` 目录执行：
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2/deploy
++
++PYTHONPATH=. /home/loco1/miniconda3/envs/rb/bin/python \
++  -m diagnostics.export_hitter_task_csv \
++  --session ../recordings/hitter_task_diagnostics/20260730_194528_402494-p740921-f85e25f0 \
++  --attempts 1 2 \
++  --output ../recordings/hitter_task_diagnostics/20260730_122056_381218-p994970-d50bc89f/analysis_attempts_1_2_20260730_194528 \
++  --overwrite
++```
++
++四个参数的含义：
++
++- `--session`：完整源 session 目录。
++- `--attempts`：一个或多个正整数 attempt id。
++- `--output`：导出目录。不能等于源 session、不能是源 session 的祖先，也不能是符号链接。
++- `--overwrite`：允许事务式替换已有输出目录；省略时，已有目标会直接报错。
++
++命令成功返回 0，并在标准输出打印 manifest JSON；任一完整性、读取、写入或替换错误均返回非零。
++
++## 完成调用的定义
++
++`planner_inputs.csv`、`planner_calls.csv` 和 `planner_results.csv` 只包含 actual completed calls。每个 key 必须同时存在：
++
++1. `planner_submit`
++2. `planner_trace/start`
++3. `planner_trace/complete` 及 result
++4. attempt detail 中的 planner input
++
++三表统一使用以下复合 key，并按 complete 时间排序：
++
++```text
++attempt_id
+++ snapshot_key.schema_version
+++ snapshot_key.track_epoch
+++ snapshot_key.generation
++```
++
++三表关闭后会被重新打开，逐行验证 header、行数、key 顺序和唯一性。仅发生 `pending_replaced`、从未 start/complete 的输入不属于完成调用，不会进入这三张表；其数量会单独记录在 summary 和 manifest 中。
++
++## 输出文件
++
++导出目录包含八张 CSV 和一个 manifest：
++
++- `summary.csv`：每个 attempt 一行，保留 detail 原有的 `recording_complete` 历史值，并增加 `completed_call_export_complete`、`completed_call_count`、`pending_replaced_count`。
++- `raw_lcm.csv`：从完整 `ball_samples.csv` 按 segment 闭区间选出的 ball、g1pelvis、table 行。源 `attempt_id` 和 `track_segment_id` 原样保留，`interval_attempt_id` 和 `interval_track_segment_id` 表示离线区间归属。
++- `planner_inputs.csv`：actual completed calls 对应的完整输入。
++- `planner_calls.csv`：submit/start/complete 时间、耗时及 replacement 元数据。
++- `planner_results.csv`：真实 command、reason code 或错误结果。
++- `stage_timeline.csv`：按 attempt detail 原始顺序展开，并增加 `stage_index`；不会按时间重新排序。
++- `policy_ticks.csv`：从完整 `events.jsonl` 流式提取的 `lifecycle_tick`，使用真实 `event_id`。
++- `task_observations.csv`：每个 attempt 一行，展开 11 维 pre/post clip；没有 observation 的 attempt 仍保留空值行。
++- `export_manifest.json`：源 session 绝对路径、attempt ids、所有源文件 SHA-256/stat、各表行数、核心 key 序列 SHA-256、submitted/pending/completed 计数及明确的 completeness checks。
++
++所有向量和映射均使用紧凑 JSON，不使用 Python `repr`。
++
++## 完整性与输出安全
++
++导出器采用 fail-closed 语义。源 session 必须同时满足：
++
++- `status=COMPLETE`
++- `recording_complete=true`
++- `recorder_healthy=true`
++- `last_error=null`、`failure=null`
++- `input_samples_dropped=0`
++- persisted/observed event watermark 相等
++- `events.jsonl` 的 event id 连续、末端与 watermark 一致，且没有 `RECORDER_EVENT_GAP`
++
++Segment 时间必须有限且 `first_monotonic_s <= last_monotonic_s`；重叠或相接的同 attempt 区间会合并，不同 attempt 的区间重叠会拒绝。源文件在导出末尾会重新 stat 和计算 SHA-256，任何导出期间的变化都会使导出失败。
++
++所有文件先写入目标同级临时目录并完成重读验证。覆盖已有输出时，旧目录先移动到同级唯一 backup，再安装完整临时目录；安装失败会恢复旧目录。验证失败不会触碰已有输出，成功后 backup 会被清理。
++
++## 当前 Attempt 1/2 的完整结果
++
++源 session `20260730_194528_402494-p740921-f85e25f0` 的预期结果为：
++
++| 指标 | 行数 |
++|---|---:|
++| submitted | 2625 |
++| pending-replaced | 540 |
++| actual completed | 2085 |
++| `planner_inputs.csv` | 2085 |
++| `planner_calls.csv` | 2085 |
++| `planner_results.csv` | 2085 |
++| `raw_lcm.csv` | 33894 |
++| `stage_timeline.csv` | 2102 |
++| `policy_ticks.csv` | 1578 |
++| `task_observations.csv` | 2 |
++
++三张核心表必须具有同一个 2085-key 序列；Attempt 2 的 generation 11192 应存在于导出结果中。

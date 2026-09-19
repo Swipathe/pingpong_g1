@@ -1,0 +1,8 @@
+\section{System Overview}
+We adopt a hierarchical system framework that integrates a model-based planner with a learning-based whole-body controller (Fig.~\ref{fig:method}).
+Nine OptiTrack cameras track the ball’s position, with the motion capture system operating at 300\,Hz and achieving millimeter-level accuracy.
+The estimated ball position is provided to the model-based planner, which predicts the hitting position and time, and computes the desired racket velocity at impact for the Unitree G1 humanoid~\cite{unitree_g1}.
+The robot is equipped with a reinforcement learning policy that processes the observations and outputs the desired joint positions for all 29 joints at 50\,Hz.
+These joint position setpoints are converted into joint torques using a PD controller.
+
+As shown in Fig.~\ref{fig:method}, we use a regulation-size table measuring 2.74\,m by 1.525\,m, with the playing surface 0.76\,m above the ground. The coordinate frame is defined at the table center on the top surface, with the $x$-axis aligned with the table’s long side and the $z$-axis pointing upward. In the sections below, we assume the humanoid is positioned on the $x<0$ side of the table.

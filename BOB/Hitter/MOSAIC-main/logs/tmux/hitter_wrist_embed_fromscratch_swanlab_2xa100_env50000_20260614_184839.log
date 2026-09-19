@@ -1,0 +1,6 @@
+run_name=hitter_wrist_embed_fromscratch_swanlab_2xa100_env50000_20260614_184839
+session=hitter_wrist_embed_fromscratch_swanlab_2xa100_env50000_20260614_184839_train
+log=/root/Hitter/MOSAIC-main/logs/tmux/hitter_wrist_embed_fromscratch_swanlab_2xa100_env50000_20260614_184839.log
+cwd=/root/Hitter/MOSAIC-main
+command=/root/.venvs/isaaclab-mosaic/bin/torchrun --standalone --nnodes=1 --nproc_per_node=2 scripts/rsl_rl/train.py --task=Hitter-Striking-PlannerDomain-Flat-G1-v0 --motion=data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean --num_envs=50000 --max_iterations=10000 --run_name=hitter_wrist_embed_fromscratch_swanlab_2xa100_env50000_20260614_184839 --logger=swanlab --log_project_name=isaaclab --save_interval=100 --headless
+started_at=Sun Jun 14 18:48:39 CST 2026

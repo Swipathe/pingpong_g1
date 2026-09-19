@@ -1,0 +1,170 @@
+# Review package: 927a33e9684e4ff3fe64b8bf588e59cdd94be0c3..49efb76b3b5705c690e33275f5d25dc19db6bf9e
+
+## Commits
+49efb76 test: cover real HITTER planner failure pairs
+
+## Files changed
+ deploy/tests/test_hitter_completed_result_queue.py | 93 ++++++++++++++++++++++
+ 1 file changed, 93 insertions(+)
+
+## Diff
+diff --git a/deploy/tests/test_hitter_completed_result_queue.py b/deploy/tests/test_hitter_completed_result_queue.py
+index b5c1161..230d3af 100644
+--- a/deploy/tests/test_hitter_completed_result_queue.py
++++ b/deploy/tests/test_hitter_completed_result_queue.py
+@@ -1,20 +1,22 @@
+ from __future__ import annotations
+ 
+ import inspect
+ import threading
+ import time
++from dataclasses import replace
+ 
+ import numpy as np
+ import pytest
+ 
+ import utils.hitter_realtime as hitter_realtime
++from diagnostics.hitter_task_pipeline import ShadowTaskPipeline
+ from utils.hitter_planner import HitterWbcCommand, StrikePlan
+ from utils.hitter_realtime import (
+     BallEstimateSnapshot,
+     LatestOnlyPlannerWorker,
+     PlannerResultSnapshot,
+ )
+ from utils.hitter_runtime_types import PlannerFailureReason, PlannerRejected
+ 
+ 
+ def snapshot(*, track_id: int = 7, generation: int = 1) -> BallEstimateSnapshot:
+@@ -76,20 +78,37 @@ def complete_sequential_submissions(
+     generations=(1, 2, 3),
+ ) -> None:
+     for completion_count, generation in enumerate(generations, start=1):
+         worker.submit(snapshot(generation=generation))
+         wait_until(
+             lambda: worker.stats.completed + worker.stats.failed
+             == completion_count
+         )
+ 
+ 
++def completed_failure_pair(plan_fn):
++    worker = LatestOnlyPlannerWorker(
++        plan_fn,
++        trace_listener=lambda _trace: None,
++    )
++    try:
++        worker.submit(snapshot())
++        wait_until(lambda: worker.stats.failed == 1)
++        batch = worker.drain_completed_results()
++        assert len(batch.results) == 1
++        assert len(batch.frozen_results) == 1
++        assert batch.frozen_results[0] is not None
++        return batch.results[0], batch.frozen_results[0]
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
+ def test_completed_results_are_drained_in_order():
+     worker = LatestOnlyPlannerWorker(plan_in_generation_order)
+     try:
+         complete_sequential_submissions(worker)
+         batch = worker.drain_completed_results()
+         assert [result.source_generation for result in batch.results] == [1, 2, 3]
+         assert batch.frozen_results == (None, None, None)
+         assert worker.drain_completed_results().results == ()
+     finally:
+         assert worker.close(timeout_s=1.0)
+@@ -241,20 +260,94 @@ def test_unknown_exception_is_internal_error_and_worker_continues():
+         )
+         assert succeeded.command is not None
+         assert succeeded.failure_reason is None
+         assert succeeded.error_text is None
+         assert worker.stats.failed == 1
+         assert worker.stats.completed == 1
+     finally:
+         assert worker.close(timeout_s=1.0)
+ 
+ 
++def test_real_typed_rejection_pair_rejects_reason_type_or_detail_mutation():
++    detail = "轨迹: 没有未来交点"
++
++    def reject(_value: BallEstimateSnapshot):
++        raise PlannerRejected(
++            PlannerFailureReason.NO_FUTURE_CROSSING,
++            detail,
++        )
++
++    result, frozen = completed_failure_pair(reject)
++
++    assert result.failure_reason is PlannerFailureReason.NO_FUTURE_CROSSING
++    assert result.error_text == "轨迹: 没有未来交点"
++    assert frozen.failure_reason is PlannerFailureReason.NO_FUTURE_CROSSING
++    assert frozen.error_type == "PlannerRejected"
++    assert frozen.error_text == "轨迹: 没有未来交点"
++    assert ShadowTaskPipeline._result_bundle_matches(result, frozen)
++
++    mutations = (
++        {"failure_reason": PlannerFailureReason.TRACK_ENDED},
++        {"error_type": "LookupError"},
++        {"error_text": "不同: 详情"},
++    )
++    for changes in mutations:
++        assert not ShadowTaskPipeline._result_bundle_matches(
++            result,
++            replace(frozen, **changes),
++        )
++
++
++@pytest.mark.parametrize(
++    ("message", "expected_result_text", "expected_frozen_text"),
++    [
++        ("", "ValueError: ", ""),
++        ("a:b:c", "ValueError: a:b:c", "a:b:c"),
++        ("错误:没有交点", "ValueError: 错误:没有交点", "错误:没有交点"),
++        ("x" * 2055, None, "x" * 2048),
++    ],
++    ids=("empty", "colons", "non_ascii", "over_2048"),
++)
++def test_real_unknown_failure_pair_rejects_reason_type_or_detail_mutation(
++    message,
++    expected_result_text,
++    expected_frozen_text,
++):
++    def fail(_value: BallEstimateSnapshot):
++        raise ValueError(message)
++
++    result, frozen = completed_failure_pair(fail)
++
++    assert result.failure_reason is PlannerFailureReason.INTERNAL_ERROR
++    if expected_result_text is None:
++        assert result.error_text.startswith("ValueError: ")
++        assert len(result.error_text) == 2067
++        assert result.error_text.endswith("x" * 2055)
++    else:
++        assert result.error_text == expected_result_text
++    assert frozen.failure_reason is PlannerFailureReason.INTERNAL_ERROR
++    assert frozen.error_type == "ValueError"
++    assert frozen.error_text == expected_frozen_text
++    assert ShadowTaskPipeline._result_bundle_matches(result, frozen)
++
++    mutations = (
++        {"failure_reason": PlannerFailureReason.TRACK_ENDED},
++        {"error_type": "LookupError"},
++        {"error_text": "different"},
++    )
++    for changes in mutations:
++        assert not ShadowTaskPipeline._result_bundle_matches(
++            result,
++            replace(frozen, **changes),
++        )
++
++
+ def test_frozen_queue_result_is_detached_from_mutable_command_arrays():
+     command_holder = {}
+ 
+     def plan(value: BallEstimateSnapshot) -> HitterWbcCommand:
+         command = plan_ok(value)
+         command_holder["command"] = command
+         return command
+ 
+     worker = LatestOnlyPlannerWorker(plan, trace_listener=lambda _trace: None)
+     try:

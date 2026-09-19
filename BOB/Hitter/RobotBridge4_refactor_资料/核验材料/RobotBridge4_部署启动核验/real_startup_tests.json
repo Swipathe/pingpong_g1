@@ -1,0 +1,38 @@
+[
+  {
+    "label": "before",
+    "command": [
+      "/home/yhl/miniforge3/envs/isaaclab/bin/python",
+      "-m",
+      "pytest",
+      "deploy/tests/test_real_world_connection_wait.py",
+      "deploy/tests/test_hitter_policy_first_frame_transition.py",
+      "deploy/tests/test_real_world_v2_consumer.py",
+      "-q",
+      "--assert=plain",
+      "--tb=native",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/home/yhl/Desktop/RobotBridge4_\u90e8\u7f72\u542f\u52a8\u6838\u9a8c/real_startup_tests_before.xml"
+    ],
+    "exit_code": 1
+  },
+  {
+    "label": "after",
+    "command": [
+      "/home/yhl/miniforge3/envs/isaaclab/bin/python",
+      "-m",
+      "pytest",
+      "deploy/tests/test_real_world_connection_wait.py",
+      "deploy/tests/test_hitter_policy_first_frame_transition.py",
+      "deploy/tests/test_real_world_v2_consumer.py",
+      "-q",
+      "--assert=plain",
+      "--tb=native",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=/home/yhl/Desktop/RobotBridge4_\u90e8\u7f72\u542f\u52a8\u6838\u9a8c/real_startup_tests_after.xml"
+    ],
+    "exit_code": 1
+  }
+]

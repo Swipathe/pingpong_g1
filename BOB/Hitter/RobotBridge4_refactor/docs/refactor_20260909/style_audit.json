@@ -1,0 +1,1373 @@
+{
+  "schema_version": 1,
+  "task": "RobotBridge4 style-only refactor",
+  "workspace": "/home/yhl/Desktop/RobotBridge4_refactor",
+  "pre_style_snapshot_commit": "e85fcae6e1a5aeb8b31a3c387cd50f83b8ab2b45",
+  "baseline_reference": "/home/yhl/Desktop/BAAI-Humanoid/RobotBridge",
+  "scope": {
+    "active_added_program_files": 71,
+    "modified_original_files": 2,
+    "reviewed_total": 73,
+    "changed_total": 62,
+    "reviewed_unchanged_total": 11,
+    "active_added_by_extension": {
+      ".cpp": 6,
+      ".html": 1,
+      ".py": 60,
+      ".sh": 4
+    },
+    "excluded": [
+      "deploy/mocap_bridge (copy)/**",
+      "*.before-*",
+      "vendor code",
+      "generated LCM files",
+      "backups"
+    ]
+  },
+  "tools": {
+    "python_formatter": "Black 26.5.1 under Python 3.13.13; --line-length 120 --skip-string-normalization --target-version py310",
+    "python_validation": "isaaclab Python 3.10.20 compile() and ast.parse(type_comments=True, feature_version=(3, 10))",
+    "cpp_formatter": "clang-format 23.1.0; LLVM base, 4-space indent, attached braces, 120 columns, no include/using sorting, no comment reflow",
+    "cpp_token_validation": "custom C++ lexical scanner removes whitespace/comments after line splicing and preserves identifiers, pp-numbers, raw/ordinary literals, macros and maximal-munch punctuators",
+    "shell_validation": "bash -n",
+    "html_validation": "Python html.parser; Node/other JavaScript parser unavailable"
+  },
+  "protected_regions": {
+    "method": "Diff baseline reference to pre-style HEAD with SequenceMatcher(autojunk=False); allow formatter edits only when all consumed pre-style lines belong to non-equal opcodes. Reject boundary insertions unless adjacent to a mutable line. Then require every baseline-equal block to remain exact and ordered.",
+    "deploy/simulator/mujoco.py": {
+      "pre_style_lines": 557,
+      "post_style_lines": 548,
+      "baseline_equal_blocks": 36,
+      "pre_style_changed_lines": 311,
+      "accepted_formatter_opcodes": 20,
+      "rejected_expansion_opcodes": 15,
+      "out_of_scope_edits": 0,
+      "missing_exact_blocks": 0
+    },
+    "deploy/simulator/real_world.py": {
+      "pre_style_lines": 1645,
+      "post_style_lines": 1495,
+      "baseline_equal_blocks": 27,
+      "pre_style_changed_lines": 1358,
+      "accepted_formatter_opcodes": 59,
+      "rejected_expansion_opcodes": 16,
+      "out_of_scope_edits": 0,
+      "missing_exact_blocks": 0
+    }
+  },
+  "checks": [
+    {
+      "name": "Python 3.10 syntax and AST equality",
+      "files": 62,
+      "result": "pass",
+      "failures": 0
+    },
+    {
+      "name": "Black active-added Python profile",
+      "files": 60,
+      "result": "pass",
+      "detail": "60 files would be left unchanged"
+    },
+    {
+      "name": "C++ non-comment token equality",
+      "files": 6,
+      "result": "pass",
+      "failures": 0
+    },
+    {
+      "name": "clang-format dry run",
+      "files": 5,
+      "result": "pass",
+      "detail": "nexus_probe_cpp.cpp intentionally retains one over-120-column string literal to preserve its single literal token"
+    },
+    {
+      "name": "offline C++ protocol/tracker compile and run",
+      "files": 2,
+      "result": "pass"
+    },
+    {
+      "name": "Bash syntax",
+      "files": 4,
+      "result": "pass"
+    },
+    {
+      "name": "HTML parse",
+      "files": 1,
+      "result": "pass",
+      "detail": "reviewed unchanged; JavaScript parser unavailable"
+    },
+    {
+      "name": "modified-original protected regions",
+      "files": 2,
+      "result": "pass",
+      "failures": 0
+    },
+    {
+      "name": "Git whitespace errors",
+      "result": "pass",
+      "failures": 0
+    },
+    {
+      "name": "baseline-identical and out-of-scope files unchanged from pre-style HEAD",
+      "result": "pass",
+      "detail": "working-tree program diff contains only the 62 intended formatted files"
+    }
+  ],
+  "baseline_test_context": {
+    "owner": "controller",
+    "result": {
+      "failed": 111,
+      "passed": 674,
+      "skipped": 3,
+      "subtests_passed": 254
+    },
+    "interpretation": "Existing schema and stale fixture mismatches; style task did not change behavior or attempt fixes.",
+    "post_style_result": {
+      "failed": 111,
+      "passed": 674,
+      "skipped": 3,
+      "subtests_passed": 254
+    },
+    "post_style_comparison": "Exactly identical JUnit test results: 0 new failures and 0 missing results; controller-owned style_test_comparison.json.",
+    "full_post_style_suite": "completed by controller"
+  },
+  "files": [
+    {
+      "path": "deploy/agents/hitter_agent.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "fbeac1579f863a6bc05f7e5b61f5bd2d4acd01ff6e9fad56b29dae939d44ae6b",
+      "after_sha256": "9d296f4d380f14ab8b3b6f80d598ff603824df69ce077cf2660ef0c523df681d",
+      "before_lines": 68,
+      "after_lines": 65,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "8baf06df95b87b47437413a2bd05047cbc56a573afa3f08b0baba4a3e915cba5",
+        "after_sha256": "8baf06df95b87b47437413a2bd05047cbc56a573afa3f08b0baba4a3e915cba5",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/__init__.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "reviewed_unchanged",
+      "reason": "already compliant with the selected Black profile",
+      "before_sha256": "c2b1e873e74f4cd97013832e4afb8298065292050605cabb12e1d7e1cbab58d8",
+      "after_sha256": "c2b1e873e74f4cd97013832e4afb8298065292050605cabb12e1d7e1cbab58d8",
+      "before_lines": 3,
+      "after_lines": 3,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "08c8fe0721c26be2c1c77d573a392b11000ce04c088f26a0f48b9f222eb0487d",
+        "after_sha256": "08c8fe0721c26be2c1c77d573a392b11000ce04c088f26a0f48b9f222eb0487d",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_attempts.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "e996574797217ebb43aa07174b3e22700e9d6bf47b76c3b46af95cc6e68cabf2",
+      "after_sha256": "b74f35465212045259276226c5963d1dcf0db63ee47c25264640d2b057ca7eab",
+      "before_lines": 662,
+      "after_lines": 632,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "b30b64fe83d6b2f206ad8a142a8f2e3a596c691c2217973dfb7f100a71f396ec",
+        "after_sha256": "b30b64fe83d6b2f206ad8a142a8f2e3a596c691c2217973dfb7f100a71f396ec",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_events.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "312c44c6ec7d98af9bff03a27f799129e21935a4dfb131e98f3ac623fb89a7ff",
+      "after_sha256": "e77cbbffbc7e738ed0f697296e32f2a0d2ad9a35e7361331856033b604b53816",
+      "before_lines": 1094,
+      "after_lines": 981,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "4e5af103586b8e40c6f6658c61bf728ef4f742c4bc5e017ad7c0347d91b2d7cc",
+        "after_sha256": "4e5af103586b8e40c6f6658c61bf728ef4f742c4bc5e017ad7c0347d91b2d7cc",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_models.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "9de389389c61c63d100baadbb2384ad19018eb8c817608e449b7262a325f2ae8",
+      "after_sha256": "28b04d15b4554b8e4e4693780ce9f813baf5339eb01e09ba618b29f21b1a75b6",
+      "before_lines": 861,
+      "after_lines": 817,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "3728260bdd127fea724a338e350a347c15984646236dc319cd230091ee54a149",
+        "after_sha256": "3728260bdd127fea724a338e350a347c15984646236dc319cd230091ee54a149",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_monitor.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "c1b77c3cbfa2140c9ce8bcd626495e393b3268ac1f901f1eabbef9684dff9df6",
+      "after_sha256": "8ee6d48bab729bcb0e045ae67775090efe30a6476af53e748d975eb927cf13fb",
+      "before_lines": 3177,
+      "after_lines": 2808,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "6aac4d2ba861ec249b3d1c263ef9779134a5079b3e423e7c0b183fe4dc9c6760",
+        "after_sha256": "6aac4d2ba861ec249b3d1c263ef9779134a5079b3e423e7c0b183fe4dc9c6760",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_pipeline.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "2933ac43fc33ac0f6d9294e775d8a43c5273c7674a2d45fb21e5f148c58416e3",
+      "after_sha256": "834c91ba43fabbcab0714047a409817aaf4c5ea60520fdfbcfa0b23d4fdda7b9",
+      "before_lines": 2288,
+      "after_lines": 1896,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "d612568879058414db0f173fa490eeabb7af2e8be04864222da45bae859e969c",
+        "after_sha256": "d612568879058414db0f173fa490eeabb7af2e8be04864222da45bae859e969c",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_recording.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "ac01a7945bcb2d4cfc402ad3d4afb4516cad41c24880666a6161a0a387c101bc",
+      "after_sha256": "22652be732fb0817176a6cf441339fc23f36b427f20e44d67f74f12cb96e4d48",
+      "before_lines": 1714,
+      "after_lines": 1619,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "e4ff522579f30718c388556c29b5bc3d428fc65b539c41f9c79a0e0b4c63dfab",
+        "after_sha256": "e4ff522579f30718c388556c29b5bc3d428fc65b539c41f9c79a0e0b4c63dfab",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_replay.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "6f62811c597f8d32556c1130abe938e2d7de0b281c430e3ed04cdaad0472772e",
+      "after_sha256": "4f377798b5f325aabaa3d4b25f2ad473da2ac4d31020c1b867596eeda10ff0fc",
+      "before_lines": 3868,
+      "after_lines": 3434,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "c70b0edc732705daa7f105860887faee8424984e54b511da3edc1e1cf653d6e3",
+        "after_sha256": "c70b0edc732705daa7f105860887faee8424984e54b511da3edc1e1cf653d6e3",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/hitter_task_web.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "41855de3ccce757f4116b0d6f49304681f79d70287d2a7f156954bc85435316c",
+      "after_sha256": "154bfb10b3a5999cefffb87b42cd40f0656ce2904962d290e525a9364cfad9b1",
+      "before_lines": 1001,
+      "after_lines": 952,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "9b03b53d52d0f40b96f46e7bdb6df537aa223bf18330815f1b754c27d557f017",
+        "after_sha256": "9b03b53d52d0f40b96f46e7bdb6df537aa223bf18330815f1b754c27d557f017",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/diagnostics/static/hitter_task_monitor.html",
+      "origin": "active_added",
+      "language": "html",
+      "decision": "reviewed_unchanged",
+      "reason": "consistent two-space HTML/CSS/JavaScript layout; embedded code left untouched",
+      "before_sha256": "13735807ec9d469f1b08aeece219470acf79b5f49f7ebb07f2c20223c16943ee",
+      "after_sha256": "13735807ec9d469f1b08aeece219470acf79b5f49f7ebb07f2c20223c16943ee",
+      "before_lines": 1421,
+      "after_lines": 1421,
+      "equivalence": {
+        "kind": "byte_identity",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/envs/hitter.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "7047a748c1e965d2d65f91a30057fa346eca69f9eb43c877fa429d65f6d16d83",
+      "after_sha256": "1513cdf699454bd74beacac7b8ddbd153cc535da8e9fe8489d6cc42202442229",
+      "before_lines": 2128,
+      "after_lines": 1910,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "06566522aed62d740ddc6d1e5b25929fa01012cf4ffa75a9023dd4a305690283",
+        "after_sha256": "06566522aed62d740ddc6d1e5b25929fa01012cf4ffa75a9023dd4a305690283",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/build_cpp_probe.sh",
+      "origin": "active_added",
+      "language": "shell",
+      "decision": "reviewed_unchanged",
+      "reason": "consistent two-space shell layout; whitespace changes were not justified",
+      "before_sha256": "c44a8f689adcde2340f80fa2c3fd3e0e2cb938a01d4255c2567a315f8ac87b74",
+      "after_sha256": "c44a8f689adcde2340f80fa2c3fd3e0e2cb938a01d4255c2567a315f8ac87b74",
+      "before_lines": 98,
+      "after_lines": 98,
+      "equivalence": {
+        "kind": "byte_identity",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/build_v2_mocap.sh",
+      "origin": "active_added",
+      "language": "shell",
+      "decision": "reviewed_unchanged",
+      "reason": "consistent two-space shell layout; whitespace changes were not justified",
+      "before_sha256": "b1e5e28a301f9b3e768888795f6013414e28564582836ebe69194aee6880d7b9",
+      "after_sha256": "b1e5e28a301f9b3e768888795f6013414e28564582836ebe69194aee6880d7b9",
+      "before_lines": 33,
+      "after_lines": 33,
+      "equivalence": {
+        "kind": "byte_identity",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/build_vicon_frame_stream.sh",
+      "origin": "active_added",
+      "language": "shell",
+      "decision": "reviewed_unchanged",
+      "reason": "consistent two-space shell layout; whitespace changes were not justified",
+      "before_sha256": "3b3eac5f062685c790a3400a7a91b0be84bc88892096e3b7bad217ce4e0c0418",
+      "after_sha256": "3b3eac5f062685c790a3400a7a91b0be84bc88892096e3b7bad217ce4e0c0418",
+      "before_lines": 20,
+      "after_lines": 20,
+      "equivalence": {
+        "kind": "byte_identity",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/chingmu_sdk_client.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "b36a53c6110bc5bccac3223f4446298ce94b2cdcbb931f8e969c6c3929736c16",
+      "after_sha256": "c736b79585d87f3a69c2f5c981e11f91074d4ed85219774720576d3ac679c724",
+      "before_lines": 566,
+      "after_lines": 497,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "15e126f59c3f4ec7dbfff8ed31fa7fe619f36a08503943bf8b4c30c2532810c3",
+        "after_sha256": "15e126f59c3f4ec7dbfff8ed31fa7fe619f36a08503943bf8b4c30c2532810c3",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/chingmu_table_lcm_bridge.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "adc77ba251058372e6ef0645d8c6f5a214411684f516d3aae4a024c4945e9e5b",
+      "after_sha256": "2db3279b2f4f84d0493a84661bff3cfdceb7e467e947c7618a9d1c52d56993d3",
+      "before_lines": 1581,
+      "after_lines": 1343,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "7ff0676797939c5229244969efc4b9a2797b546f821486132a0642aa475ed59b",
+        "after_sha256": "7ff0676797939c5229244969efc4b9a2797b546f821486132a0642aa475ed59b",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/monitor_vicon_lcm.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "0e06c90fc96163c59b7443ae2a1875271e100a045fb73d00e0135aa29ca6935d",
+      "after_sha256": "06bcab7746c873dea37591f021997278013711d20f7d6363d2aa556de707d142",
+      "before_lines": 256,
+      "after_lines": 250,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "2e3a0706880858b6d75f28a8b8cbda22cae369b6c8cf318ebeb10e52a1dfeea7",
+        "after_sha256": "2e3a0706880858b6d75f28a8b8cbda22cae369b6c8cf318ebeb10e52a1dfeea7",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/nexus_probe_cpp.cpp",
+      "origin": "active_added",
+      "language": "cpp",
+      "decision": "formatted",
+      "reason": "clang-format with four-space indentation, attached braces, and include sorting disabled",
+      "before_sha256": "8d48c6dfe8b9f00243c67c2d331535ed1888fc3bb9e1d3aedaecb7230f9481ef",
+      "after_sha256": "20bc5d4300985ac531baca3ca791b1f3943f32266bd4f4798f06fadc71750a5e",
+      "before_lines": 338,
+      "after_lines": 328,
+      "equivalence": {
+        "kind": "cpp_non_comment_tokens",
+        "token_count": 2291,
+        "before_sha256": "68dae666865d8954482c423fc47e23386c5df4ff861064053d1d613ae82bc488",
+        "after_sha256": "68dae666865d8954482c423fc47e23386c5df4ff861064053d1d613ae82bc488",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/run_robotbridge4_vicon_real.sh",
+      "origin": "active_added",
+      "language": "shell",
+      "decision": "reviewed_unchanged",
+      "reason": "consistent two-space shell layout; whitespace changes were not justified",
+      "before_sha256": "bc5ad4017beb743f9b84d52cfc2a06b944d843de43612076932e8001add2e796",
+      "after_sha256": "bc5ad4017beb743f9b84d52cfc2a06b944d843de43612076932e8001add2e796",
+      "before_lines": 189,
+      "after_lines": 189,
+      "equivalence": {
+        "kind": "byte_identity",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_chingmu_ball_track_v2.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "a32b4b9deb041c5c95e6740f4b6f733b0633d7291fde44ecaed2e0736e960c12",
+      "after_sha256": "ad4da2ed4a5f913057ca7b3f9a74e686fd01213bc814d6dcb7ba9174d61517ce",
+      "before_lines": 551,
+      "after_lines": 533,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "45b0ce5359647b5be7da086fd18d18462048c0194f3d71e91e2c3576513026aa",
+        "after_sha256": "45b0ce5359647b5be7da086fd18d18462048c0194f3d71e91e2c3576513026aa",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "32098d4fb04b84e27c671228bd9844a0b55d10bce447f9b881262ab30398c949",
+      "after_sha256": "750f365e5133877a97b22758a77bf1a7c64f81599950f6092a2fe23afdd7eb51",
+      "before_lines": 176,
+      "after_lines": 172,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "f6f321ea72bc35bff3e22fb649dcd5151c720c8a7f5467f514ad5f6226e7dc3c",
+        "after_sha256": "f6f321ea72bc35bff3e22fb649dcd5151c720c8a7f5467f514ad5f6226e7dc3c",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "65dd25b071a71102e6954bebc92f5753587353d12169924193be77dee967e753",
+      "after_sha256": "2d40506c63613e718b71691f3a4e4cec65f0bb94005340fe74c2eca7acd2aefe",
+      "before_lines": 1337,
+      "after_lines": 1267,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "18e27bf0120b6be31b9b975238fbbca5513abd89b04d33fd9ff1e12ce4b44bd4",
+        "after_sha256": "18e27bf0120b6be31b9b975238fbbca5513abd89b04d33fd9ff1e12ce4b44bd4",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_mocap_v2_monitor.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "9a4683b3bc6513cbc087553361d444d8da3202e947458ddc31a59874d56c3d35",
+      "after_sha256": "7bf346b834db2eaf77297103047736ae638a6b27d3dd7e5f2c0cacfa30462bfa",
+      "before_lines": 198,
+      "after_lines": 194,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "fea7a9f6a9bafa7e77bdaf0c635b8eefbd2b6b64740c0ce17e652511269a59f4",
+        "after_sha256": "fea7a9f6a9bafa7e77bdaf0c635b8eefbd2b6b64740c0ce17e652511269a59f4",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_transformation_t_v2.cpp",
+      "origin": "active_added",
+      "language": "cpp",
+      "decision": "formatted",
+      "reason": "clang-format with four-space indentation, attached braces, and include sorting disabled",
+      "before_sha256": "9dbdc79f7744bc75a585cdc09c579bdef9c4edf4e3be37e1f921b29e9f403c1d",
+      "after_sha256": "6fc79669b75c26023751ef6367ddf148730f7ea0f2db3c50b98342b54ea57c8c",
+      "before_lines": 31,
+      "after_lines": 32,
+      "equivalence": {
+        "kind": "cpp_non_comment_tokens",
+        "token_count": 238,
+        "before_sha256": "8754ff807af45d97773b53dca78d4df0582e5747716ac6c72fd6c2e7374f6d57",
+        "after_sha256": "8754ff807af45d97773b53dca78d4df0582e5747716ac6c72fd6c2e7374f6d57",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_transformation_t_v2.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "4d269ab2e385c7a7545b3949927fe6bd6c6beca8101e66724de9373a6744d865",
+      "after_sha256": "c3266c3d6ccc740db7916a663e97e9e0c45b79433cd00266abae274313bb2698",
+      "before_lines": 71,
+      "after_lines": 69,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "6333e08cd6c259a10f990ed33632e306c42544b961e2dfa7f10bb0c963ec9ee7",
+        "after_sha256": "6333e08cd6c259a10f990ed33632e306c42544b961e2dfa7f10bb0c963ec9ee7",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_vicon_ball_track_v2.cpp",
+      "origin": "active_added",
+      "language": "cpp",
+      "decision": "formatted",
+      "reason": "clang-format with four-space indentation, attached braces, and include sorting disabled",
+      "before_sha256": "04d547a16fc96d5539b4b080aa2ca01b76e001b4124b397c9b685da15ba0fd78",
+      "after_sha256": "5aee7b7547381f2bfeab6df71f38d490abcb6669bc1943a30cc0de3aa3889c1a",
+      "before_lines": 938,
+      "after_lines": 806,
+      "equivalence": {
+        "kind": "cpp_non_comment_tokens",
+        "token_count": 6622,
+        "before_sha256": "c8044e97724f866125ae721837e802a85aec2cdedb34195e4a8fc9660312cd51",
+        "after_sha256": "c8044e97724f866125ae721837e802a85aec2cdedb34195e4a8fc9660312cd51",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_vicon_sdk_client.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "31de3666e712423ca2c7050a6466cc307b0b0f5126878c5e580910135edd0041",
+      "after_sha256": "57c2f780df7544d817cb2e1ec3f3e5eb4675545b06905255fb879571b9ae1137",
+      "before_lines": 97,
+      "after_lines": 95,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "53299d303f0462729fbc506ccf0ea838b0074e50900d87ccdf92d4dfb676bece",
+        "after_sha256": "53299d303f0462729fbc506ccf0ea838b0074e50900d87ccdf92d4dfb676bece",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/tests/test_vicon_table_lcm_bridge.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "reviewed_unchanged",
+      "reason": "already compliant with the selected Black profile",
+      "before_sha256": "96ed59eca283fc601091f00c81e9d36a4d780dc6adfcd72de27f85b2af2dc4f3",
+      "after_sha256": "96ed59eca283fc601091f00c81e9d36a4d780dc6adfcd72de27f85b2af2dc4f3",
+      "before_lines": 120,
+      "after_lines": 120,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "c618ebc5cf7f6e946d087ed366dd7e4e36aa2eaefdd5ff66e1edd474421f871c",
+        "after_sha256": "c618ebc5cf7f6e946d087ed366dd7e4e36aa2eaefdd5ff66e1edd474421f871c",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/vicon_datastream_dump.cpp",
+      "origin": "active_added",
+      "language": "cpp",
+      "decision": "formatted",
+      "reason": "clang-format with four-space indentation, attached braces, and include sorting disabled",
+      "before_sha256": "f0179f265fb7d2c9bf7b11c62749b7eec8ba27c3d1d6f9c005850c48a0f0b29f",
+      "after_sha256": "d345af4ed003ffccbfea1bbb5923bb5283ae61af546fe467a7cf9d5a0539b7fa",
+      "before_lines": 208,
+      "after_lines": 185,
+      "equivalence": {
+        "kind": "cpp_non_comment_tokens",
+        "token_count": 1713,
+        "before_sha256": "ffe407d15cc7d3d17745ed6ba44a6501adf38f990e2e33c075d346c8f453c95f",
+        "after_sha256": "ffe407d15cc7d3d17745ed6ba44a6501adf38f990e2e33c075d346c8f453c95f",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/vicon_frame_stream.cpp",
+      "origin": "active_added",
+      "language": "cpp",
+      "decision": "formatted",
+      "reason": "clang-format with four-space indentation, attached braces, and include sorting disabled",
+      "before_sha256": "b85a5ae830576690c697b54c149e2b69a4c839db8d658b50dd6b87c2415724ef",
+      "after_sha256": "17d7a87d20ebc1027abfa46556d1f33cfeae7e1f191397ef1f74a7a8b3fde0bc",
+      "before_lines": 247,
+      "after_lines": 244,
+      "equivalence": {
+        "kind": "cpp_non_comment_tokens",
+        "token_count": 1645,
+        "before_sha256": "4ea34d1abc56caf5416aa4006ac6d5e01b36100e40d20588fe3a33df6a9a0864",
+        "after_sha256": "4ea34d1abc56caf5416aa4006ac6d5e01b36100e40d20588fe3a33df6a9a0864",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/vicon_sdk_client.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "8ce4c08a8cdad283d4e8c47bd9b927ccc3e65ec186e32f5a8640fd01e1d30c3b",
+      "after_sha256": "c99d1c9ed6625c583ad382f9e7dd1e94fa21fe80d8dd7b3d18ec33f45fa33a21",
+      "before_lines": 238,
+      "after_lines": 229,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "bac3a257eba356d70a3104cc3deb503f34099c1235edfa23f320100981e2caa2",
+        "after_sha256": "bac3a257eba356d70a3104cc3deb503f34099c1235edfa23f320100981e2caa2",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/vicon_table_lcm_bridge.cpp",
+      "origin": "active_added",
+      "language": "cpp",
+      "decision": "formatted",
+      "reason": "clang-format with four-space indentation, attached braces, and include sorting disabled",
+      "before_sha256": "7881585137426403ef3ff77445ce7817342e93d1b521b3fded3af87837cb313a",
+      "after_sha256": "504a01fc418aa44b1b40440977d5ed6200f19a32187089d00502024d6ece678f",
+      "before_lines": 2459,
+      "after_lines": 2208,
+      "equivalence": {
+        "kind": "cpp_non_comment_tokens",
+        "token_count": 17823,
+        "before_sha256": "8299c94d4197dc3efcbbcb0f1aa87129b87bd6d4929ddac2931e767b2680f0c6",
+        "after_sha256": "8299c94d4197dc3efcbbcb0f1aa87129b87bd6d4929ddac2931e767b2680f0c6",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/mocap_bridge/vicon_table_lcm_bridge.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "602692161e20dce14cdad460a17dfa1003257ee27fb17444bf89d140079067f9",
+      "after_sha256": "c1d37a9c183c3f88bc96d05ab485999b3483e1f03bbb51bfc8358cb392b1741c",
+      "before_lines": 315,
+      "after_lines": 296,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "9c33f49ae7a93543c655f871dee0c5df935c93c2ce6eea24b03464e4bfbbb09c",
+        "after_sha256": "9c33f49ae7a93543c655f871dee0c5df935c93c2ce6eea24b03464e4bfbbb09c",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/hitter_runtime_test_harness.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "60de31f7fc40dc670b90b52c2ef7985aa1182aa4820bf52f1b4128c01ca2d700",
+      "after_sha256": "e0f9b597e13e2e0ed0d41daa661dc215dbc7470db38658a025ea479ae34fed8c",
+      "before_lines": 455,
+      "after_lines": 444,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "3c8768492a2a1beea99c6e8dd3c0c1c66542adab72ec8a3cca1aa5cb5001e331",
+        "after_sha256": "3c8768492a2a1beea99c6e8dd3c0c1c66542adab72ec8a3cca1aa5cb5001e331",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/hitter_test_factories.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "f21cd96bdfd81fc4aea7d4e8491597ccfd9393f6b2ae0cd62034c4ffea5280d7",
+      "after_sha256": "996880e3cef4b03161f864398afb0b3c307c33cb5e0d65a1dbe4f95217579da3",
+      "before_lines": 92,
+      "after_lines": 88,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "dc5b8108db47a668273e214ca03d73dc248871867f5ac2a1f16127d89f764f21",
+        "after_sha256": "dc5b8108db47a668273e214ca03d73dc248871867f5ac2a1f16127d89f764f21",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_backhand_edge_landing_bias.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "429d4fe2bc4bba3c624d142b0ce259de7ae9ebe97ad37daaabcbd0982e6a4dbb",
+      "after_sha256": "26716d5ae287d3fc99065165eb25725899744f2564ee371f8eaf7eb2267ee708",
+      "before_lines": 210,
+      "after_lines": 206,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "15d4886e98c7a67304193ac0204e174b3ea1181cad7a1aa648115bbba8cdd107",
+        "after_sha256": "15d4886e98c7a67304193ac0204e174b3ea1181cad7a1aa648115bbba8cdd107",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_completed_result_queue.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "8e85ff0274a00a7ab65ec649d32b451772f671a42ca404ff16f42ebf747ee3a5",
+      "after_sha256": "1472c5dcb2513a7b768380947ec4f78091ea5782645009602f46d56ecabcbd7f",
+      "before_lines": 555,
+      "after_lines": 537,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "a65136ef92c3d616a98febe3c8eac5089ed73356d3fdda624a50c7d2930fd0c6",
+        "after_sha256": "a65136ef92c3d616a98febe3c8eac5089ed73356d3fdda624a50c7d2930fd0c6",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_forehand_policy_vx_offset.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "fcb101d5eb7dcac8cf50923cfd0eaadf4a2dc25946abaae1c4942ad23934599f",
+      "after_sha256": "e23224124c405aa51b0f0022bad64604688e9902c5b8b2d9902eff28aba20f3f",
+      "before_lines": 410,
+      "after_lines": 329,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "b33cc30508cfd5b24bd0f30ea8f67246461c1f9af7e7787fae5209a7f44352f1",
+        "after_sha256": "b33cc30508cfd5b24bd0f30ea8f67246461c1f9af7e7787fae5209a7f44352f1",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_planner_failure_reasons.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "38a93234ed86d9ed4f3ca3e2e711b06d777bb5337b7f9c2596d1272227821e2c",
+      "after_sha256": "daeb8f19f3dc71609a5f1044d0798a02126dca24adc3bfc8a6d53531c2535231",
+      "before_lines": 228,
+      "after_lines": 224,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "641336e50c28b77f2f9e8b6f9a8f68384f4379b9ebcd459e702620a2e87644c0",
+        "after_sha256": "641336e50c28b77f2f9e8b6f9a8f68384f4379b9ebcd459e702620a2e87644c0",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_planner_velocity_alignment.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "reviewed_unchanged",
+      "reason": "already compliant with the selected Black profile",
+      "before_sha256": "5d66f234a045d787633bcea6504726fa97260ce8bf9208e10270a54e9e4153de",
+      "after_sha256": "5d66f234a045d787633bcea6504726fa97260ce8bf9208e10270a54e9e4153de",
+      "before_lines": 60,
+      "after_lines": 60,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "9763a0763ebb99ba33c7efd0b255b86a920b83410fd3a4d0cfe67d28489a0d7f",
+        "after_sha256": "9763a0763ebb99ba33c7efd0b255b86a920b83410fd3a4d0cfe67d28489a0d7f",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_policy_first_frame_transition.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "c18586c655a7e79c05ad2cac135bb4400d21aa3288cff9623fdc785b35c09617",
+      "after_sha256": "7137ac7f56068ad0595558cfd8e46c647a3e97f3526705281f4d7dfb655c8559",
+      "before_lines": 350,
+      "after_lines": 332,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "bda1ba7032aa52f7c3d0a120b52ac676c3e9556db1ce6a5f4e414caa9683dfe1",
+        "after_sha256": "bda1ba7032aa52f7c3d0a120b52ac676c3e9556db1ce6a5f4e414caa9683dfe1",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_runtime_factory.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "c17360dc7094d7ede239ba1c4235cc35576d8f60efa66841d221c58a3619f133",
+      "after_sha256": "85ed7a9255074cfe73f95df3f09048ccc36e15d8e0ac5c2e08218452c816bfc5",
+      "before_lines": 984,
+      "after_lines": 957,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "ab0ca2b9698c3e909099f9095fba7ed79e91244bed087879dcd2631cae0c50fc",
+        "after_sha256": "ab0ca2b9698c3e909099f9095fba7ed79e91244bed087879dcd2631cae0c50fc",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_runtime_identity_types.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "reviewed_unchanged",
+      "reason": "already compliant with the selected Black profile",
+      "before_sha256": "35cf590b7e16c0caa9514ca920986c455f149a569a90a3da5ea22065e79e5167",
+      "after_sha256": "35cf590b7e16c0caa9514ca920986c455f149a569a90a3da5ea22065e79e5167",
+      "before_lines": 74,
+      "after_lines": 74,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "dfa6fb205d1d61b2dd241bcee17204fc40ff432e5f7ce60075848cb9b1cb7708",
+        "after_sha256": "dfa6fb205d1d61b2dd241bcee17204fc40ff432e5f7ce60075848cb9b1cb7708",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_runtime_single_shot_integration.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "be652cb6d84de0852496762aa6e1ccb455bc07adc29eb5c9749b9a596437e28e",
+      "after_sha256": "11b5aa2261db93aefd1ca5f0419d6b1fba1fda4144b5c2a860cecedc524f1e75",
+      "before_lines": 662,
+      "after_lines": 631,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "cac55786c80b3e9c2b7d074f2df5bb3bf4f855c1b5e84cc2cb5a4f40cd9faacf",
+        "after_sha256": "cac55786c80b3e9c2b7d074f2df5bb3bf4f855c1b5e84cc2cb5a4f40cd9faacf",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_single_shot_lifecycle.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "5f7cf8fb2f34aaffb946a2f9c065a95955559fc16587a702a6fd5933ace8e3b4",
+      "after_sha256": "45b3d12802eea96d983d6944b1373809682db02ec708cc92ec212c12b6719924",
+      "before_lines": 876,
+      "after_lines": 868,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "e4da14d250521c65945916ba3685c71541dc715d3923140d45fee536aa095083",
+        "after_sha256": "e4da14d250521c65945916ba3685c71541dc715d3923140d45fee536aa095083",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_strike_target_logging.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "c53dcb360cb51e4fa61408eb2b6725041ca60b725424fc47d45cd135da2218ff",
+      "after_sha256": "9dca81925ae90d291dc7feee3bcecbca18eca20ad51ccf687738ff06fad9ddfc",
+      "before_lines": 610,
+      "after_lines": 547,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "3df26e82023bfd9f5681b41061444b7969bf13ff6a33811230bdae10fdd04bc9",
+        "after_sha256": "3df26e82023bfd9f5681b41061444b7969bf13ff6a33811230bdae10fdd04bc9",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_attempts.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "03e0977fd89b756d3834e231d722018f5427ab4dc21e008de248ce43cf308d36",
+      "after_sha256": "ce20efaf7fdbe99ce119d9e0bdf8aac3e0d2db4acb01a575e2ac84b3bcae7825",
+      "before_lines": 882,
+      "after_lines": 871,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "04f44a0d1496cb679ebbbde42fbc681698c2c97424fd69dc2b3f538a8f9348b9",
+        "after_sha256": "04f44a0d1496cb679ebbbde42fbc681698c2c97424fd69dc2b3f538a8f9348b9",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_diagnostics_integration.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "da0174e4478f9774ca1293c31ab50431bd8a493f82ff63506bd4e2958408800a",
+      "after_sha256": "d7c320a86cf70c3ec84317458a4755d90219efdfc0567272310fc1b422b15d41",
+      "before_lines": 579,
+      "after_lines": 558,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "b883e3ef232b8a260a992a78951f7c0cc88db5d1426d308d88af2b8916695db5",
+        "after_sha256": "b883e3ef232b8a260a992a78951f7c0cc88db5d1426d308d88af2b8916695db5",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_diagnostics_performance.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "7d3c4c841ba8eaa27d10dd408e0c512b2ace236791e75242230327e947b64142",
+      "after_sha256": "4f98a9769c4aa761097748671e052580dc7cc134e7c6416e421455668fccc41c",
+      "before_lines": 401,
+      "after_lines": 383,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "208cbc2297d8ac837c72ddfb314846489d086874da7751667a967059d0dd9deb",
+        "after_sha256": "208cbc2297d8ac837c72ddfb314846489d086874da7751667a967059d0dd9deb",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_diagnostics_safety.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "2ef8d47d9006b944de67317398908afd0d0923b406b359ea07014bde0d139919",
+      "after_sha256": "14bdb8428b6db9dd960eb38e545cc9d3c48544a8bb4d3308725d487f3fc19584",
+      "before_lines": 499,
+      "after_lines": 448,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "15c5ae92ddaa3dd48dbd1039a4de4a76c145ffb969c97ab6b5f9bbbf9c5ebded",
+        "after_sha256": "15c5ae92ddaa3dd48dbd1039a4de4a76c145ffb969c97ab6b5f9bbbf9c5ebded",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_events.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "9b2463b72596d489505834670d2cb96d00386e35032d5a5be409caa646241d45",
+      "after_sha256": "35a21b7d1fa0f3c38b574667a71add476cb099cc7783f68239e2fa2b4b7c7eed",
+      "before_lines": 899,
+      "after_lines": 884,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "e9cc2f17f259f13e39f1e430d9eed8f6a72c67c8e8e2f36ec4305604cf06e66f",
+        "after_sha256": "e9cc2f17f259f13e39f1e430d9eed8f6a72c67c8e8e2f36ec4305604cf06e66f",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_frontend.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "e51a2cbd4d7ea3ce123bcb0bc39ac72769fe771cdd797ea63e9cd23020cbd551",
+      "after_sha256": "239d6654ba7138dcdaa0769aab365aae2e38aeda7fe530524443d0beac66557b",
+      "before_lines": 929,
+      "after_lines": 886,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "8b4310dbc6e793f7889b9026a5b5b7736047b6e4be71454a54c8bcdee0f44032",
+        "after_sha256": "8b4310dbc6e793f7889b9026a5b5b7736047b6e4be71454a54c8bcdee0f44032",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_input_adapter.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "d7ce1938abab6dba69297476be5479289658dd4e2a3f08586acd1fda079ec67a",
+      "after_sha256": "e8ce54865eb7defc297507d200c3df2b83a475003dbddcfbba9f5517e452f2d7",
+      "before_lines": 581,
+      "after_lines": 567,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "a8a0620e0b65d8bdea21f45f8c5425bd9c94e1a7cd770740ff7e6b421d763a8f",
+        "after_sha256": "a8a0620e0b65d8bdea21f45f8c5425bd9c94e1a7cd770740ff7e6b421d763a8f",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_monitor.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "7feb760c70cfc1747a57e308b1619de2a35b811febe490af92ca071ebb1ba2b4",
+      "after_sha256": "4b5d7a023d40b58d3eee29486e7139ef7c94726fbca46ffbd3d6fcf7f9663e34",
+      "before_lines": 2931,
+      "after_lines": 2809,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "0cc18da7242e54858b8eb217c4c62e22e4f17ccf4bd19b42105a297e8ad7f2e1",
+        "after_sha256": "0cc18da7242e54858b8eb217c4c62e22e4f17ccf4bd19b42105a297e8ad7f2e1",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_observation.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "69ff6e933e481fd1d09e9ec4cfc71fddb85cd7a4f2814abdba09b6000361d1bc",
+      "after_sha256": "6700cbbee33327adccd80dd61b368076508e3cd33cab00d99ab3318914f46976",
+      "before_lines": 568,
+      "after_lines": 530,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "ccfc9f34854300399c21f3c33fb32107a66220b5d44c67835498e7ec691a49bf",
+        "after_sha256": "ccfc9f34854300399c21f3c33fb32107a66220b5d44c67835498e7ec691a49bf",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_pipeline.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "fd6b5d9e947803654d08ba1112a5a00e266f9ecd80c5c8fd4d3ca086b2b56369",
+      "after_sha256": "7385f5eba59b62bafd8ee1793b2fe37ee0a7fb2600ffef243294a3d4f51b77c8",
+      "before_lines": 2433,
+      "after_lines": 2269,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "92b39a7d363f95327ecf08b5c012b7563b374296004c586dd614b354e530a905",
+        "after_sha256": "92b39a7d363f95327ecf08b5c012b7563b374296004c586dd614b354e530a905",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_recording.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "04037d676f999a8e0d420fbf4c54a07cf420c40323550b3971afa459b02ca2e0",
+      "after_sha256": "3dfce904cf0329cd457a165d19942bcd733ecd29b7c49ad3840993c41e911140",
+      "before_lines": 1656,
+      "after_lines": 1599,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "167b9c40cf4af6630bcb9bf8299b08cc279867bc51450cc98fbae514d1267048",
+        "after_sha256": "167b9c40cf4af6630bcb9bf8299b08cc279867bc51450cc98fbae514d1267048",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_replay.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "b164d9d5149a762bbfc81a4f01bdb585b6159be81a1f4c5f1537d27693725b26",
+      "after_sha256": "0b3bdf81d227f437aca6309661790cb4a446e056706e54cc6b516ebce6d0dc24",
+      "before_lines": 1399,
+      "after_lines": 1370,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "cc98e78302a6e76c477d711ae7d57c86c7f04fa30849d309955dd85d697d32f4",
+        "after_sha256": "cc98e78302a6e76c477d711ae7d57c86c7f04fa30849d309955dd85d697d32f4",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_replay_process.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "d592fd5d3743aa60131d48a792c7530dff5d9b3c6fa781e358f3ba9b83fd4096",
+      "after_sha256": "1ac053856e6ef25201a75726713a0457a65aad9145c0ca0c04ec65b725477faf",
+      "before_lines": 712,
+      "after_lines": 614,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "6ab536d9f67183bae0676e99dc612e2286b3ddcae49569a84361f6262ca47700",
+        "after_sha256": "6ab536d9f67183bae0676e99dc612e2286b3ddcae49569a84361f6262ca47700",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_task_web.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "0084c92437b707e922eda9f7387ffffa731480c72ce69449485ae28c8537d38f",
+      "after_sha256": "2caeb537d266a5543ac8a46348488b2783f1db5eb0df6ebaf7a9cf5a1f89b5e2",
+      "before_lines": 845,
+      "after_lines": 822,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "eb627a0bc155efaee8abb56ee4dd42dcf5586d24b74c20efbf8800a9d162de43",
+        "after_sha256": "eb627a0bc155efaee8abb56ee4dd42dcf5586d24b74c20efbf8800a9d162de43",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_hitter_waiting_anchor.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "0be52d3ab62c5391a1865867874d8f6d874e60673839eb31f44769ff751650ee",
+      "after_sha256": "a67d1ebf606555eca11ab5ba737ca0cda977c624c0230478618e6c06c9466c1a",
+      "before_lines": 136,
+      "after_lines": 130,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "b26796704df6e53632967af3f312cb68badd70873383e89db4a95b5e2df8b0e2",
+        "after_sha256": "b26796704df6e53632967af3f312cb68badd70873383e89db4a95b5e2df8b0e2",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_mujoco_hitter_track_id_v2.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "899bc5bf2d546a2d610d0cc7c2eb35e71d9f774428ca5f152df3791889dfa72b",
+      "after_sha256": "8bd1721b4ed195988ae88eb16cadae45add00b7ec568da6aa5c63b1cdeeba282",
+      "before_lines": 49,
+      "after_lines": 47,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "85e1e7e993576b9149063cdee9526c8217d7ebda3bb0c2a3023f8ed89297e951",
+        "after_sha256": "85e1e7e993576b9149063cdee9526c8217d7ebda3bb0c2a3023f8ed89297e951",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_mujoco_physical_table_tennis.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "f18246244e0a6b887cba7b263ef9a1c8e0e01a75bb365ee1b0e77f6f791246ce",
+      "after_sha256": "4efc29b68f28fa3218baff1ac179df8997beda8c0c29acb390e0b6e263e682bd",
+      "before_lines": 783,
+      "after_lines": 687,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "efbe276da4b34ff8bd5bdb6b584e5e9094d8517833aec90ecf8397215f7097c2",
+        "after_sha256": "efbe276da4b34ff8bd5bdb6b584e5e9094d8517833aec90ecf8397215f7097c2",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_real_world_connection_wait.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "reviewed_unchanged",
+      "reason": "already compliant with the selected Black profile",
+      "before_sha256": "d577887737efed6dd5d1150846130d16a7f1bc2e7e3cfd5700c70759246b8d22",
+      "after_sha256": "d577887737efed6dd5d1150846130d16a7f1bc2e7e3cfd5700c70759246b8d22",
+      "before_lines": 92,
+      "after_lines": 92,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "ff6c9c66c4b435c1fabe7bbdcc63778fbba44b74b6efa50eddb65c0fea3b58e2",
+        "after_sha256": "ff6c9c66c4b435c1fabe7bbdcc63778fbba44b74b6efa50eddb65c0fea3b58e2",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/tests/test_real_world_v2_consumer.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "1efc8eda5f3db5f43bf4c5f3d22e72b0abb91b4cc23299080a2264ef989b7c67",
+      "after_sha256": "d5e973da57b5617e4ac98279a0cf2369b0d73275310e891b10cd0a4959db2c99",
+      "before_lines": 1359,
+      "after_lines": 1230,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "0a167d8e7051184614c378d4804ac0f20430c27a34f9eab45f7d60ab2db5d5c9",
+        "after_sha256": "0a167d8e7051184614c378d4804ac0f20430c27a34f9eab45f7d60ab2db5d5c9",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/utils/hitter_planner.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "75abe231b3be2128ccb66d85cb1c391d7cf17377f2d3e379d5b7d3f4577b927e",
+      "after_sha256": "06b4c553e01b84cca8b65197617290beb1b4ac4b34ba0bcd68630506536c33c6",
+      "before_lines": 1310,
+      "after_lines": 1131,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "502a81cf745609a84d68bb3c8951b849e7a8553ffedc76582805ec8ccdaf17ac",
+        "after_sha256": "502a81cf745609a84d68bb3c8951b849e7a8553ffedc76582805ec8ccdaf17ac",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/utils/hitter_realtime.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "fd14b80f6b51a7d5332c5ca93fc1538bb1abca7fd2a133f4ab390c18db1be000",
+      "after_sha256": "f129ac36d381636babf7ff62700f12b19a22eb4fc32e4cafef4a613236a736f8",
+      "before_lines": 1693,
+      "after_lines": 1493,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "8c02ac669a40b5d76314e9634a1b36d18868c31c904f4f1ba83c3a651b61995e",
+        "after_sha256": "8c02ac669a40b5d76314e9634a1b36d18868c31c904f4f1ba83c3a651b61995e",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/utils/hitter_runtime_factory.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "5f3333511bee1ee264380293ca766307fce14b44487194789f570f785c8892fa",
+      "after_sha256": "5e13e9047d3b656cef39f05fac83174dc7e4beacda2941d86f1acb65ce3a0441",
+      "before_lines": 623,
+      "after_lines": 539,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "e4e6e1a51019b66ccafad64730796795717a013f727a78664a47fa39b9cf029a",
+        "after_sha256": "e4e6e1a51019b66ccafad64730796795717a013f727a78664a47fa39b9cf029a",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/utils/hitter_runtime_types.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "reviewed_unchanged",
+      "reason": "already compliant with the selected Black profile",
+      "before_sha256": "23f47910c98f308274f8275a55f2bf82bd368edb89852a059785e7bb3dc68029",
+      "after_sha256": "23f47910c98f308274f8275a55f2bf82bd368edb89852a059785e7bb3dc68029",
+      "before_lines": 41,
+      "after_lines": 41,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "f9c75f9c8055b4909ef5ac0cdd5464994366ed3ed4d24071391f91f785461da1",
+        "after_sha256": "f9c75f9c8055b4909ef5ac0cdd5464994366ed3ed4d24071391f91f785461da1",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/utils/hitter_task_observation.py",
+      "origin": "active_added",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "Black formatting at 120 columns with original string spelling and import order",
+      "before_sha256": "6cebcc34ce2123e122689976da21ef8ec86987755400501883e4c1f90527c29f",
+      "after_sha256": "6af6259ab124cb613d3b62b09f62a420a2f1bca2dd5003551a989194ffc6e870",
+      "before_lines": 189,
+      "after_lines": 179,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "ef8ca537c2cedaa757a682a451df0c9964e3f3965203621dfe987b3a11a1b030",
+        "after_sha256": "ef8ca537c2cedaa757a682a451df0c9964e3f3965203621dfe987b3a11a1b030",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/simulator/mujoco.py",
+      "origin": "modified_original",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "controlled Black formatting limited to baseline-changed regions",
+      "before_sha256": "7e1d58feafd584f0e60d6f1c85799ea0499f7862cecdfa1bad652ee145b5bb6a",
+      "after_sha256": "e135294f6b407403b4de95dc0f77d9be7cb53d897d2ae593b6135ff2505b1f04",
+      "before_lines": 557,
+      "after_lines": 548,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "d03f0a0554f55d42c827b26f56cc42aa5dcaa245f6a7da76cef22381bdf79010",
+        "after_sha256": "d03f0a0554f55d42c827b26f56cc42aa5dcaa245f6a7da76cef22381bdf79010",
+        "equal": true
+      }
+    },
+    {
+      "path": "deploy/simulator/real_world.py",
+      "origin": "modified_original",
+      "language": "python",
+      "decision": "formatted",
+      "reason": "controlled Black formatting limited to baseline-changed regions",
+      "before_sha256": "ba11c02339d35193a87548eb5bca380e6180b464d9ee5fb5c97dc545b734883a",
+      "after_sha256": "43efd2d51d592d7fb0a18c3ecc795798a5e3389025c0d97c0a4504ac6efeb614",
+      "before_lines": 1645,
+      "after_lines": 1495,
+      "equivalence": {
+        "kind": "python_ast",
+        "before_sha256": "84f7a95789f9345e8bbce3b5c780576c0a2005783e13f0538e98c8c5d85844f9",
+        "after_sha256": "84f7a95789f9345e8bbce3b5c780576c0a2005783e13f0538e98c8c5d85844f9",
+        "equal": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+# Review package: 9c1f6a8383aecc4cc2e109484d1b8e17d2218527..HEAD
+
+## Commits
+1a9bb52 fix: sample HITTER clocks under capture lock
+
+## Files changed
+ deploy/diagnostics/hitter_task_monitor.py |   6 +-
+ deploy/tests/test_hitter_task_monitor.py  | 174 ++++++++++++++++++++++++++++++
+ 2 files changed, 177 insertions(+), 3 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_monitor.py b/deploy/diagnostics/hitter_task_monitor.py
+index 656de9b..81e69a1 100644
+--- a/deploy/diagnostics/hitter_task_monitor.py
++++ b/deploy/diagnostics/hitter_task_monitor.py
+@@ -2577,24 +2577,24 @@ class HitterTaskMonitor:
+ 
+     def _tick_once(self) -> None:
+         """Run one serialized production-order projection tick."""
+         with self._attempt_projection_lock:
+             if self._closed:
+                 return
+             self._tick_once_under_projection()
+ 
+     def _tick_once_under_projection(self) -> None:
+         """Run one production-order tick with exactly two semantic clocks."""
+-        lifecycle_now_s = self._monotonic_fn()
+-        obs_now_s = self._monotonic_fn()
+-        wall_time_us = int(self._wall_time_fn() * 1.0e6)
+         with self._snapshot_capture_lock:
++            lifecycle_now_s = self._monotonic_fn()
++            obs_now_s = self._monotonic_fn()
++            wall_time_us = int(self._wall_time_fn() * 1.0e6)
+             with self._tick_lock:
+                 tick_result = self.pipeline.tick(
+                     lifecycle_now_s=lifecycle_now_s,
+                     obs_now_s=obs_now_s,
+                     wall_time_us=wall_time_us,
+                 )
+                 transitions = self.pipeline.attempt_tracker.advance(
+                     now_monotonic_s=obs_now_s
+                 )
+             self._last_tick_result = tick_result
+diff --git a/deploy/tests/test_hitter_task_monitor.py b/deploy/tests/test_hitter_task_monitor.py
+index 420efe8..e14d8f6 100644
+--- a/deploy/tests/test_hitter_task_monitor.py
++++ b/deploy/tests/test_hitter_task_monitor.py
+@@ -1049,20 +1049,194 @@ class HitterTaskMonitorTest(unittest.TestCase):
+                     pipeline.log.index("pipeline.ingest"),
+                     pipeline.log.index("pipeline.tick"),
+                 )
+             finally:
+                 release_input.set()
+                 input_thread.join(1.0)
+                 tick_thread.join(1.0)
+                 monitor.close(timeout_s=0.0)
+                 transport.close_fds()
+ 
++    def test_tick_clocks_are_sampled_after_waiting_input_commits(self):
++        class ObservableRLock:
++            def __init__(self):
++                self._lock = threading.RLock()
++                self._metadata_lock = threading.Lock()
++                self._owner = None
++                self._depth = 0
++                self.contended = threading.Event()
++
++            def acquire(self):
++                owner = threading.get_ident()
++                with self._metadata_lock:
++                    if self._owner is not None and self._owner != owner:
++                        self.contended.set()
++                acquired = self._lock.acquire()
++                with self._metadata_lock:
++                    if self._owner == owner:
++                        self._depth += 1
++                    else:
++                        self._owner = owner
++                        self._depth = 1
++                return acquired
++
++            def release(self):
++                owner = threading.get_ident()
++                with self._metadata_lock:
++                    if self._owner != owner or self._depth < 1:
++                        raise RuntimeError("lock released by non-owner")
++                    self._depth -= 1
++                    if self._depth == 0:
++                        self._owner = None
++                self._lock.release()
++
++            def held_by_current_thread(self):
++                with self._metadata_lock:
++                    return self._owner == threading.get_ident()
++
++            def __enter__(self):
++                self.acquire()
++                return self
++
++            def __exit__(self, _exc_type, _exc, _traceback):
++                self.release()
++
++        committed = threading.Event()
++
++        def semantic_clock():
++            return 12.0 if committed.is_set() else 10.0
++
++        def wall_clock():
++            return 2.0 if committed.is_set() else 1.0
++
++        with tempfile.TemporaryDirectory() as temp_dir:
++            (
++                monitor,
++                _log,
++                transport,
++                _decoder_log,
++                _ingested,
++                pipeline,
++                _recorder,
++                _web,
++                lane,
++            ) = _constructed_monitor(
++                Path(temp_dir),
++                monotonic_fn=semantic_clock,
++            )
++            monitor._wall_time_fn = wall_clock
++            capture_lock = ObservableRLock()
++            monitor._snapshot_capture_lock = capture_lock
++            ball_state = {
++                "value": BallDiagnosticState(
++                    status="NOT_SEEN",
++                    estimator_sample_count=None,
++                    estimator_window_size=31,
++                    speed_mps=None,
++                    velocity_world_mps=None,
++                    incoming_count=None,
++                    incoming_required_count=3,
++                    incoming_status="NOT_EVALUATED",
++                    blocker="BALL_NOT_SEEN",
++                )
++            }
++            pipeline.ball_diagnostics = SimpleNamespace(
++                snapshot=lambda: ball_state["value"]
++            )
++            original_ingest = pipeline.ingest_adapter_output
++
++            def ingest_and_commit_ball(output):
++                original_ingest(output)
++                ball_state["value"] = BallDiagnosticState(
++                    status="READY",
++                    estimator_sample_count=31,
++                    estimator_window_size=31,
++                    speed_mps=1.0,
++                    velocity_world_mps=(-1.0, 0.0, 0.0),
++                    incoming_count=1,
++                    incoming_required_count=3,
++                    incoming_status="INCOMING",
++                    blocker=None,
++                    source_frame=17,
++                    track_epoch=1,
++                    generation=1,
++                    raw_position_w=(1.0, 0.0, 1.0),
++                    estimated_position_w=(1.0, 0.0, 1.0),
++                    observed_monotonic_s=11.0,
++                )
++
++            pipeline.ingest_adapter_output = ingest_and_commit_ball
++            publication_lock_states = []
++            original_offer = lane.offer
++
++            def observe_publication(draft):
++                publication_lock_states.append(
++                    capture_lock.held_by_current_thread()
++                )
++                return original_offer(draft)
++
++            lane.offer = observe_publication
++            item = SimpleNamespace(
++                channel="vicon_state_data",
++                message=SimpleNamespace(name="ball"),
++                payload_size=96,
++                received_monotonic_s=11.0,
++                wall_time_us=1,
++            )
++            tick_errors = []
++
++            def run_tick():
++                try:
++                    monitor._tick_once()
++                except BaseException as exc:
++                    tick_errors.append(exc)
++
++            tick_thread = threading.Thread(target=run_tick)
++            capture_lock.acquire()
++            try:
++                tick_thread.start()
++                self.assertTrue(capture_lock.contended.wait(1.0))
++                monitor._process_input(item)
++                committed.set()
++            finally:
++                capture_lock.release()
++            tick_thread.join(1.0)
++            try:
++                self.assertFalse(tick_thread.is_alive())
++                self.assertEqual(tick_errors, [])
++                live = next(
++                    draft.payload
++                    for draft in lane.drafts
++                    if draft.kind == "LIVE_SNAPSHOT"
++                )
++                lifecycle = next(
++                    draft.payload["lifecycle"]
++                    for draft in lane.drafts
++                    if draft.kind == "LIFECYCLE_SNAPSHOT"
++                )
++                observed_s = live["ball"]["observed_monotonic_s"]
++                captured_s = live["captured_monotonic_s"]
++                self.assertGreaterEqual(captured_s, observed_s)
++                self.assertEqual(captured_s - observed_s, 1.0)
++                self.assertEqual(live["ball"]["age_s"], 1.0)
++                self.assertEqual(lifecycle["lifecycle_now_s"], 12.0)
++                self.assertEqual(lifecycle["obs_now_s"], 12.0)
++                self.assertEqual(
++                    {draft.wall_time_us for draft in lane.drafts},
++                    {2_000_000},
++                )
++                self.assertTrue(publication_lock_states)
++                self.assertFalse(any(publication_lock_states))
++            finally:
++                monitor.close(timeout_s=0.0)
++                transport.close_fds()
++
+     def test_subject_health_distinguishes_never_live_stale_and_invalid(self):
+         values = iter(
+             (
+                 10.0,
+                 10.025,
+                 10.1,
+                 10.125,
+                 10.7,
+                 10.725,
+                 10.9,

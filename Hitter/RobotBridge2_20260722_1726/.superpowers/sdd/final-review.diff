@@ -1,0 +1,1398 @@
+# Final review package: MuJoCo pure physical table tennis
+# Base: 5cf6a7a324a9f5e8f803ad932bc64dad53d3a8a1
+# Head: 085b9932304f55e11268b7acb7cafcf7de672128 plus uncommitted implementation changes
+# Commits
+085b993 docs: record stable MuJoCo table contact
+c6abd3a docs: align physical contact test timestep
+fe900d6 docs: plan pure physical MuJoCo table tennis
+ab0203c docs: design pure physical MuJoCo table tennis
+# Committed documentation stat
+ ...2026-07-22-mujoco-pure-physical-table-tennis.md | 520 +++++++++++++++++++++
+ ...-22-mujoco-pure-physical-table-tennis-design.md | 114 +++++
+ 2 files changed, 634 insertions(+)
+# Committed documentation diff
+diff --git a/docs/superpowers/plans/2026-07-22-mujoco-pure-physical-table-tennis.md b/docs/superpowers/plans/2026-07-22-mujoco-pure-physical-table-tennis.md
+new file mode 100644
+index 0000000..639fd3a
+--- /dev/null
++++ b/docs/superpowers/plans/2026-07-22-mujoco-pure-physical-table-tennis.md
+@@ -0,0 +1,520 @@
++# MuJoCo 纯物理乒乓球实施计划
++
++> **供智能体执行：** 必须逐任务使用 `superpowers:subagent-driven-development`（推荐）或 `superpowers:executing-plans`。所有步骤均使用复选框跟踪。
++
++**目标：** 彻底删除 Python 对仿真球位置和速度的脚本化覆写，让桌面反弹、球网接触和球拍击球全部由 MuJoCo 接触动力学计算。
++
++**架构：** 规划器只生成策略观测，不再向仿真器注入出球速度。MuJoCo 每个低层子步只计算 PD 力矩、执行 `mujoco.mj_step()` 并读取状态；XML 通过显式接触对限定球只与桌面、球网和球拍发生物理接触。
++
++**技术栈：** Python 3.8、`unittest`、MuJoCo 3.2.3、Hydra/OmegaConf、MJCF XML、NumPy。
++
++## 全局约束
++
++- 目标仓库固定为 `/home/loco1/BOB/Hitter/RobotBridge2`，不修改 Omega 项目。
++- 所有新增文档和测试说明使用中文。
++- 不恢复用户已经删除的旧测试或文档。
++- 不修改 ONNX、105 维观测布局、action gating、真机后端或现有 50 Hz 策略周期。
++- 初版保持 `low_dt=0.005`、`decimation=4`；只有目标速度范围测试证明漏碰时才另行设计 2 ms 子步修改。
++- 不允许任何 fallback 直接写入规划出球速度。
++- `deploy/envs/hitter.py` 已含用户未提交修改；本轮实施代码保持未提交，只检查目标 diff，避免把用户改动混入自动提交。
++
++---
++
++### 任务 1：切断规划器到仿真球状态的注入接口
++
++**文件：**
++- 新建：`deploy/tests/test_mujoco_physical_table_tennis.py`
++- 修改：`deploy/config/hitter.yaml:15-30`
++- 修改：`deploy/envs/hitter.py:280-290, 570-627`
++
++**接口：**
++- 输入：`HitterEnv._copy_hitter_command(command, validated=fields)`。
++- 输出：只更新策略所需的击球类型、底座目标、球拍目标、球拍目标速度和 TTS；不调用仿真器的球状态接口。
++
++- [ ] **步骤 1：先写失败测试**
++
++在新测试文件中加入：
++
++```python
++from __future__ import annotations
++
++import unittest
++from pathlib import Path
++from types import SimpleNamespace
++
++import numpy as np
++import yaml
++
++from envs.hitter import HitterEnv
++
++
++DEPLOY_DIR = Path(__file__).resolve().parents[1]
++
++
++class RecordingSimulator:
++    def __init__(self):
++        self.analytic_hit_calls = 0
++
++    def set_hitter_analytic_racket_hit(self, _target_pos, _outgoing_vel):
++        self.analytic_hit_calls += 1
++
++
++class AnalyticOverrideRemovalTests(unittest.TestCase):
++    def test_hitter_config_contains_no_analytic_ball_override_options(self):
++        config = yaml.safe_load((DEPLOY_DIR / "config" / "hitter.yaml").read_text())
++        table_tennis = config["sim"]["config"]["table_tennis"]
++        for key in (
++            "use_analytic_table_bounce",
++            "use_analytic_racket_hit",
++            "ball_geom_name",
++            "racket_face_geom_name",
++        ):
++            self.assertNotIn(key, table_tennis)
++
++    def test_copying_planner_command_does_not_call_analytic_hit_setter(self):
++        env = HitterEnv.__new__(HitterEnv)
++        env.simulator = RecordingSimulator()
++        env.hitter_command_lifecycle = SimpleNamespace(recovery_duration_s=0.5)
++        fields = {
++            "strike_type_index": 0,
++            "time_to_strike": 0.85,
++            "base_target": np.array([-0.4, 0.0], dtype=np.float32),
++            "base_height": np.float32(0.793),
++            "racket_target": np.array([0.0, 0.1, 1.0], dtype=np.float32),
++            "racket_velocity": np.array([2.8, 0.0, 0.5], dtype=np.float32),
++            "ball_out_velocity": np.array([4.0, 0.0, 1.0], dtype=np.float32),
++        }
++
++        env._copy_hitter_command(SimpleNamespace(), validated=fields)
++
++        self.assertEqual(env.simulator.analytic_hit_calls, 0)
++```
++
++- [ ] **步骤 2：运行测试并确认按预期失败**
++
++运行：
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2/deploy
++conda run --no-capture-output -n rb \
++  python -m unittest discover -s tests \
++  -p 'test_mujoco_physical_table_tennis.py' -v
++```
++
++预期：两个测试失败；配置仍含四个字段，且旧 setter 被调用一次。
++
++- [ ] **步骤 3：做最小生产修改**
++
++修改 `deploy/config/hitter.yaml`，使 `table_tennis` 只保留运行时仍消费的字段：
++
++```yaml
++table_tennis:
++  enabled: true
++  ball_body_name: hitter_ball
++  ball_joint_name: hitter_ball_freejoint
++```
++
++规划器参数继续保留在 `mimic.motion.ball_planner`，不再复制到 MuJoCo 脚本配置。
++
++修改 `HitterEnv`：
++
++- 删除 `self.hitter_ball_out_vel_w` 初始化；
++- `_validated_hitter_command_fields()` 不再返回只为仿真注入服务的 `ball_out_velocity`；
++- `_copy_hitter_command()` 不再保存该字段；
++- 完整删除 `set_hitter_analytic_racket_hit()` 调用块。
++
++同时把测试中的 `fields["ball_out_velocity"]` 删除，确保测试描述最终接口。
++
++- [ ] **步骤 4：重新运行测试并确认通过**
++
++运行与步骤 2 相同的命令。
++
++预期：`Ran 2 tests`，结果 `OK`。
++
++- [ ] **步骤 5：检查本任务补丁（不提交）**
++
++```bash
++git diff -- deploy/tests/test_mujoco_physical_table_tennis.py \
++  deploy/config/hitter.yaml deploy/envs/hitter.py
++```
++
++预期：只包含本任务改动和 `hitter.py` 原有的最高击球高度修改；不执行 `git add` 或 `git commit`。
++
++---
++
++### 任务 2：删除 MuJoCo 解析式反弹与击球运行时代码
++
++**文件：**
++- 修改：`deploy/tests/test_mujoco_physical_table_tennis.py`
++- 修改：`deploy/simulator/mujoco.py:98-316, 370-400, 604-622`
++
++**接口：**
++- 输入：策略生成的绝对关节目标和 MuJoCo 当前状态。
++- 输出：每个子步仅执行物理求解，不存在解析式球状态后处理。
++
++- [ ] **步骤 1：追加失败测试**
++
++在 `AnalyticOverrideRemovalTests` 中加入：
++
++```python
++    def test_mujoco_source_contains_no_analytic_ball_state_override(self):
++        source = (DEPLOY_DIR / "simulator" / "mujoco.py").read_text()
++        forbidden = (
++            "use_analytic_table_bounce",
++            "use_analytic_racket_hit",
++            "analytic_racket_hit_armed",
++            "set_hitter_analytic_racket_hit",
++            "_apply_hitter_ball_analytic_table_bounce",
++            "_apply_hitter_ball_analytic_racket_hit",
++        )
++        for token in forbidden:
++            self.assertNotIn(token, source, token)
++```
++
++- [ ] **步骤 2：运行并确认失败原因正确**
++
++运行任务 1 的 unittest 命令。
++
++预期：新测试因 `mujoco.py` 中仍存在禁用标识符而失败；任务 1 的两个测试保持通过。
++
++- [ ] **步骤 3：删除解析式运行时实现**
++
++在 `Mujoco._init_table_tennis_state()` 中只保留：
++
++```python
++self.table_tennis_cfg = getattr(self.cfg, "table_tennis", None)
++self.table_tennis_enabled = bool(
++    self.table_tennis_cfg and self.table_tennis_cfg.get("enabled", False)
++)
++self.hitter_ball_body_id = -1
++self.hitter_ball_qposadr = None
++self.hitter_ball_qveladr = None
++self.ball_pos_world = np.zeros(3, dtype=np.float32)
++self.ball_quat_world = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
++self.ball_vel_world = np.zeros(3, dtype=np.float32)
++self.ball_ang_vel_world = np.zeros(3, dtype=np.float32)
++self.ball_visible = False
++self.ball_state_estimator_ready = False
++self.ball_state_estimator_sample_count = 0
++self.ball_state_estimator_min_samples = 31
++self.randomize_hitter_ball = False
++self.table_tennis_rng = np.random.default_rng()
++self.table_tennis_ball_trajectory_index = 0
++```
++
++启用后只解析 `ball_body_name` 和 `ball_joint_name`，保留现有 body/joint 有效性检查、qpos/qvel 地址和 `reset_hitter_ball(update_default=True)`。
++
++删除：
++
++- `_hitter_ball_inside_table()`；
++- `_apply_hitter_ball_analytic_table_bounce()`；
++- 所有 analytic racket 状态和辅助方法；
++- `reset_hitter_ball()` 中的 analytic clear；
++- `apply_action()` 中 `prev_ball_pos/prev_ball_vel` 缓存与两次后处理调用。
++
++低层循环最终形态必须是：
++
++```python
++mujoco.mj_step(self.mujoco_model, self.mujoco_data)
++```
++
++- [ ] **步骤 4：运行单测和语法检查**
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2/deploy
++conda run --no-capture-output -n rb \
++  python -m unittest discover -s tests \
++  -p 'test_mujoco_physical_table_tennis.py' -v
++conda run --no-capture-output -n rb \
++  python -m py_compile simulator/mujoco.py envs/hitter.py
++```
++
++预期：`Ran 3 tests` 且 `OK`；`py_compile` 无输出。
++
++- [ ] **步骤 5：检查本任务补丁（不提交）**
++
++```bash
++git diff -- deploy/tests/test_mujoco_physical_table_tennis.py \
++  deploy/simulator/mujoco.py
++```
++
++---
++
++### 任务 3：启用桌面、球网和球拍纯物理接触
++
++**文件：**
++- 修改：`deploy/tests/test_mujoco_physical_table_tennis.py`
++- 修改：`deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml:302-319`
++
++**接口：**
++- 输入：球的 MJCF 自由关节状态。
++- 输出：MuJoCo `contact` 中出现指定接触对，接触求解器决定反弹速度。
++
++- [ ] **步骤 1：增加 XML 拓扑与动态失败测试**
++
++在测试文件顶部增加：
++
++```python
++import xml.etree.ElementTree as ET
++
++import mujoco
++```
++
++增加以下测试类和辅助函数：
++
++```python
++XML_PATH = (
++    DEPLOY_DIR
++    / "data"
++    / "assets"
++    / "g1"
++    / "g1_29dof_hitter_racket_table_tennis.xml"
++)
++
++
++def _geom_id(model, name: str) -> int:
++    geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
++    if geom_id < 0:
++        raise AssertionError(f"缺少 MuJoCo geom: {name}")
++    return int(geom_id)
++
++
++def _has_contact(data, geom_a: int, geom_b: int) -> bool:
++    expected = {geom_a, geom_b}
++    return any(
++        {int(data.contact[i].geom1), int(data.contact[i].geom2)} == expected
++        for i in range(data.ncon)
++    )
++
++
++class PurePhysicalContactTests(unittest.TestCase):
++    def test_xml_defines_only_intended_ball_contact_pairs(self):
++        root = ET.parse(XML_PATH).getroot()
++        pairs = {
++            frozenset((pair.attrib["geom1"], pair.attrib["geom2"]))
++            for pair in root.findall("./contact/pair")
++        }
++        self.assertIn(
++            frozenset(("right_racket_face_collision", "hitter_ball_geom")),
++            pairs,
++        )
++        self.assertIn(
++            frozenset(("hitter_table_top", "hitter_ball_geom")),
++            pairs,
++        )
++        self.assertIn(
++            frozenset(("hitter_table_net", "hitter_ball_geom")),
++            pairs,
++        )
++        self.assertEqual(root.findall("./contact/exclude"), [])
++        center_line = root.find(".//geom[@name='hitter_table_center_line']")
++        self.assertIsNotNone(center_line)
++        self.assertEqual(center_line.attrib.get("contype"), "0")
++        self.assertEqual(center_line.attrib.get("conaffinity"), "0")
++
++    def test_falling_ball_contacts_table_and_rebounds(self):
++        model = mujoco.MjModel.from_xml_path(str(XML_PATH))
++        model.opt.timestep = 0.005
++        data = mujoco.MjData(model)
++        ball_geom = _geom_id(model, "hitter_ball_geom")
++        table_geom = _geom_id(model, "hitter_table_top")
++        ball_joint = mujoco.mj_name2id(
++            model, mujoco.mjtObj.mjOBJ_JOINT, "hitter_ball_freejoint"
++        )
++        qposadr = int(model.jnt_qposadr[ball_joint])
++        qveladr = int(model.jnt_dofadr[ball_joint])
++        data.qpos[qposadr:qposadr + 3] = [1.0, 0.25, 0.84]
++        data.qvel[qveladr:qveladr + 3] = [0.0, 0.0, -2.0]
++        mujoco.mj_forward(model, data)
++
++        contacted = False
++        rebound_vz = -np.inf
++        for _ in range(120):
++            mujoco.mj_step(model, data)
++            contacted = contacted or _has_contact(data, ball_geom, table_geom)
++            if contacted:
++                rebound_vz = max(rebound_vz, float(data.qvel[qveladr + 2]))
++            self.assertTrue(np.isfinite(data.qpos).all())
++            self.assertTrue(np.isfinite(data.qvel).all())
++
++        self.assertTrue(contacted)
++        self.assertGreater(rebound_vz, 0.0)
++
++    def test_racket_contact_is_physical_across_operating_speeds(self):
++        for speed in (2.0, 4.0, 6.0):
++            with self.subTest(speed=speed):
++                model = mujoco.MjModel.from_xml_path(str(XML_PATH))
++                model.opt.timestep = 0.005
++                model.opt.gravity[:] = 0.0
++                data = mujoco.MjData(model)
++                mujoco.mj_forward(model, data)
++                ball_geom = _geom_id(model, "hitter_ball_geom")
++                racket_geom = _geom_id(model, "right_racket_face_collision")
++                ball_joint = mujoco.mj_name2id(
++                    model, mujoco.mjtObj.mjOBJ_JOINT, "hitter_ball_freejoint"
++                )
++                qposadr = int(model.jnt_qposadr[ball_joint])
++                qveladr = int(model.jnt_dofadr[ball_joint])
++                rotation = data.geom_xmat[racket_geom].reshape(3, 3)
++                normal = rotation @ np.array([0.0, -1.0, 0.0])
++                normal /= np.linalg.norm(normal)
++                data.qpos[qposadr:qposadr + 3] = (
++                    data.geom_xpos[racket_geom] + 0.15 * normal
++                )
++                data.qvel[qveladr:qveladr + 3] = -speed * normal
++                mujoco.mj_forward(model, data)
++
++                contacted = False
++                outgoing_normal_speed = -np.inf
++                for _ in range(80):
++                    mujoco.mj_step(model, data)
++                    contacted = contacted or _has_contact(
++                        data, ball_geom, racket_geom
++                    )
++                    if contacted:
++                        outgoing_normal_speed = max(
++                            outgoing_normal_speed,
++                            float(np.dot(data.qvel[qveladr:qveladr + 3], normal)),
++                        )
++
++                self.assertTrue(contacted)
++                self.assertGreater(outgoing_normal_speed, 0.0)
++```
++
++- [ ] **步骤 2：运行并确认桌面相关测试失败**
++
++运行任务 1 的 unittest 命令。
++
++预期：XML 缺少桌面、球网接触对且仍有 `exclude`；下落球不会产生桌面接触。球拍物理接触子测试应通过。
++
++- [ ] **步骤 3：修改 MJCF 接触配置**
++
++把中心线设置为视觉几何体：
++
++```xml
++<geom name="hitter_table_center_line" ... contype="0" conaffinity="0" ... />
++```
++
++保持球为：
++
++```xml
++<geom name="hitter_ball_geom" ... contype="0" conaffinity="0" ... />
++```
++
++删除：
++
++```xml
++<exclude body1="hitter_table" body2="hitter_ball" />
++```
++
++在 `<contact>` 中设置三个显式物理接触对：
++
++```xml
++<pair geom1="hitter_table_top" geom2="hitter_ball_geom"
++      condim="6" friction="0.20 0.005 0.0001"
++      solref="0.04 0.10" solimp="0.95 0.99 0.001" />
++<pair geom1="hitter_table_net" geom2="hitter_ball_geom"
++      condim="6" friction="0.20 0.005 0.0001"
++      solref="0.004 0.35" solimp="0.95 0.99 0.001" />
++<pair geom1="right_racket_face_collision" geom2="hitter_ball_geom"
++      condim="6" friction="0.20 0.005 0.0001"
++      solref="0.004 0.35" solimp="0.95 0.99 0.001" />
++```
++
++`solref="0.04 0.10"` 是在 5 ms 子步下经过连续三次反弹不增能回归验证的稳定初值；本任务不声明其与真机恢复系数完全相同。首轮候选 `0.03 0.10` 会在第二次反弹产生数值增能，因此已弃用。
++
++- [ ] **步骤 4：运行动态接触测试**
++
++运行任务 1 的 unittest 命令。
++
++预期：全部测试通过；连续三次桌面反弹均不增能，2、4、6 m/s 球拍子测试均检测到真实 contact 和正向法向出球速度。
++
++- [ ] **步骤 5：检查本任务补丁（不提交）**
++
++```bash
++git diff -- deploy/tests/test_mujoco_physical_table_tennis.py \
++  deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
++```
++
++---
++
++### 任务 4：全量验证与物理参数报告
++
++**文件：**
++- 验证：`deploy/tests/test_mujoco_physical_table_tennis.py`
++- 验证：`deploy/config/hitter.yaml`
++- 验证：`deploy/envs/hitter.py`
++- 验证：`deploy/simulator/mujoco.py`
++- 验证：`deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml`
++
++**接口：**
++- 输入：最终工作树。
++- 输出：无脚本状态覆写、物理接触通过、语法和配置可加载的证据。
++
++- [ ] **步骤 1：运行专用测试**
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2/deploy
++conda run --no-capture-output -n rb \
++  python -m unittest discover -s tests \
++  -p 'test_mujoco_physical_table_tennis.py' -v
++```
++
++预期：全部测试为 `OK`。
++
++- [ ] **步骤 2：运行语法与配置组合检查**
++
++```bash
++conda run --no-capture-output -n rb \
++  python -m py_compile simulator/mujoco.py envs/hitter.py
++conda run --no-capture-output -n rb python - <<'PY'
++from pathlib import Path
++from hydra import compose, initialize_config_dir
++from omegaconf import OmegaConf
++
++config_dir = Path("config").resolve()
++with initialize_config_dir(version_base=None, config_dir=str(config_dir)):
++    cfg = compose(config_name="hitter", overrides=["sim=mujoco"])
++table_tennis = OmegaConf.to_container(
++    cfg.sim.config.table_tennis, resolve=True
++)
++assert table_tennis == {
++    "enabled": True,
++    "ball_body_name": "hitter_ball",
++    "ball_joint_name": "hitter_ball_freejoint",
++}
++print(table_tennis)
++PY
++```
++
++预期：`py_compile` 无输出，配置脚本打印只含三个键的字典。
++
++- [ ] **步骤 3：确认不存在脚本状态覆写残留**
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2
++rg -n "analytic_(table|racket)|use_analytic|set_hitter_analytic" \
++  deploy/config/hitter.yaml deploy/envs/hitter.py deploy/simulator/mujoco.py
++```
++
++预期：无输出。
++
++- [ ] **步骤 4：检查补丁完整性和脏工作区隔离**
++
++```bash
++git diff --check
++git status --short
++```
++
++预期：`git diff --check` 无输出；状态中原有用户修改仍保持，实施代码未被自动提交。
++
++- [ ] **步骤 5：记录标定边界**
++
++最终交付中明确报告：
++
++```text
++桌面和球拍均已改为 MuJoCo 真实接触；
++当前桌面 solref="0.04 0.10" 是 5 ms 下不连续增能的稳定初值，尚不能声称与真实桌面恢复系数完全等价；
++5 ms 下已覆盖 2、4、6 m/s 球拍接触；
++若现场速度超出范围出现漏碰，再单独评估 2 ms MuJoCo 子步。
++```
+diff --git a/docs/superpowers/specs/2026-07-22-mujoco-pure-physical-table-tennis-design.md b/docs/superpowers/specs/2026-07-22-mujoco-pure-physical-table-tennis-design.md
+new file mode 100644
+index 0000000..644d090
+--- /dev/null
++++ b/docs/superpowers/specs/2026-07-22-mujoco-pure-physical-table-tennis-design.md
+@@ -0,0 +1,114 @@
++# MuJoCo 纯物理乒乓球设计
++
++## 目标
++
++让 MuJoCo 完全通过接触动力学计算桌面反弹和球拍击球。规划器仍可预测击球并生成策略观测，但任何 Python 代码都不得为了制造反弹或击球效果而覆写仿真球的位置、线速度或角速度。
++
++## 范围
++
++- 删除两套脚本机制：
++  - 解析式桌面反弹；
++  - 解析式球拍击球。
++- 初期保持当前 50 Hz 策略循环和 5 ms MuJoCo 子步长不变。
++- 保留规划器、轨迹预测器、状态估计器、指令生命周期和真机后端。
++- 保持当前球的质量和半径不变。
++- 使用 MuJoCo 显式接触对，让球只与预期的乒乓球设施发生碰撞。
++
++## 非目标
++
++- 不修改 ONNX 策略或 105 维观测布局。
++- 不增加 action gating。
++- 不改变真机控制行为。
++- 在完成多速度标定之前，不声称初始接触参数与真实球桌完全一致。
++- 不允许重新加入任何把规划出球速度直接写入仿真球状态的兜底逻辑。
++
++## 当前问题
++
++`deploy/simulator/mujoco.py` 当前会在 `mj_step()` 之后执行两种状态覆写：
++
++1. 球到达桌面高度时，代码会钳制球的 `z` 坐标、缩放水平速度并反转竖直速度。
++2. 球靠近规划击球点时，即使没有发生真实球拍接触，代码也可能把球吸附到目标点，并把球速替换成规划器给出的期望出球速度。
++
++XML 中已经存在可工作的球拍—球显式接触对。桌面—球接触则同时被接触排除项和球的零碰撞掩码关闭。
++
++## 选定方案
++
++### 运行时数据流
++
++MuJoCo 低层循环调整为：
++
++```text
++策略 q_des
++  -> PD 力矩
++  -> 力矩限幅
++  -> mujoco.mj_step()
++  -> 读取球的位置和速度
++```
++
++物理步之后不再修改球状态。规划器只提供建议：
++
++```text
++球状态 -> 预测器/规划器 -> 策略观测 -> 策略动作
++```
++
++规划结果不得再作为强制球速回写 MuJoCo。
++
++### Python 与配置清理
++
++- 从 `deploy/config/hitter.yaml` 删除 `use_analytic_table_bounce` 和 `use_analytic_racket_hit`。
++- 删除只用于解析式球拍击球几何体查找、且不再有其他消费者的配置字段。
++- 删除 `HitterEnv._copy_hitter_command()` 中规划器到仿真器的解析式击球调用。
++- 从 `deploy/simulator/mujoco.py` 删除解析式桌面反弹和球拍击球相关的状态、布防逻辑、距离判断、状态覆写函数、重置钩子和物理步后调用。
++- 保留估计器的反弹检测和规划器的反弹预测，因为它们只观察或预测运动，不修改 MuJoCo 状态。
++
++### MuJoCo 接触设计
++
++- 保留现有 `right_racket_face_collision` 与 `hitter_ball_geom` 的显式接触对。
++- 删除桌体与球之间的接触排除项。
++- 增加 `hitter_table_top` 与 `hitter_ball_geom` 的显式接触对。
++- 增加 `hitter_table_net` 与 `hitter_ball_geom` 的显式接触对。
++- 继续关闭球的通用碰撞掩码，避免球意外撞上所有机器人网格、桌腿或装饰几何体。
++- 将凸起的桌面中心白线设置为仅显示、不参与碰撞，避免它形成 6 mm 的虚假物理凸棱。
++
++第一版保持 5 ms 子步长。现有检查表明，相对速度为 2～6 m/s 时球拍物理接触可以正常触发。如果目标工作速度范围内仍出现漏碰，再单独把 MuJoCo 子步长降低到 2 ms，同时保持策略周期为 50 Hz。
++
++### 接触参数标定
++
++物理接触响应由 XML 中的 `solref`、`solimp` 和摩擦参数决定，而不是规划器的恢复系数字段。初始参数首先要保证真实、稳定的反弹，然后使用多组向下和斜向入射速度进行评估。
++
++标定输出至少包含：
++
++- 接触前、接触后的速度；
++- 实测竖直恢复系数；
++- 实测水平速度保持比例；
++- 是否检测到真实接触；
++- 是否出现数值稳定性警告。
++
++首次删除脚本逻辑时，不要求接触参数立刻与配置中的真机系数完全一致。但完成多速度标定之前，不得把结果描述为与真机物理等价。
++
++## 测试
++
++实现遵循测试先行：
++
++1. 配置测试：当前 HITTER 配置中不再启用或保留解析式反弹/击球选项。
++2. 源码路径回归测试：规划指令生效时，不得调用已删除的解析式击球接口，也不得覆写球状态。
++3. XML 接触测试：球拍—球、桌面—球、球网—球显式接触对存在；桌面—球排除项不存在；中心线不参与碰撞。
++4. 动态桌面测试：下落球必须产生真实桌面接触，随后竖直速度变为正值，而且过程中没有 Python 状态覆写。
++5. 动态球拍测试：在 2～6 m/s 工作速度范围内向球拍发射球，必须产生真实接触，并由物理解算器改变球速。
++6. 稳定性冒烟测试：代表性的发球、桌面反弹和球拍接触过程保持有限数值，且不产生 MuJoCo 数值不稳定警告。
++
++测试放入一个新的、聚焦纯物理接触的测试文件。不得恢复用户已经删除的旧测试文件，也不得改动无关的脏工作区内容。
++
++## 预期行为变化
++
++MuJoCo 将暴露真实的击球失败。此前解析式逻辑会把距离规划点 8 cm 内、且球拍距离球 20 cm 内的情况视为成功；改成纯物理后，这些情况中没有实际接触的都会成为真实 miss。
++
++因此初期看到击球成功率下降是正常现象。这个下降能够真实反映策略时序、球拍姿态、碰撞几何体或接触参数存在的问题。
++
++## 完成标准
++
++- 不存在通过修改球位置或速度来实现桌面反弹或球拍击球的活动代码路径。
++- 组合后的 HITTER 配置中不存在解析式桌面反弹或球拍击球配置。
++- 桌面和球拍接触完全由 MuJoCo 生成，并有自动化测试覆盖。
++- 代表性运动在当前 5 ms 子步长下保持数值稳定。
++- 所有无关的工作区修改保持原样。
+# Implementation worktree status/stat
+ M deploy/config/hitter.yaml
+ M deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+ M deploy/envs/hitter.py
+ M deploy/simulator/mujoco.py
+?? deploy/tests/test_mujoco_physical_table_tennis.py
+ deploy/config/hitter.yaml                          |  12 --
+ .../g1/g1_29dof_hitter_racket_table_tennis.xml     |   6 +-
+ deploy/envs/hitter.py                              |  24 +--
+ deploy/simulator/mujoco.py                         | 208 +--------------------
+ 4 files changed, 7 insertions(+), 243 deletions(-)
+# Implementation tracked diff
+diff --git a/deploy/config/hitter.yaml b/deploy/config/hitter.yaml
+index 5ea8802..770a2fb 100644
+--- a/deploy/config/hitter.yaml
++++ b/deploy/config/hitter.yaml
+@@ -9,22 +9,10 @@ defaults:
+ 
+ device: cpu
+ 
+ sim:
+   config:
+     motion: ${mimic.motion}
+     table_tennis:
+       enabled: true
+       ball_body_name: hitter_ball
+       ball_joint_name: hitter_ball_freejoint
+-      ball_geom_name: hitter_ball_geom
+-      racket_face_geom_name: right_racket_face_collision
+-      use_analytic_table_bounce: true
+-      use_analytic_racket_hit: true
+-      table_center_xy_w: ${mimic.motion.ball_planner.table_center_xy_w}
+-      table_height: ${mimic.motion.ball_planner.table_height}
+-      table_length: ${mimic.motion.ball_planner.table_length}
+-      table_width: ${mimic.motion.ball_planner.table_width}
+-      ball_radius: ${mimic.motion.ball_planner.ball_radius}
+-      drag_coefficient: ${mimic.motion.ball_planner.drag_coefficient}
+-      vertical_restitution: ${mimic.motion.ball_planner.vertical_restitution}
+-      horizontal_restitution: ${mimic.motion.ball_planner.horizontal_restitution}
+diff --git a/deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml b/deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+index 6f15916..14684e0 100644
+--- a/deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
++++ b/deploy/data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+@@ -293,28 +293,28 @@
+     <material name="table_blue" rgba="0.02 0.18 0.42 1" />
+     <material name="table_edge" rgba="0.9 0.9 0.9 1" />
+     <material name="table_net" rgba="0.05 0.05 0.05 0.45" />
+     <material name="hitter_ball_orange" rgba="1.0 0.45 0.05 1" />
+   </asset>
+   <worldbody>
+     <light pos="1 0 3.5" dir="0 0 -1" directional="true" />
+     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" />
+     <body name="hitter_table" pos="0 0 0">
+       <geom name="hitter_table_top" type="box" pos="1.365369 0 0.735" size="1.365369 0.7562255 0.025" contype="1" conaffinity="1" condim="3" material="table_blue" friction="1.0 0.005 0.0001" />
+-      <geom name="hitter_table_center_line" type="box" pos="1.365369 0 0.763" size="1.365369 0.006 0.003" contype="1" conaffinity="1" condim="3" material="table_edge" friction="1.0 0.005 0.0001" />
++      <geom name="hitter_table_center_line" type="box" pos="1.365369 0 0.763" size="1.365369 0.006 0.003" contype="0" conaffinity="0" condim="3" material="table_edge" friction="1.0 0.005 0.0001" />
+       <geom name="hitter_table_net" type="box" pos="1.365369 0 0.84" size="0.01 0.7562255 0.08" contype="1" conaffinity="1" condim="3" material="table_net" friction="1.0 0.005 0.0001" />
+       <geom name="hitter_table_leg_near_left" type="box" pos="0.18 0.62 0.36" size="0.025 0.025 0.36" contype="1" conaffinity="1" condim="3" material="table_edge" friction="1.0 0.005 0.0001" />
+       <geom name="hitter_table_leg_near_right" type="box" pos="0.18 -0.62 0.36" size="0.025 0.025 0.36" contype="1" conaffinity="1" condim="3" material="table_edge" friction="1.0 0.005 0.0001" />
+       <geom name="hitter_table_leg_far_left" type="box" pos="2.550738 0.62 0.36" size="0.025 0.025 0.36" contype="1" conaffinity="1" condim="3" material="table_edge" friction="1.0 0.005 0.0001" />
+       <geom name="hitter_table_leg_far_right" type="box" pos="2.550738 -0.62 0.36" size="0.025 0.025 0.36" contype="1" conaffinity="1" condim="3" material="table_edge" friction="1.0 0.005 0.0001" />
+     </body>
+     <body name="hitter_ball" pos="1.8 0 1.05">
+       <freejoint name="hitter_ball_freejoint" />
+       <geom name="hitter_ball_geom" type="sphere" size="0.02" mass="0.0027" material="hitter_ball_orange" contype="0" conaffinity="0" condim="6" friction="0.2 0.005 0.0001" solref="0.003 0.35" solimp="0.95 0.99 0.001" />
+     </body>
+   </worldbody>
+   <contact>
+-    <!-- Ball-table contact is scripted in simulator/mujoco.py to match the planner's analytic bounce. -->
+-    <exclude body1="hitter_table" body2="hitter_ball" />
++    <pair geom1="hitter_table_top" geom2="hitter_ball_geom" condim="6" friction="0.20 0.005 0.0001" solref="0.04 0.10" solimp="0.95 0.99 0.001" />
++    <pair geom1="hitter_table_net" geom2="hitter_ball_geom" condim="6" friction="0.20 0.005 0.0001" solref="0.004 0.35" solimp="0.95 0.99 0.001" />
+     <pair geom1="right_racket_face_collision" geom2="hitter_ball_geom" condim="6" friction="0.20 0.005 0.0001" solref="0.004 0.35" solimp="0.95 0.99 0.001" />
+   </contact>
+ </mujoco>
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index d63d172..8c26689 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -279,21 +279,20 @@ class HitterEnv(BaseEnv):
+         self.hitter_waiting_base_target_pos_w = np.asarray(
+             [
+                 waiting_base_target_xy_w[0],
+                 waiting_base_target_xy_w[1],
+                 self.hitter_base_target_z_w,
+             ],
+             dtype=np.float32,
+         )
+         self.hitter_racket_target_pos_w_fixed = np.zeros(3, dtype=np.float32)
+         self.hitter_racket_target_vel_w = np.zeros(3, dtype=np.float32)
+-        self.hitter_ball_out_vel_w = np.zeros(3, dtype=np.float32)
+ 
+     def _new_hitter_command_lifecycle(self) -> HitterCommandLifecycle:
+         planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
+ 
+         def sample_swing_duration() -> float:
+             return self._sample_range_from_cfg(
+                 planner_cfg,
+                 "swing_duration_range",
+                 tuple(self.motion_cfg.get("swing_duration_range", (1.75, 1.95))),
+             )
+@@ -460,21 +459,21 @@ class HitterEnv(BaseEnv):
+             dt=float(planner_cfg.get("prediction_dt", 0.005)),
+             table_height=float(planner_cfg.get("table_height", 0.76)),
+             table_center_xy=table_center_xy,
+             table_length=float(planner_cfg.get("table_length", 2.74)),
+             table_width=float(planner_cfg.get("table_width", 1.525)),
+             ball_radius=float(planner_cfg.get("ball_radius", 0.02)),
+         )
+         table_height = float(planner_cfg.get("table_height", 0.76))
+         maximum_hit_height = round(
+             table_height
+-            + float(planner_cfg.get("maximum_hit_height_above_table_m", 0.50)),
++            + float(planner_cfg.get("maximum_hit_height_above_table_m", 0.69)),
+             12,
+         )
+         strike_planner = StrikePlanner(
+             predictor=predictor,
+             virtual_hit_plane_x=float(planner_cfg.get("virtual_hit_plane_x", 0.0)),
+             desired_landing_point=planner_cfg.get("desired_landing_point_w", [2.05, 0.0, 0.78]),
+             post_hit_flight_time=float(planner_cfg.get("post_hit_flight_time", 0.55)),
+             racket_restitution=float(planner_cfg.get("racket_restitution", 0.85)),
+             prediction_horizon_s=float(planner_cfg.get("prediction_horizon_s", 2.0)),
+             maximum_prediction_horizon_s=float(
+@@ -565,74 +564,53 @@ class HitterEnv(BaseEnv):
+         racket_velocity = self._validated_vector(
+             command.v_racket_target_w,
+             name="v_racket_target_w",
+             size=3,
+         )
+         ball_in_velocity = self._validated_vector(
+             strike_plan.v_ball_in,
+             name="strike_plan.v_ball_in",
+             size=3,
+         )
+-        ball_out_velocity = self._validated_vector(
+-            strike_plan.v_ball_out,
+-            name="strike_plan.v_ball_out",
+-            size=3,
+-        )
+         base_height = float(self._hitter_target_base_height_w())
+         if not np.isfinite(base_height):
+             raise ValueError("HITTER target base height must be finite.")
+         return {
+             "strike_type": strike_type,
+             "strike_type_index": 0 if strike_type == "forehand" else 1,
+             "time_to_strike": time_to_strike,
+             "base_target": base_target,
+             "base_height": np.float32(base_height),
+             "racket_target": racket_target,
+             "racket_velocity": racket_velocity,
+             "ball_in_velocity": ball_in_velocity,
+-            "ball_out_velocity": ball_out_velocity,
+         }
+ 
+     def _copy_hitter_command(self, command, *, validated: dict | None = None) -> None:
+         fields = (
+             self._validated_hitter_command_fields(command)
+             if validated is None
+             else validated
+         )
+         self.hitter_strike_type = fields["strike_type_index"]
+         self.hitter_base_target_xy_w = fields["base_target"].copy()
+         self.hitter_base_target_z_w = fields["base_height"]
+         self.hitter_racket_target_pos_w_fixed = fields["racket_target"].copy()
+         self.hitter_racket_target_vel_w = fields["racket_velocity"].copy()
+-        self.hitter_ball_out_vel_w = fields["ball_out_velocity"].copy()
+         self.hitter_strike_elapsed_s = 0.0
+         self.hitter_strike_time_s = fields["time_to_strike"]
+         self.hitter_strike_duration_s = max(
+             fields["time_to_strike"]
+             + float(self.hitter_command_lifecycle.recovery_duration_s),
+             fields["time_to_strike"],
+         )
+ 
+-        analytic_hit = getattr(
+-            self.simulator,
+-            "set_hitter_analytic_racket_hit",
+-            None,
+-        )
+-        if callable(analytic_hit):
+-            try:
+-                analytic_hit(
+-                    self.hitter_racket_target_pos_w_fixed,
+-                    self.hitter_ball_out_vel_w,
+-                )
+-            except Exception as exc:
+-                logger.warning("Failed to update analytic HITTER racket hit: {}", exc)
+-
+     def _plan_hitter_snapshot(self, snapshot: BallEstimateSnapshot):
+         if not snapshot.visible:
+             if getattr(self.simulator, "is_real", False):
+                 self.hitter_incoming_track_confirmation.reset()
+             raise RuntimeError(TRACK_ENDED_ERROR)
+         if not snapshot.ready:
+             raise ValueError("HITTER ball estimator is not ready.")
+         if not snapshot.base_valid:
+             raise ValueError("HITTER base pose is not valid.")
+ 
+diff --git a/deploy/simulator/mujoco.py b/deploy/simulator/mujoco.py
+index f991300..80c4e6e 100755
+--- a/deploy/simulator/mujoco.py
++++ b/deploy/simulator/mujoco.py
+@@ -90,238 +90,55 @@ class Mujoco(BaseSim):
+             body_id = mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_BODY, name)
+             if body_id < 0:
+                 logger.warning(f"[Mujoco] foot body not found: {name}")
+                 continue
+             self.foot_body_ids.append(body_id)
+         self.foot_body_ids = np.asarray(self.foot_body_ids, dtype=np.int32)
+         self.foot_contact_forces_w = np.zeros((len(self.foot_body_ids), 3), dtype=np.float32)
+ 
+     def _init_table_tennis_state(self):
+         self.table_tennis_cfg = getattr(self.cfg, "table_tennis", None)
+-        self.table_tennis_enabled = bool(self.table_tennis_cfg and self.table_tennis_cfg.get("enabled", False))
++        self.table_tennis_enabled = bool(
++            self.table_tennis_cfg and self.table_tennis_cfg.get("enabled", False)
++        )
+         self.hitter_ball_body_id = -1
+         self.hitter_ball_qposadr = None
+         self.hitter_ball_qveladr = None
+         self.ball_pos_world = np.zeros(3, dtype=np.float32)
+         self.ball_quat_world = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
+         self.ball_vel_world = np.zeros(3, dtype=np.float32)
+         self.ball_ang_vel_world = np.zeros(3, dtype=np.float32)
+         self.ball_visible = False
+         self.ball_state_estimator_ready = False
+         self.ball_state_estimator_sample_count = 0
+         self.ball_state_estimator_min_samples = 31
+         self.randomize_hitter_ball = False
+         self.table_tennis_rng = np.random.default_rng()
+         self.table_tennis_ball_trajectory_index = 0
+-        self.use_analytic_table_bounce = False
+-        self.table_tennis_table_center_xy = np.array([1.37, 0.0], dtype=np.float64)
+-        self.table_tennis_table_length = 2.74
+-        self.table_tennis_table_width = 1.525
+-        self.table_tennis_table_height = 0.76
+-        self.table_tennis_ball_radius = 0.02
+-        self.table_tennis_vertical_restitution = 0.8
+-        self.table_tennis_horizontal_restitution = 1.0
+-        self.use_analytic_racket_hit = False
+-        self.hitter_ball_geom_id = -1
+-        self.hitter_racket_face_geom_id = -1
+-        self.analytic_racket_hit_armed = False
+-        self.analytic_racket_hit_applied = False
+-        self.analytic_racket_hit_target_pos = np.zeros(3, dtype=np.float64)
+-        self.analytic_racket_hit_outgoing_vel = np.zeros(3, dtype=np.float64)
+-        self.analytic_racket_hit_target_radius = 0.08
+-        self.analytic_racket_hit_racket_radius = 0.20
+-        self.analytic_racket_hit_require_racket_near = True
+-        self.analytic_racket_hit_min_incoming_speed_x = 0.05
+-        self.analytic_racket_hit_snap_to_target = True
+-        self.analytic_racket_hit_separation = 0.03
+         if not self.table_tennis_enabled:
+             return
+-        self.randomize_hitter_ball = bool(self.table_tennis_cfg.get("randomize_ball_on_reset", False))
+-        self.table_tennis_rng = np.random.default_rng(self.table_tennis_cfg.get("ball_random_seed", None))
+-        self.use_analytic_table_bounce = bool(self.table_tennis_cfg.get("use_analytic_table_bounce", False))
+-        self.use_analytic_racket_hit = bool(self.table_tennis_cfg.get("use_analytic_racket_hit", False))
+-        table_center_xy = self.table_tennis_cfg.get(
+-            "table_center_xy_w", self.table_tennis_cfg.get("table_center_xy", [1.37, 0.0])
+-        )
+-        self.table_tennis_table_center_xy = np.asarray(table_center_xy, dtype=np.float64).reshape(2)
+-        self.table_tennis_table_length = float(self.table_tennis_cfg.get("table_length", 2.74))
+-        self.table_tennis_table_width = float(self.table_tennis_cfg.get("table_width", 1.525))
+-        self.table_tennis_table_height = float(self.table_tennis_cfg.get("table_height", 0.76))
+-        self.table_tennis_ball_radius = float(self.table_tennis_cfg.get("ball_radius", 0.02))
+-        self.table_tennis_vertical_restitution = float(self.table_tennis_cfg.get("vertical_restitution", 0.8))
+-        self.table_tennis_horizontal_restitution = float(self.table_tennis_cfg.get("horizontal_restitution", 1.0))
+-        self.analytic_racket_hit_target_radius = float(self.table_tennis_cfg.get("analytic_racket_hit_target_radius", 0.08))
+-        self.analytic_racket_hit_racket_radius = float(self.table_tennis_cfg.get("analytic_racket_hit_racket_radius", 0.20))
+-        self.analytic_racket_hit_require_racket_near = bool(
+-            self.table_tennis_cfg.get("analytic_racket_hit_require_racket_near", True)
+-        )
+-        self.analytic_racket_hit_min_incoming_speed_x = float(
+-            self.table_tennis_cfg.get("analytic_racket_hit_min_incoming_speed_x", 0.05)
+-        )
+-        self.analytic_racket_hit_snap_to_target = bool(self.table_tennis_cfg.get("analytic_racket_hit_snap_to_target", True))
+-        self.analytic_racket_hit_separation = float(self.table_tennis_cfg.get("analytic_racket_hit_separation", 0.03))
+ 
+         ball_body_name = self.table_tennis_cfg.get("ball_body_name", "hitter_ball")
+         ball_joint_name = self.table_tennis_cfg.get("ball_joint_name", "hitter_ball_freejoint")
+-        ball_geom_name = self.table_tennis_cfg.get("ball_geom_name", "hitter_ball_geom")
+-        racket_face_geom_name = self.table_tennis_cfg.get("racket_face_geom_name", "right_racket_face_collision")
+         self.hitter_ball_body_id = mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_BODY, ball_body_name)
+         ball_joint_id = mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_JOINT, ball_joint_name)
+-        self.hitter_ball_geom_id = mujoco.mj_name2id(self.mujoco_model, mujoco.mjtObj.mjOBJ_GEOM, ball_geom_name)
+-        self.hitter_racket_face_geom_id = mujoco.mj_name2id(
+-            self.mujoco_model,
+-            mujoco.mjtObj.mjOBJ_GEOM,
+-            racket_face_geom_name,
+-        )
+         if self.hitter_ball_body_id < 0 or ball_joint_id < 0:
+             logger.warning(
+                 f"[Mujoco] table_tennis.enabled=True but ball body/joint not found: {ball_body_name}/{ball_joint_name}"
+             )
+             self.table_tennis_enabled = False
+             return
+-        if self.use_analytic_racket_hit and (self.hitter_ball_geom_id < 0 or self.hitter_racket_face_geom_id < 0):
+-            logger.warning(
+-                "[Mujoco] use_analytic_racket_hit=True but ball/racket geom not found: {}/{}",
+-                ball_geom_name,
+-                racket_face_geom_name,
+-            )
+-            self.use_analytic_racket_hit = False
+ 
+         self.hitter_ball_qposadr = int(self.mujoco_model.jnt_qposadr[ball_joint_id])
+         self.hitter_ball_qveladr = int(self.mujoco_model.jnt_dofadr[ball_joint_id])
+         self.reset_hitter_ball(update_default=True)
+ 
+-    def _hitter_ball_inside_table(self, xy: np.ndarray) -> bool:
+-        half = np.array([0.5 * self.table_tennis_table_length, 0.5 * self.table_tennis_table_width], dtype=np.float64)
+-        return bool(np.all(np.abs(xy - self.table_tennis_table_center_xy) <= half))
+-
+-    def _apply_hitter_ball_analytic_table_bounce(self, prev_ball_vel: np.ndarray) -> bool:
+-        if (
+-            not self.table_tennis_enabled
+-            or not self.use_analytic_table_bounce
+-            or self.hitter_ball_qposadr is None
+-            or self.hitter_ball_qveladr is None
+-        ):
+-            return False
+-        if prev_ball_vel[2] >= 0.0:
+-            return False
+-
+-        qposadr = self.hitter_ball_qposadr
+-        qveladr = self.hitter_ball_qveladr
+-        pos = self.mujoco_data.qpos[qposadr:qposadr + 3]
+-        vel = self.mujoco_data.qvel[qveladr:qveladr + 3]
+-        contact_z = self.table_tennis_table_height + self.table_tennis_ball_radius
+-        if pos[2] > contact_z or vel[2] >= 0.0 or not self._hitter_ball_inside_table(pos[:2]):
+-            return False
+-
+-        pos[2] = contact_z
+-        vel[:2] *= self.table_tennis_horizontal_restitution
+-        vel[2] = -vel[2] * self.table_tennis_vertical_restitution
+-        mujoco.mj_forward(self.mujoco_model, self.mujoco_data)
+-        return True
+-
+-    def clear_hitter_analytic_racket_hit(self) -> None:
+-        self.analytic_racket_hit_armed = False
+-        self.analytic_racket_hit_applied = False
+-        self.analytic_racket_hit_target_pos[:] = 0.0
+-        self.analytic_racket_hit_outgoing_vel[:] = 0.0
+-
+-    def set_hitter_analytic_racket_hit(self, target_pos, outgoing_vel) -> None:
+-        if not self.table_tennis_enabled or not self.use_analytic_racket_hit:
+-            return
+-        if self.analytic_racket_hit_applied:
+-            return
+-        target_pos = np.asarray(target_pos, dtype=np.float64).reshape(-1)
+-        outgoing_vel = np.asarray(outgoing_vel, dtype=np.float64).reshape(-1)
+-        if target_pos.shape != (3,) or outgoing_vel.shape != (3,):
+-            raise ValueError("analytic racket hit target_pos/outgoing_vel must both contain 3 values.")
+-        if not np.isfinite(target_pos).all() or not np.isfinite(outgoing_vel).all():
+-            raise ValueError("analytic racket hit target_pos/outgoing_vel must be finite.")
+-        self.analytic_racket_hit_target_pos = target_pos.copy()
+-        self.analytic_racket_hit_outgoing_vel = outgoing_vel.copy()
+-        self.analytic_racket_hit_armed = True
+-
+-    def _hitter_ball_racket_contact_active(self) -> bool:
+-        if self.hitter_ball_geom_id < 0 or self.hitter_racket_face_geom_id < 0:
+-            return False
+-        for contact_index in range(self.mujoco_data.ncon):
+-            contact = self.mujoco_data.contact[contact_index]
+-            if {
+-                int(contact.geom1),
+-                int(contact.geom2),
+-            } == {
+-                self.hitter_ball_geom_id,
+-                self.hitter_racket_face_geom_id,
+-            }:
+-                return True
+-        return False
+-
+-    @staticmethod
+-    def _point_segment_distance(point: np.ndarray, start: np.ndarray, end: np.ndarray) -> float:
+-        segment = end - start
+-        length_sq = float(np.dot(segment, segment))
+-        if length_sq < 1.0e-12:
+-            return float(np.linalg.norm(point - end))
+-        alpha = float(np.clip(np.dot(point - start, segment) / length_sq, 0.0, 1.0))
+-        closest = start + alpha * segment
+-        return float(np.linalg.norm(point - closest))
+-
+-    def _hitter_racket_near_ball(self, ball_pos: np.ndarray) -> bool:
+-        if self._hitter_ball_racket_contact_active():
+-            return True
+-        if self.hitter_racket_face_geom_id < 0:
+-            return False
+-        racket_pos = self.mujoco_data.geom_xpos[self.hitter_racket_face_geom_id]
+-        return bool(np.linalg.norm(ball_pos - racket_pos) <= self.analytic_racket_hit_racket_radius)
+-
+-    def _apply_hitter_ball_analytic_racket_hit(self, prev_ball_pos: np.ndarray, prev_ball_vel: np.ndarray) -> bool:
+-        if (
+-            not self.table_tennis_enabled
+-            or not self.use_analytic_racket_hit
+-            or not self.analytic_racket_hit_armed
+-            or self.analytic_racket_hit_applied
+-            or self.hitter_ball_qposadr is None
+-            or self.hitter_ball_qveladr is None
+-        ):
+-            return False
+-        if prev_ball_vel[0] >= -self.analytic_racket_hit_min_incoming_speed_x:
+-            return False
+-
+-        qposadr = self.hitter_ball_qposadr
+-        qveladr = self.hitter_ball_qveladr
+-        ball_pos = self.mujoco_data.qpos[qposadr:qposadr + 3]
+-        target_pos = self.analytic_racket_hit_target_pos
+-        distance_to_target = self._point_segment_distance(target_pos, prev_ball_pos, ball_pos.copy())
+-        if distance_to_target > self.analytic_racket_hit_target_radius:
+-            return False
+-        if self.analytic_racket_hit_require_racket_near and not self._hitter_racket_near_ball(ball_pos):
+-            return False
+-
+-        outgoing_vel = self.analytic_racket_hit_outgoing_vel.copy()
+-        if self.analytic_racket_hit_snap_to_target:
+-            ball_pos[:] = target_pos
+-            speed = float(np.linalg.norm(outgoing_vel))
+-            if speed > 1.0e-9 and self.analytic_racket_hit_separation > 0.0:
+-                ball_pos[:] = ball_pos + outgoing_vel / speed * self.analytic_racket_hit_separation
+-        self.mujoco_data.qvel[qveladr:qveladr + 3] = outgoing_vel
+-        self.mujoco_data.qvel[qveladr + 3:qveladr + 6] = 0.0
+-        self.analytic_racket_hit_applied = True
+-        self.analytic_racket_hit_armed = False
+-        mujoco.mj_forward(self.mujoco_model, self.mujoco_data)
+-        logger.info(
+-            "[Mujoco] Applied analytic racket hit: target_pos={}, outgoing_vel={}, target_dist={:.4f}",
+-            target_pos.astype(np.float32),
+-            outgoing_vel.astype(np.float32),
+-            distance_to_target,
+-        )
+-        return True
+-
+     def _sample_table_tennis_vector(self, key: str, default, size: int, *, randomize: bool) -> np.ndarray:
+         if randomize:
+             candidates = self.table_tennis_cfg.get(f"{key}_candidates", None)
+             if candidates is not None:
+                 arr = np.asarray(candidates, dtype=np.float64)
+                 if arr.ndim != 2 or arr.shape[1] != size:
+                     raise ValueError(f"table_tennis.{key}_candidates must have shape (N, {size}), got {arr.shape}.")
+                 return arr[int(self.table_tennis_rng.integers(arr.shape[0]))].copy()
+ 
+             value_range = self.table_tennis_cfg.get(f"{key}_range", None)
+@@ -380,21 +197,20 @@ class Mujoco(BaseSim):
+             pos = self._sample_table_tennis_vector("ball_initial_pos", [1.80, 0.0, 1.05], 3, randomize=randomize)
+         quat = self.table_tennis_cfg.get("ball_initial_quat_wxyz", [1.0, 0.0, 0.0, 0.0])
+         if lin_vel is None:
+             lin_vel = self._sample_table_tennis_vector("ball_initial_lin_vel", [-2.2, 0.0, 0.2], 3, randomize=randomize)
+         if trajectory is None:
+             ang_vel = self._sample_table_tennis_vector("ball_initial_ang_vel", [0.0, 0.0, 0.0], 3, randomize=randomize)
+ 
+         qposadr = self.hitter_ball_qposadr
+         qveladr = self.hitter_ball_qveladr
+         with self._viewer_lock():
+-            self.clear_hitter_analytic_racket_hit()
+             self.mujoco_data.qpos[qposadr:qposadr + 3] = np.asarray(pos, dtype=np.float64)
+             self.mujoco_data.qpos[qposadr + 3:qposadr + 7] = np.asarray(quat, dtype=np.float64)
+             self.mujoco_data.qvel[qveladr:qveladr + 3] = np.asarray(lin_vel, dtype=np.float64)
+             self.mujoco_data.qvel[qveladr + 3:qveladr + 6] = np.asarray(ang_vel, dtype=np.float64)
+             mujoco.mj_forward(self.mujoco_model, self.mujoco_data)
+ 
+             if update_default:
+                 self.default_qpos[qposadr:qposadr + 7] = self.mujoco_data.qpos[qposadr:qposadr + 7]
+                 self.default_qvel[qveladr:qveladr + 6] = self.mujoco_data.qvel[qveladr:qveladr + 6]
+         self._update_hitter_ball_state()
+@@ -594,40 +410,22 @@ class Mujoco(BaseSim):
+                 if len(self.frozen_dof_idx) > 0:
+                     torque_all = np.zeros(self.num_dof, dtype=np.float32)
+                     torque_all[self.active_dof_idx] = torque_active
+                     torque_frozen = (self.default_angles[self.frozen_dof_idx] - all_dof_pos[self.frozen_dof_idx]) * self.kps[self.frozen_dof_idx] \
+                                     - all_dof_vel[self.frozen_dof_idx] * self.kds[self.frozen_dof_idx]
+                     torque_all[self.frozen_dof_idx] = torque_frozen
+                     self.mujoco_data.ctrl[:] = torque_all
+                 else:
+                     self.mujoco_data.ctrl[:] = torque_active
+ 
+-                prev_ball_pos = None
+-                prev_ball_vel = None
+-                if (
+-                    self.table_tennis_enabled
+-                    and (self.use_analytic_table_bounce or self.use_analytic_racket_hit)
+-                    and self.hitter_ball_qposadr is not None
+-                    and self.hitter_ball_qveladr is not None
+-                ):
+-                    qposadr = self.hitter_ball_qposadr
+-                    qveladr = self.hitter_ball_qveladr
+-                    prev_ball_pos = self.mujoco_data.qpos[qposadr:qposadr + 3].copy()
+-                    prev_ball_vel = self.mujoco_data.qvel[qveladr:qveladr + 3].copy()
+-
+                 mujoco.mj_step(self.mujoco_model, self.mujoco_data)
+ 
+-                if prev_ball_pos is not None and prev_ball_vel is not None:
+-                    hit_applied = self._apply_hitter_ball_analytic_racket_hit(prev_ball_pos, prev_ball_vel)
+-                    if not hit_applied:
+-                        self._apply_hitter_ball_analytic_table_bounce(prev_ball_vel)
+-
+         # Rendering.
+         if self.viewer_enabled:
+             self.render()
+ 
+         # Optional real-time synchronization.
+         is_real_time = getattr(self.cfg.control, 'real_time', False)
+         if is_real_time:
+             sim_elapsed = self.mujoco_data.time - self.sim_start_time
+             real_elapsed = time.perf_counter() - self.real_start_time
+             
+# New focused test diff
+diff --git a/deploy/tests/test_mujoco_physical_table_tennis.py b/deploy/tests/test_mujoco_physical_table_tennis.py
+new file mode 100644
+index 0000000..75b325a
+--- /dev/null
++++ b/deploy/tests/test_mujoco_physical_table_tennis.py
+@@ -0,0 +1,224 @@
++from __future__ import annotations
++
++import unittest
++import xml.etree.ElementTree as ET
++from pathlib import Path
++from types import SimpleNamespace
++
++import mujoco
++import numpy as np
++import yaml
++
++from envs.hitter import HitterEnv
++
++
++DEPLOY_DIR = Path(__file__).resolve().parents[1]
++XML_PATH = (
++    DEPLOY_DIR
++    / "data"
++    / "assets"
++    / "g1"
++    / "g1_29dof_hitter_racket_table_tennis.xml"
++)
++
++
++def _geom_id(model, name: str) -> int:
++    geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
++    if geom_id < 0:
++        raise AssertionError(f"缺少 MuJoCo geom: {name}")
++    return int(geom_id)
++
++
++def _has_contact(data, geom_a: int, geom_b: int) -> bool:
++    expected = {geom_a, geom_b}
++    return any(
++        {int(data.contact[i].geom1), int(data.contact[i].geom2)} == expected
++        for i in range(data.ncon)
++    )
++
++
++class RecordingSimulator:
++    def __init__(self):
++        self.analytic_hit_calls = 0
++
++    def set_hitter_analytic_racket_hit(self, _target_pos, _outgoing_vel):
++        self.analytic_hit_calls += 1
++
++
++class AnalyticOverrideRemovalTests(unittest.TestCase):
++    def test_mujoco_source_contains_no_analytic_ball_state_override(self):
++        source = (DEPLOY_DIR / "simulator" / "mujoco.py").read_text()
++        forbidden = (
++            "use_analytic_table_bounce",
++            "use_analytic_racket_hit",
++            "analytic_racket_hit_armed",
++            "set_hitter_analytic_racket_hit",
++            "_apply_hitter_ball_analytic_table_bounce",
++            "_apply_hitter_ball_analytic_racket_hit",
++        )
++        for token in forbidden:
++            self.assertNotIn(token, source, token)
++
++    def test_hitter_config_contains_no_analytic_ball_override_options(self):
++        config = yaml.safe_load((DEPLOY_DIR / "config" / "hitter.yaml").read_text())
++        table_tennis = config["sim"]["config"]["table_tennis"]
++        for key in (
++            "use_analytic_table_bounce",
++            "use_analytic_racket_hit",
++            "ball_geom_name",
++            "racket_face_geom_name",
++        ):
++            self.assertNotIn(key, table_tennis)
++
++    def test_copying_planner_command_does_not_call_analytic_hit_setter(self):
++        env = HitterEnv.__new__(HitterEnv)
++        env.simulator = RecordingSimulator()
++        env.hitter_command_lifecycle = SimpleNamespace(recovery_duration_s=0.5)
++        fields = {
++            "strike_type_index": 0,
++            "time_to_strike": 0.85,
++            "base_target": np.array([-0.4, 0.0], dtype=np.float32),
++            "base_height": np.float32(0.793),
++            "racket_target": np.array([0.0, 0.1, 1.0], dtype=np.float32),
++            "racket_velocity": np.array([2.8, 0.0, 0.5], dtype=np.float32),
++        }
++
++        env._copy_hitter_command(SimpleNamespace(), validated=fields)
++
++        self.assertEqual(env.simulator.analytic_hit_calls, 0)
++
++
++class PurePhysicalContactTests(unittest.TestCase):
++    def test_xml_defines_only_intended_ball_contact_pairs(self):
++        root = ET.parse(XML_PATH).getroot()
++        pairs = {
++            frozenset((pair.attrib["geom1"], pair.attrib["geom2"]))
++            for pair in root.findall("./contact/pair")
++        }
++        expected_pairs = {
++            frozenset(("right_racket_face_collision", "hitter_ball_geom")),
++            frozenset(("hitter_table_top", "hitter_ball_geom")),
++            frozenset(("hitter_table_net", "hitter_ball_geom")),
++        }
++        self.assertEqual(pairs, expected_pairs)
++        self.assertEqual(root.findall("./contact/exclude"), [])
++        center_line = root.find(".//geom[@name='hitter_table_center_line']")
++        self.assertIsNotNone(center_line)
++        self.assertEqual(center_line.attrib.get("contype"), "0")
++        self.assertEqual(center_line.attrib.get("conaffinity"), "0")
++        ball = root.find(".//geom[@name='hitter_ball_geom']")
++        self.assertIsNotNone(ball)
++        self.assertEqual(ball.attrib.get("contype"), "0")
++        self.assertEqual(ball.attrib.get("conaffinity"), "0")
++
++    def test_falling_ball_contacts_table_and_rebounds(self):
++        model = mujoco.MjModel.from_xml_path(str(XML_PATH))
++        model.opt.timestep = 0.005
++        data = mujoco.MjData(model)
++        ball_geom = _geom_id(model, "hitter_ball_geom")
++        table_geom = _geom_id(model, "hitter_table_top")
++        ball_joint = mujoco.mj_name2id(
++            model, mujoco.mjtObj.mjOBJ_JOINT, "hitter_ball_freejoint"
++        )
++        qposadr = int(model.jnt_qposadr[ball_joint])
++        qveladr = int(model.jnt_dofadr[ball_joint])
++        data.qpos[qposadr:qposadr + 3] = [1.0, 0.25, 0.84]
++        data.qvel[qveladr:qveladr + 3] = [0.0, 0.0, -2.0]
++        mujoco.mj_forward(model, data)
++
++        contacted = False
++        rebound_vz = -np.inf
++        for _ in range(120):
++            mujoco.mj_step(model, data)
++            contacted = contacted or _has_contact(data, ball_geom, table_geom)
++            if contacted:
++                rebound_vz = max(rebound_vz, float(data.qvel[qveladr + 2]))
++            self.assertTrue(np.isfinite(data.qpos).all())
++            self.assertTrue(np.isfinite(data.qvel).all())
++
++        self.assertTrue(contacted)
++        self.assertGreater(rebound_vz, 0.0)
++
++    def test_repeated_table_bounces_do_not_gain_vertical_speed(self):
++        model = mujoco.MjModel.from_xml_path(str(XML_PATH))
++        model.opt.timestep = 0.005
++        data = mujoco.MjData(model)
++        ball_geom = _geom_id(model, "hitter_ball_geom")
++        table_geom = _geom_id(model, "hitter_table_top")
++        ball_joint = mujoco.mj_name2id(
++            model, mujoco.mjtObj.mjOBJ_JOINT, "hitter_ball_freejoint"
++        )
++        qposadr = int(model.jnt_qposadr[ball_joint])
++        qveladr = int(model.jnt_dofadr[ball_joint])
++        data.qpos[qposadr:qposadr + 3] = [1.0, 0.25, 0.84]
++        data.qvel[qveladr:qveladr + 3] = [0.0, 0.0, -2.0]
++        mujoco.mj_forward(model, data)
++
++        episodes = []
++        incoming_speed = None
++        was_in_contact = _has_contact(data, ball_geom, table_geom)
++        for _ in range(2000):
++            previous_vz = float(data.qvel[qveladr + 2])
++            mujoco.mj_step(model, data)
++            in_contact = _has_contact(data, ball_geom, table_geom)
++            if in_contact and not was_in_contact:
++                self.assertLess(previous_vz, 0.0)
++                incoming_speed = -previous_vz
++            elif was_in_contact and not in_contact:
++                outgoing_speed = float(data.qvel[qveladr + 2])
++                self.assertIsNotNone(incoming_speed)
++                self.assertGreater(outgoing_speed, 0.0)
++                episodes.append((incoming_speed, outgoing_speed))
++                incoming_speed = None
++                if len(episodes) == 3:
++                    break
++            was_in_contact = in_contact
++
++        self.assertEqual(len(episodes), 3)
++        for episode, (incoming_speed, outgoing_speed) in enumerate(episodes, 1):
++            self.assertLessEqual(
++                outgoing_speed,
++                incoming_speed + 1e-6,
++                f"episode {episode}: incoming={incoming_speed}, "
++                f"outgoing={outgoing_speed}",
++            )
++
++    def test_racket_contact_is_physical_across_operating_speeds(self):
++        for speed in (2.0, 4.0, 6.0):
++            with self.subTest(speed=speed):
++                model = mujoco.MjModel.from_xml_path(str(XML_PATH))
++                model.opt.timestep = 0.005
++                model.opt.gravity[:] = 0.0
++                data = mujoco.MjData(model)
++                mujoco.mj_forward(model, data)
++                ball_geom = _geom_id(model, "hitter_ball_geom")
++                racket_geom = _geom_id(model, "right_racket_face_collision")
++                ball_joint = mujoco.mj_name2id(
++                    model, mujoco.mjtObj.mjOBJ_JOINT, "hitter_ball_freejoint"
++                )
++                qposadr = int(model.jnt_qposadr[ball_joint])
++                qveladr = int(model.jnt_dofadr[ball_joint])
++                rotation = data.geom_xmat[racket_geom].reshape(3, 3)
++                normal = rotation @ np.array([0.0, -1.0, 0.0])
++                normal /= np.linalg.norm(normal)
++                data.qpos[qposadr:qposadr + 3] = (
++                    data.geom_xpos[racket_geom] + 0.15 * normal
++                )
++                data.qvel[qveladr:qveladr + 3] = -speed * normal
++                mujoco.mj_forward(model, data)
++
++                contacted = False
++                outgoing_normal_speed = -np.inf
++                for _ in range(80):
++                    mujoco.mj_step(model, data)
++                    contacted = contacted or _has_contact(
++                        data, ball_geom, racket_geom
++                    )
++                    if contacted:
++                        outgoing_normal_speed = max(
++                            outgoing_normal_speed,
++                            float(np.dot(data.qvel[qveladr:qveladr + 3], normal)),
++                        )
++
++                self.assertTrue(contacted)
++                self.assertGreater(outgoing_normal_speed, 0.0)

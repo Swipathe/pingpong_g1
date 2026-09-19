@@ -1,0 +1,1191 @@
+# Review package: db26450390c372fe993825ad96ddde30dac68374..81d4225
+
+## Commits
+81d4225 refactor: share HITTER runtime factories
+
+## Files changed
+ deploy/envs/hitter.py                       | 145 +++------
+ deploy/simulator/real_world.py              |  16 +-
+ deploy/tests/test_hitter_runtime_factory.py | 477 ++++++++++++++++++++++++++++
+ deploy/utils/hitter_runtime_factory.py      | 331 +++++++++++++++++++
+ 4 files changed, 849 insertions(+), 120 deletions(-)
+
+## Diff
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index 697bbc1..d45049c 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -3,25 +3,26 @@ from typing import Dict, List, Optional, Union
+ 
+ import numpy as np
+ from loguru import logger
+ from omegaconf import DictConfig, OmegaConf
+ from scipy.spatial.transform import Rotation as sRot
+ 
+ from envs.base_env import BaseEnv
+ 
+ from utils.dataset import MosaicModelMeta as HitterModelMeta
+ from utils.dof import DoFAdapter
+-from utils.hitter_planner import (
+-    BallTrajectoryPredictor,
+-    BaseTargetPlanner,
+-    HitterSystemPlanner,
+-    StrikePlanner,
++from utils.hitter_planner import HitterSystemPlanner
++from utils.hitter_runtime_factory import (
++    build_hitter_command_lifecycle,
++    build_hitter_system_planner,
++    forced_strike_type,
++    resolve_hitter_runtime_settings,
+ )
+ from utils.hitter_realtime import (
+     BallEstimateSnapshot,
+     CommandPhase,
+     HitterCommandLifecycle,
+     IncomingTrackConfirmation,
+     LatestOnlyPlannerWorker,
+     PlannerResultSnapshot,
+ )
+ from utils.hitter_task_observation import (
+@@ -48,24 +49,36 @@ class HitterEnv(BaseEnv):
+     """Environment wrapper for the HITTER target-conditioned policy."""
+ 
+     def __init__(self, config: DictConfig):
+         super().__init__(config)
+ 
+         cfg_dict = OmegaConf.to_container(config, resolve=True) if isinstance(config, DictConfig) else config
+         self.policy_cfg: Dict[str, Union[float, bool]] = cfg_dict.get("policy", {}) if isinstance(cfg_dict, dict) else {}
+         self.motion_cfg: Dict[str, Union[float, bool, str]] = (
+             cfg_dict.get("motion", {}) if isinstance(cfg_dict, dict) else {}
+         )
++        control_cfg = (
++            cfg_dict.get("control", {})
++            if isinstance(cfg_dict, dict)
++            else {}
++        )
++        self.hitter_runtime_settings = resolve_hitter_runtime_settings(
++            policy_config=self.policy_cfg,
++            motion_config=self.motion_cfg,
++            control_config=control_cfg,
++        )
+ 
+         self.playback_speed = float(self.motion_cfg.get("playback_speed", 1.0))
+         self.action_beta = float(self.policy_cfg.get("action_beta", 1.0))
+-        self.hitter_rng = np.random.default_rng(self.policy_cfg.get("hitter_seed", None))
++        self.hitter_rng = np.random.default_rng(
++            self.hitter_runtime_settings.hitter_seed
++        )
+ 
+         self.policy_model_meta: Optional[HitterModelMeta] = None
+         self.policy_action_scales: Optional[np.ndarray] = None
+         self.policy_default_joint_pos: Optional[np.ndarray] = None
+         self.policy_joint_names: Optional[List[str]] = None
+         self.policy_joint_index: Optional[Dict[str, int]] = None
+ 
+         self._sim_to_policy: Optional[np.ndarray] = None
+         self._policy_to_sim: Optional[np.ndarray] = None
+         self._policy_dim: Optional[int] = None
+@@ -74,21 +87,23 @@ class HitterEnv(BaseEnv):
+ 
+         self.prev_policy_action: Optional[np.ndarray] = None
+         self.time_step: float = 0.0
+         self._last_ball_estimator_not_ready_log_s: float = 0.0
+         self._last_ball_planner_error_log_s: float = 0.0
+         self._last_waiting_racket_target_error_log_s: float = 0.0
+ 
+         self.hard_reset = False
+         self.reset_ball_on_command = bool(self.motion_cfg.get("reset_ball_on_command", True))
+         self.waiting_racket_body_name = str(self.motion_cfg.get("waiting_racket_body_name", "right_racket_link"))
+-        self.waiting_time_to_strike_s = float(self.motion_cfg.get("waiting_time_to_strike_s", 0.92))
++        self.waiting_time_to_strike_s = (
++            self.hitter_runtime_settings.waiting_tts_s
++        )
+         self.hitter_ball_planner: HitterSystemPlanner = self._build_hitter_ball_planner()
+         self._init_hitter_command_state()
+         self._init_hitter_lifecycle_state()
+         self._initialize_hitter_realtime_runtime()
+         logger.info("HITTER ball planner configured.")
+ 
+         # Video capture.
+         self.init_video()
+ 
+     def init_video(self):
+@@ -234,56 +249,41 @@ class HitterEnv(BaseEnv):
+     def refresh_policy_observation(self):
+         """Refresh the command lifecycle and observation immediately before policy inference."""
+         self._update_hitter_command()
+         self.compute_observation()
+         return self.obs_buf_dict
+ 
+     # --------------------------------------------------------------------- #
+     # HITTER command-conditioned observation branch.
+     # --------------------------------------------------------------------- #
+     def _init_hitter_command_state(self) -> None:
+-        planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
+         waiting_base_target_xy_w = self._validated_vector(
+             self.motion_cfg.get("waiting_base_target_xy_w", [-0.4, 0.0]),
+             name="waiting_base_target_xy_w",
+             size=2,
+         )
+-        planner_update_rate_hz = float(
+-            planner_cfg.get(
+-                "planner_update_rate_hz",
+-                self.motion_cfg.get("planner_update_rate_hz", 100.0),
+-            )
+-        )
+-        if not np.isfinite(planner_update_rate_hz) or planner_update_rate_hz <= 0.0:
+-            raise ValueError(
+-                "HITTER planner_update_rate_hz must be finite and positive."
+-            )
+         self.hitter_command_initialized = False
+         self.hitter_ball_sequence_needs_reset = True
+         self.hitter_strike_type = 0
+         self.hitter_strike_elapsed_s = 0.0
+         self.hitter_strike_time_s = float(self.waiting_time_to_strike_s)
+         self.hitter_strike_duration_s = 1.85
+-        self.hitter_planner_update_interval_s = 1.0 / planner_update_rate_hz
++        self.hitter_planner_update_interval_s = (
++            self.hitter_runtime_settings.planner_update_interval_s
++        )
+         self._hitter_last_planner_submit_monotonic_s = None
+         self.hitter_incoming_track_confirmation = IncomingTrackConfirmation(
+-            minimum_speed_x_mps=float(
+-                planner_cfg.get(
+-                    "minimum_stable_incoming_speed_x_mps",
+-                    0.20,
+-                )
++            minimum_speed_x_mps=(
++                self.hitter_runtime_settings.minimum_incoming_speed_x_mps
+             ),
+-            required_consecutive_snapshots=int(
+-                planner_cfg.get(
+-                    "stable_incoming_confirmation_snapshots",
+-                    3,
+-                )
++            required_consecutive_snapshots=(
++                self.hitter_runtime_settings.incoming_confirmation_snapshots
+             ),
+         )
+         self.hitter_base_target_xy_w = np.zeros(2, dtype=np.float32)
+         self.hitter_base_target_z_w = self._hitter_target_base_height_w()
+         self.hitter_waiting_base_target_pos_w = np.asarray(
+             [
+                 waiting_base_target_xy_w[0],
+                 waiting_base_target_xy_w[1],
+                 self.hitter_base_target_z_w,
+             ],
+@@ -353,39 +353,23 @@ class HitterEnv(BaseEnv):
+         self.hitter_ball_sequence_needs_reset = False
+         logger.info(
+             "MuJoCo HITTER serve {}/{} at simulation time {:.3f} s.",
+             self._mujoco_next_serve_index,
+             len(self._mujoco_serve_times_s),
+             sim_time_s,
+         )
+         return True
+ 
+     def _new_hitter_command_lifecycle(self) -> HitterCommandLifecycle:
+-        planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
+-
+-        def sample_swing_duration() -> float:
+-            return self._sample_range_from_cfg(
+-                planner_cfg,
+-                "swing_duration_range",
+-                tuple(self.motion_cfg.get("swing_duration_range", (1.75, 1.95))),
+-            )
+-
+-        return HitterCommandLifecycle(
+-            waiting_tts=self.waiting_time_to_strike_s,
+-            arm_tts=float(planner_cfg.get("arm_time_to_strike_s", 0.90)),
+-            minimum_arm_tts=float(
+-                planner_cfg.get("minimum_arm_time_to_strike_s", 0.80)
+-            ),
+-            maximum_policy_tts=float(
+-                planner_cfg.get("maximum_policy_time_to_strike_s", 0.92)
+-            ),
+-            swing_duration_sampler=sample_swing_duration,
++        return build_hitter_command_lifecycle(
++            self.hitter_runtime_settings,
++            rng=self.hitter_rng,
+         )
+ 
+     def _init_hitter_lifecycle_state(self) -> None:
+         self.hitter_command_lifecycle = self._new_hitter_command_lifecycle()
+         self.hitter_planner_worker = None
+         self._unregister_ball_listener = None
+         self._hitter_last_result_key = None
+         self._hitter_minimum_track_epoch = int(
+             getattr(self.simulator, "ball_track_epoch", 0)
+         )
+@@ -511,82 +495,29 @@ class HitterEnv(BaseEnv):
+                 robot_anchor_pos_w[2],
+             ],
+             dtype=np.float32,
+         )
+         logger.info(
+             "HITTER waiting base target captured at world position {}.",
+             self.hitter_waiting_base_target_pos_w.tolist(),
+         )
+ 
+     def _build_hitter_ball_planner(self) -> HitterSystemPlanner:
+-        planner_cfg = self.motion_cfg.get("ball_planner", {})
+-        if planner_cfg is None:
+-            planner_cfg = {}
+-
+-        table_center_xy = planner_cfg.get("table_center_xy_w", [1.37, 0.0])
+-        predictor = BallTrajectoryPredictor(
+-            gravity=planner_cfg.get("gravity", [0.0, 0.0, -9.81]),
+-            drag_coefficient=float(planner_cfg.get("drag_coefficient", 0.0)),
+-            vertical_restitution=float(planner_cfg.get("vertical_restitution", 0.8)),
+-            horizontal_restitution=float(planner_cfg.get("horizontal_restitution", 0.9)),
+-            dt=float(planner_cfg.get("prediction_dt", 0.005)),
+-            table_height=float(planner_cfg.get("table_height", 0.76)),
+-            table_center_xy=table_center_xy,
+-            table_length=float(planner_cfg.get("table_length", 2.74)),
+-            table_width=float(planner_cfg.get("table_width", 1.525)),
+-            ball_radius=float(planner_cfg.get("ball_radius", 0.02)),
+-        )
+-        table_height = float(planner_cfg.get("table_height", 0.76))
+-        maximum_hit_height = round(
+-            table_height
+-            + float(planner_cfg.get("maximum_hit_height_above_table_m", 0.69)),
+-            12,
+-        )
+-        strike_planner = StrikePlanner(
+-            predictor=predictor,
+-            virtual_hit_plane_x=float(planner_cfg.get("virtual_hit_plane_x", 0.0)),
+-            desired_landing_point=planner_cfg.get("desired_landing_point_w", [2.05, 0.0, 0.78]),
+-            post_hit_flight_time=float(planner_cfg.get("post_hit_flight_time", 0.55)),
+-            racket_restitution=float(planner_cfg.get("racket_restitution", 0.85)),
+-            prediction_horizon_s=float(planner_cfg.get("prediction_horizon_s", 2.0)),
+-            maximum_prediction_horizon_s=float(
+-                planner_cfg.get("maximum_prediction_horizon_s", 5.0)
+-            ),
+-            minimum_hit_height=table_height,
+-            maximum_hit_height=maximum_hit_height,
+-            require_future_hit_plane_crossing=bool(planner_cfg.get("require_future_hit_plane_crossing", False)),
+-        )
+-        racket_x_offset_b = planner_cfg.get(
+-            "racket_x_offset_b",
+-            0.40,
+-        )
+-        base_planner = BaseTargetPlanner(
+-            racket_x_offset_b=float(racket_x_offset_b),
+-            forehand_nominal_racket_y_b=float(
+-                planner_cfg.get("forehand_nominal_racket_y_b", -0.5)
+-            ),
+-            backhand_nominal_racket_y_b=float(
+-                planner_cfg.get("backhand_nominal_racket_y_b", 0.22)
+-            ),
+-            default_base_z=float(planner_cfg.get("target_base_height_w", 0.793)),
+-        )
+-        return HitterSystemPlanner(strike_planner=strike_planner, base_planner=base_planner)
++        planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
++        return build_hitter_system_planner(planner_cfg)
+ 
+     def _forced_strike_type_name(self) -> Optional[str]:
+         planner_cfg = self.motion_cfg.get("ball_planner", {}) or {}
+-        forced = planner_cfg.get("force_strike_type", self.motion_cfg.get("force_strike_type", None))
+-        if forced is None or str(forced).strip().lower() in {"", "none", "null"}:
+-            return None
+-        forced = str(forced).strip().lower()
+-        if forced not in {"forehand", "backhand"}:
+-            raise ValueError(f"force_strike_type must be forehand/backhand/None, got {forced!r}.")
+-        return forced
++        return forced_strike_type(
++            planner_cfg,
++            self.motion_cfg,
++        )
+ 
+     def _reset_hitter_ball_sequence_if_needed(self) -> None:
+         if not self.hitter_ball_sequence_needs_reset:
+             return
+         if self.reset_ball_on_command and hasattr(self.simulator, "reset_hitter_ball"):
+             self.simulator.reset_hitter_ball()
+         self.hitter_ball_sequence_needs_reset = False
+ 
+     @staticmethod
+     def _validated_vector(value, *, name: str, size: int) -> np.ndarray:
+diff --git a/deploy/simulator/real_world.py b/deploy/simulator/real_world.py
+index 76ce739..24cb6db 100755
+--- a/deploy/simulator/real_world.py
++++ b/deploy/simulator/real_world.py
+@@ -13,22 +13,22 @@ from scipy.spatial.transform import Rotation as sRot
+ 
+ import sys
+ sys.path.append('../')
+ from unitree_sdk2.lcm_types.body_control_data_lcmt import body_control_data_lcmt
+ from unitree_sdk2.lcm_types.rc_command_lcmt import rc_command_lcmt
+ from unitree_sdk2.lcm_types.state_estimator_lcmt import state_estimator_lcmt
+ from unitree_sdk2.lcm_types.pd_tau_targets_lcmt import pd_tau_targets_lcmt
+ from unitree_sdk2.lcm_types.transformation_t import transformation_t
+ 
+ from utils.helpers import get_gravity, get_rpy
+-from utils.hitter_planner import BallStateEstimator
+ from utils.hitter_realtime import BallEstimateSnapshot
++from utils.hitter_runtime_factory import build_ball_state_estimator
+ 
+ class RealWorld(BaseSim):
+     is_real = True
+     def __init__(self, config):
+         super().__init__(config)
+         self._init_communication()
+         self.spin()
+         self.sync = True
+         while True:
+             if self.connected:
+@@ -113,32 +113,22 @@ class RealWorld(BaseSim):
+         self.ball_track_epoch = 0
+         self.latest_ball_snapshot = None
+         self._last_base_pose_wait_log_monotonic_s = None
+         planner_cfg = {}
+         motion_cfg = getattr(self.cfg, "motion", None)
+         if motion_cfg is not None:
+             planner_cfg = motion_cfg.get("ball_planner", {}) or {}
+         self.ball_state_estimator_sample_rate_hz = float(planner_cfg.get("state_estimator_sample_rate_hz", 300.0))
+         self.ball_state_estimator_time = None
+         self.ball_state_estimator_last_host_time = None
+-        estimator_window_size = int(planner_cfg.get("state_estimator_window_size", 31))
+-        self.ball_state_estimator = BallStateEstimator(
+-            window_size=estimator_window_size,
+-            min_samples=int(planner_cfg.get("state_estimator_min_samples", estimator_window_size)),
+-            table_height=float(planner_cfg.get("table_height", 0.76)),
+-            table_center_xy=planner_cfg.get("table_center_xy_w", [1.37, 0.0]),
+-            table_length=float(planner_cfg.get("table_length", 2.74)),
+-            table_width=float(planner_cfg.get("table_width", 1.525)),
+-            ball_radius=float(planner_cfg.get("ball_radius", 0.02)),
+-            bounce_height_tolerance=float(planner_cfg.get("state_estimator_bounce_height_tolerance", 0.03)),
+-            bounce_velocity_threshold=float(planner_cfg.get("state_estimator_bounce_velocity_threshold", 0.10)),
+-            bounce_min_separation_s=float(planner_cfg.get("state_estimator_bounce_min_separation_s", 0.20)),
++        self.ball_state_estimator = build_ball_state_estimator(
++            planner_cfg
+         )
+         self.ball_state_estimator_ready = False
+         self.ball_state_estimator_ready_tmp = False
+         self.ball_state_estimator_sample_count = 0
+         self.ball_state_estimator_sample_count_tmp = 0
+         self.ball_state_estimator_min_samples = self.ball_state_estimator.min_samples
+ 
+     def register_hitter_ball_listener(
+         self,
+         listener: Callable[[BallEstimateSnapshot], None],
+diff --git a/deploy/tests/test_hitter_runtime_factory.py b/deploy/tests/test_hitter_runtime_factory.py
+new file mode 100644
+index 0000000..6446327
+--- /dev/null
++++ b/deploy/tests/test_hitter_runtime_factory.py
+@@ -0,0 +1,477 @@
++from __future__ import annotations
++
++import unittest
++from dataclasses import FrozenInstanceError
++from pathlib import Path
++from types import SimpleNamespace
++
++import numpy as np
++from omegaconf import OmegaConf
++
++from envs.hitter import HitterEnv
++from simulator.real_world import RealWorld
++from utils.hitter_planner import (
++    BallStateEstimator,
++    BallTrajectoryPredictor,
++    BaseTargetPlanner,
++    HitterSystemPlanner,
++    StrikePlanner,
++)
++from utils.hitter_realtime import PlannerResultSnapshot
++from utils.hitter_runtime_factory import (
++    HitterRuntimeSettings,
++    build_ball_state_estimator,
++    build_hitter_command_lifecycle,
++    build_hitter_system_planner,
++    forced_strike_type,
++    resolve_hitter_runtime_settings,
++)
++
++
++DEPLOY_DIR = Path(__file__).resolve().parents[1]
++
++
++def load_yaml_mapping(relative_path: str) -> dict:
++    loaded = OmegaConf.load(DEPLOY_DIR / relative_path)
++    return OmegaConf.to_container(loaded, resolve=True)
++
++
++def reference_ball_state_estimator(planner_config: dict) -> BallStateEstimator:
++    """Copy of the pre-factory RealWorld estimator construction."""
++    estimator_window_size = int(
++        planner_config.get("state_estimator_window_size", 31)
++    )
++    return BallStateEstimator(
++        window_size=estimator_window_size,
++        min_samples=int(
++            planner_config.get(
++                "state_estimator_min_samples",
++                estimator_window_size,
++            )
++        ),
++        table_height=float(planner_config.get("table_height", 0.76)),
++        table_center_xy=planner_config.get(
++            "table_center_xy_w",
++            [1.37, 0.0],
++        ),
++        table_length=float(planner_config.get("table_length", 2.74)),
++        table_width=float(planner_config.get("table_width", 1.525)),
++        ball_radius=float(planner_config.get("ball_radius", 0.02)),
++        bounce_height_tolerance=float(
++            planner_config.get(
++                "state_estimator_bounce_height_tolerance",
++                0.03,
++            )
++        ),
++        bounce_velocity_threshold=float(
++            planner_config.get(
++                "state_estimator_bounce_velocity_threshold",
++                0.10,
++            )
++        ),
++        bounce_min_separation_s=float(
++            planner_config.get(
++                "state_estimator_bounce_min_separation_s",
++                0.20,
++            )
++        ),
++    )
++
++
++def reference_hitter_system_planner(
++    planner_config: dict,
++) -> HitterSystemPlanner:
++    """Copy of the pre-factory HitterEnv planner construction."""
++    table_center_xy = planner_config.get(
++        "table_center_xy_w",
++        [1.37, 0.0],
++    )
++    predictor = BallTrajectoryPredictor(
++        gravity=planner_config.get("gravity", [0.0, 0.0, -9.81]),
++        drag_coefficient=float(
++            planner_config.get("drag_coefficient", 0.0)
++        ),
++        vertical_restitution=float(
++            planner_config.get("vertical_restitution", 0.8)
++        ),
++        horizontal_restitution=float(
++            planner_config.get("horizontal_restitution", 0.9)
++        ),
++        dt=float(planner_config.get("prediction_dt", 0.005)),
++        table_height=float(planner_config.get("table_height", 0.76)),
++        table_center_xy=table_center_xy,
++        table_length=float(planner_config.get("table_length", 2.74)),
++        table_width=float(planner_config.get("table_width", 1.525)),
++        ball_radius=float(planner_config.get("ball_radius", 0.02)),
++    )
++    table_height = float(planner_config.get("table_height", 0.76))
++    maximum_hit_height = round(
++        table_height
++        + float(
++            planner_config.get(
++                "maximum_hit_height_above_table_m",
++                0.69,
++            )
++        ),
++        12,
++    )
++    strike_planner = StrikePlanner(
++        predictor=predictor,
++        virtual_hit_plane_x=float(
++            planner_config.get("virtual_hit_plane_x", 0.0)
++        ),
++        desired_landing_point=planner_config.get(
++            "desired_landing_point_w",
++            [2.05, 0.0, 0.78],
++        ),
++        post_hit_flight_time=float(
++            planner_config.get("post_hit_flight_time", 0.55)
++        ),
++        racket_restitution=float(
++            planner_config.get("racket_restitution", 0.85)
++        ),
++        prediction_horizon_s=float(
++            planner_config.get("prediction_horizon_s", 2.0)
++        ),
++        maximum_prediction_horizon_s=float(
++            planner_config.get("maximum_prediction_horizon_s", 5.0)
++        ),
++        minimum_hit_height=table_height,
++        maximum_hit_height=maximum_hit_height,
++        require_future_hit_plane_crossing=bool(
++            planner_config.get(
++                "require_future_hit_plane_crossing",
++                False,
++            )
++        ),
++    )
++    base_planner = BaseTargetPlanner(
++        racket_x_offset_b=float(
++            planner_config.get("racket_x_offset_b", 0.40)
++        ),
++        forehand_nominal_racket_y_b=float(
++            planner_config.get(
++                "forehand_nominal_racket_y_b",
++                -0.5,
++            )
++        ),
++        backhand_nominal_racket_y_b=float(
++            planner_config.get(
++                "backhand_nominal_racket_y_b",
++                0.22,
++            )
++        ),
++        default_base_z=float(
++            planner_config.get("target_base_height_w", 0.793)
++        ),
++    )
++    return HitterSystemPlanner(
++        strike_planner=strike_planner,
++        base_planner=base_planner,
++    )
++
++
++def assert_estimator_equal(
++    testcase: unittest.TestCase,
++    actual: BallStateEstimator,
++    expected: BallStateEstimator,
++) -> None:
++    testcase.assertEqual(actual.window_size, expected.window_size)
++    testcase.assertEqual(actual.min_samples, expected.min_samples)
++    testcase.assertEqual(actual.table_height, expected.table_height)
++    np.testing.assert_array_equal(
++        actual.table_center_xy,
++        expected.table_center_xy,
++    )
++    testcase.assertEqual(actual.table_length, expected.table_length)
++    testcase.assertEqual(actual.table_width, expected.table_width)
++    testcase.assertEqual(actual.ball_radius, expected.ball_radius)
++    testcase.assertEqual(
++        actual.bounce_height_tolerance,
++        expected.bounce_height_tolerance,
++    )
++    testcase.assertEqual(
++        actual.bounce_velocity_threshold,
++        expected.bounce_velocity_threshold,
++    )
++    testcase.assertEqual(
++        actual.bounce_min_separation_s,
++        expected.bounce_min_separation_s,
++    )
++
++
++def assert_system_planner_equal(
++    testcase: unittest.TestCase,
++    actual: HitterSystemPlanner,
++    expected: HitterSystemPlanner,
++) -> None:
++    actual_strike = actual.strike_planner
++    expected_strike = expected.strike_planner
++    actual_predictor = actual_strike.predictor
++    expected_predictor = expected_strike.predictor
++
++    np.testing.assert_array_equal(
++        actual_predictor.gravity,
++        expected_predictor.gravity,
++    )
++    for name in (
++        "drag_coefficient",
++        "vertical_restitution",
++        "horizontal_restitution",
++        "dt",
++        "table_height",
++        "table_length",
++        "table_width",
++        "ball_radius",
++    ):
++        testcase.assertEqual(
++            getattr(actual_predictor, name),
++            getattr(expected_predictor, name),
++        )
++    np.testing.assert_array_equal(
++        actual_predictor.table_center_xy,
++        expected_predictor.table_center_xy,
++    )
++
++    for name in (
++        "virtual_hit_plane_x",
++        "post_hit_flight_time",
++        "racket_restitution",
++        "prediction_horizon_s",
++        "maximum_prediction_horizon_s",
++        "minimum_hit_height",
++        "maximum_hit_height",
++        "require_future_hit_plane_crossing",
++    ):
++        testcase.assertEqual(
++            getattr(actual_strike, name),
++            getattr(expected_strike, name),
++        )
++    np.testing.assert_array_equal(
++        actual_strike.desired_landing_point,
++        expected_strike.desired_landing_point,
++    )
++
++    actual_base = actual.base_planner
++    expected_base = expected.base_planner
++    for name in (
++        "racket_x_offset_b",
++        "forehand_nominal_racket_y_b",
++        "backhand_nominal_racket_y_b",
++        "default_base_z",
++    ):
++        testcase.assertEqual(
++            getattr(actual_base, name),
++            getattr(expected_base, name),
++        )
++
++
++def armed_recovery_duration(lifecycle, sequence_number: int) -> float:
++    result = PlannerResultSnapshot(
++        track_epoch=sequence_number,
++        source_generation=1,
++        source_frame=sequence_number,
++        strike_deadline_monotonic_s=10.92,
++        completed_monotonic_s=10.0,
++        command=object(),
++        error=None,
++    )
++    decision = lifecycle.ingest(result, now=10.0)
++    if decision != "armed":
++        raise AssertionError(f"expected lifecycle to arm, got {decision!r}")
++    return lifecycle.recovery_duration_s
++
++
++class RuntimeFactoryCharacterizationTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        mimic_config = load_yaml_mapping("config/mimic/hitter.yaml")
++        cls.policy_config = mimic_config["policy"]
++        cls.motion_config = mimic_config["motion"]
++        cls.planner_config = cls.motion_config["ball_planner"]
++        cls.control_config = load_yaml_mapping(
++            "config/control/g1_hitter_racket.yaml"
++        )
++
++    def test_yaml_factories_match_pre_factory_production_builders(self):
++        assert_estimator_equal(
++            self,
++            build_ball_state_estimator(self.planner_config),
++            reference_ball_state_estimator(self.planner_config),
++        )
++        assert_system_planner_equal(
++            self,
++            build_hitter_system_planner(self.planner_config),
++            reference_hitter_system_planner(self.planner_config),
++        )
++
++    def test_yaml_runtime_settings_resolve_current_production_values(self):
++        settings = resolve_hitter_runtime_settings(
++            policy_config=self.policy_config,
++            motion_config=self.motion_config,
++            control_config=self.control_config,
++        )
++
++        self.assertEqual(settings.estimator_sample_rate_hz, 360.0)
++        self.assertEqual(settings.planner_update_rate_hz, 100.0)
++        self.assertEqual(settings.planner_update_interval_s, 0.01)
++        self.assertEqual(settings.minimum_incoming_speed_x_mps, 0.20)
++        self.assertEqual(settings.incoming_confirmation_snapshots, 3)
++        self.assertEqual(settings.waiting_tts_s, 0.92)
++        self.assertEqual(settings.arm_tts_s, 0.92)
++        self.assertEqual(settings.minimum_arm_tts_s, 0.60)
++        self.assertEqual(settings.maximum_policy_tts_s, 0.92)
++        self.assertEqual(
++            settings.swing_duration_range_s,
++            (1.75, 1.95),
++        )
++        self.assertEqual(settings.hitter_seed, 0)
++        self.assertEqual(settings.control_tick_s, 0.02)
++        self.assertEqual(settings.obs_clip_value, 1000.0)
++
++    def test_empty_configs_preserve_all_production_defaults(self):
++        assert_estimator_equal(
++            self,
++            build_ball_state_estimator({}),
++            reference_ball_state_estimator({}),
++        )
++        assert_system_planner_equal(
++            self,
++            build_hitter_system_planner({}),
++            reference_hitter_system_planner({}),
++        )
++        settings = resolve_hitter_runtime_settings(
++            policy_config={},
++            motion_config={},
++            control_config={},
++        )
++
++        self.assertEqual(
++            settings,
++            HitterRuntimeSettings(
++                estimator_sample_rate_hz=300.0,
++                planner_update_rate_hz=100.0,
++                planner_update_interval_s=0.01,
++                minimum_incoming_speed_x_mps=0.20,
++                incoming_confirmation_snapshots=3,
++                waiting_tts_s=0.92,
++                arm_tts_s=0.90,
++                minimum_arm_tts_s=0.80,
++                maximum_policy_tts_s=0.92,
++                swing_duration_range_s=(1.75, 1.95),
++                hitter_seed=None,
++                control_tick_s=0.02,
++                obs_clip_value=None,
++            ),
++        )
++        with self.assertRaises(FrozenInstanceError):
++            settings.planner_update_rate_hz = 50.0
++
++    def test_maximum_hit_height_uses_twelve_decimal_rounding(self):
++        planner = build_hitter_system_planner(
++            {
++                "table_height": 0.1,
++                "maximum_hit_height_above_table_m": 0.2,
++            }
++        )
++
++        self.assertEqual(
++            planner.strike_planner.maximum_hit_height,
++            0.3,
++        )
++
++    def test_forced_strike_type_preserves_precedence_and_normalization(self):
++        cases = (
++            ({}, {}, None),
++            ({}, {"force_strike_type": " FOREHAND "}, "forehand"),
++            ({"force_strike_type": "BACKHAND"}, {}, "backhand"),
++            (
++                {"force_strike_type": None},
++                {"force_strike_type": "forehand"},
++                None,
++            ),
++            ({"force_strike_type": " null "}, {}, None),
++        )
++        for planner_config, motion_config, expected in cases:
++            with self.subTest(
++                planner_config=planner_config,
++                motion_config=motion_config,
++            ):
++                self.assertEqual(
++                    forced_strike_type(
++                        planner_config,
++                        motion_config,
++                    ),
++                    expected,
++                )
++
++    def test_invalid_forced_strike_type_is_rejected(self):
++        with self.assertRaisesRegex(
++            ValueError,
++            "force_strike_type must be forehand/backhand/None",
++        ):
++            forced_strike_type(
++                {"force_strike_type": "smash"},
++                {},
++            )
++
++    def test_seeded_lifecycle_recovery_sequence_matches_hitter_env(self):
++        settings = resolve_hitter_runtime_settings(
++            policy_config=self.policy_config,
++            motion_config=self.motion_config,
++            control_config=self.control_config,
++        )
++        env = HitterEnv.__new__(HitterEnv)
++        env.motion_cfg = self.motion_config
++        env.waiting_time_to_strike_s = settings.waiting_tts_s
++        env.hitter_runtime_settings = settings
++        env.hitter_rng = np.random.default_rng(settings.hitter_seed)
++        factory_rng = np.random.default_rng(settings.hitter_seed)
++
++        expected = []
++        actual = []
++        for sequence_number in range(1, 7):
++            expected.append(
++                armed_recovery_duration(
++                    env._new_hitter_command_lifecycle(),
++                    sequence_number,
++                )
++            )
++            actual.append(
++                armed_recovery_duration(
++                    build_hitter_command_lifecycle(
++                        settings,
++                        rng=factory_rng,
++                    ),
++                    sequence_number,
++                )
++            )
++
++        np.testing.assert_array_equal(actual, expected)
++
++    def test_real_world_ball_state_defaults_stay_initialized(self):
++        simulator = RealWorld.__new__(RealWorld)
++        simulator.cfg = SimpleNamespace(motion=self.motion_config)
++
++        simulator._init_ball_state()
++
++        self.assertEqual(simulator.ball_state_estimator_sample_rate_hz, 360.0)
++        assert_estimator_equal(
++            self,
++            simulator.ball_state_estimator,
++            reference_ball_state_estimator(self.planner_config),
++        )
++        self.assertIsNone(simulator.ball_state_estimator_time)
++        self.assertIsNone(simulator.ball_state_estimator_last_host_time)
++        self.assertFalse(simulator.ball_state_estimator_ready)
++        self.assertFalse(simulator.ball_state_estimator_ready_tmp)
++        self.assertEqual(simulator.ball_state_estimator_sample_count, 0)
++        self.assertEqual(simulator.ball_state_estimator_sample_count_tmp, 0)
++        self.assertEqual(
++            simulator.ball_state_estimator_min_samples,
++            simulator.ball_state_estimator.min_samples,
++        )
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/deploy/utils/hitter_runtime_factory.py b/deploy/utils/hitter_runtime_factory.py
+new file mode 100644
+index 0000000..bc265e3
+--- /dev/null
++++ b/deploy/utils/hitter_runtime_factory.py
+@@ -0,0 +1,331 @@
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Mapping
++
++import numpy as np
++
++from utils.hitter_planner import (
++    BallStateEstimator,
++    BallTrajectoryPredictor,
++    BaseTargetPlanner,
++    HitterSystemPlanner,
++    StrikePlanner,
++)
++from utils.hitter_realtime import HitterCommandLifecycle
++
++
++def build_ball_state_estimator(
++    planner_config: Mapping[str, object],
++) -> BallStateEstimator:
++    """Build the exact estimator currently used by RealWorld."""
++    estimator_window_size = int(
++        planner_config.get("state_estimator_window_size", 31)
++    )
++    return BallStateEstimator(
++        window_size=estimator_window_size,
++        min_samples=int(
++            planner_config.get(
++                "state_estimator_min_samples",
++                estimator_window_size,
++            )
++        ),
++        table_height=float(planner_config.get("table_height", 0.76)),
++        table_center_xy=planner_config.get(
++            "table_center_xy_w",
++            [1.37, 0.0],
++        ),
++        table_length=float(planner_config.get("table_length", 2.74)),
++        table_width=float(planner_config.get("table_width", 1.525)),
++        ball_radius=float(planner_config.get("ball_radius", 0.02)),
++        bounce_height_tolerance=float(
++            planner_config.get(
++                "state_estimator_bounce_height_tolerance",
++                0.03,
++            )
++        ),
++        bounce_velocity_threshold=float(
++            planner_config.get(
++                "state_estimator_bounce_velocity_threshold",
++                0.10,
++            )
++        ),
++        bounce_min_separation_s=float(
++            planner_config.get(
++                "state_estimator_bounce_min_separation_s",
++                0.20,
++            )
++        ),
++    )
++
++
++def build_hitter_system_planner(
++    planner_config: Mapping[str, object],
++) -> HitterSystemPlanner:
++    """Build the exact planner currently used by HitterEnv."""
++    table_center_xy = planner_config.get(
++        "table_center_xy_w",
++        [1.37, 0.0],
++    )
++    predictor = BallTrajectoryPredictor(
++        gravity=planner_config.get("gravity", [0.0, 0.0, -9.81]),
++        drag_coefficient=float(
++            planner_config.get("drag_coefficient", 0.0)
++        ),
++        vertical_restitution=float(
++            planner_config.get("vertical_restitution", 0.8)
++        ),
++        horizontal_restitution=float(
++            planner_config.get("horizontal_restitution", 0.9)
++        ),
++        dt=float(planner_config.get("prediction_dt", 0.005)),
++        table_height=float(planner_config.get("table_height", 0.76)),
++        table_center_xy=table_center_xy,
++        table_length=float(planner_config.get("table_length", 2.74)),
++        table_width=float(planner_config.get("table_width", 1.525)),
++        ball_radius=float(planner_config.get("ball_radius", 0.02)),
++    )
++    table_height = float(planner_config.get("table_height", 0.76))
++    maximum_hit_height = round(
++        table_height
++        + float(
++            planner_config.get(
++                "maximum_hit_height_above_table_m",
++                0.69,
++            )
++        ),
++        12,
++    )
++    strike_planner = StrikePlanner(
++        predictor=predictor,
++        virtual_hit_plane_x=float(
++            planner_config.get("virtual_hit_plane_x", 0.0)
++        ),
++        desired_landing_point=planner_config.get(
++            "desired_landing_point_w",
++            [2.05, 0.0, 0.78],
++        ),
++        post_hit_flight_time=float(
++            planner_config.get("post_hit_flight_time", 0.55)
++        ),
++        racket_restitution=float(
++            planner_config.get("racket_restitution", 0.85)
++        ),
++        prediction_horizon_s=float(
++            planner_config.get("prediction_horizon_s", 2.0)
++        ),
++        maximum_prediction_horizon_s=float(
++            planner_config.get("maximum_prediction_horizon_s", 5.0)
++        ),
++        minimum_hit_height=table_height,
++        maximum_hit_height=maximum_hit_height,
++        require_future_hit_plane_crossing=bool(
++            planner_config.get(
++                "require_future_hit_plane_crossing",
++                False,
++            )
++        ),
++    )
++    base_planner = BaseTargetPlanner(
++        racket_x_offset_b=float(
++            planner_config.get("racket_x_offset_b", 0.40)
++        ),
++        forehand_nominal_racket_y_b=float(
++            planner_config.get(
++                "forehand_nominal_racket_y_b",
++                -0.5,
++            )
++        ),
++        backhand_nominal_racket_y_b=float(
++            planner_config.get(
++                "backhand_nominal_racket_y_b",
++                0.22,
++            )
++        ),
++        default_base_z=float(
++            planner_config.get("target_base_height_w", 0.793)
++        ),
++    )
++    return HitterSystemPlanner(
++        strike_planner=strike_planner,
++        base_planner=base_planner,
++    )
++
++
++def forced_strike_type(
++    planner_config: Mapping[str, object],
++    motion_config: Mapping[str, object],
++) -> str | None:
++    """Resolve and validate forehand/backhand/None exactly once."""
++    forced = planner_config.get(
++        "force_strike_type",
++        motion_config.get("force_strike_type", None),
++    )
++    if (
++        forced is None
++        or str(forced).strip().lower() in {"", "none", "null"}
++    ):
++        return None
++    forced_name = str(forced).strip().lower()
++    if forced_name not in {"forehand", "backhand"}:
++        raise ValueError(
++            "force_strike_type must be forehand/backhand/None, "
++            f"got {forced_name!r}."
++        )
++    return forced_name
++
++
++@dataclass(frozen=True)
++class HitterRuntimeSettings:
++    estimator_sample_rate_hz: float
++    planner_update_rate_hz: float
++    planner_update_interval_s: float
++    minimum_incoming_speed_x_mps: float
++    incoming_confirmation_snapshots: int
++    waiting_tts_s: float
++    arm_tts_s: float
++    minimum_arm_tts_s: float
++    maximum_policy_tts_s: float
++    swing_duration_range_s: tuple[float, float]
++    hitter_seed: int | None
++    control_tick_s: float
++    obs_clip_value: float | None
++
++
++def _range_from_value(
++    name: str,
++    value: object,
++) -> tuple[float, float]:
++    if len(value) != 2:
++        raise ValueError(
++            f"HITTER motion range `{name}` must contain two values, "
++            f"got {value!r}."
++        )
++    low, high = float(value[0]), float(value[1])
++    if high < low:
++        raise ValueError(
++            f"HITTER motion range `{name}` has high < low: {value!r}."
++        )
++    return low, high
++
++
++def resolve_hitter_runtime_settings(
++    *,
++    policy_config: Mapping[str, object],
++    motion_config: Mapping[str, object],
++    control_config: Mapping[str, object],
++) -> HitterRuntimeSettings:
++    """Resolve every estimator/incoming/lifecycle/tick value once."""
++    planner_config = motion_config.get("ball_planner", {}) or {}
++    planner_update_rate_hz = float(
++        planner_config.get(
++            "planner_update_rate_hz",
++            motion_config.get("planner_update_rate_hz", 100.0),
++        )
++    )
++    if (
++        not np.isfinite(planner_update_rate_hz)
++        or planner_update_rate_hz <= 0.0
++    ):
++        raise ValueError(
++            "HITTER planner_update_rate_hz must be finite and positive."
++        )
++
++    swing_duration_range_s = _range_from_value(
++        "swing_duration_range",
++        planner_config.get(
++            "swing_duration_range",
++            motion_config.get(
++                "swing_duration_range",
++                (1.75, 1.95),
++            ),
++        ),
++    )
++    hitter_seed_value = policy_config.get("hitter_seed", None)
++    obs_clip_value = control_config.get("obs_clip_value", None)
++
++    return HitterRuntimeSettings(
++        estimator_sample_rate_hz=float(
++            planner_config.get(
++                "state_estimator_sample_rate_hz",
++                300.0,
++            )
++        ),
++        planner_update_rate_hz=planner_update_rate_hz,
++        planner_update_interval_s=1.0 / planner_update_rate_hz,
++        minimum_incoming_speed_x_mps=float(
++            planner_config.get(
++                "minimum_stable_incoming_speed_x_mps",
++                0.20,
++            )
++        ),
++        incoming_confirmation_snapshots=int(
++            planner_config.get(
++                "stable_incoming_confirmation_snapshots",
++                3,
++            )
++        ),
++        waiting_tts_s=float(
++            motion_config.get("waiting_time_to_strike_s", 0.92)
++        ),
++        arm_tts_s=float(
++            planner_config.get("arm_time_to_strike_s", 0.90)
++        ),
++        minimum_arm_tts_s=float(
++            planner_config.get(
++                "minimum_arm_time_to_strike_s",
++                0.80,
++            )
++        ),
++        maximum_policy_tts_s=float(
++            planner_config.get(
++                "maximum_policy_time_to_strike_s",
++                0.92,
++            )
++        ),
++        swing_duration_range_s=swing_duration_range_s,
++        hitter_seed=(
++            None
++            if hitter_seed_value is None
++            else int(hitter_seed_value)
++        ),
++        control_tick_s=(
++            float(control_config.get("low_dt", 0.005))
++            * float(control_config.get("decimation", 4))
++        ),
++        obs_clip_value=(
++            None
++            if obs_clip_value is None
++            else float(obs_clip_value)
++        ),
++    )
++
++
++def build_hitter_command_lifecycle(
++    settings: HitterRuntimeSettings,
++    *,
++    rng: np.random.Generator,
++) -> HitterCommandLifecycle:
++    """Use the seeded production-uniform swing-duration sampler."""
++    low, high = settings.swing_duration_range_s
++
++    def sample_swing_duration() -> float:
++        return float(rng.uniform(low, high))
++
++    return HitterCommandLifecycle(
++        waiting_tts=settings.waiting_tts_s,
++        arm_tts=settings.arm_tts_s,
++        minimum_arm_tts=settings.minimum_arm_tts_s,
++        maximum_policy_tts=settings.maximum_policy_tts_s,
++        swing_duration_sampler=sample_swing_duration,
++    )
++
++
++__all__ = [
++    "HitterRuntimeSettings",
++    "build_ball_state_estimator",
++    "build_hitter_command_lifecycle",
++    "build_hitter_system_planner",
++    "forced_strike_type",
++    "resolve_hitter_runtime_settings",
++]

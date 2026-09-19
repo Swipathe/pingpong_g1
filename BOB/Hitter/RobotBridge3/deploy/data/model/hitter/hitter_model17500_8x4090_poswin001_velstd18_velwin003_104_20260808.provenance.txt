@@ -1,0 +1,57 @@
+Artifact
+========
+Filename: hitter_model17500_8x4090_poswin001_velstd18_velwin003_104_20260808.onnx
+Exported: 2026-08-08 on loco1
+ONNX SHA256: 397c1d2faed0126020d553a3d418f731a43801af1054ad620d7165f70acc868d
+ONNX size: 891384 bytes
+ONNX opset: 18
+Contract: float32 obs [1,104] -> float32 actions [1,29]
+
+Source checkpoint
+=================
+Host: g0701 (eight RTX 4090)
+Run: /share/yhl/MOSAIC-main-sijie-20260806/logs/rsl_rl/hitter_striking_g1/2026-08-08_07-00-26_hitter_mqy_resume11100_vx0to6_vyneg05to05_vz0to6_racketz0to05_tts030to092_posstd010_poswin001_velstd18_velwin003_8x4090_env28000_20260808_065401
+Checkpoint: model_17500.pt
+Checkpoint iteration: 17500
+Checkpoint SHA256: 9ed50651408b85190225113f4e871717a29cbcfed5a5de96a8817f0b3d2fa7c5
+params/agent.yaml SHA256: 0faf11a3af8c6b6d9e1b205cf03610fcf7024a566e615e72d1171d8f1dd51674
+params/env.yaml SHA256: 89599ed41e9ffc1da2d021bc451d8d1a583c57baa43d5c39f494164d02fab1e5
+source_snapshot/flat_env_cfg.py SHA256: 637cf6dda3e40e3d8b13279b001369aecc431984ba68f107166fa8a75db71176
+
+Training provenance
+===================
+Motion: data/hitter_motions/20260806_mqy_g1_npz_raw_peak43_aligned
+Motion NPZ count: 6
+Motion manifest SHA256: e49e72fa202dfa97bfce364aedd7618a7b63e21894309c8b7cd3aeae7ed411d6
+Resume checkpoint: model_11100.pt
+Planner-domain velocity ranges: x=[0,6], y=[-0.5,0.5], z=[0,6] m/s
+Time-to-strike range: [0.30,0.92] s
+Racket relative-z range: [0,0.5] m
+Reward snapshot: racket_pos std=0.10 window=0.01; racket_vel std=1.8 window=0.03
+
+Export
+======
+Host: loco1
+MOSAIC root: /home/loco1/BOB/Hitter/MOSAIC-main
+Import root: /home/loco1/BOB/Hitter/MOSAIC-main/imports/8x4090_20260808_model17500
+Python: /home/loco1/miniconda3/envs/isaaclab/bin/python
+Entry point: scripts/rsl_rl/play.py
+play.py SHA256: f86484c04f1a86dc0171391b300331c7dc63f5bd6d3a45d36ace9d9c6ddd453e
+exporter.py SHA256: 4e05cd5af77bb5f5dad2015cfbf72f3106df390f0166c546b389e6e2fee55513
+Task: Hitter-Striking-PlannerDomain-Flat-G1-v0
+Options: --num_envs=1 --skip_critic --headless --device=cuda:0 --video --video_length=1
+Isolation: imported whole_body_tracking source copy with the exact run config snapshot; the main MOSAIC source was not overwritten.
+
+Validation
+==========
+Checkpoint torch.load: PASS; iter=17500; actor 104->512->256->128->29
+Isaac 1-env/1-frame load and clean exit: PASS
+Policy observation manager: 104 dimensions
+onnx.checker: PASS
+Input/output: obs [1,104] -> actions [1,29]
+Metadata: 11 keys; base_target_xy present
+ONNX Runtime CPU: zero, ramp, and seeded random observations produced finite [1,29] actions
+
+Evidence boundary
+=================
+These checks establish checkpoint provenance, export success, ONNX structure, and finite numerical inference. They do not establish MuJoCo quality or physical-robot safety/performance.

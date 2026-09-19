@@ -1,0 +1,59 @@
+#usda 1.0
+(
+    defaultPrim = "g1"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+# Preserve the original 31-rigid-body topology expected by the motion NPZ files,
+# while replacing only the racket assembly geometry and inertial properties.
+def Xform "g1" (
+    prepend references = @../g1_hitter_racket/main.usda@
+)
+{
+    over "right_racket_link"
+    {
+        point3f physics:centerOfMass = (-0.04789, 0.00685, -0.00083)
+        vector3f physics:diagonalInertia = (0.00044095429, 0.0024131257, 0.0019975721)
+        float physics:mass = 0.36624
+        quatf physics:principalAxes = (0.9999632, -0.00000192322, 0.008573798, -0.000000178099)
+        quatd xformOp:orient = (0.000029937424, 1, 0.000095795825, -0.000027471629)
+        double3 xformOp:translate = (0.4225628376, -0.141759187, 0.0923101753)
+
+        over "visuals" (
+            active = false
+        )
+        {
+        }
+
+        over "collisions" (
+            active = false
+        )
+        {
+        }
+
+        def Xform "cad_visuals" (
+            prepend references = @./cad_geometry.usd@</CAD/visuals>
+        )
+        {
+            rel material:binding = </g1/Looks/ConnectorWhite>
+        }
+
+        def Xform "cad_collisions" (
+            prepend references = @./cad_geometry.usd@</CAD/collisions>
+        )
+        {
+        }
+    }
+
+    over "joints"
+    {
+        over "right_racket_fixed_joint"
+        {
+            point3f physics:localPos0 = (0.22279, 0.00685, -0.00291)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0, 1, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+    }
+}

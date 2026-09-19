@@ -1,0 +1,691 @@
+# Review package: 852c1c687204b47eb0da0f244168285c47b9e2b1..5749e237e0e69441953082caf31de4614a94fc91
+
+## Commits
+5749e23 feat: add isolated HITTER waiting ready pose
+
+## Files changed
+ deploy/config/mimic/hitter.yaml                    |  18 ++
+ deploy/envs/hitter.py                              | 162 +++++++++++++++++
+ deploy/tests/test_hitter_waiting_arm_return.py     | 171 ++++++++++++++++++
+ ...2026-07-27-hitter-ready-pose-mujoco-isolated.md | 194 +++++++++++++++++++++
+ 4 files changed, 545 insertions(+)
+
+## Diff
+diff --git a/deploy/config/mimic/hitter.yaml b/deploy/config/mimic/hitter.yaml
+index a83c80c..412b975 100644
+--- a/deploy/config/mimic/hitter.yaml
++++ b/deploy/config/mimic/hitter.yaml
+@@ -3,20 +3,38 @@ policy:
+   action_beta: 1.0
+   hitter_seed: 0
+   save_video: false
+ 
+ motion:
+   playback_speed: 1.0
+   reset_ball_on_command: true
+   mujoco_serve_times_s: [0.0, 20.0]
+   waiting_time_to_strike_s: 0.92
+   waiting_base_target_xy_w: [-0.4, 0.0]
++  waiting_arm_return:
++    enabled: true
++    duration_s: 0.9
++    target_joint_pos:
++      left_shoulder_pitch_joint: 0.2
++      left_shoulder_roll_joint: 0.2
++      left_shoulder_yaw_joint: 0.0
++      left_elbow_joint: 0.6
++      left_wrist_roll_joint: 0.0
++      left_wrist_pitch_joint: 0.0
++      left_wrist_yaw_joint: 0.0
++      right_shoulder_pitch_joint: -0.5946002267035698
++      right_shoulder_roll_joint: -0.2
++      right_shoulder_yaw_joint: 0.0
++      right_elbow_joint: 0.6
++      right_wrist_roll_joint: 0.0
++      right_wrist_pitch_joint: 0.0
++      right_wrist_yaw_joint: 0.0
+ 
+   ball_planner:
+     table_center_xy_w: [1.365369, 0.0]
+     table_height: 0.760000
+     table_length: 2.730738
+     table_width: 1.512451
+     ball_radius: 0.02
+     virtual_hit_plane_x: 0.0
+     desired_landing_point_w: [2.05, 0.0, 0.78]
+     post_hit_flight_time: 0.48
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index a448cb5..bd4a52f 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -1,11 +1,12 @@
+ from __future__ import annotations
++from collections.abc import Mapping
+ from typing import Dict, List, Optional, Union
+ 
+ import numpy as np
+ from loguru import logger
+ from omegaconf import DictConfig, OmegaConf
+ from scipy.spatial.transform import Rotation as sRot
+ 
+ from envs.base_env import BaseEnv
+ 
+ from utils.dataset import MosaicModelMeta as HitterModelMeta
+@@ -38,31 +39,49 @@ from pathlib import Path
+ if "MUJOCO_GL" not in os.environ and not os.environ.get("DISPLAY"):
+     os.environ["MUJOCO_GL"] = "egl"
+ 
+ import imageio
+ import mujoco
+ 
+ 
+ TRACK_ENDED_ERROR = "HITTER_TRACK_ENDED"
+ TRACK_ENDED_RESULT_ERROR = f"RuntimeError: {TRACK_ENDED_ERROR}"
+ 
++WAITING_ARM_RETURN_JOINT_NAMES = (
++    "left_shoulder_pitch_joint",
++    "left_shoulder_roll_joint",
++    "left_shoulder_yaw_joint",
++    "left_elbow_joint",
++    "left_wrist_roll_joint",
++    "left_wrist_pitch_joint",
++    "left_wrist_yaw_joint",
++    "right_shoulder_pitch_joint",
++    "right_shoulder_roll_joint",
++    "right_shoulder_yaw_joint",
++    "right_elbow_joint",
++    "right_wrist_roll_joint",
++    "right_wrist_pitch_joint",
++    "right_wrist_yaw_joint",
++)
++
+ class HitterEnv(BaseEnv):
+     """Environment wrapper for the HITTER target-conditioned policy."""
+ 
+     def __init__(self, config: DictConfig):
+         super().__init__(config)
+ 
+         cfg_dict = OmegaConf.to_container(config, resolve=True) if isinstance(config, DictConfig) else config
+         self.policy_cfg: Dict[str, Union[float, bool]] = cfg_dict.get("policy", {}) if isinstance(cfg_dict, dict) else {}
+         self.motion_cfg: Dict[str, Union[float, bool, str]] = (
+             cfg_dict.get("motion", {}) if isinstance(cfg_dict, dict) else {}
+         )
++        self._configure_waiting_arm_return()
+         control_cfg = (
+             cfg_dict.get("control", {})
+             if isinstance(cfg_dict, dict)
+             else {}
+         )
+         self.hitter_runtime_settings = resolve_hitter_runtime_settings(
+             policy_config=self.policy_cfg,
+             motion_config=self.motion_cfg,
+             control_config=control_cfg,
+         )
+@@ -189,26 +208,167 @@ class HitterEnv(BaseEnv):
+ 
+         self._sim_to_policy = sim_to_policy
+         self._policy_to_sim = policy_to_sim
+         self.policy_default_joint_pos_sim = sim_default
+         self.policy_action_scales_sim = self.policy_action_scales[sim_to_policy]
+         self._policy_to_sim_adapter = DoFAdapter(self.policy_joint_names, sim_joint_names)
+         self._sim_to_policy_adapter = DoFAdapter(sim_joint_names, self.policy_joint_names)
+ 
+         logger.info("HITTER policy metadata configured, {} degrees of freedom.", self._policy_dim)
+ 
++    @staticmethod
++    def _is_finite_number(value) -> bool:
++        return (
++            not isinstance(value, (bool, np.bool_))
++            and isinstance(value, (int, float, np.integer, np.floating))
++            and np.isfinite(value)
++        )
++
++    def _configure_waiting_arm_return(self) -> None:
++        """Validate the optional hold-phase arm return configuration."""
++        self._waiting_arm_return_enabled = False
++        self._waiting_arm_return_duration_s = None
++        self._waiting_arm_return_arm_indices = None
++        self._waiting_arm_return_target_arm = None
++        self._reset_waiting_arm_return_state(clear_last_target=True)
++
++        raw = self.motion_cfg.get("waiting_arm_return")
++        if raw is None:
++            return
++        if not isinstance(raw, Mapping):
++            raise TypeError("motion.waiting_arm_return must be a mapping")
++
++        expected_keys = {"enabled", "duration_s", "target_joint_pos"}
++        actual_keys = set(raw.keys())
++        if actual_keys != expected_keys:
++            raise ValueError(
++                "motion.waiting_arm_return must contain exactly "
++                "enabled, duration_s, and target_joint_pos"
++            )
++
++        enabled = raw["enabled"]
++        if type(enabled) is not bool:
++            raise TypeError("motion.waiting_arm_return.enabled must be a bool")
++        duration_s = raw["duration_s"]
++        if not self._is_finite_number(duration_s) or float(duration_s) <= 0.0:
++            raise ValueError("motion.waiting_arm_return.duration_s must be finite and positive")
++        target_joint_pos = raw["target_joint_pos"]
++        if not isinstance(target_joint_pos, Mapping):
++            raise TypeError("motion.waiting_arm_return.target_joint_pos must be a mapping")
++        if set(target_joint_pos.keys()) != set(WAITING_ARM_RETURN_JOINT_NAMES):
++            raise ValueError(
++                "motion.waiting_arm_return.target_joint_pos must contain exactly "
++                "the configured arm joints"
++            )
++
++        target_values = []
++        for name in WAITING_ARM_RETURN_JOINT_NAMES:
++            value = target_joint_pos[name]
++            if not self._is_finite_number(value):
++                raise ValueError(
++                    "motion.waiting_arm_return.target_joint_pos[{}] must be finite "
++                    "and numeric".format(name)
++                )
++            target_values.append(float(value))
++
++        sim_joint_names = list(self.simulator.dof_names)
++        try:
++            arm_indices = np.asarray(
++                [sim_joint_names.index(name) for name in WAITING_ARM_RETURN_JOINT_NAMES],
++                dtype=np.int32,
++            )
++        except ValueError as exc:
++            raise ValueError(
++                "motion.waiting_arm_return target joints are missing from simulator.dof_names"
++            ) from exc
++        if not np.array_equal(arm_indices, np.arange(15, 29, dtype=np.int32)):
++            raise ValueError(
++                "motion.waiting_arm_return arm joints must map to simulation indices 15..28"
++            )
++
++        if enabled:
++            high_dt = self.simulator.high_dt
++            if not self._is_finite_number(high_dt) or float(high_dt) <= 0.0:
++                raise ValueError("simulator.high_dt must be finite and positive")
++
++        self._waiting_arm_return_enabled = enabled
++        self._waiting_arm_return_duration_s = float(duration_s)
++        self._waiting_arm_return_arm_indices = arm_indices
++        self._waiting_arm_return_target_arm = np.asarray(target_values, dtype=np.float32)
++
++    def _reset_waiting_arm_return_state(self, clear_last_target: bool) -> None:
++        self._waiting_arm_return_start_arm = None
++        self._waiting_arm_return_elapsed_s = 0.0
++        if clear_last_target:
++            self._last_dispatched_sim_pd_target = None
++
++    def _apply_waiting_arm_return(self, sim_action: np.ndarray) -> np.ndarray:
++        """Blend only the simulation-order arms during WAITING and TRACKING."""
++        result = np.asarray(sim_action).copy()
++        if not self._waiting_arm_return_enabled:
++            return result
++
++        arm_indices = self._waiting_arm_return_arm_indices
++        expected_size = len(self.simulator.dof_names)
++        if (
++            result.ndim != 1
++            or result.size != expected_size
++            or not np.issubdtype(result.dtype, np.number)
++            or not np.all(np.isfinite(result))
++        ):
++            raise ValueError("waiting arm return requires a finite simulation-order action vector")
++
++        phase = self.hitter_command_lifecycle.phase
++        if phase in {CommandPhase.ARMED, CommandPhase.RECOVERY}:
++            self._reset_waiting_arm_return_state(clear_last_target=False)
++            return result
++        if phase not in {CommandPhase.WAITING, CommandPhase.TRACKING}:
++            raise RuntimeError("unexpected HITTER command phase for waiting arm return")
++
++        if self._waiting_arm_return_start_arm is None:
++            start = self._last_dispatched_sim_pd_target
++            if start is None:
++                start = self.dof_pos
++            start = np.asarray(start)
++            if (
++                start.ndim != 1
++                or start.size != expected_size
++                or not np.issubdtype(start.dtype, np.number)
++                or not np.all(np.isfinite(start))
++            ):
++                raise ValueError("waiting arm return start vector must be finite and simulation-order")
++            self._waiting_arm_return_start_arm = start[arm_indices].astype(
++                np.float32,
++                copy=True,
++            )
++
++        elapsed_s = float(self._waiting_arm_return_elapsed_s)
++        duration_s = self._waiting_arm_return_duration_s
++        u = np.clip(elapsed_s / duration_s, 0.0, 1.0)
++        blend = u * u * (3.0 - 2.0 * u)
++        result[arm_indices] = (
++            (1.0 - blend) * self._waiting_arm_return_start_arm
++            + blend * self._waiting_arm_return_target_arm
++        )
++        self._waiting_arm_return_elapsed_s = min(
++            elapsed_s + float(self.simulator.high_dt),
++            duration_s,
++        )
++        return result
++
+     # --------------------------------------------------------------------- #
+     # BaseEnv overrides.
+     # --------------------------------------------------------------------- #
+     def _prepare_hitter_reset_state(self) -> None:
+         self.playback_speed = 1.0
+         self.prev_policy_action = np.zeros(self._policy_dim, dtype=np.float32)
++        self._reset_waiting_arm_return_state(clear_last_target=True)
+         self._init_hitter_command_state()
+         self._reset_hitter_lifecycle_state()
+ 
+     def reset(self):
+         if self.policy_model_meta is None:
+             raise RuntimeError("HitterEnv.reset() called before policy metadata was configured.")
+         self._prepare_hitter_reset_state()
+ 
+         obs_buf_dict = super().reset()
+         if self._mujoco_serve_schedule_enabled():
+@@ -230,20 +390,22 @@ class HitterEnv(BaseEnv):
+ 
+         action = np.asarray(action, dtype=np.float32).reshape(-1)
+         if action.size != self._policy_dim:
+             raise ValueError(f"Expected policy action of size {self._policy_dim}, received {action.size}.")
+ 
+         smoothed = (1.0 - self.action_beta) * self.prev_policy_action + self.action_beta * action
+         self.prev_policy_action = smoothed
+         scaled = smoothed * self.policy_action_scales
+         pd_target = scaled + self.policy_default_joint_pos
+         sim_action = self._policy_vector_to_sim(pd_target)
++        sim_action = self._apply_waiting_arm_return(sim_action)
++        self._last_dispatched_sim_pd_target = sim_action.copy()
+ 
+         if self.save_video_enabled:
+             self.sample_video_frame()
+ 
+         return super().step(sim_action[None, ...])
+ 
+     def compute_observation(self):
+         return self._compute_hitter_observation()
+ 
+     def refresh_policy_observation(self):
+diff --git a/deploy/tests/test_hitter_waiting_arm_return.py b/deploy/tests/test_hitter_waiting_arm_return.py
+new file mode 100644
+index 0000000..8a45cb6
+--- /dev/null
++++ b/deploy/tests/test_hitter_waiting_arm_return.py
+@@ -0,0 +1,171 @@
++from __future__ import annotations
++
++import copy
++import unittest
++from types import SimpleNamespace
++
++import numpy as np
++
++from envs.hitter import HitterEnv
++from utils.hitter_realtime import CommandPhase
++
++
++ARM_NAMES = (
++    "left_shoulder_pitch_joint", "left_shoulder_roll_joint", "left_shoulder_yaw_joint",
++    "left_elbow_joint", "left_wrist_roll_joint", "left_wrist_pitch_joint", "left_wrist_yaw_joint",
++    "right_shoulder_pitch_joint", "right_shoulder_roll_joint", "right_shoulder_yaw_joint",
++    "right_elbow_joint", "right_wrist_roll_joint", "right_wrist_pitch_joint", "right_wrist_yaw_joint",
++)
++LOWER_BODY_NAMES = tuple(f"lower_body_{index}" for index in range(15))
++ARM_TARGET = np.asarray(
++    [0.2, 0.2, 0.0, 0.6, 0.0, 0.0, 0.0, -0.5946002267035698, -0.2, 0.0, 0.6, 0.0, 0.0, 0.0],
++    dtype=np.float32,
++)
++
++
++def valid_motion_config(*, enabled: bool = True) -> dict:
++    return {"waiting_arm_return": {"enabled": enabled, "duration_s": 0.9,
++            "target_joint_pos": dict(zip(ARM_NAMES, ARM_TARGET.tolist()))}}
++
++
++class HitterWaitingArmReturnTests(unittest.TestCase):
++    def make_env(self, motion_cfg=None, *, high_dt: float = 0.1, dof_names=None):
++        env = HitterEnv.__new__(HitterEnv)
++        env.motion_cfg = valid_motion_config() if motion_cfg is None else motion_cfg
++        env.simulator = SimpleNamespace(
++            dof_names=list(LOWER_BODY_NAMES + ARM_NAMES if dof_names is None else dof_names), high_dt=high_dt)
++        env.dof_pos = np.linspace(-1.4, 1.4, 29, dtype=np.float32)
++        env.hitter_command_lifecycle = SimpleNamespace(phase=CommandPhase.WAITING)
++        return env
++
++    @staticmethod
++    def dispatch(env: HitterEnv, policy_target: np.ndarray) -> np.ndarray:
++        output = env._apply_waiting_arm_return(policy_target)
++        env._last_dispatched_sim_pd_target = output.copy()
++        return output
++
++    def test_waiting_smoothstep_changes_only_sim_arm_indices(self):
++        env = self.make_env()
++        env._configure_waiting_arm_return()
++        captured_start = np.arange(29, dtype=np.float32) - 14.0
++        policy_target = np.arange(29, dtype=np.float32) + 50.0
++        env._last_dispatched_sim_pd_target = captured_start.copy()
++
++        first = self.dispatch(env, policy_target)
++        np.testing.assert_array_equal(first[:15], policy_target[:15])
++        np.testing.assert_array_equal(first[15:], captured_start[15:])
++
++        env._waiting_arm_return_elapsed_s = 0.45
++        halfway = self.dispatch(env, policy_target)
++        np.testing.assert_array_equal(halfway[:15], policy_target[:15])
++        np.testing.assert_allclose(halfway[15:], (captured_start[15:] + ARM_TARGET) / 2.0, rtol=0.0, atol=1e-7)
++
++        env._waiting_arm_return_elapsed_s = 0.9
++        complete = self.dispatch(env, policy_target)
++        held = self.dispatch(env, policy_target + 100.0)
++        np.testing.assert_array_equal(complete[:15], policy_target[:15])
++        np.testing.assert_array_equal(complete[15:], ARM_TARGET)
++        np.testing.assert_array_equal(held[15:], ARM_TARGET)
++
++    def test_tracking_continues_but_armed_and_recovery_cancel(self):
++        env = self.make_env()
++        env._configure_waiting_arm_return()
++        waiting_policy = np.arange(29, dtype=np.float32)
++        env._last_dispatched_sim_pd_target = np.arange(29, dtype=np.float32) - 20.0
++        first = self.dispatch(env, waiting_policy)
++        captured_start = first[15:].copy()
++
++        env._waiting_arm_return_elapsed_s = 0.2
++        env.hitter_command_lifecycle.phase = CommandPhase.TRACKING
++        tracking_policy = waiting_policy + 30.0
++        tracking = self.dispatch(env, tracking_policy)
++        u = 0.2 / 0.9
++        blend = u * u * (3.0 - 2.0 * u)
++        np.testing.assert_array_equal(tracking[:15], tracking_policy[:15])
++        np.testing.assert_allclose(tracking[15:], (1.0 - blend) * captured_start + blend * ARM_TARGET, rtol=0.0, atol=1e-7)
++
++        armed_policy = tracking_policy + 40.0
++        env.hitter_command_lifecycle.phase = CommandPhase.ARMED
++        armed = self.dispatch(env, armed_policy)
++        np.testing.assert_array_equal(armed, armed_policy)
++        self.assertIsNone(env._waiting_arm_return_start_arm)
++        self.assertEqual(env._waiting_arm_return_elapsed_s, 0.0)
++
++        recovery_policy = armed_policy + 40.0
++        env.hitter_command_lifecycle.phase = CommandPhase.RECOVERY
++        recovery = self.dispatch(env, recovery_policy)
++        np.testing.assert_array_equal(recovery, recovery_policy)
++        self.assertIsNone(env._waiting_arm_return_start_arm)
++
++        env.hitter_command_lifecycle.phase = CommandPhase.WAITING
++        reentered = self.dispatch(env, recovery_policy + 40.0)
++        np.testing.assert_array_equal(reentered[15:], recovery_policy[15:])
++
++    def test_startup_and_reset_capture_current_dof_position(self):
++        env = self.make_env()
++        env._configure_waiting_arm_return()
++        policy_target = np.arange(29, dtype=np.float32) + 10.0
++        startup = self.dispatch(env, policy_target)
++        np.testing.assert_array_equal(startup[:15], policy_target[:15])
++        np.testing.assert_array_equal(startup[15:], env.dof_pos[15:])
++
++        env._last_dispatched_sim_pd_target = np.arange(29, dtype=np.float32)
++        env._waiting_arm_return_start_arm = np.ones(14, dtype=np.float32)
++        env._waiting_arm_return_elapsed_s = 0.3
++        env._policy_dim = 29
++        env._init_hitter_command_state = lambda: None
++        env._reset_hitter_lifecycle_state = lambda: None
++        env._prepare_hitter_reset_state()
++        self.assertIsNone(env._last_dispatched_sim_pd_target)
++        self.assertIsNone(env._waiting_arm_return_start_arm)
++        self.assertEqual(env._waiting_arm_return_elapsed_s, 0.0)
++
++    def test_waiting_return_configuration_fails_closed(self):
++        valid = valid_motion_config()
++
++        def assert_invalid(raw, *, high_dt=0.1, dof_names=None):
++            env = self.make_env({"waiting_arm_return": raw}, high_dt=high_dt, dof_names=dof_names)
++            with self.assertRaises((TypeError, ValueError)):
++                env._configure_waiting_arm_return()
++
++        assert_invalid([])
++        assert_invalid({"enabled": True, "duration_s": 0.9, "target_joint_pos": {}, "extra": 1})
++        assert_invalid({"enabled": True, "target_joint_pos": valid["waiting_arm_return"]["target_joint_pos"]})
++        for enabled in (1, "true", None):
++            raw = copy.deepcopy(valid["waiting_arm_return"])
++            raw["enabled"] = enabled
++            assert_invalid(raw)
++        for duration in (True, "0.9", float("nan"), float("inf"), 0.0, -0.1):
++            raw = copy.deepcopy(valid["waiting_arm_return"])
++            raw["duration_s"] = duration
++            assert_invalid(raw)
++        for target_value in (True, "0.2", float("nan"), float("inf")):
++            raw = copy.deepcopy(valid["waiting_arm_return"])
++            raw["target_joint_pos"][ARM_NAMES[0]] = target_value
++            assert_invalid(raw)
++        raw = copy.deepcopy(valid["waiting_arm_return"])
++        raw["target_joint_pos"].pop(ARM_NAMES[0])
++        assert_invalid(raw)
++        raw = copy.deepcopy(valid["waiting_arm_return"])
++        raw["target_joint_pos"]["unexpected_joint"] = 0.0
++        assert_invalid(raw)
++        assert_invalid(valid["waiting_arm_return"], dof_names=LOWER_BODY_NAMES + ARM_NAMES[1:])
++        assert_invalid(valid["waiting_arm_return"], dof_names=("extra",) + LOWER_BODY_NAMES + ARM_NAMES)
++        for high_dt in (True, "0.1", float("nan"), float("inf"), 0.0, -0.1):
++            assert_invalid(valid["waiting_arm_return"], high_dt=high_dt)
++
++    def test_missing_or_disabled_block_preserves_policy_target(self):
++        policy_target = np.arange(29, dtype=np.float32) - 3.0
++        missing = self.make_env({})
++        missing._configure_waiting_arm_return()
++        self.assertFalse(missing._waiting_arm_return_enabled)
++        np.testing.assert_array_equal(missing._apply_waiting_arm_return(policy_target), policy_target)
++
++        disabled = self.make_env(valid_motion_config(enabled=False))
++        disabled._configure_waiting_arm_return()
++        self.assertFalse(disabled._waiting_arm_return_enabled)
++        np.testing.assert_array_equal(disabled._apply_waiting_arm_return(policy_target), policy_target)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/docs/superpowers/plans/2026-07-27-hitter-ready-pose-mujoco-isolated.md b/docs/superpowers/plans/2026-07-27-hitter-ready-pose-mujoco-isolated.md
+new file mode 100644
+index 0000000..96a00f7
+--- /dev/null
++++ b/docs/superpowers/plans/2026-07-27-hitter-ready-pose-mujoco-isolated.md
+@@ -0,0 +1,194 @@
++# HITTER Ready Pose MuJoCo Isolated Test Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
++
++**Goal:** Add the user-selected bilateral ready pose to an isolated RobotBridge2 test worktree so the user can validate recovery-to-waiting behavior in MuJoCo without changing or starting the original `loco1` checkout.
++
++**Architecture:** Keep the saved YAML/JSON as audit artifacts, but inline the exact 14 named joint values in the isolated Hydra config because the current runtime has no pose-file loader. `HitterEnv` validates the configuration once, maps names to the exact simulation indices `15..28`, and applies a deterministic 0.9-second smoothstep only while the lifecycle is WAITING or TRACKING. ARMED and RECOVERY always receive the unmodified ONNX PD target.
++
++**Tech Stack:** Python 3.8, NumPy, OmegaConf/Hydra, `unittest`, RobotBridge2 MuJoCo runtime.
++
++## Global Constraints
++
++- Work only in `/home/loco1/BOB/Hitter/RobotBridge2/.worktrees/hitter-ready-pose-mujoco-test-20260727` on branch `codex/hitter-ready-pose-mujoco-test-20260727`.
++- Do not modify, clean, reset, stop, or start `/home/loco1/BOB/Hitter/RobotBridge2`.
++- Do not start MuJoCo or a real-robot process; the user will run the final command.
++- Do not enable video recording.
++- The source pose is `hitter_ready_arm_pose_20260727_185434`; preserve its ignored YAML/JSON/commit-marker files unchanged.
++- The exact target, in radians, is left `[0.2, 0.2, 0.0, 0.6, 0.0, 0.0, 0.0]` and right `[-0.5946002267035698, -0.2, 0.0, 0.6, 0.0, 0.0, 0.0]`.
++- `duration_s` is exactly `0.9`, and the isolated test config sets `enabled: true`.
++- Apply the ready-pose transition in WAITING and TRACKING so the robot remains ready until ARMED.
++- Cancel the override on the first ARMED or RECOVERY control step; those phases must receive the full unmodified ONNX PD target.
++- Override only the simulation-order arm indices `15..28`; indices `0..14` always pass through from the current ONNX output.
++- Capture the transition start from the previously dispatched simulation-order PD target. After reset/startup, when no previous target exists, capture the current `dof_pos`.
++- Use `simulator.high_dt` as the deterministic transition clock. The first hold-phase step outputs the captured start exactly; after 0.9 simulated seconds it outputs the target exactly and continues holding it.
++- No runtime pose-file loader is added in this test.
++
++---
++
++### Task 1: Isolated waiting-arm return and MuJoCo command
++
++**Files:**
++- Create: `deploy/tests/test_hitter_waiting_arm_return.py`
++- Modify: `deploy/envs/hitter.py`
++- Modify: `deploy/config/mimic/hitter.yaml`
++- Create: `docs/superpowers/plans/2026-07-27-hitter-ready-pose-mujoco-isolated.md`
++
++**Interfaces:**
++- Consumes: `HitterEnv.step(action)`, `CommandPhase`, `simulator.dof_names`, `simulator.high_dt`, `self.dof_pos`.
++- Produces: `HitterEnv._configure_waiting_arm_return()`, `HitterEnv._reset_waiting_arm_return_state(clear_last_target: bool)`, and `HitterEnv._apply_waiting_arm_return(sim_action: np.ndarray) -> np.ndarray`.
++
++- [x] **Step 1: Write focused failing tests**
++
++Create a real `HitterEnv.__new__(HitterEnv)` fixture with a minimal simulator whose `dof_names` contain the 15 lower-body/waist names followed by the exact 14 arm names, `high_dt=0.1`, and a 29-D finite `dof_pos`. Call the production configuration and application methods directly.
++
++The tests must cover these observable contracts with hand-derived values:
++
++```python
++def test_waiting_smoothstep_changes_only_sim_arm_indices(self):
++    # At elapsed 0.0, output arms equal the captured start.
++    # With duration 0.9 and high_dt 0.1, after the state has accumulated
++    # 0.45 s, smoothstep(0.5) == 0.5.
++    # Lower-body indices 0..14 always equal the current policy PD target.
++    # At 0.9 s and afterward, indices 15..28 equal the literal target.
++
++def test_tracking_continues_but_armed_and_recovery_cancel(self):
++    # WAITING -> TRACKING keeps the same captured start and elapsed state.
++    # ARMED and RECOVERY return all 29 current policy values unchanged and
++    # clear transition state.
++    # Re-entering WAITING captures the most recently dispatched target.
++
++def test_startup_and_reset_capture_current_dof_position(self):
++    # With no previous dispatched target, first WAITING output uses dof_pos.
++    # _prepare_hitter_reset_state clears the prior target and transition.
++
++def test_waiting_return_configuration_fails_closed(self):
++    # Reject a non-mapping block, unknown/missing block keys, non-bool enabled,
++    # non-numeric/bool/non-finite/non-positive duration, missing/extra joint
++    # names, bool/string/non-finite target values, missing simulator joints,
++    # non-15..28 mapping, and non-finite/non-positive high_dt.
++
++def test_missing_or_disabled_block_preserves_policy_target(self):
++    # No block is backward-compatible and disabled mode is bitwise passthrough.
++```
++
++Run:
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2/.worktrees/hitter-ready-pose-mujoco-test-20260727/deploy
++env -u DISPLAY PYTHONDONTWRITEBYTECODE=1 MUJOCO_GL=egl \
++  /home/loco1/miniconda3/envs/rb/bin/python \
++  -m unittest tests.test_hitter_waiting_arm_return -v
++```
++
++Expected: fail because the three production methods do not exist.
++
++- [x] **Step 2: Implement strict configuration and deterministic state**
++
++Add a module-level tuple with the exact 14 arm names. In `__init__`, after `motion_cfg` is available, call `_configure_waiting_arm_return()`.
++
++`_configure_waiting_arm_return()` must:
++
++```python
++raw = self.motion_cfg.get("waiting_arm_return")
++# raw is absent -> disabled backward-compatible state.
++# A present block has exactly enabled, duration_s, target_joint_pos.
++# Validate concrete bool/numeric/mapping types and finite values.
++# Resolve each name against simulator.dof_names.
++# Require resolved indices == np.arange(15, 29).
++# Store a float32 target in the same 14-name order.
++# Validate finite positive simulator.high_dt when enabled.
++```
++
++`_reset_waiting_arm_return_state(clear_last_target)` clears the captured start and elapsed time. It clears `_last_dispatched_sim_pd_target` only when requested.
++
++- [x] **Step 3: Implement the WAITING/TRACKING smoothstep**
++
++Immediately after converting the policy PD target to simulation order in `step()`:
++
++```python
++sim_action = self._apply_waiting_arm_return(sim_action)
++self._last_dispatched_sim_pd_target = sim_action.copy()
++```
++
++`_apply_waiting_arm_return()` must copy its input. Disabled mode returns it unchanged. ARMED/RECOVERY clear transition state and return all 29 values unchanged. WAITING/TRACKING capture a start only once, then apply:
++
++```python
++u = np.clip(elapsed_s / duration_s, 0.0, 1.0)
++blend = u * u * (3.0 - 2.0 * u)
++result[arm_indices] = (
++    (1.0 - blend) * captured_start_arm
++    + blend * target_arm
++)
++elapsed_s = min(elapsed_s + high_dt, duration_s)
++```
++
++Require shape-compatible, finite input and start vectors. The first hold-phase output uses `u=0`. In `_prepare_hitter_reset_state()`, reset the transition with `clear_last_target=True`.
++
++- [x] **Step 4: Add the exact isolated Hydra configuration**
++
++Under `motion` in `deploy/config/mimic/hitter.yaml`, add:
++
++```yaml
++  waiting_arm_return:
++    enabled: true
++    duration_s: 0.9
++    target_joint_pos:
++      left_shoulder_pitch_joint: 0.2
++      left_shoulder_roll_joint: 0.2
++      left_shoulder_yaw_joint: 0.0
++      left_elbow_joint: 0.6
++      left_wrist_roll_joint: 0.0
++      left_wrist_pitch_joint: 0.0
++      left_wrist_yaw_joint: 0.0
++      right_shoulder_pitch_joint: -0.5946002267035698
++      right_shoulder_roll_joint: -0.2
++      right_shoulder_yaw_joint: 0.0
++      right_elbow_joint: 0.6
++      right_wrist_roll_joint: 0.0
++      right_wrist_pitch_joint: 0.0
++      right_wrist_yaw_joint: 0.0
++```
++
++- [x] **Step 5: Verify RED becomes GREEN and run regressions**
++
++Run the focused test command from Step 1, then:
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2/.worktrees/hitter-ready-pose-mujoco-test-20260727/deploy
++env -u DISPLAY PYTHONDONTWRITEBYTECODE=1 MUJOCO_GL=egl \
++  /home/loco1/miniconda3/envs/rb/bin/python \
++  -m unittest discover -s tests -p 'test_*.py'
++```
++
++Expected: focused tests pass; the current isolated baseline of 238 tests plus the new tests has zero failures, with only the existing environment-dependent skips.
++
++- [x] **Step 6: Verify composition, syntax, isolation, and command inputs**
++
++Run:
++
++```bash
++cd /home/loco1/BOB/Hitter/RobotBridge2/.worktrees/hitter-ready-pose-mujoco-test-20260727/deploy
++env PYTHONDONTWRITEBYTECODE=1 \
++  /home/loco1/miniconda3/envs/rb/bin/python -m py_compile envs/hitter.py \
++  tests/test_hitter_waiting_arm_return.py
++/home/loco1/miniconda3/envs/rb/bin/python -u run.py \
++  --config-name=hitter sim=mujoco device=cpu --cfg job
++test -f /home/loco1/BOB/Hitter/RobotBridge2/deploy/data/model/hitter/hitter_model8000_oldmotion_104_20260725.onnx
++git diff --check
++```
++
++Confirm the composed config contains the exact 14 values, duration `0.9`, `enabled: true`, `simulator.mujoco.Mujoco`, viewer enabled, and video disabled. Confirm the original main checkout has the same pre-task status and no new pose-test edits.
++
++- [x] **Step 7: Commit the isolated implementation**
++
++```bash
++git add \
++  deploy/envs/hitter.py \
++  deploy/config/mimic/hitter.yaml \
++  deploy/tests/test_hitter_waiting_arm_return.py \
++  docs/superpowers/plans/2026-07-27-hitter-ready-pose-mujoco-isolated.md
++git commit -m "feat: add isolated HITTER waiting ready pose"
++```
++
++The ignored saved pose artifacts remain uncommitted and byte-identical to their source.

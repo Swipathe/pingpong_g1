@@ -1,0 +1,1104 @@
+# Review package: 8bc598ab765341c0cd9441f4bb5050a998940d42..9c58d69f905040ac505225c60619b88fb6d66138
+
+## Commits
+9c58d69 feat: track physical balls in Vicon publisher
+
+## Files changed
+ deploy/mocap_bridge/build_v2_mocap.sh              |  14 +-
+ .../tests/test_vicon_ball_track_v2.cpp             | 364 +++++++++++++++++++++
+ deploy/mocap_bridge/vicon_table_lcm_bridge.cpp     | 356 ++++++++++++++------
+ 3 files changed, 634 insertions(+), 100 deletions(-)
+
+## Diff
+diff --git a/deploy/mocap_bridge/build_v2_mocap.sh b/deploy/mocap_bridge/build_v2_mocap.sh
+index 9af062e..0d5f0d0 100644
+--- a/deploy/mocap_bridge/build_v2_mocap.sh
++++ b/deploy/mocap_bridge/build_v2_mocap.sh
+@@ -18,18 +18,16 @@ g++ -std=c++17 -O2 -I"${ROBOTBRIDGE_DIR}" \
+   "${LCM_LIBS[@]}" \
+   -o "${BUILD_DIR}/test_transformation_t_v2"
+ 
+ g++ -std=c++17 -O2 -I"${SDK_DIR}" -I"${ROBOTBRIDGE_DIR}" \
+   -I"${UNITREE_INCLUDE_DIR}" "${LCM_CFLAGS[@]}" \
+   "${SCRIPT_DIR}/vicon_table_lcm_bridge.cpp" \
+   -L"${SDK_DIR}" -Wl,-rpath,"${SDK_DIR}" -lViconDataStreamSDK_CPP \
+   "${UNITREE_SDK_LIB}" "${LCM_LIBS[@]}" \
+   -o "${BUILD_DIR}/vicon_table_lcm_bridge_v2"
+ 
+-if [[ -f "${SCRIPT_DIR}/tests/test_vicon_ball_track_v2.cpp" ]]; then
+-  g++ -std=c++17 -O2 -I"${SDK_DIR}" -I"${ROBOTBRIDGE_DIR}" \
+-    -I"${UNITREE_INCLUDE_DIR}" "${LCM_CFLAGS[@]}" \
+-    "${SCRIPT_DIR}/tests/test_vicon_ball_track_v2.cpp" \
+-    -L"${SDK_DIR}" -Wl,-rpath,"${SDK_DIR}" -lViconDataStreamSDK_CPP \
+-    "${UNITREE_SDK_LIB}" "${LCM_LIBS[@]}" \
+-    -o "${BUILD_DIR}/test_vicon_ball_track_v2"
+-fi
++g++ -std=c++17 -O2 -I"${SDK_DIR}" -I"${ROBOTBRIDGE_DIR}" \
++  -I"${UNITREE_INCLUDE_DIR}" "${LCM_CFLAGS[@]}" \
++  "${SCRIPT_DIR}/tests/test_vicon_ball_track_v2.cpp" \
++  -L"${SDK_DIR}" -Wl,-rpath,"${SDK_DIR}" -lViconDataStreamSDK_CPP \
++  "${UNITREE_SDK_LIB}" "${LCM_LIBS[@]}" \
++  -o "${BUILD_DIR}/test_vicon_ball_track_v2"
+diff --git a/deploy/mocap_bridge/tests/test_vicon_ball_track_v2.cpp b/deploy/mocap_bridge/tests/test_vicon_ball_track_v2.cpp
+new file mode 100644
+index 0000000..a3f7b1b
+--- /dev/null
++++ b/deploy/mocap_bridge/tests/test_vicon_ball_track_v2.cpp
+@@ -0,0 +1,364 @@
++#define VICON_TABLE_LCM_BRIDGE_TESTING
++#include "../vicon_table_lcm_bridge.cpp"
++
++#include <cstdlib>
++#include <iostream>
++#include <limits>
++#include <string>
++#include <vector>
++
++namespace {
++
++void Expect(bool condition, const std::string& message) {
++  if (!condition) {
++    std::cerr << "FAIL: " << message << "\n";
++    std::exit(1);
++  }
++}
++
++BallCandidate Candidate(double x, double y, double z) {
++  return BallCandidate{{}, {x, y, z}};
++}
++
++bool Finite(const Vec3& value) {
++  return std::isfinite(value.x) && std::isfinite(value.y) &&
++      std::isfinite(value.z);
++}
++
++enum class ExpectedIdRelation { Zero, Positive, Same, Greater };
++
++struct TrackCase {
++  const char* name;
++  std::vector<BallCandidate> candidates;
++  int64_t frame;
++  double time;
++  BallTrackPhase expected_phase;
++  ExpectedIdRelation expected_id_relation;
++  bool publish_valid;
++  bool publish_end;
++};
++
++void CheckCases(
++    BallTrackState* state,
++    const std::vector<TrackCase>& cases,
++    int64_t allocation_time_us = 1000000) {
++  int64_t reference_id = state->track_id;
++  for (size_t index = 0; index < cases.size(); ++index) {
++    const TrackCase& test = cases[index];
++    const BallTrackUpdate update = AdvanceBallTrack(
++        state, test.candidates, test.frame, test.time, 0.35, 0.25,
++        allocation_time_us + static_cast<int64_t>(index));
++    Expect(update.phase == test.expected_phase,
++           std::string(test.name) + ": phase");
++    Expect(update.publish_valid == test.publish_valid,
++           std::string(test.name) + ": publish_valid");
++    Expect(update.publish_end == test.publish_end,
++           std::string(test.name) + ": publish_end");
++    Expect(Finite(update.position), std::string(test.name) + ": finite position");
++    switch (test.expected_id_relation) {
++      case ExpectedIdRelation::Zero:
++        Expect(update.track_id == 0, std::string(test.name) + ": zero id");
++        break;
++      case ExpectedIdRelation::Positive:
++        Expect(update.track_id > 0, std::string(test.name) + ": positive id");
++        reference_id = update.track_id;
++        break;
++      case ExpectedIdRelation::Same:
++        Expect(update.track_id == reference_id,
++               std::string(test.name) + ": same id");
++        break;
++      case ExpectedIdRelation::Greater:
++        Expect(update.track_id > reference_id,
++               std::string(test.name) + ": strictly greater id");
++        reference_id = update.track_id;
++        break;
++    }
++  }
++}
++
++void TestTrackIdentityAndGrace() {
++  BallTrackState state;
++  const auto first = AdvanceBallTrack(
++      &state, {Candidate(0.80, -0.10, 1.00)}, 100, 1.00,
++      0.35, 0.25, 1000000);
++  Expect(first.publish_valid && first.track_id == 1000000,
++         "first eligible marker allocates injected positive id");
++  const auto approach = AdvanceBallTrack(
++      &state, {Candidate(0.50, -0.10, 1.00)}, 101, 1.01,
++      0.35, 0.25, 1000001);
++  Expect(approach.publish_valid && approach.track_id == first.track_id,
++         "approach establishes velocity within the strict gate");
++  const auto reverse = AdvanceBallTrack(
++      &state, {Candidate(-0.02, -0.10, 1.00)}, 102, 1.02,
++      0.35, 0.25, 1000002);
++  Expect(reverse.publish_valid && reverse.track_id == first.track_id,
++         "x<=0 and reversal retain id");
++  const auto short_miss = AdvanceBallTrack(
++      &state, {}, 120, 1.20, 0.35, 0.25, 1000003);
++  Expect(!short_miss.publish_valid && !short_miss.publish_end,
++         "short miss stays in grace");
++  const auto end = AdvanceBallTrack(
++      &state, {}, 127, 1.27, 0.35, 0.25, 1000004);
++  Expect(end.publish_end && end.track_id == first.track_id,
++         "timeout emits old id once");
++  const auto end_again = AdvanceBallTrack(
++      &state, {}, 128, 1.28, 0.35, 0.25, 1000005);
++  Expect(!end_again.publish_end, "end is not repeated");
++}
++
++void TestTableDrivenTrackContract() {
++  {
++    BallTrackState state;
++    CheckCases(&state, {
++        {"inactive rejects x<=0", {Candidate(0.0, 0.0, 1.0)}, 99, 0.99,
++         BallTrackPhase::Inactive, ExpectedIdRelation::Zero, false, false},
++        {"start", {Candidate(0.80, 0.0, 1.0)}, 100, 1.00,
++         BallTrackPhase::Active, ExpectedIdRelation::Positive, true, false},
++        {"distance exactly radius reassociates",
++         {Candidate(1.15, 0.0, 1.0)}, 101, 1.01,
++         BallTrackPhase::Active, ExpectedIdRelation::Same, true, false},
++    });
++  }
++  {
++    BallTrackState state;
++    AdvanceBallTrack(
++        &state, {Candidate(0.80, 0.0, 1.0)}, 100, 1.00,
++        0.35, 0.25, 1100000);
++    CheckCases(&state, {
++        {"distance above radius does not take over",
++         {Candidate(1.150001, 0.0, 1.0)}, 101, 1.01,
++         BallTrackPhase::MissingGrace, ExpectedIdRelation::Same, false, false},
++    }, 1100001);
++  }
++  {
++    BallTrackState state;
++    Expect(Distance(
++               Candidate(0.10, 0.0, 1.0).world,
++               Candidate(-0.10, 0.0, 1.0).world) <= 0.35,
++           "bounce approach is within association radius");
++    const Vec3 predicted_after_cross{-0.30, 0.0, 1.0};
++    Expect(Distance(
++               predicted_after_cross,
++               Candidate(0.049, 0.0, 1.0).world) <= 0.35,
++           "bounce reversal is within predicted association radius");
++    CheckCases(&state, {
++        {"bounce start", {Candidate(0.10, 0.0, 1.0)}, 100, 1.00,
++         BallTrackPhase::Active, ExpectedIdRelation::Positive, true, false},
++        {"cross x zero with negative velocity",
++         {Candidate(-0.10, 0.0, 1.0)}, 101, 1.01,
++         BallTrackPhase::Active, ExpectedIdRelation::Same, true, false},
++        {"bounce reverses x and velocity without changing id",
++         {Candidate(0.049, 0.0, 1.0)}, 102, 1.02,
++         BallTrackPhase::Active, ExpectedIdRelation::Same, true, false},
++    }, 1200000);
++    Expect(state.velocity.x > 0.0, "bounce reverses velocity sign");
++  }
++  {
++    BallTrackState state;
++    CheckCases(&state, {
++        {"shot start", {Candidate(0.80, 0.0, 1.0)}, 100, 1.00,
++         BallTrackPhase::Active, ExpectedIdRelation::Positive, true, false},
++        {"shot end", {}, 125, 1.25,
++         BallTrackPhase::Inactive, ExpectedIdRelation::Same, false, true},
++        {"next shot id increases", {Candidate(0.90, 0.0, 1.0)}, 126, 1.26,
++         BallTrackPhase::Active, ExpectedIdRelation::Greater, true, false},
++    }, 1300000);
++  }
++}
++
++void TestSourceTimeFallbacks() {
++  BallTrackState state;
++  AdvanceBallTrack(
++      &state, {Candidate(0.80, 0.0, 1.0)}, 100, 1.00,
++      0.35, 0.25, 1400000);
++  const BallTrackUpdate non_increasing = AdvanceBallTrack(
++      &state, {Candidate(1.10, 0.0, 1.0)}, 103, 1.00,
++      0.35, 0.25, 1400001);
++  Expect(non_increasing.publish_valid, "non-increasing time uses frame fallback");
++  Expect(std::abs(state.velocity.x - 30.0) < 1.0e-9,
++         "public contract uses 300 Hz fallback");
++
++  const BallTrackUpdate non_finite = AdvanceBallTrack(
++      &state, {}, 178, std::numeric_limits<double>::quiet_NaN(),
++      0.35, 0.25, 1400002);
++  Expect(non_finite.publish_end, "non-finite time uses frame fallback");
++
++  BallTrackState rate_state;
++  AdvanceBallTrackWithFrameRate(
++      &rate_state, {Candidate(0.80, 0.0, 1.0)}, 100, 1.00,
++      0.35, 0.25, 1500000, 100.0);
++  const BallTrackUpdate non_300_hz = AdvanceBallTrackWithFrameRate(
++      &rate_state, {}, 125, std::numeric_limits<double>::infinity(),
++      0.35, 0.25, 1500001, 100.0);
++  Expect(non_300_hz.publish_end,
++         "internal helper accepts selected non-300 Hz frame rate");
++}
++
++void TestAllocatorSurvivesClockRollback() {
++  BallTrackState state;
++  const BallTrackUpdate first = AdvanceBallTrack(
++      &state, {Candidate(0.80, 0.0, 1.0)}, 100, 1.00,
++      0.35, 0.25, 2000000);
++  const BallTrackUpdate ended = AdvanceBallTrack(
++      &state, {}, 125, 1.25, 0.35, 0.25, 1999999);
++  const BallTrackUpdate next = AdvanceBallTrack(
++      &state, {Candidate(0.90, 0.0, 1.0)}, 126, 1.26,
++      0.35, 0.25, 1000000);
++  Expect(ended.publish_end && ended.track_id == first.track_id,
++         "end retains allocated id during clock rollback");
++  Expect(next.track_id == first.track_id + 1,
++         "allocator remains strictly monotonic during clock rollback");
++}
++
++void TestBaseInvalidAndMessageIds() {
++  BallTrackState state;
++  const BallTrackUpdate valid = AdvanceBallTrack(
++      &state, {Candidate(0.80, -0.10, 1.00)}, 100, 1.00,
++      0.35, 0.25, 1600000);
++  const BallTrackUpdate held = AdvanceBallTrackForBaseFrame(
++      &state, {}, false, 1000, 10.0, 0.35, 0.25, 1600001, 300.0);
++  Expect(held.phase == BallTrackPhase::Active && !held.publish_end &&
++             state.track_id == valid.track_id,
++         "invalid pelvis does not advance or end ball track");
++  const BallTrackUpdate ended = AdvanceBallTrackForBaseFrame(
++      &state, {}, true, 125, 1.25, 0.35, 0.25, 1600002, 300.0);
++  Expect(ended.publish_end, "valid pelvis permits source-time end");
++
++  Args args;
++  lcm_types::transformation_t pelvis{};
++  lcm_types::transformation_t table{};
++  lcm_types::transformation_t ball_valid{};
++  lcm_types::transformation_t ball_end{};
++  FillMessage(
++      &pelvis, kBaseSubject, {}, {}, 125, args, 300.0, false, true, 0);
++  FillMessage(
++      &table, "table", {}, {}, 125, args, 300.0, true, false, 0);
++  FillMessage(
++      &ball_valid, "ball", valid.position, {}, 100, args, 300.0,
++      true, false, valid.track_id);
++  FillMessage(
++      &ball_end, "ball", ended.position, {}, 125, args, 300.0,
++      false, true, ended.track_id);
++  Expect(pelvis.track_id == 0 && table.track_id == 0,
++         "pelvis and table ids are zero");
++  Expect(ball_valid.track_id > 0 && ball_end.track_id == ball_valid.track_id,
++         "valid and end ball messages share positive id");
++  Expect(ball_valid.valid == 1 && ball_end.valid == 0,
++         "ball end message is invalid");
++}
++
++void TestStrictV2Args() {
++  Args defaults;
++  Expect(defaults.channel == "vicon_state_data_v2", "default channel is v2");
++  Expect(defaults.print_hz == 1.0, "default print rate is 1 Hz");
++
++  std::vector<std::string> storage{
++      "bridge", "--channel", "vicon_state_data_v2",
++      "--ball-track-association-radius-m", "0.4",
++      "--ball-track-end-timeout-s", "0.3"};
++  std::vector<char*> argv;
++  for (std::string& item : storage) argv.push_back(item.data());
++  Args parsed;
++  Expect(ParseArgs(static_cast<int>(argv.size()), argv.data(), &parsed),
++         "strict v2 arguments parse");
++  Expect(parsed.channel == kViconV2Channel &&
++             parsed.ball_track_association_radius_m == 0.4 &&
++             parsed.ball_track_end_timeout_s == 0.3,
++         "track arguments are applied");
++
++  std::vector<std::string> wrong_storage{
++      "bridge", "--channel", "vicon_state_data"};
++  std::vector<char*> wrong_argv;
++  for (std::string& item : wrong_storage) wrong_argv.push_back(item.data());
++  Args wrong;
++  Expect(!ParseArgs(
++             static_cast<int>(wrong_argv.size()), wrong_argv.data(), &wrong),
++         "v1 channel is rejected");
++
++  std::vector<std::string> zero_storage{
++      "bridge", "--ball-track-end-timeout-s", "0"};
++  std::vector<char*> zero_argv;
++  for (std::string& item : zero_storage) zero_argv.push_back(item.data());
++  Args zero;
++  Expect(!ParseArgs(
++             static_cast<int>(zero_argv.size()), zero_argv.data(), &zero),
++         "non-positive track timeout is rejected");
++
++  std::vector<std::string> nan_storage{
++      "bridge", "--ball-track-association-radius-m", "nan"};
++  std::vector<char*> nan_argv;
++  for (std::string& item : nan_storage) nan_argv.push_back(item.data());
++  Args nan;
++  Expect(!ParseArgs(
++             static_cast<int>(nan_argv.size()), nan_argv.data(), &nan),
++         "non-finite association radius is rejected");
++
++  std::vector<std::string> infinity_storage{
++      "bridge", "--ball-track-end-timeout-s", "inf"};
++  std::vector<char*> infinity_argv;
++  for (std::string& item : infinity_storage) {
++    infinity_argv.push_back(item.data());
++  }
++  Args infinity;
++  Expect(!ParseArgs(
++             static_cast<int>(infinity_argv.size()), infinity_argv.data(),
++             &infinity),
++         "non-finite track timeout is rejected");
++}
++
++std::vector<BallTrackUpdate> ContractFixture() {
++  BallTrackState state;
++  std::vector<BallTrackUpdate> updates;
++  updates.push_back(AdvanceBallTrack(
++      &state, {Candidate(0.80, -0.10, 1.00)}, 100, 1.00,
++      0.35, 0.25, 1000000));
++  updates.push_back(AdvanceBallTrack(
++      &state, {Candidate(0.50, -0.10, 1.00)}, 101, 1.01,
++      0.35, 0.25, 1000001));
++  updates.push_back(AdvanceBallTrack(
++      &state, {}, 102, 1.02, 0.35, 0.25, 1000002));
++  updates.push_back(AdvanceBallTrack(
++      &state, {Candidate(-0.02, -0.10, 1.00)}, 103, 1.03,
++      0.35, 0.25, 1000003));
++  updates.push_back(AdvanceBallTrack(
++      &state, {}, 128, 1.28, 0.35, 0.25, 1000004));
++  updates.push_back(AdvanceBallTrack(
++      &state, {Candidate(0.90, 0.20, 1.10)}, 129, 1.29,
++      0.35, 0.25, 1000100));
++  return updates;
++}
++
++void EmitTrackFixture() {
++  const std::vector<BallTrackUpdate> updates = ContractFixture();
++  std::cout << "[";
++  for (size_t index = 0; index < updates.size(); ++index) {
++    const BallTrackUpdate& update = updates[index];
++    if (index != 0) std::cout << ",";
++    std::cout << "{\"phase\":\"" << BallTrackPhaseName(update.phase)
++              << "\",\"track_id\":" << update.track_id
++              << ",\"publish_valid\":"
++              << (update.publish_valid ? "true" : "false")
++              << ",\"publish_end\":"
++              << (update.publish_end ? "true" : "false")
++              << ",\"position_world\":[" << update.position.x << ","
++              << update.position.y << "," << update.position.z << "]}";
++  }
++  std::cout << "]\n";
++}
++
++}  // namespace
++
++int main(int argc, char** argv) {
++  if (argc == 2 && std::string(argv[1]) == "--emit-track-fixture") {
++    EmitTrackFixture();
++    return 0;
++  }
++  TestTrackIdentityAndGrace();
++  TestTableDrivenTrackContract();
++  TestSourceTimeFallbacks();
++  TestAllocatorSurvivesClockRollback();
++  TestBaseInvalidAndMessageIds();
++  TestStrictV2Args();
++  std::cout << "PASS: Vicon v2 ball track contract\n";
++  return 0;
++}
+diff --git a/deploy/mocap_bridge/vicon_table_lcm_bridge.cpp b/deploy/mocap_bridge/vicon_table_lcm_bridge.cpp
+index 4b2086b..c24e093 100644
+--- a/deploy/mocap_bridge/vicon_table_lcm_bridge.cpp
++++ b/deploy/mocap_bridge/vicon_table_lcm_bridge.cpp
+@@ -24,20 +24,22 @@
+ #include <vector>
+ 
+ using namespace ViconDataStreamSDK::CPP;
+ 
+ namespace {
+ 
+ volatile std::sig_atomic_t g_stop = 0;
+ void HandleSignal(int) { g_stop = 1; }
+ 
+ constexpr const char* kBaseSubject = "G1Pelvis";
++constexpr const char* kViconV2Channel = "vicon_state_data_v2";
++constexpr double kDefaultViconFrameRateHz = 300.0;
+ 
+ struct Vec3 {
+   double x = 0.0;
+   double y = 0.0;
+   double z = 0.0;
+ };
+ 
+ constexpr Vec3 kTrackerNativeUpRaw{0.0, 0.0, 1.0};
+ 
+ struct RawIgnoreSphere {
+@@ -52,30 +54,33 @@ struct Quat {
+   double w = 1.0;
+ };
+ 
+ struct Args {
+   std::string host = "192.168.10.1:801";
+   std::string base_subject = kBaseSubject;
+   std::string lcm_url = "udpm://239.255.76.67:7667?ttl=255";
+   std::string table_calib_path;
+   std::string save_table_calib_path;
+   double duration_s = 0.0;
+-  double print_hz = 10.0;
++  double print_hz = 1.0;
+   double calib_s = 2.0;
+   double table_length_m = 2.730738;
+   double table_width_m = 1.512451;
+   double table_height_m = 0.760000;
+   double expected_base_edge_distance_m = 0.40;
+   double vicon_frame_rate_hz = 300.0;
+   double corner_exclusion_radius_mm = 50.0;
+   std::vector<RawIgnoreSphere> raw_ignore_spheres;
+   bool publish = false;
++  std::string channel = kViconV2Channel;
++  double ball_track_association_radius_m = 0.35;
++  double ball_track_end_timeout_s = 0.25;
+ };
+ 
+ struct Cluster {
+   Vec3 mean;
+   Vec3 sum;
+   Vec3 sum_sq;
+   int count = 0;
+   int observed_frames = 0;
+   int last_observed_frame = -1;
+   std::vector<Vec3> samples;
+@@ -162,27 +167,51 @@ size_t BallRejectReasonIndex(BallRejectReason reason) {
+ struct BallSelectionDiagnostics {
+   BallRejectReason reason = BallRejectReason::None;
+   size_t raw_ignored_count = 0;
+   size_t corner_ignored_count = 0;
+   size_t candidate_count = 0;
+   double tracking_dt_s = 0.0;
+   double tracking_best_pred_dist_m = std::numeric_limits<double>::infinity();
+   double tracking_best_direct_speed_mps = 0.0;
+ };
+ 
++enum class BallTrackPhase { Inactive, Active, MissingGrace };
++
++const char* BallTrackPhaseName(BallTrackPhase phase) {
++  switch (phase) {
++    case BallTrackPhase::Inactive:
++      return "inactive";
++    case BallTrackPhase::Active:
++      return "active";
++    case BallTrackPhase::MissingGrace:
++      return "missing_grace";
++  }
++  return "unknown";
++}
++
+ struct BallTrackState {
+-  bool have_position = false;
+-  bool have_velocity = false;
++  BallTrackPhase phase = BallTrackPhase::Inactive;
++  int64_t track_id = 0;
++  int64_t last_allocated_track_id = 0;
+   Vec3 position;
+   Vec3 velocity;
+-  int64_t frame_number = 0;
+-  int missed_frames = 0;
++  bool have_velocity = false;
++  int64_t last_observed_frame = 0;
++  double last_observed_source_time_s = 0.0;
++};
++
++struct BallTrackUpdate {
++  BallTrackPhase phase = BallTrackPhase::Inactive;
++  int64_t track_id = 0;
++  Vec3 position;
++  bool publish_valid = false;
++  bool publish_end = false;
+ };
+ 
+ Vec3 operator+(const Vec3& a, const Vec3& b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+ Vec3 operator-(const Vec3& a, const Vec3& b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+ Vec3 operator*(double s, const Vec3& a) { return {s * a.x, s * a.y, s * a.z}; }
+ Vec3 operator/(const Vec3& a, double s) { return {a.x / s, a.y / s, a.z / s}; }
+ 
+ double Dot(const Vec3& a, const Vec3& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+ Vec3 Cross(const Vec3& a, const Vec3& b) {
+   return {a.y * b.z - a.z * b.y,
+@@ -191,27 +220,20 @@ Vec3 Cross(const Vec3& a, const Vec3& b) {
+ }
+ double Norm(const Vec3& a) { return std::sqrt(Dot(a, a)); }
+ double Distance(const Vec3& a, const Vec3& b) { return Norm(a - b); }
+ double Clamp(double v, double lo, double hi) { return std::max(lo, std::min(hi, v)); }
+ 
+ int64_t NowUnixMicros() {
+   const auto now = std::chrono::system_clock::now().time_since_epoch();
+   return std::chrono::duration_cast<std::chrono::microseconds>(now).count();
+ }
+ 
+-double FrameDeltaSeconds(int64_t current_frame, int64_t previous_frame, double frame_rate_hz) {
+-  if (frame_rate_hz <= 0.0) return 0.0;
+-  const int64_t frame_delta = current_frame - previous_frame;
+-  if (frame_delta > 0) return static_cast<double>(frame_delta) / frame_rate_hz;
+-  return 1.0 / frame_rate_hz;
+-}
+-
+ Vec3 NormalizeVec(const Vec3& p) {
+   const double n = Norm(p);
+   if (n < 1.0e-12) return {};
+   return p / n;
+ }
+ 
+ bool SymmetricEigenvectors3(
+     const double covariance[3][3],
+     std::array<double, 3>* eigenvalues,
+     std::array<Vec3, 3>* eigenvectors) {
+@@ -752,20 +774,23 @@ Quat RelativeTableYawQuat(
+ 
+ std::string UsageText(const std::string& program) {
+   std::ostringstream out;
+   out << "Usage: " << program
+       << " [--host 192.168.10.1:801] [--base-subject G1Pelvis]"
+       << " [--calib-sec 2] [--table-calib table_frame_latest.json]"
+       << " [--save-table-calib vicon_table_frame_candidate.json]"
+       << " [--ignore-raw-sphere-m x,y,z,r] [--clear-raw-ignore-spheres]"
+       << " [--corner-exclusion-radius-mm 50]"
+       << " [--vicon-frame-rate-hz FALLBACK_HZ]"
++      << " [--channel vicon_state_data_v2]"
++      << " [--ball-track-association-radius-m 0.35]"
++      << " [--ball-track-end-timeout-s 0.25]"
+       << " [--duration 0] [--publish]\n"
+       << "  --vicon-frame-rate-hz is fallback only when the SDK rate is unavailable.\n";
+   return out.str();
+ }
+ 
+ bool ParseArgs(int argc, char** argv, Args* args) {
+   for (int i = 1; i < argc; ++i) {
+     const std::string key = argv[i];
+     auto next = [&]() -> std::string {
+       if (i + 1 >= argc) {
+@@ -775,20 +800,27 @@ bool ParseArgs(int argc, char** argv, Args* args) {
+       return argv[++i];
+     };
+     if (key == "--host") args->host = next();
+     else if (key == "--base-subject") args->base_subject = next();
+     else if (key == "--duration") args->duration_s = std::stod(next());
+     else if (key == "--print-hz") args->print_hz = std::stod(next());
+     else if (key == "--calib-sec") args->calib_s = std::stod(next());
+     else if (key == "--table-calib") args->table_calib_path = next();
+     else if (key == "--save-table-calib") args->save_table_calib_path = next();
+     else if (key == "--lcm-url") args->lcm_url = next();
++    else if (key == "--channel") args->channel = next();
++    else if (key == "--ball-track-association-radius-m") {
++      args->ball_track_association_radius_m = std::stod(next());
++    }
++    else if (key == "--ball-track-end-timeout-s") {
++      args->ball_track_end_timeout_s = std::stod(next());
++    }
+     else if (key == "--table-length") args->table_length_m = std::stod(next());
+     else if (key == "--table-width") args->table_width_m = std::stod(next());
+     else if (key == "--table-height") args->table_height_m = std::stod(next());
+     else if (key == "--expected-base-edge-distance") args->expected_base_edge_distance_m = std::stod(next());
+     else if (key == "--vicon-frame-rate-hz") args->vicon_frame_rate_hz = std::stod(next());
+     else if (key == "--corner-exclusion-radius-mm") {
+       const std::string value = next();
+       const double radius_mm = std::stod(value);
+       if (!std::isfinite(radius_mm) || radius_mm < 0.0) {
+         std::cerr << "Invalid --corner-exclusion-radius-mm value, expected a finite non-negative radius: "
+@@ -814,20 +846,34 @@ bool ParseArgs(int argc, char** argv, Args* args) {
+       std::exit(0);
+     } else {
+       std::cerr << "Unknown argument: " << key << "\n";
+       return false;
+     }
+   }
+   if (args->base_subject != kBaseSubject) {
+     std::cerr << "--base-subject must be exactly " << kBaseSubject << "\n";
+     return false;
+   }
++  if (args->channel != kViconV2Channel) {
++    std::cerr << "--channel must be exactly " << kViconV2Channel << "\n";
++    return false;
++  }
++  if (!std::isfinite(args->ball_track_association_radius_m) ||
++      args->ball_track_association_radius_m <= 0.0) {
++    std::cerr << "--ball-track-association-radius-m must be finite and positive\n";
++    return false;
++  }
++  if (!std::isfinite(args->ball_track_end_timeout_s) ||
++      args->ball_track_end_timeout_s <= 0.0) {
++    std::cerr << "--ball-track-end-timeout-s must be finite and positive\n";
++    return false;
++  }
+   return true;
+ }
+ 
+ void AddClusterSample(
+     std::vector<Cluster>* clusters,
+     const Vec3& p,
+     double gate_mm,
+     int calibration_frame = -1) {
+   int best = -1;
+   double best_dist = gate_mm;
+@@ -1159,110 +1205,208 @@ std::vector<BallCandidate> BallCandidates(
+       if (diagnostics != nullptr) ++diagnostics->corner_ignored_count;
+       continue;
+     }
+     const Vec3 world = RawToTableWorld(raw, table, args);
+     candidates.push_back(BallCandidate{raw, world});
+   }
+   if (diagnostics != nullptr) diagnostics->candidate_count = candidates.size();
+   return candidates;
+ }
+ 
+-bool SelectBall(
+-    const std::vector<Vec3>& unlabeled_raw,
+-    const TableFrame& table,
+-    const Args& args,
+-    BallTrackState* track,
+-    int64_t frame_number,
+-    double source_frame_rate_hz,
+-    Vec3* ball_raw,
+-    Vec3* ball_world,
+-    BallSelectionDiagnostics* diagnostics = nullptr) {
+-  if (diagnostics != nullptr) *diagnostics = BallSelectionDiagnostics{};
++bool FiniteVec(const Vec3& value) {
++  return std::isfinite(value.x) && std::isfinite(value.y) &&
++      std::isfinite(value.z);
++}
+ 
+-  const std::vector<BallCandidate> candidates = BallCandidates(unlabeled_raw, table, args, diagnostics);
+-  if (candidates.empty()) {
+-    if (diagnostics != nullptr) diagnostics->reason = BallRejectReason::NoCandidates;
+-    return false;
++double SourceDeltaSeconds(
++    const BallTrackState& state,
++    int64_t source_frame,
++    double source_time_s,
++    double source_frame_rate_hz) {
++  if (std::isfinite(source_time_s) &&
++      source_time_s > state.last_observed_source_time_s) {
++    return source_time_s - state.last_observed_source_time_s;
++  }
++  if (!std::isfinite(source_frame_rate_hz) || source_frame_rate_hz <= 0.0) {
++    return 0.0;
+   }
++  const int64_t frame_delta = source_frame - state.last_observed_frame;
++  return frame_delta > 0
++      ? static_cast<double>(frame_delta) / source_frame_rate_hz
++      : 0.0;
++}
+ 
+-  size_t best = 0;
+-  if (track->have_position) {
+-    const double dt = FrameDeltaSeconds(
+-        frame_number, track->frame_number, source_frame_rate_hz);
+-    const Vec3 predicted = track->have_velocity ? track->position + dt * track->velocity : track->position;
+-    if (diagnostics != nullptr) {
+-      diagnostics->tracking_dt_s = dt;
+-    }
+-    double best_pred_dist = std::numeric_limits<double>::infinity();
+-    double best_direct_speed = 0.0;
+-    for (size_t i = 0; i < candidates.size(); ++i) {
+-      const double direct_speed = dt > 1.0e-6 ? Distance(candidates[i].world, track->position) / dt : 0.0;
+-      const double pred_dist = Distance(candidates[i].world, predicted);
+-      if (pred_dist < best_pred_dist) {
+-        best = i;
+-        best_pred_dist = pred_dist;
+-        best_direct_speed = direct_speed;
+-      }
+-    }
+-    if (diagnostics != nullptr) {
+-      diagnostics->tracking_best_pred_dist_m = best_pred_dist;
+-      diagnostics->tracking_best_direct_speed_mps = best_direct_speed;
++double NormalizedObservedSourceTime(
++    const BallTrackState& state,
++    int64_t source_frame,
++    double source_time_s,
++    double source_frame_rate_hz) {
++  if (state.phase == BallTrackPhase::Inactive) {
++    if (std::isfinite(source_time_s)) return source_time_s;
++    if (std::isfinite(source_frame_rate_hz) && source_frame_rate_hz > 0.0) {
++      return static_cast<double>(source_frame) / source_frame_rate_hz;
+     }
++    return 0.0;
+   }
+-  *ball_raw = candidates[best].raw;
+-  *ball_world = candidates[best].world;
+-  if (diagnostics != nullptr) diagnostics->reason = BallRejectReason::None;
+-  return true;
++  return state.last_observed_source_time_s + SourceDeltaSeconds(
++      state, source_frame, source_time_s, source_frame_rate_hz);
+ }
+ 
+-void UpdateBallTrack(
+-    BallTrackState* track,
+-    const Vec3& ball_world,
+-    int64_t frame_number,
++void UpdateVelocityFromSourceTime(
++    BallTrackState* state,
++    const BallCandidate& matched,
++    int64_t source_frame,
++    double source_time_s,
++    double source_frame_rate_hz) {
++  const bool had_observation = state->phase != BallTrackPhase::Inactive;
++  const double dt = had_observation
++      ? SourceDeltaSeconds(
++            *state, source_frame, source_time_s, source_frame_rate_hz)
++      : 0.0;
++  const double normalized_time = NormalizedObservedSourceTime(
++      *state, source_frame, source_time_s, source_frame_rate_hz);
++  if (had_observation && dt > 0.0) {
++    state->velocity = (matched.world - state->position) / dt;
++    state->have_velocity = true;
++  }
++  state->position = matched.world;
++  state->last_observed_frame = source_frame;
++  state->last_observed_source_time_s = normalized_time;
++}
++
++void ResetActiveTrackPreservingAllocator(BallTrackState* state) {
++  const int64_t last_allocated_track_id = state->last_allocated_track_id;
++  *state = BallTrackState{};
++  state->last_allocated_track_id = last_allocated_track_id;
++}
++
++BallTrackUpdate CurrentBallTrackUpdate(const BallTrackState& state) {
++  return {state.phase, state.track_id, state.position, false, false};
++}
++
++BallTrackUpdate AdvanceBallTrackWithFrameRate(
++    BallTrackState* state,
++    const std::vector<BallCandidate>& candidates,
++    int64_t source_frame,
++    double source_time_s,
++    double association_radius_m,
++    double end_timeout_s,
++    int64_t allocation_unix_time_us,
+     double source_frame_rate_hz) {
+-  if (track->have_position) {
+-    const double dt = FrameDeltaSeconds(
+-        frame_number, track->frame_number, source_frame_rate_hz);
+-    if (dt > 1.0e-6) {
+-      track->velocity = (ball_world - track->position) / dt;
+-      track->have_velocity = true;
++  if (state == nullptr || !std::isfinite(association_radius_m) ||
++      association_radius_m <= 0.0 || !std::isfinite(end_timeout_s) ||
++      end_timeout_s <= 0.0 || !std::isfinite(source_frame_rate_hz) ||
++      source_frame_rate_hz <= 0.0) {
++    return {};
++  }
++
++  std::optional<BallCandidate> matched;
++  if (state->phase == BallTrackPhase::Inactive) {
++    for (const BallCandidate& candidate : candidates) {
++      if (FiniteVec(candidate.world) && candidate.world.x > 0.0) {
++        matched = candidate;
++        break;
++      }
+     }
++    if (!matched.has_value()) return CurrentBallTrackUpdate(*state);
++
++    const int64_t allocated = std::max(
++        state->last_allocated_track_id + 1, allocation_unix_time_us);
++    state->track_id = std::max<int64_t>(1, allocated);
++    state->last_allocated_track_id = state->track_id;
++  } else {
++    const double dt = SourceDeltaSeconds(
++        *state, source_frame, source_time_s, source_frame_rate_hz);
++    const Vec3 predicted = state->have_velocity
++        ? state->position + dt * state->velocity
++        : state->position;
++    double nearest_distance = std::numeric_limits<double>::infinity();
++    for (const BallCandidate& candidate : candidates) {
++      if (!FiniteVec(candidate.world)) continue;
++      const double distance = Distance(candidate.world, predicted);
++      if (distance < nearest_distance) {
++        nearest_distance = distance;
++        matched = candidate;
++      }
++    }
++    if (nearest_distance > association_radius_m) matched.reset();
++  }
++
++  if (matched.has_value()) {
++    UpdateVelocityFromSourceTime(
++        state, *matched, source_frame, source_time_s, source_frame_rate_hz);
++    state->phase = BallTrackPhase::Active;
++    return {state->phase, state->track_id, state->position, true, false};
+   }
+-  track->position = ball_world;
+-  track->frame_number = frame_number;
+-  track->have_position = true;
+-  track->missed_frames = 0;
++
++  const double missing_s = std::max(
++      0.0, SourceDeltaSeconds(
++               *state, source_frame, source_time_s, source_frame_rate_hz));
++  if (missing_s < end_timeout_s) {
++    state->phase = BallTrackPhase::MissingGrace;
++    return CurrentBallTrackUpdate(*state);
++  }
++  const BallTrackUpdate ended{
++      BallTrackPhase::Inactive, state->track_id, state->position, false, true};
++  ResetActiveTrackPreservingAllocator(state);
++  return ended;
+ }
+ 
+-void NoteBallMiss(BallTrackState* track, const Args& args) {
+-  (void)args;
+-  if (!track->have_position) return;
+-  ++track->missed_frames;
++BallTrackUpdate AdvanceBallTrack(
++    BallTrackState* state,
++    const std::vector<BallCandidate>& candidates,
++    int64_t source_frame,
++    double source_time_s,
++    double association_radius_m,
++    double end_timeout_s,
++    int64_t allocation_unix_time_us) {
++  return AdvanceBallTrackWithFrameRate(
++      state, candidates, source_frame, source_time_s, association_radius_m,
++      end_timeout_s, allocation_unix_time_us, kDefaultViconFrameRateHz);
++}
++
++BallTrackUpdate AdvanceBallTrackForBaseFrame(
++    BallTrackState* state,
++    const std::vector<BallCandidate>& candidates,
++    bool base_valid,
++    int64_t source_frame,
++    double source_time_s,
++    double association_radius_m,
++    double end_timeout_s,
++    int64_t allocation_unix_time_us,
++    double source_frame_rate_hz) {
++  if (state == nullptr) return {};
++  if (!base_valid) return CurrentBallTrackUpdate(*state);
++  return AdvanceBallTrackWithFrameRate(
++      state, candidates, source_frame, source_time_s, association_radius_m,
++      end_timeout_s, allocation_unix_time_us, source_frame_rate_hz);
+ }
+ 
+ void FillMessage(
+     lcm_types::transformation_t* msg,
+     const std::string& name,
+     const Vec3& pos,
+     const Quat& quat,
+     int64_t frame_number,
+     const Args& args,
+     double source_frame_rate_hz,
+     bool valid,
+-    bool occluded) {
++    bool occluded,
++    int64_t track_id) {
+   (void)args;
+   msg->name = name;
+   msg->vicon_frame_number = frame_number;
+   msg->vicon_time_s = source_frame_rate_hz > 0.0
+                           ? static_cast<double>(frame_number) / source_frame_rate_hz
+                           : 0.0;
+   msg->publish_time_us = NowUnixMicros();
++  msg->track_id = track_id;
+   msg->valid = valid ? 1 : 0;
+   msg->occluded = occluded ? 1 : 0;
+   msg->pos_vicon[0] = pos.x;
+   msg->pos_vicon[1] = pos.y;
+   msg->pos_vicon[2] = pos.z;
+   msg->quat_vicon[0] = quat.x;
+   msg->quat_vicon[1] = quat.y;
+   msg->quat_vicon[2] = quat.z;
+   msg->quat_vicon[3] = quat.w;
+ }
+@@ -1282,21 +1426,21 @@ RuntimeFrameWaitDecision DecideRuntimeFrameWait(
+     const Args& args,
+     double source_frame_rate_hz) {
+   RuntimeFrameWaitDecision decision;
+   if (frame_received) return decision;
+   decision.exit_loop = true;
+   if (shutdown_requested) return decision;
+ 
+   decision.exit_nonzero = true;
+   FillMessage(
+       &decision.invalid_base, kBaseSubject, Vec3{}, Quat{},
+-      last_frame_number, args, source_frame_rate_hz, false, true);
++      last_frame_number, args, source_frame_rate_hz, false, true, 0);
+   decision.publish_invalid_base = publishing_enabled;
+   return decision;
+ }
+ 
+ void PublishTransform(lcm::LCM* lcm, const std::string& channel, const lcm_types::transformation_t& msg) {
+   std::vector<unsigned char> buffer(static_cast<size_t>(msg.getEncodedSize()));
+   const int encoded = msg.encode(buffer.data(), 0, static_cast<int>(buffer.size()));
+   if (encoded > 0) lcm->publish(channel, buffer.data(), static_cast<unsigned int>(encoded));
+ }
+ 
+@@ -1539,21 +1683,21 @@ int main(int argc, char** argv) {
+   std::cout << "Base initial direct_world_m=[" << initial_base_world.position_m.x
+             << ", " << initial_base_world.position_m.y << ", "
+             << initial_base_world.position_m.z << "]\n";
+ 
+   lcm::LCM lcm(args.lcm_url);
+   if (args.publish && !lcm.good()) {
+     std::cerr << "Could not initialize LCM: " << args.lcm_url << "\n";
+     return 1;
+   }
+   std::cout << (args.publish ? "Publishing" : "Monitoring only")
+-            << " on vicon_state_data via " << args.lcm_url << "\n";
++            << " on " << args.channel << " via " << args.lcm_url << "\n";
+ 
+   const auto start = std::chrono::steady_clock::now();
+   auto last_print = start - std::chrono::seconds(10);
+   unsigned long frames = 0;
+   const auto latest_source_frame = client.GetFrameNumber();
+   int64_t last_frame_number = Ok(latest_source_frame.Result)
+       ? static_cast<int64_t>(latest_source_frame.FrameNumber)
+       : 0;
+   int runtime_exit_code = 0;
+   BallTrackState ball_track;
+@@ -1566,76 +1710,103 @@ int main(int argc, char** argv) {
+     const bool frame_received = WaitFrame(&client, 2.0);
+     const RuntimeFrameWaitDecision wait_decision = DecideRuntimeFrameWait(
+         frame_received, g_stop != 0, args.publish, last_frame_number,
+         args, source_frame_rate_hz);
+     if (wait_decision.exit_loop) {
+       if (wait_decision.exit_nonzero) {
+         std::cerr << "Vicon stream timeout: no frame received for 2 seconds; "
+                      "exiting fail-closed.\n";
+         if (wait_decision.publish_invalid_base) {
+           PublishTransform(
+-              &lcm, "vicon_state_data", wait_decision.invalid_base);
++              &lcm, args.channel, wait_decision.invalid_base);
+         }
+         runtime_exit_code = 1;
+       }
+       break;
+     }
+     ++frames;
+     const int64_t frame_number = static_cast<int64_t>(client.GetFrameNumber().FrameNumber);
+     last_frame_number = frame_number;
+ 
+     const SegmentPoseRaw base_raw =
+         ReadRootSegmentPose(&client, args.base_subject, base_segment);
+     const BasePoseWorld transformed =
+         TransformRootPose(base_raw, initial_base_raw_q, table, args);
+     const Vec3 base_world = transformed.valid ? transformed.position_m : Vec3{};
+     const Quat base_world_q =
+         transformed.valid ? transformed.relative_yaw_xyzw : Quat{};
+     const bool base_valid = transformed.valid;
+ 
+     const std::vector<Vec3> unlabeled = UnlabeledMarkers(&client);
+     Vec3 ball_raw;
+-    Vec3 ball_world;
+     BallSelectionDiagnostics ball_diag;
+-    bool ball_valid = false;
++    const std::vector<BallCandidate> candidates =
++        BallCandidates(unlabeled, table, args, &ball_diag);
++    const BallTrackPhase previous_phase = ball_track.phase;
++    const int64_t previous_track_id = ball_track.track_id;
++    const double source_time_s = source_frame_rate_hz > 0.0
++        ? static_cast<double>(frame_number) / source_frame_rate_hz
++        : std::numeric_limits<double>::quiet_NaN();
+     if (!base_valid) {
+       ball_diag.reason = BallRejectReason::BaseInvalid;
+-    } else {
+-      ball_valid = SelectBall(
+-          unlabeled, table, args, &ball_track, frame_number,
+-          source_frame_rate_hz, &ball_raw, &ball_world, &ball_diag);
++    } else if (candidates.empty()) {
++      ball_diag.reason = BallRejectReason::NoCandidates;
+     }
++    const BallTrackUpdate ball_update = AdvanceBallTrackForBaseFrame(
++        &ball_track, candidates, base_valid, frame_number, source_time_s,
++        args.ball_track_association_radius_m,
++        args.ball_track_end_timeout_s, NowUnixMicros(), source_frame_rate_hz);
++    const bool ball_valid = ball_update.publish_valid;
++    const Vec3 ball_world = ball_update.position;
+     if (ball_valid) {
+-      UpdateBallTrack(
+-          &ball_track, ball_world, frame_number, source_frame_rate_hz);
++      double nearest = std::numeric_limits<double>::infinity();
++      for (const BallCandidate& candidate : candidates) {
++        const double distance = Distance(candidate.world, ball_world);
++        if (distance < nearest) {
++          nearest = distance;
++          ball_raw = candidate.raw;
++        }
++      }
++      ball_diag.reason = BallRejectReason::None;
+     } else {
+-      NoteBallMiss(&ball_track, args);
+       ++ball_reject_counts[BallRejectReasonIndex(ball_diag.reason)];
+     }
++    if (ball_update.phase != previous_phase ||
++        (ball_update.publish_valid &&
++         ball_update.track_id != previous_track_id)) {
++      std::cout << "ball_track transition="
++                << BallTrackPhaseName(previous_phase) << "->"
++                << BallTrackPhaseName(ball_update.phase)
++                << " track_id=" << ball_update.track_id
++                << " publish_valid=" << ball_update.publish_valid
++                << " publish_end=" << ball_update.publish_end
++                << " source_frame=" << frame_number << "\n";
++    }
+ 
+     if (args.publish) {
+       lcm_types::transformation_t msg;
+       FillMessage(
+           &msg, kBaseSubject, base_world, base_world_q, frame_number,
+-          args, source_frame_rate_hz, base_valid, !base_valid);
+-      PublishTransform(&lcm, "vicon_state_data", msg);
+-      if (ball_valid) {
++          args, source_frame_rate_hz, base_valid, !base_valid, 0);
++      PublishTransform(&lcm, args.channel, msg);
++      if (ball_update.publish_valid || ball_update.publish_end) {
+         FillMessage(
+             &msg, "ball", ball_world, Quat{}, frame_number,
+-            args, source_frame_rate_hz, true, false);
+-        PublishTransform(&lcm, "vicon_state_data", msg);
++            args, source_frame_rate_hz, ball_update.publish_valid,
++            ball_update.publish_end, ball_update.track_id);
++        PublishTransform(&lcm, args.channel, msg);
+       }
+       FillMessage(
+           &msg, "table",
+           Vec3{args.table_length_m * 0.5, 0.0, args.table_height_m},
+-          Quat{}, frame_number, args, source_frame_rate_hz, true, false);
+-      PublishTransform(&lcm, "vicon_state_data", msg);
++          Quat{}, frame_number, args, source_frame_rate_hz, true, false, 0);
++      PublishTransform(&lcm, args.channel, msg);
+     }
+ 
+     const double print_period = 1.0 / std::max(args.print_hz, 1.0e-6);
+     if (std::chrono::duration<double>(now - last_print).count() >= print_period) {
+       const double hz = frames / std::max(elapsed, 1.0e-6);
+       std::cout << std::fixed << std::setprecision(4)
+                 << "frame=" << frame_number
+                 << " hz=" << std::setprecision(1) << hz
+                 << " base_valid=" << base_valid
+                 << " base_occluded=" << base_raw.occluded
+@@ -1646,21 +1817,22 @@ int main(int argc, char** argv) {
+                 << " base_world_m=["
+                 << base_world.x << ", " << base_world.y << ", " << base_world.z << "]"
+                 << " base_edge_error_m=" << base_world.x + args.expected_base_edge_distance_m
+                 << " base_quat_xyzw=[" << base_world_q.x << ", " << base_world_q.y << ", "
+                 << base_world_q.z << ", " << base_world_q.w << "]"
+                 << " unlabeled_count=" << unlabeled.size()
+                 << " raw_ignored_count=" << ball_diag.raw_ignored_count
+                 << " corner_ignored_count=" << ball_diag.corner_ignored_count
+                 << " ball_candidates=" << ball_diag.candidate_count
+                 << " ball_valid=" << ball_valid
+-                << " ball_missed_frames=" << ball_track.missed_frames;
++                << " ball_track_phase=" << BallTrackPhaseName(ball_update.phase)
++                << " ball_track_id=" << ball_update.track_id;
+       if (ball_valid) {
+         std::cout << " ball_world_m=[" << ball_world.x << ", " << ball_world.y << ", " << ball_world.z << "]"
+                   << " ball_raw_m=[" << ball_raw.x * 0.001 << ", " << ball_raw.y * 0.001 << ", " << ball_raw.z * 0.001 << "]";
+       } else {
+         std::cout << " ball_reject=" << BallRejectReasonName(ball_diag.reason)
+                   << " ball_reject_counts=";
+         PrintRejectCounts(std::cout, ball_reject_counts);
+         if (std::isfinite(ball_diag.tracking_best_pred_dist_m)) {
+           std::cout << " track_dt_s=" << ball_diag.tracking_dt_s
+                     << " best_pred_dist_m=" << ball_diag.tracking_best_pred_dist_m

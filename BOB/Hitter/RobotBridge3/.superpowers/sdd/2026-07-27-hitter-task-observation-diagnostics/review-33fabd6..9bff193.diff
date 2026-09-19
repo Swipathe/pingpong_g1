@@ -1,0 +1,1022 @@
+# Review package: 33fabd6..9bff193
+
+## Commits
+9bff193 feat: normalize HITTER mocap inputs
+
+## Files changed
+ deploy/diagnostics/hitter_task_pipeline.py     | 513 +++++++++++++++++++++++++
+ deploy/tests/test_hitter_task_input_adapter.py | 486 +++++++++++++++++++++++
+ 2 files changed, 999 insertions(+)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_pipeline.py b/deploy/diagnostics/hitter_task_pipeline.py
+new file mode 100644
+index 0000000..d99abca
+--- /dev/null
++++ b/deploy/diagnostics/hitter_task_pipeline.py
+@@ -0,0 +1,513 @@
++from __future__ import annotations
++
++from dataclasses import dataclass
++import threading
++from typing import Mapping, Optional, Tuple
++
++import numpy as np
++
++from diagnostics.hitter_task_models import NormalizedMocapSample
++from utils.hitter_realtime import BallEstimateSnapshot
++from utils.hitter_runtime_factory import build_ball_state_estimator
++
++
++def _readonly_float32(value, *, shape: Tuple[int, ...], field: str) -> np.ndarray:
++    array = np.array(value, dtype=np.float32, copy=True)
++    if array.shape != shape:
++        raise ValueError(
++            "{} must have shape {}, got {}".format(field, shape, array.shape)
++        )
++    immutable = np.frombuffer(
++        array.tobytes(order="C"),
++        dtype=np.float32,
++    ).reshape(shape)
++    immutable.setflags(write=False)
++    return immutable
++
++
++@dataclass(frozen=True)
++class ProductionReset:
++    previous_track_epoch: int
++    new_track_epoch: int
++    reason: str
++
++
++@dataclass(frozen=True)
++class LatestPelvisPose:
++    position_w: np.ndarray
++    quaternion_xyzw: np.ndarray
++    valid: bool
++    occluded: bool
++    source_frame: int
++    source_time_s: Optional[float]
++    publish_time_us: Optional[int]
++    received_monotonic_s: Optional[float]
++    wall_time_us: Optional[int]
++
++    def __post_init__(self) -> None:
++        object.__setattr__(
++            self,
++            "position_w",
++            _readonly_float32(
++                self.position_w,
++                shape=(3,),
++                field="position_w",
++            ),
++        )
++        object.__setattr__(
++            self,
++            "quaternion_xyzw",
++            _readonly_float32(
++                self.quaternion_xyzw,
++                shape=(4,),
++                field="quaternion_xyzw",
++            ),
++        )
++
++
++@dataclass(frozen=True)
++class AdapterOutput:
++    sample: NormalizedMocapSample
++    snapshot: Optional[BallEstimateSnapshot]
++    warnings: Tuple[str, ...]
++    estimator_sample_count: int
++    bounce_detected: bool
++    reset_transition: Optional[ProductionReset]
++
++
++class MocapFrameAdapter:
++    """Normalize decoded ChingMu frames while preserving RealWorld semantics."""
++
++    _KNOWN_SUBJECTS = frozenset(("ball", "g1pelvis", "table"))
++
++    def __init__(
++        self,
++        planner_config: Optional[Mapping[str, object]] = None,
++        *,
++        estimator_sample_rate_hz: Optional[float] = None,
++        pelvis_stale_threshold_s: float = 0.05,
++        maximum_source_frame_delta: int = 1,
++        clock_offset_threshold_s: float = 0.05,
++        clock_rate_tolerance_s: float = 0.005,
++    ) -> None:
++        config = {} if planner_config is None else planner_config
++        configured_rate = config.get(
++            "state_estimator_sample_rate_hz",
++            300.0,
++        )
++        sample_rate = (
++            configured_rate
++            if estimator_sample_rate_hz is None
++            else estimator_sample_rate_hz
++        )
++        self.estimator_sample_rate_hz = float(sample_rate)
++        if (
++            not np.isfinite(self.estimator_sample_rate_hz)
++            or self.estimator_sample_rate_hz <= 0.0
++        ):
++            raise ValueError(
++                "estimator_sample_rate_hz must be finite and positive"
++            )
++        self.pelvis_stale_threshold_s = float(
++            pelvis_stale_threshold_s
++        )
++        if (
++            not np.isfinite(self.pelvis_stale_threshold_s)
++            or self.pelvis_stale_threshold_s < 0.0
++        ):
++            raise ValueError(
++                "pelvis_stale_threshold_s must be finite and nonnegative"
++            )
++        self.maximum_source_frame_delta = int(
++            maximum_source_frame_delta
++        )
++        if self.maximum_source_frame_delta < 0:
++            raise ValueError(
++                "maximum_source_frame_delta must be nonnegative"
++            )
++        self.clock_offset_threshold_s = float(clock_offset_threshold_s)
++        self.clock_rate_tolerance_s = float(clock_rate_tolerance_s)
++        if (
++            not np.isfinite(self.clock_offset_threshold_s)
++            or self.clock_offset_threshold_s < 0.0
++            or not np.isfinite(self.clock_rate_tolerance_s)
++            or self.clock_rate_tolerance_s < 0.0
++        ):
++            raise ValueError("clock warning thresholds must be nonnegative")
++
++        self.lock = threading.RLock()
++        self.ball_state_estimator = build_ball_state_estimator(config)
++        self.track_epoch = 0
++        self.ball_snapshot_generation = 0
++        self.latest_ball_snapshot: Optional[BallEstimateSnapshot] = None
++        self.fallback_estimator_time_s: Optional[float] = None
++        self._next_input_seq = 0
++        self._ball_position_w = np.zeros(3, dtype=np.float32)
++        self._ball_velocity_w = np.zeros(3, dtype=np.float32)
++        self._ball_visible = False
++        self._ball_ready = False
++        self._accepted_pelvis_position_w = np.zeros(
++            3,
++            dtype=np.float32,
++        )
++        self._accepted_pelvis_quaternion_xyzw = np.array(
++            [0.0, 0.0, 0.0, 1.0],
++            dtype=np.float32,
++        )
++        self._pelvis_valid = False
++        self._pelvis_occluded = False
++        self._pelvis_source_frame = 0
++        self._pelvis_source_time_s: Optional[float] = None
++        self._pelvis_publish_time_us: Optional[int] = None
++        self._pelvis_received_monotonic_s: Optional[float] = None
++        self._pelvis_wall_time_us: Optional[int] = None
++        self._last_source_frame_by_subject = {}
++        self._last_source_publish_pair_by_subject = {}
++
++    @staticmethod
++    def _append_warning(warnings, reason: str) -> None:
++        if reason not in warnings:
++            warnings.append(reason)
++
++    @staticmethod
++    def _positive_finite(value: float) -> bool:
++        return bool(np.isfinite(value) and value > 0.0)
++
++    def _next_fallback_timestamp_locked(self) -> float:
++        if self.fallback_estimator_time_s is None:
++            self.fallback_estimator_time_s = 0.0
++        else:
++            self.fallback_estimator_time_s += (
++                1.0 / self.estimator_sample_rate_hz
++            )
++        return float(self.fallback_estimator_time_s)
++
++    def _estimator_timestamp_locked(
++        self,
++        *,
++        source_time_s: float,
++        publish_time_us: int,
++    ) -> float:
++        if self._positive_finite(source_time_s):
++            return float(source_time_s)
++        if publish_time_us > 0:
++            publish_time_s = float(publish_time_us) * 1.0e-6
++            if self._positive_finite(publish_time_s):
++                return publish_time_s
++        return self._next_fallback_timestamp_locked()
++
++    def _clear_ball_tracking_locked(self, *, advance_epoch: bool) -> None:
++        self.ball_state_estimator.reset()
++        self.fallback_estimator_time_s = None
++        self._ball_visible = False
++        self._ball_ready = False
++        if advance_epoch:
++            self.track_epoch += 1
++
++    def _make_snapshot_locked(
++        self,
++        sample: NormalizedMocapSample,
++    ) -> BallEstimateSnapshot:
++        self.ball_snapshot_generation += 1
++        snapshot = BallEstimateSnapshot(
++            track_epoch=int(self.track_epoch),
++            generation=int(self.ball_snapshot_generation),
++            source_frame=int(sample.source_frame),
++            source_time_s=float(sample.source_time_s or 0.0),
++            received_monotonic_s=float(sample.received_monotonic_s),
++            position_w=self._ball_position_w.astype(
++                np.float32,
++                copy=True,
++            ),
++            velocity_w=self._ball_velocity_w.astype(
++                np.float32,
++                copy=True,
++            ),
++            base_position_w=self._accepted_pelvis_position_w.astype(
++                np.float32,
++                copy=True,
++            ),
++            base_quaternion_xyzw=(
++                self._accepted_pelvis_quaternion_xyzw.astype(
++                    np.float32,
++                    copy=True,
++                )
++            ),
++            base_valid=bool(self._pelvis_valid),
++            visible=bool(self._ball_visible),
++            ready=bool(self._ball_ready),
++        )
++        self.latest_ball_snapshot = snapshot
++        return snapshot
++
++    def _source_warnings_locked(
++        self,
++        sample: NormalizedMocapSample,
++        warnings,
++    ) -> None:
++        previous_frame = self._last_source_frame_by_subject.get(
++            sample.subject
++        )
++        if (
++            previous_frame is not None
++            and abs(int(sample.source_frame) - int(previous_frame))
++            > self.maximum_source_frame_delta
++        ):
++            self._append_warning(warnings, "SOURCE_FRAME_GAP")
++        self._last_source_frame_by_subject[sample.subject] = int(
++            sample.source_frame
++        )
++
++        source_time_s = sample.source_time_s
++        publish_time_us = sample.publish_time_us
++        if (
++            source_time_s is None
++            or publish_time_us is None
++            or not self._positive_finite(float(source_time_s))
++            or publish_time_us <= 0
++        ):
++            return
++        publish_time_s = float(publish_time_us) * 1.0e-6
++        if not self._positive_finite(publish_time_s):
++            return
++        current = (float(source_time_s), publish_time_s)
++        previous = self._last_source_publish_pair_by_subject.get(
++            sample.subject
++        )
++        self._last_source_publish_pair_by_subject[sample.subject] = current
++        if previous is None:
++            return
++        source_delta = current[0] - previous[0]
++        publish_delta = current[1] - previous[1]
++        if (
++            source_delta > 0.0
++            and publish_delta > 0.0
++            and abs(source_delta - publish_delta)
++            <= self.clock_rate_tolerance_s
++            and abs(current[1] - current[0])
++            > self.clock_offset_threshold_s
++        ):
++            self._append_warning(warnings, "CLOCK_OFFSET_SUSPECTED")
++
++    def _pelvis_warnings_for_ball_locked(
++        self,
++        sample: NormalizedMocapSample,
++        warnings,
++    ) -> None:
++        if not self._pelvis_valid:
++            self._append_warning(warnings, "PELVIS_INVALID")
++            return
++        mismatch = (
++            abs(int(sample.source_frame) - self._pelvis_source_frame)
++            > self.maximum_source_frame_delta
++        )
++        if (
++            self._pelvis_received_monotonic_s is not None
++            and float(sample.received_monotonic_s)
++            - self._pelvis_received_monotonic_s
++            > self.pelvis_stale_threshold_s
++        ):
++            mismatch = True
++        if (
++            sample.source_time_s is not None
++            and self._pelvis_source_time_s is not None
++            and np.isfinite(float(sample.source_time_s))
++            and np.isfinite(float(self._pelvis_source_time_s))
++            and abs(
++                float(sample.source_time_s)
++                - float(self._pelvis_source_time_s)
++            )
++            > self.pelvis_stale_threshold_s
++        ):
++            mismatch = True
++        if mismatch:
++            self._append_warning(warnings, "PELVIS_FRAME_MISMATCH")
++
++    def _update_pelvis_locked(
++        self,
++        sample: NormalizedMocapSample,
++        warnings,
++    ) -> None:
++        effective_valid = bool(sample.valid and not sample.occluded)
++        finite_pose = bool(
++            np.isfinite(sample.position_w).all()
++            and np.isfinite(sample.quaternion_xyzw).all()
++        )
++        self._pelvis_valid = bool(effective_valid and finite_pose)
++        self._pelvis_occluded = bool(sample.occluded)
++        self._pelvis_source_frame = int(sample.source_frame)
++        self._pelvis_source_time_s = sample.source_time_s
++        self._pelvis_publish_time_us = sample.publish_time_us
++        self._pelvis_received_monotonic_s = float(
++            sample.received_monotonic_s
++        )
++        self._pelvis_wall_time_us = int(sample.wall_time_us)
++        if self._pelvis_valid:
++            self._accepted_pelvis_position_w = np.asarray(
++                sample.position_w,
++                dtype=np.float32,
++            ).copy()
++            self._accepted_pelvis_quaternion_xyzw = np.asarray(
++                sample.quaternion_xyzw,
++                dtype=np.float32,
++            ).copy()
++        else:
++            self._append_warning(warnings, "PELVIS_INVALID")
++
++    def _update_ball_locked(
++        self,
++        sample: NormalizedMocapSample,
++        warnings,
++    ):
++        self._pelvis_warnings_for_ball_locked(sample, warnings)
++        effective_valid = bool(sample.valid and not sample.occluded)
++        if not effective_valid:
++            previous_epoch = int(self.track_epoch)
++            self._clear_ball_tracking_locked(advance_epoch=True)
++            self._append_warning(
++                warnings,
++                "BALL_INVALID_OR_OCCLUDED",
++            )
++            reset = ProductionReset(
++                previous_track_epoch=previous_epoch,
++                new_track_epoch=int(self.track_epoch),
++                reason="BALL_INVALID_OR_OCCLUDED",
++            )
++            return (
++                self._make_snapshot_locked(sample),
++                False,
++                reset,
++            )
++
++        timestamp = self._estimator_timestamp_locked(
++            source_time_s=float(sample.source_time_s or 0.0),
++            publish_time_us=int(sample.publish_time_us or 0),
++        )
++        try:
++            estimate = self.ball_state_estimator.add_sample(
++                sample.position_w,
++                timestamp=timestamp,
++            )
++        except ValueError:
++            self._append_warning(warnings, "ESTIMATE_NONFINITE")
++            return None, False, None
++
++        self._ball_position_w = estimate.position.astype(
++            np.float32,
++            copy=True,
++        )
++        self._ball_velocity_w = estimate.velocity.astype(
++            np.float32,
++            copy=True,
++        )
++        self._ball_visible = True
++        self._ball_ready = bool(estimate.valid)
++        bounce_detected = bool(estimate.bounce_detected)
++        if bounce_detected:
++            self._append_warning(warnings, "BOUNCE_RESET")
++        return (
++            self._make_snapshot_locked(sample),
++            bounce_detected,
++            None,
++        )
++
++    def ingest_decoded(
++        self,
++        *,
++        channel: str,
++        message: object,
++        payload_size: int,
++        received_monotonic_s: float,
++        wall_time_us: int,
++    ) -> AdapterOutput:
++        """Process one decoded transformation_t in exact arrival order."""
++        with self.lock:
++            raw_subject = str(getattr(message, "name", "") or "")
++            subject = raw_subject.strip().lower() or "<unnamed>"
++            source_time_s = float(
++                getattr(message, "vicon_time_s", 0.0) or 0.0
++            )
++            publish_time_us = int(
++                getattr(message, "publish_time_us", 0) or 0
++            )
++            sample = NormalizedMocapSample(
++                input_seq=self._next_input_seq,
++                channel=str(channel),
++                subject=subject,
++                position_w=np.asarray(
++                    getattr(message, "pos_vicon"),
++                    dtype=np.float64,
++                ).reshape(-1)[:3],
++                quaternion_xyzw=np.asarray(
++                    getattr(message, "quat_vicon"),
++                    dtype=np.float64,
++                ).reshape(-1)[:4],
++                valid=bool(getattr(message, "valid", 1)),
++                occluded=bool(getattr(message, "occluded", 0)),
++                source_frame=int(
++                    getattr(message, "vicon_frame_number", 0) or 0
++                ),
++                source_time_s=source_time_s,
++                publish_time_us=publish_time_us,
++                received_monotonic_s=float(received_monotonic_s),
++                wall_time_us=int(wall_time_us),
++                payload_size=int(payload_size),
++            )
++            self._next_input_seq += 1
++            warnings = []
++            self._source_warnings_locked(sample, warnings)
++            snapshot = None
++            bounce_detected = False
++            reset_transition = None
++            if subject == "g1pelvis":
++                self._update_pelvis_locked(sample, warnings)
++            elif subject == "ball":
++                (
++                    snapshot,
++                    bounce_detected,
++                    reset_transition,
++                ) = self._update_ball_locked(sample, warnings)
++            elif subject != "table":
++                self._append_warning(warnings, "UNKNOWN_SUBJECT")
++
++            return AdapterOutput(
++                sample=sample,
++                snapshot=snapshot,
++                warnings=tuple(warnings),
++                estimator_sample_count=int(
++                    self.ball_state_estimator.sample_count
++                ),
++                bounce_detected=bounce_detected,
++                reset_transition=reset_transition,
++            )
++
++    def reset_estimator_after_strike(self) -> int:
++        """Match RealWorld reset: clear estimator and advance track epoch."""
++        with self.lock:
++            self._clear_ball_tracking_locked(advance_epoch=True)
++            return int(self.track_epoch)
++
++    def copy_latest_pelvis(self) -> LatestPelvisPose:
++        """Atomically copy accepted pose plus latest validity and timing."""
++        with self.lock:
++            return LatestPelvisPose(
++                position_w=self._accepted_pelvis_position_w,
++                quaternion_xyzw=(
++                    self._accepted_pelvis_quaternion_xyzw
++                ),
++                valid=bool(self._pelvis_valid),
++                occluded=bool(self._pelvis_occluded),
++                source_frame=int(self._pelvis_source_frame),
++                source_time_s=self._pelvis_source_time_s,
++                publish_time_us=self._pelvis_publish_time_us,
++                received_monotonic_s=self._pelvis_received_monotonic_s,
++                wall_time_us=self._pelvis_wall_time_us,
++            )
++
++
++__all__ = [
++    "AdapterOutput",
++    "LatestPelvisPose",
++    "MocapFrameAdapter",
++    "ProductionReset",
++]
+diff --git a/deploy/tests/test_hitter_task_input_adapter.py b/deploy/tests/test_hitter_task_input_adapter.py
+new file mode 100644
+index 0000000..a61d660
+--- /dev/null
++++ b/deploy/tests/test_hitter_task_input_adapter.py
+@@ -0,0 +1,486 @@
++from __future__ import annotations
++
++import math
++import threading
++import unittest
++from dataclasses import FrozenInstanceError
++from types import SimpleNamespace
++from unittest import mock
++
++import numpy as np
++
++from diagnostics.hitter_task_pipeline import (
++    MocapFrameAdapter,
++    ProductionReset,
++)
++from simulator.real_world import RealWorld
++from unitree_sdk2.lcm_types.transformation_t import transformation_t
++
++
++def _message(
++    name: str,
++    *,
++    position=(1.5, 0.0, 1.0),
++    quaternion=(0.0, 0.0, 0.0, 1.0),
++    frame: int = 1,
++    source_time_s: float = 1.0,
++    publish_time_us: int = 1_000_000,
++    valid: bool = True,
++    occluded: bool = False,
++) -> transformation_t:
++    message = transformation_t()
++    message.name = name
++    message.vicon_frame_number = frame
++    message.vicon_time_s = source_time_s
++    message.publish_time_us = publish_time_us
++    message.valid = int(valid)
++    message.occluded = int(occluded)
++    message.pos_vicon = list(position)
++    message.quat_vicon = list(quaternion)
++    return transformation_t.decode(message.encode())
++
++
++def _adapter(*, min_samples: int = 3) -> MocapFrameAdapter:
++    return MocapFrameAdapter(
++        planner_config={
++            "state_estimator_window_size": 31,
++            "state_estimator_min_samples": min_samples,
++            "state_estimator_sample_rate_hz": 360.0,
++        },
++        estimator_sample_rate_hz=360.0,
++    )
++
++
++def _ingest(
++    adapter: MocapFrameAdapter,
++    message: transformation_t,
++    *,
++    received_s: float,
++    wall_time_us: int = 1_700_000_000_000_000,
++):
++    return adapter.ingest_decoded(
++        channel="vicon_state_data",
++        message=message,
++        payload_size=len(message.encode()),
++        received_monotonic_s=received_s,
++        wall_time_us=wall_time_us,
++    )
++
++
++class MocapFrameAdapterInputTests(unittest.TestCase):
++    def test_real_messages_keep_global_arrival_order_and_normalized_subjects(self) -> None:
++        adapter = _adapter()
++        messages = [
++            _message("G1Pelvis", frame=10),
++            _message("BALL", frame=10),
++            _message("table", frame=10),
++            _message("UnknownSubject", frame=10),
++        ]
++
++        outputs = [
++            _ingest(adapter, message, received_s=2.0 + index * 0.01)
++            for index, message in enumerate(messages)
++        ]
++
++        self.assertEqual(
++            [output.sample.input_seq for output in outputs],
++            [0, 1, 2, 3],
++        )
++        self.assertEqual(
++            [output.sample.subject for output in outputs],
++            ["g1pelvis", "ball", "table", "unknownsubject"],
++        )
++        self.assertIsNotNone(outputs[1].snapshot)
++        self.assertIsNone(outputs[0].snapshot)
++        self.assertIsNone(outputs[2].snapshot)
++        self.assertIsNone(outputs[3].snapshot)
++        self.assertIn("UNKNOWN_SUBJECT", outputs[3].warnings)
++
++    def test_samples_are_detached_bytes_backed_float64_but_snapshots_are_float32(self) -> None:
++        adapter = _adapter(min_samples=1)
++        message = _message(
++            "ball",
++            position=(1.25, -0.5, 0.875),
++            quaternion=(0.1, 0.2, 0.3, 0.9),
++        )
++        output = _ingest(adapter, message, received_s=2.0)
++
++        message.pos_vicon = [99.0, -0.5, 0.875]
++        self.assertEqual(output.sample.position_w.dtype, np.dtype(np.float64))
++        self.assertEqual(
++            output.sample.quaternion_xyzw.dtype,
++            np.dtype(np.float64),
++        )
++        self.assertFalse(output.sample.position_w.flags.writeable)
++        with self.assertRaises(ValueError):
++            output.sample.position_w.setflags(write=True)
++        self.assertEqual(output.snapshot.position_w.dtype, np.dtype(np.float32))
++        self.assertEqual(output.snapshot.velocity_w.dtype, np.dtype(np.float32))
++        self.assertEqual(
++            output.snapshot.base_position_w.dtype,
++            np.dtype(np.float32),
++        )
++        self.assertEqual(
++            output.snapshot.base_quaternion_xyzw.dtype,
++            np.dtype(np.float32),
++        )
++        np.testing.assert_array_equal(
++            output.sample.position_w,
++            [1.25, -0.5, 0.875],
++        )
++
++    def test_timestamp_priority_and_independent_zero_based_nominal_fallback(self) -> None:
++        adapter = _adapter(min_samples=1)
++        messages = [
++            _message(
++                "ball",
++                frame=1,
++                source_time_s=10.0,
++                publish_time_us=90_000_000,
++            ),
++            _message(
++                "ball",
++                frame=2,
++                source_time_s=float("nan"),
++                publish_time_us=20_000_000,
++            ),
++            _message(
++                "ball",
++                frame=3,
++                source_time_s=0.0,
++                publish_time_us=0,
++            ),
++            _message(
++                "ball",
++                frame=4,
++                source_time_s=-1.0,
++                publish_time_us=-1,
++            ),
++        ]
++        for index, message in enumerate(messages):
++            _ingest(adapter, message, received_s=1000.0 + index * 50.0)
++
++        timestamps = [
++            float(timestamp)
++            for timestamp, _position in adapter.ball_state_estimator._samples
++        ]
++        np.testing.assert_allclose(
++            timestamps,
++            [10.0, 20.0, 20.000001, 20.000002],
++            rtol=0.0,
++            atol=1.0e-12,
++        )
++        self.assertAlmostEqual(
++            adapter.fallback_estimator_time_s,
++            1.0 / 360.0,
++        )
++
++    def test_duplicate_and_backward_source_times_use_estimator_last_plus_epsilon(self) -> None:
++        adapter = _adapter(min_samples=1)
++        for frame, source_time in enumerate((5.0, 5.0, 4.0), start=1):
++            _ingest(
++                adapter,
++                _message(
++                    "ball",
++                    frame=frame,
++                    source_time_s=source_time,
++                ),
++                received_s=float(frame),
++            )
++        timestamps = [
++            float(timestamp)
++            for timestamp, _position in adapter.ball_state_estimator._samples
++        ]
++        np.testing.assert_allclose(
++            timestamps,
++            [5.0, 5.000001, 5.000002],
++            rtol=0.0,
++            atol=1.0e-12,
++        )
++
++    def test_ball_snapshot_binds_last_accepted_pose_and_current_validity(self) -> None:
++        adapter = _adapter(min_samples=1)
++        valid_pose = _message(
++            "G1Pelvis",
++            position=(0.2, -0.3, 0.8),
++            quaternion=(0.0, 0.0, 0.25, 0.9682458365518543),
++            frame=100,
++            source_time_s=1.0,
++        )
++        _ingest(adapter, valid_pose, received_s=10.0)
++        invalid_pose = _message(
++            "g1pelvis",
++            position=(9.0, 9.0, 9.0),
++            quaternion=(1.0, 0.0, 0.0, 0.0),
++            frame=101,
++            source_time_s=1.01,
++            valid=False,
++        )
++        invalid_output = _ingest(adapter, invalid_pose, received_s=10.01)
++        latest = adapter.copy_latest_pelvis()
++        np.testing.assert_allclose(latest.position_w, [0.2, -0.3, 0.8])
++        self.assertFalse(latest.valid)
++        self.assertEqual(latest.source_frame, 101)
++        self.assertEqual(latest.source_time_s, 1.01)
++        self.assertEqual(latest.received_monotonic_s, 10.01)
++        self.assertIn("PELVIS_INVALID", invalid_output.warnings)
++
++        ball_output = _ingest(
++            adapter,
++            _message("ball", frame=101, source_time_s=1.01),
++            received_s=10.011,
++        )
++        np.testing.assert_allclose(
++            ball_output.snapshot.base_position_w,
++            [0.2, -0.3, 0.8],
++        )
++        self.assertFalse(ball_output.snapshot.base_valid)
++        with self.assertRaises(ValueError):
++            latest.position_w.setflags(write=True)
++        with self.assertRaises(FrozenInstanceError):
++            latest.valid = True
++
++    def test_frame_mismatch_staleness_and_source_gap_warn_without_changing_base_valid(self) -> None:
++        adapter = _adapter(min_samples=1)
++        _ingest(
++            adapter,
++            _message("g1pelvis", frame=10, source_time_s=1.0),
++            received_s=20.0,
++        )
++        _ingest(
++            adapter,
++            _message("ball", frame=10, source_time_s=1.0),
++            received_s=20.001,
++        )
++        output = _ingest(
++            adapter,
++            _message("ball", frame=15, source_time_s=1.2),
++            received_s=20.051,
++        )
++
++        self.assertTrue(output.snapshot.base_valid)
++        self.assertIn("PELVIS_FRAME_MISMATCH", output.warnings)
++        self.assertIn("SOURCE_FRAME_GAP", output.warnings)
++
++    def test_clock_offset_is_inferred_from_consecutive_source_publish_pairs_only(self) -> None:
++        adapter = _adapter(min_samples=1)
++        first = _ingest(
++            adapter,
++            _message(
++                "table",
++                frame=1,
++                source_time_s=10.0,
++                publish_time_us=1_010_000_000,
++            ),
++            received_s=500.0,
++            wall_time_us=9_000_000_000_000_000,
++        )
++        second = _ingest(
++            adapter,
++            _message(
++                "table",
++                frame=2,
++                source_time_s=10.01,
++                publish_time_us=1_010_010_000,
++            ),
++            received_s=500.01,
++            wall_time_us=9_100_000_000_000_000,
++        )
++
++        self.assertNotIn("CLOCK_OFFSET_SUSPECTED", first.warnings)
++        self.assertIn("CLOCK_OFFSET_SUSPECTED", second.warnings)
++        self.assertFalse(
++            any(
++                "LATENCY" in warning or "DELAY" in warning
++                for warning in second.warnings
++            )
++        )
++
++    def test_invalid_ball_resets_epoch_emits_invisible_snapshot_and_retains_state(self) -> None:
++        adapter = _adapter(min_samples=1)
++        visible = _ingest(
++            adapter,
++            _message("ball", position=(1.4, 0.1, 1.1), frame=1),
++            received_s=1.0,
++        )
++        invalid = _ingest(
++            adapter,
++            _message(
++                "ball",
++                position=(0.0, 0.0, 0.0),
++                frame=2,
++                source_time_s=1.01,
++                valid=False,
++            ),
++            received_s=1.01,
++        )
++
++        self.assertEqual(visible.snapshot.track_epoch, 0)
++        self.assertEqual(visible.snapshot.generation, 1)
++        self.assertEqual(invalid.snapshot.track_epoch, 1)
++        self.assertEqual(invalid.snapshot.generation, 2)
++        self.assertFalse(invalid.snapshot.visible)
++        self.assertFalse(invalid.snapshot.ready)
++        np.testing.assert_array_equal(
++            invalid.snapshot.position_w,
++            visible.snapshot.position_w,
++        )
++        np.testing.assert_array_equal(
++            invalid.snapshot.velocity_w,
++            visible.snapshot.velocity_w,
++        )
++        self.assertEqual(invalid.estimator_sample_count, 0)
++        self.assertEqual(
++            invalid.reset_transition,
++            ProductionReset(0, 1, "BALL_INVALID_OR_OCCLUDED"),
++        )
++        self.assertIn("BALL_INVALID_OR_OCCLUDED", invalid.warnings)
++        self.assertFalse(hasattr(adapter, "incoming"))
++        self.assertFalse(hasattr(adapter, "lifecycle"))
++
++    def test_strike_reset_only_advances_epoch_and_preserves_latest_snapshot(self) -> None:
++        adapter = _adapter(min_samples=1)
++        first = _ingest(
++            adapter,
++            _message("ball", frame=1),
++            received_s=1.0,
++        )
++
++        new_epoch = adapter.reset_estimator_after_strike()
++
++        self.assertEqual(new_epoch, 1)
++        self.assertIs(adapter.latest_ball_snapshot, first.snapshot)
++        second = _ingest(
++            adapter,
++            _message("ball", frame=2, source_time_s=2.0),
++            received_s=2.0,
++        )
++        self.assertEqual(second.snapshot.track_epoch, 1)
++        self.assertEqual(second.snapshot.generation, 2)
++        self.assertEqual(second.estimator_sample_count, 1)
++
++    def test_bounce_resets_fit_buffer_without_advancing_epoch(self) -> None:
++        adapter = _adapter(min_samples=3)
++        positions = (
++            (1.4, 0.0, 0.95),
++            (1.4, 0.0, 0.90),
++            (1.4, 0.0, 0.79),
++        )
++        outputs = [
++            _ingest(
++                adapter,
++                _message(
++                    "ball",
++                    position=position,
++                    frame=index,
++                    source_time_s=float(index),
++                ),
++                received_s=float(index),
++            )
++            for index, position in enumerate(positions, start=1)
++        ]
++
++        self.assertTrue(outputs[-1].bounce_detected)
++        self.assertEqual(outputs[-1].estimator_sample_count, 1)
++        self.assertEqual(outputs[-1].snapshot.track_epoch, 0)
++        self.assertIn("BOUNCE_RESET", outputs[-1].warnings)
++
++    def test_estimator_becomes_ready_on_the_thirty_first_sample(self) -> None:
++        adapter = _adapter(min_samples=31)
++        outputs = []
++        for index in range(31):
++            outputs.append(
++                _ingest(
++                    adapter,
++                    _message(
++                        "ball",
++                        position=(1.8 - 0.01 * index, 0.0, 1.2),
++                        frame=index + 1,
++                        source_time_s=1.0 + index / 360.0,
++                    ),
++                    received_s=2.0 + index / 360.0,
++                )
++            )
++        self.assertFalse(outputs[-2].snapshot.ready)
++        self.assertEqual(outputs[-2].estimator_sample_count, 30)
++        self.assertTrue(outputs[-1].snapshot.ready)
++        self.assertEqual(outputs[-1].estimator_sample_count, 31)
++
++    def test_near_zero_pelvis_quaternion_matches_realworld_base_validity(self) -> None:
++        adapter = _adapter(min_samples=1)
++        tiny_quaternion = (1.0e-300, -1.0e-300, 1.0e-300, -1.0e-300)
++        pelvis = _message(
++            "G1Pelvis",
++            quaternion=tiny_quaternion,
++            frame=7,
++        )
++        pelvis_output = _ingest(adapter, pelvis, received_s=1.0)
++        ball_output = _ingest(
++            adapter,
++            _message("ball", frame=7),
++            received_s=1.001,
++        )
++
++        real = RealWorld.__new__(RealWorld)
++        real.cfg = SimpleNamespace(
++            motion={
++                "ball_planner": {
++                    "state_estimator_window_size": 31,
++                    "state_estimator_min_samples": 1,
++                    "state_estimator_sample_rate_hz": 360.0,
++                }
++            }
++        )
++        real._init_ball_state()
++        real.firstReceiveVicon = False
++        real._vicon_state_handler("vicon_state_data", pelvis.encode())
++
++        self.assertEqual(pelvis_output.sample.valid, bool(pelvis.valid))
++        self.assertTrue(real.base_pose_valid_tmp)
++        self.assertTrue(ball_output.snapshot.base_valid)
++        np.testing.assert_array_equal(
++            ball_output.snapshot.base_quaternion_xyzw,
++            real.root_quat_world_tmp,
++        )
++
++    def test_nonfinite_valid_ball_is_recorded_but_estimate_failure_is_contained(self) -> None:
++        adapter = _adapter(min_samples=1)
++        before = _ingest(
++            adapter,
++            _message("ball", frame=1),
++            received_s=1.0,
++        )
++        output = _ingest(
++            adapter,
++            _message(
++                "ball",
++                position=(float("nan"), 0.0, 1.0),
++                frame=2,
++                source_time_s=2.0,
++            ),
++            received_s=2.0,
++        )
++
++        self.assertTrue(math.isnan(output.sample.position_w[0]))
++        self.assertIsNone(output.snapshot)
++        self.assertIn("ESTIMATE_NONFINITE", output.warnings)
++        self.assertEqual(output.estimator_sample_count, 1)
++        self.assertIsNone(output.reset_transition)
++        self.assertIs(adapter.latest_ball_snapshot, before.snapshot)
++        self.assertEqual(adapter.track_epoch, 0)
++
++    def test_adapter_serializes_ingest_reset_and_pelvis_reads_with_one_rlock(self) -> None:
++        adapter = _adapter(min_samples=1)
++        self.assertIsInstance(adapter.lock, type(threading.RLock()))
++        with adapter.lock:
++            _ingest(
++                adapter,
++                _message("g1pelvis", frame=1),
++                received_s=1.0,
++            )
++            adapter.copy_latest_pelvis()
++            self.assertEqual(adapter.reset_estimator_after_strike(), 1)
++
++
++if __name__ == "__main__":
++    unittest.main()

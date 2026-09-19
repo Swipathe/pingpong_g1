@@ -1,0 +1,1481 @@
+2026-06-29 00:50:43.186 | INFO     | __main__:main:34 - Log saved to /home/loco1/BOB/Hitter/RobotBridge/outputs/2026-06-29/00-50-43/eval.log
+2026-06-29 00:50:44.039 | INFO     | utils.motion_lib.torch_humanoid_batch:<module>:41 - Using Humanoid Batch
+2026-06-29 00:50:44.195 | DEBUG    | utils.kinematics:__init__:34 - [MujocoKinematics] loaded model from ./data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+2026-06-29 00:50:44.196 | DEBUG    | utils.kinematics:update_joint_names_subset:94 - [MujocoKinematics] set fk with 29 joints
+2026-06-29 00:50:44.196 | INFO     | simulator.base_sim:_setup:47 - Robot-level Control Frequency Set to 200.0HZ
+2026-06-29 00:50:44.196 | INFO     | simulator.base_sim:_setup:48 - Policy-level Control Frequency Set to 50.0HZ
+2026-06-29 00:50:44.196 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint waist_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint waist_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint waist_pitch_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_shoulder_roll_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_shoulder_roll_joint  Default Angles -0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:62 - Total Number of dof: 29
+2026-06-29 00:50:44.197 | INFO     | simulator.base_sim:_load_asset:63 - Number of Action: 29
+2026-06-29 00:50:44.198 | INFO     | simulator.real_world:_init_low_state:123 - [RealWorld] terminate_on_r2=False
+2026-06-29 00:50:44.198 | INFO     | utils.history_handler:__init__:19 - History Handler initialized!
+2026-06-29 00:50:44.202 | INFO     | envs.hitter:__init__:141 - HITTER planner config: use_ball_planner=True planner_only=True wait_for_ball=True max_timestep=-1
+2026-06-29 00:50:44.202 | INFO     | simulator.real_world:_vicon_state_handler:199 - Vicon root information received!
+2026-06-29 00:50:44.202 | INFO     | simulator.real_world:_vicon_state_handler:200 - Root Translation World: [-0.80742127 -0.06488051  0.7905971 ]
+2026-06-29 00:50:44.202 | INFO     | simulator.real_world:_root_state_handler:164 - State Estimator Information Received!
+2026-06-29 00:50:44.202 | INFO     | simulator.real_world:_root_state_handler:165 - Root Translation: [ 0.01864118 -0.00371707  0.72176981], Root Linear Velocity: [-2.31432580e-07 -1.10782118e-07  3.97292797e-06]
+2026-06-29 00:50:44.202 | INFO     | simulator.real_world:_joint_state_handler:209 - Communication build successfully between the policy and the transition layer!
+2026-06-29 00:50:44.202 | INFO     | simulator.real_world:_joint_state_handler:210 - First signal arrives after 0.004620790481567383s!
+2026-06-29 00:50:44.204 | INFO     | envs.loco_hitter:__init__:65 - LocoHitterEnv initialized | Total DoF: 29, Lower: 12, Upper: 17, auto_switch_on_ball=True
+2026-06-29 00:50:44.209 | INFO     | agents.loco_hitter_agent:_load_locomotion_policy:151 - Loaded locomotion policy from ./data/model/locomotion/loco_level.pt
+2026-06-29 00:50:44.214 | INFO     | envs.hitter:configure_from_modelmeta:210 - Applying HITTER joint configuration from ONNX model.
+2026-06-29 00:50:44.220 | INFO     | envs.hitter:configure_from_modelmeta:252 - HITTER policy metadata configured, 29 degrees of freedom.
+2026-06-29 00:50:44.223 | INFO     | envs.loco_hitter:configure_from_modelmeta:91 - HITTER policy configured; runtime starts in locomotion mode.
+2026-06-29 00:50:44.223 | INFO     | agents.loco_hitter_agent:_load_hitter_policy:162 - Loaded HITTER policy from /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body.onnx | joints=29 anchor=pelvis
+2026-06-29 00:50:44.223 | INFO     | agents.loco_hitter_agent:__init__:145 - LocoHitterAgent initialized. Runtime starts in locomotion mode.
+2026-06-29 00:50:44.227 | INFO     | simulator.real_world:calibrate:376 - Calibraiting..., Press R2 to continue
+2026-06-29 00:53:42.723 | INFO     | simulator.real_world:calibrate:379 - R2 button pressed, Start Calibrating...
+2026-06-29 00:53:42.904 | INFO     | simulator.real_world:calibrate:399 - Calibration Done. Press R2 to continue
+2026-06-29 00:53:47.771 | INFO     | simulator.real_world:calibrate:402 - R2 pressed again, Communication built between policy layer and transition layer!
+2026-06-29 00:53:47.773 | INFO     | simulator.real_world:reset_heading:133 - [RealWorld] heading reset enabled, yaw0=-0.114 rad
+2026-06-29 00:53:47.774 | INFO     | envs.base_env:_update_obs:92 - Receive observation: ['actions', 'root_quat', 'root_rpy', 'base_ang_vel', 'base_lin_vel', 'dof_pos', 'dof_vel', 'projected_gravity']
+2026-06-29 00:53:47.778 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:47.802 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0073s
+2026-06-29 00:53:47.852 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0099s
+2026-06-29 00:53:47.887 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0147s
+2026-06-29 00:53:47.915 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0085s
+2026-06-29 00:53:47.964 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0049s
+2026-06-29 00:53:47.986 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 00:53:48.019 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0129s
+2026-06-29 00:53:48.048 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0083s
+2026-06-29 00:53:48.078 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0102s
+2026-06-29 00:53:48.114 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0158s
+2026-06-29 00:53:48.147 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0133s
+2026-06-29 00:53:48.181 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0131s
+2026-06-29 00:53:48.208 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:53:48.236 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0080s
+2026-06-29 00:53:48.270 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0137s
+2026-06-29 00:53:48.311 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0206s
+2026-06-29 00:53:48.315 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:48.379 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0077s
+2026-06-29 00:53:48.400 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:53:48.442 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0213s
+2026-06-29 00:53:48.472 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:53:48.495 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:53:48.531 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0157s
+2026-06-29 00:53:48.816 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:48.955 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0031s
+2026-06-29 00:53:48.979 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:53:49.046 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0072s
+2026-06-29 00:53:49.076 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:53:49.112 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0153s
+2026-06-29 00:53:49.154 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0220s
+2026-06-29 00:53:49.187 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0126s
+2026-06-29 00:53:49.240 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0135s
+2026-06-29 00:53:49.264 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0035s
+2026-06-29 00:53:49.313 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:53:49.320 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:49.431 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0163s
+2026-06-29 00:53:49.467 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0159s
+2026-06-29 00:53:49.500 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0129s
+2026-06-29 00:53:49.827 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:49.946 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:53:49.973 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0065s
+2026-06-29 00:53:50.010 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0167s
+2026-06-29 00:53:50.052 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:53:50.083 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0111s
+2026-06-29 00:53:50.106 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0031s
+2026-06-29 00:53:50.136 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:53:50.207 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:53:50.333 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:50.349 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:53:50.369 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:53:50.390 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:53:50.836 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:51.337 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:51.566 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:53:51.601 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0148s
+2026-06-29 00:53:51.632 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0114s
+2026-06-29 00:53:51.670 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0177s
+2026-06-29 00:53:51.754 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0033s
+2026-06-29 00:53:51.838 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:51.929 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0143s
+2026-06-29 00:53:52.171 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:53:52.340 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:52.859 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:53.219 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:53:53.240 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:53:53.260 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:53:53.303 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:53:53.327 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:53:53.348 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:53:53.369 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:53:53.373 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:53.419 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0096s
+2026-06-29 00:53:53.524 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0050s
+2026-06-29 00:53:53.545 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:53:53.696 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0097s
+2026-06-29 00:53:53.758 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:53:53.780 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:53:53.801 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:53:53.829 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0078s
+2026-06-29 00:53:53.862 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0122s
+2026-06-29 00:53:53.894 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0120s
+2026-06-29 00:53:53.900 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:53.934 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0195s
+2026-06-29 00:53:54.181 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0065s
+2026-06-29 00:53:54.211 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0100s
+2026-06-29 00:53:54.245 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0138s
+2026-06-29 00:53:54.269 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:53:54.314 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:53:54.335 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:53:54.372 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0168s
+2026-06-29 00:53:54.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:53:54.431 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:54.449 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0042s
+2026-06-29 00:53:54.511 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:53:54.578 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0068s
+2026-06-29 00:53:54.620 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:53:54.673 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0123s
+2026-06-29 00:53:54.720 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0061s
+2026-06-29 00:53:54.929 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0082s
+2026-06-29 00:53:54.935 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:54.969 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0199s
+2026-06-29 00:53:55.437 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:55.938 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:56.439 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:56.477 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:53:56.497 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:53:56.800 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:53:56.828 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0075s
+2026-06-29 00:53:56.869 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:53:56.930 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:53:56.940 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:56.951 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:53:57.441 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:57.621 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0058s
+2026-06-29 00:53:57.732 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:53:57.847 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0127s
+2026-06-29 00:53:57.913 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0054s
+2026-06-29 00:53:57.933 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:53:57.957 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:58.459 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:58.963 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:59.327 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0091s
+2026-06-29 00:53:59.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0183s
+2026-06-29 00:53:59.470 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:53:59.858 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:53:59.879 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:53:59.899 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:53:59.985 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:00.321 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:00.349 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0081s
+2026-06-29 00:54:00.370 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:00.497 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:00.530 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:54:00.583 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0122s
+2026-06-29 00:54:00.656 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0136s
+2026-06-29 00:54:00.933 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0155s
+2026-06-29 00:54:00.993 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0404s
+2026-06-29 00:54:00.997 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:01.016 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:54:01.110 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0137s
+2026-06-29 00:54:01.136 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0061s
+2026-06-29 00:54:01.362 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0029s
+2026-06-29 00:54:01.382 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:01.415 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0132s
+2026-06-29 00:54:01.446 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0105s
+2026-06-29 00:54:01.468 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:01.490 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:54:01.498 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:01.514 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:01.778 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:01.816 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0181s
+2026-06-29 00:54:01.849 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0127s
+2026-06-29 00:54:01.906 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0149s
+2026-06-29 00:54:01.940 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0145s
+2026-06-29 00:54:01.975 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0143s
+2026-06-29 00:54:01.999 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:02.020 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0050s
+2026-06-29 00:54:02.100 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0195s
+2026-06-29 00:54:02.506 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:02.541 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0198s
+2026-06-29 00:54:02.587 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:54:03.014 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:03.100 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:54:03.132 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0118s
+2026-06-29 00:54:03.256 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:54:03.279 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:03.303 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:54:03.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:03.446 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:54:03.488 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:03.534 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:03.581 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0131s
+2026-06-29 00:54:03.660 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0189s
+2026-06-29 00:54:03.700 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:03.741 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:03.762 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:03.788 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0063s
+2026-06-29 00:54:04.034 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:04.350 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:04.376 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:54:04.421 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:54:04.548 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:04.621 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0195s
+2026-06-29 00:54:04.680 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0187s
+2026-06-29 00:54:04.714 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0143s
+2026-06-29 00:54:05.062 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:05.563 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:06.064 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0059s
+2026-06-29 00:54:06.068 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:06.089 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:54:06.111 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:06.132 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:54:06.235 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:54:06.256 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:54:06.564 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0076s
+2026-06-29 00:54:06.590 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:06.688 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:06.790 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:54:06.896 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:54:06.918 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:06.938 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:06.959 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:06.980 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:07.042 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:07.068 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:54:07.091 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:07.098 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:07.113 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:07.562 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0083s
+2026-06-29 00:54:07.594 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:54:07.600 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:07.635 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0212s
+2026-06-29 00:54:08.123 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:08.379 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:08.402 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:08.431 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0091s
+2026-06-29 00:54:08.457 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:54:08.486 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0090s
+2026-06-29 00:54:08.515 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0089s
+2026-06-29 00:54:08.642 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:08.737 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:08.759 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:08.791 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0117s
+2026-06-29 00:54:09.165 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:54:09.172 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:09.342 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0166s
+2026-06-29 00:54:09.368 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0055s
+2026-06-29 00:54:09.675 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:10.117 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0067s
+2026-06-29 00:54:10.155 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0154s
+2026-06-29 00:54:10.183 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0079s
+2026-06-29 00:54:10.190 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:10.347 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:54:10.378 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0109s
+2026-06-29 00:54:10.414 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0150s
+2026-06-29 00:54:10.474 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:10.590 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0151s
+2026-06-29 00:54:10.614 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:54:10.700 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:10.734 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:10.756 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:10.776 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:10.855 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0183s
+2026-06-29 00:54:10.905 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0093s
+2026-06-29 00:54:11.009 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0031s
+2026-06-29 00:54:11.050 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:54:11.071 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:11.112 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:11.137 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0049s
+2026-06-29 00:54:11.168 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0107s
+2026-06-29 00:54:11.213 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:11.370 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:11.401 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0108s
+2026-06-29 00:54:11.729 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:11.744 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:11.768 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:54:11.788 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:54:11.810 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:54:11.872 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:11.904 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:54:11.939 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0151s
+2026-06-29 00:54:12.055 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0159s
+2026-06-29 00:54:12.081 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:12.101 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:12.124 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:12.171 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0070s
+2026-06-29 00:54:12.198 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0075s
+2026-06-29 00:54:12.218 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:12.247 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0085s
+2026-06-29 00:54:12.254 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:12.289 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0216s
+2026-06-29 00:54:12.309 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:12.331 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:12.393 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:12.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0117s
+2026-06-29 00:54:12.448 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:54:12.468 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:54:12.652 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0035s
+2026-06-29 00:54:12.675 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:54:12.762 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:13.264 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:13.785 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:13.812 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0133s
+2026-06-29 00:54:13.859 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0070s
+2026-06-29 00:54:14.294 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:14.423 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0157s
+2026-06-29 00:54:14.534 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:54:14.575 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:54:14.733 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0372s
+2026-06-29 00:54:14.758 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0054s
+2026-06-29 00:54:14.783 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0047s
+2026-06-29 00:54:14.807 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:14.887 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:54:14.976 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0080s
+2026-06-29 00:54:15.022 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0063s
+2026-06-29 00:54:15.084 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:15.165 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:15.192 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0066s
+2026-06-29 00:54:15.225 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0123s
+2026-06-29 00:54:15.246 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:54:15.277 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0107s
+2026-06-29 00:54:15.310 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0130s
+2026-06-29 00:54:15.315 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:15.373 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:54:15.414 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0205s
+2026-06-29 00:54:15.448 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0138s
+2026-06-29 00:54:15.590 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:15.718 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0076s
+2026-06-29 00:54:15.760 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:15.795 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0150s
+2026-06-29 00:54:15.816 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:54:15.823 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:15.880 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:54:15.912 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0117s
+2026-06-29 00:54:15.950 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0179s
+2026-06-29 00:54:16.001 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0111s
+2026-06-29 00:54:16.044 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0221s
+2026-06-29 00:54:16.074 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:54:16.122 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0076s
+2026-06-29 00:54:16.329 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:16.420 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0172s
+2026-06-29 00:54:16.441 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:54:16.589 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0066s
+2026-06-29 00:54:16.739 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0100s
+2026-06-29 00:54:16.759 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:16.802 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:54:16.831 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0090s
+2026-06-29 00:54:16.838 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:16.940 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0078s
+2026-06-29 00:54:16.971 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0116s
+2026-06-29 00:54:17.164 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0117s
+2026-06-29 00:54:17.246 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:17.350 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:17.354 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:17.430 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:17.523 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0123s
+2026-06-29 00:54:17.584 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:17.872 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:18.373 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:18.677 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:54:18.706 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:54:18.731 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0044s
+2026-06-29 00:54:18.756 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0048s
+2026-06-29 00:54:18.859 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0035s
+2026-06-29 00:54:18.881 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:54:18.886 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:18.905 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:54:18.966 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:18.997 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:54:19.019 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:19.075 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0152s
+2026-06-29 00:54:19.130 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0157s
+2026-06-29 00:54:19.173 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:19.276 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:54:19.400 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:19.459 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:19.479 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:19.534 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0148s
+2026-06-29 00:54:19.597 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:19.799 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:19.902 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:54:19.908 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:19.923 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:54:19.967 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:54:20.171 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:54:20.197 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0059s
+2026-06-29 00:54:20.219 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:54:20.425 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:20.932 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0114s
+2026-06-29 00:54:20.939 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:20.953 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:20.984 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:54:21.006 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:21.039 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0123s
+2026-06-29 00:54:21.059 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:54:21.097 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0169s
+2026-06-29 00:54:21.124 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:54:21.158 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0143s
+2026-06-29 00:54:21.300 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:21.327 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0067s
+2026-06-29 00:54:21.452 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:21.501 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0131s
+2026-06-29 00:54:21.551 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0097s
+2026-06-29 00:54:21.715 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:54:21.745 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:54:21.793 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0078s
+2026-06-29 00:54:21.904 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:54:21.926 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:21.953 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:21.968 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:22.047 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0180s
+2026-06-29 00:54:22.210 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:22.232 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:54:22.253 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:22.275 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:22.339 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0033s
+2026-06-29 00:54:22.368 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:54:22.410 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:22.431 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:22.458 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:22.774 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:54:22.794 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:22.861 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0067s
+2026-06-29 00:54:22.894 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0125s
+2026-06-29 00:54:22.960 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:23.216 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:54:23.247 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0109s
+2026-06-29 00:54:23.270 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0027s
+2026-06-29 00:54:23.292 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:54:23.340 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0074s
+2026-06-29 00:54:23.465 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:23.567 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:54:23.595 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0076s
+2026-06-29 00:54:23.645 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:54:23.675 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:54:23.836 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:23.919 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:23.983 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:24.009 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:54:24.030 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:24.052 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:54:24.085 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0129s
+2026-06-29 00:54:24.143 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0162s
+2026-06-29 00:54:24.185 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:54:24.249 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:54:24.473 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:24.501 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:24.676 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:24.702 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:54:24.768 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0054s
+2026-06-29 00:54:24.880 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:54:25.006 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:25.090 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0093s
+2026-06-29 00:54:25.519 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:26.041 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:26.201 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0058s
+2026-06-29 00:54:26.231 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0091s
+2026-06-29 00:54:26.277 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0046s
+2026-06-29 00:54:26.544 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:26.805 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0067s
+2026-06-29 00:54:26.847 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:26.876 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:54:26.957 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:26.990 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0128s
+2026-06-29 00:54:27.011 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:27.034 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:27.060 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:27.089 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0153s
+2026-06-29 00:54:27.175 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:54:27.195 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:27.237 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:27.267 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0096s
+2026-06-29 00:54:27.309 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 00:54:27.350 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:27.414 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0043s
+2026-06-29 00:54:27.452 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0178s
+2026-06-29 00:54:27.475 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:27.517 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0220s
+2026-06-29 00:54:27.564 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:27.679 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:27.731 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:54:27.752 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:27.813 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:54:27.837 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0029s
+2026-06-29 00:54:27.874 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0177s
+2026-06-29 00:54:27.957 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0016s
+2026-06-29 00:54:28.080 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:28.430 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0124s
+2026-06-29 00:54:28.453 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:28.477 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0047s
+2026-06-29 00:54:28.503 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0052s
+2026-06-29 00:54:28.533 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:54:28.577 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:54:28.584 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:28.638 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:28.659 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:28.681 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:54:28.748 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0464s
+2026-06-29 00:54:28.788 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:28.817 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0085s
+2026-06-29 00:54:28.846 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0090s
+2026-06-29 00:54:28.907 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0201s
+2026-06-29 00:54:28.968 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:54:29.032 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:54:29.063 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0107s
+2026-06-29 00:54:29.085 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:54:29.093 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:29.139 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0143s
+2026-06-29 00:54:29.240 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:54:29.304 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:54:29.345 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:29.372 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:54:29.392 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:29.420 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0080s
+2026-06-29 00:54:29.449 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0082s
+2026-06-29 00:54:29.596 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:29.983 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0120s
+2026-06-29 00:54:30.004 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:30.063 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0161s
+2026-06-29 00:54:30.108 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:30.618 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:30.644 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:54:30.669 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0044s
+2026-06-29 00:54:30.761 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0120s
+2026-06-29 00:54:30.846 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:54:30.926 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:30.949 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:54:31.072 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:54:31.119 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:31.136 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:54:31.156 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:31.178 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:31.198 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:54:31.219 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:31.624 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:31.744 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:54:31.772 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:54:31.800 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0089s
+2026-06-29 00:54:31.833 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0122s
+2026-06-29 00:54:31.868 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0154s
+2026-06-29 00:54:31.930 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:31.952 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:31.992 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0195s
+2026-06-29 00:54:32.018 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0065s
+2026-06-29 00:54:32.060 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:54:32.086 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0057s
+2026-06-29 00:54:32.133 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:32.418 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:54:32.493 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0122s
+2026-06-29 00:54:32.637 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:33.140 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:33.525 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0093s
+2026-06-29 00:54:33.555 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0102s
+2026-06-29 00:54:33.586 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0103s
+2026-06-29 00:54:33.629 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0228s
+2026-06-29 00:54:33.656 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:33.693 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:54:33.726 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0132s
+2026-06-29 00:54:33.775 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0081s
+2026-06-29 00:54:33.806 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0111s
+2026-06-29 00:54:34.051 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0035s
+2026-06-29 00:54:34.076 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0046s
+2026-06-29 00:54:34.158 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:34.164 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:34.180 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:54:34.209 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:54:34.352 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:54:34.372 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:34.396 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:54:34.506 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:54:34.555 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0088s
+2026-06-29 00:54:34.599 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:54:34.641 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:34.667 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:34.701 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:34.845 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:54:35.171 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:35.493 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0046s
+2026-06-29 00:54:35.576 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:35.619 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0016s
+2026-06-29 00:54:35.670 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0101s
+2026-06-29 00:54:35.674 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:35.702 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0124s
+2026-06-29 00:54:35.724 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:35.748 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0044s
+2026-06-29 00:54:35.810 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:36.176 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:36.254 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0027s
+2026-06-29 00:54:36.288 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0131s
+2026-06-29 00:54:36.610 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:54:36.635 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0048s
+2026-06-29 00:54:36.666 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0107s
+2026-06-29 00:54:36.686 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:36.693 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:36.728 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:36.901 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0105s
+2026-06-29 00:54:36.925 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:54:36.977 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0124s
+2026-06-29 00:54:37.120 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:37.150 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:54:37.192 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0224s
+2026-06-29 00:54:37.199 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:37.215 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:37.257 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:54:37.287 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0099s
+2026-06-29 00:54:37.314 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0067s
+2026-06-29 00:54:37.450 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0135s
+2026-06-29 00:54:37.520 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0093s
+2026-06-29 00:54:37.580 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0194s
+2026-06-29 00:54:37.619 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0192s
+2026-06-29 00:54:37.680 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:54:37.716 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0159s
+2026-06-29 00:54:37.721 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:37.762 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0261s
+2026-06-29 00:54:37.804 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0216s
+2026-06-29 00:54:37.834 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:54:37.870 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0161s
+2026-06-29 00:54:37.894 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:54:37.940 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0250s
+2026-06-29 00:54:37.966 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0063s
+2026-06-29 00:54:38.003 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0168s
+2026-06-29 00:54:38.025 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:38.061 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0157s
+2026-06-29 00:54:38.110 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:54:38.141 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0109s
+2026-06-29 00:54:38.165 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:54:38.202 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0171s
+2026-06-29 00:54:38.242 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0196s
+2026-06-29 00:54:38.249 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:38.294 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0323s
+2026-06-29 00:54:38.341 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0266s
+2026-06-29 00:54:38.381 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0189s
+2026-06-29 00:54:38.419 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0183s
+2026-06-29 00:54:38.442 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:38.466 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:54:38.647 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:38.685 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0181s
+2026-06-29 00:54:38.750 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0050s
+2026-06-29 00:54:38.756 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:38.838 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0074s
+2026-06-29 00:54:38.919 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:54:38.942 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 00:54:38.963 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:54:39.246 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:39.275 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 00:54:39.280 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:39.324 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 00:54:39.354 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0104s
+2026-06-29 00:54:39.667 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:54:39.696 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0082s
+2026-06-29 00:54:39.743 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:39.789 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:39.956 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0077s
+2026-06-29 00:54:40.114 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0150s
+2026-06-29 00:54:40.143 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0085s
+2026-06-29 00:54:40.175 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0120s
+2026-06-29 00:54:40.208 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0132s
+2026-06-29 00:54:40.293 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:40.798 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:40.992 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:41.012 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:41.046 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0135s
+2026-06-29 00:54:41.162 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0149s
+2026-06-29 00:54:41.186 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0043s
+2026-06-29 00:54:41.270 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:54:41.292 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:41.299 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:41.642 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:54:41.674 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0120s
+2026-06-29 00:54:41.703 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 00:54:41.795 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0122s
+2026-06-29 00:54:41.805 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:41.888 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0088s
+2026-06-29 00:54:41.917 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:54:41.965 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0080s
+2026-06-29 00:54:42.028 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0220s
+2026-06-29 00:54:42.051 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:54:42.073 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:42.098 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:54:42.179 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0211s
+2026-06-29 00:54:42.218 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0186s
+2026-06-29 00:54:42.238 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:42.272 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0134s
+2026-06-29 00:54:42.340 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0283s
+2026-06-29 00:54:42.348 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:42.382 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0214s
+2026-06-29 00:54:42.868 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:42.976 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:54:43.000 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0042s
+2026-06-29 00:54:43.024 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:54:43.359 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0335s
+2026-06-29 00:54:43.385 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:43.402 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:54:43.510 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0076s
+2026-06-29 00:54:43.600 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0097s
+2026-06-29 00:54:43.644 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:43.691 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0071s
+2026-06-29 00:54:43.733 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:43.757 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:54:43.778 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:43.805 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0075s
+2026-06-29 00:54:43.830 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:54:43.898 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:43.911 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:44.112 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:44.142 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:54:44.162 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:44.192 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:54:44.221 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:54:44.408 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:44.909 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:44.977 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0132s
+2026-06-29 00:54:45.002 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0043s
+2026-06-29 00:54:45.432 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0091s
+2026-06-29 00:54:45.439 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:45.465 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0123s
+2026-06-29 00:54:45.485 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:45.552 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:45.582 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0102s
+2026-06-29 00:54:45.669 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0065s
+2026-06-29 00:54:45.702 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0132s
+2026-06-29 00:54:45.949 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:46.239 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0138s
+2026-06-29 00:54:46.328 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0081s
+2026-06-29 00:54:46.455 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:46.958 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:47.052 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:54:47.075 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:54:47.110 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0145s
+2026-06-29 00:54:47.139 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:54:47.199 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:47.457 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0160s
+2026-06-29 00:54:47.462 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:47.487 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0101s
+2026-06-29 00:54:47.971 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:54:47.978 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:47.994 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:48.019 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0050s
+2026-06-29 00:54:48.048 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 00:54:48.080 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0120s
+2026-06-29 00:54:48.109 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0091s
+2026-06-29 00:54:48.496 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:48.825 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0133s
+2026-06-29 00:54:48.866 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0208s
+2026-06-29 00:54:49.014 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:49.088 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:49.124 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0156s
+2026-06-29 00:54:49.147 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:49.173 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0059s
+2026-06-29 00:54:49.348 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0150s
+2026-06-29 00:54:49.382 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0130s
+2026-06-29 00:54:49.439 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0168s
+2026-06-29 00:54:49.500 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:49.522 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:49.528 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:49.702 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:54:49.724 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:49.865 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:49.885 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:49.906 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:54:49.927 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:49.956 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0089s
+2026-06-29 00:54:49.979 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0027s
+2026-06-29 00:54:50.044 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:50.226 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:54:50.264 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0182s
+2026-06-29 00:54:50.284 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:50.325 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:50.346 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:54:50.370 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:54:50.392 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:50.469 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0165s
+2026-06-29 00:54:50.510 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0205s
+2026-06-29 00:54:50.556 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:54:50.567 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:50.630 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0134s
+2026-06-29 00:54:50.654 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:54:50.706 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:54:51.071 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:51.141 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0136s
+2026-06-29 00:54:51.164 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:54:51.208 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0047s
+2026-06-29 00:54:51.239 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0110s
+2026-06-29 00:54:51.281 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0213s
+2026-06-29 00:54:51.307 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0058s
+2026-06-29 00:54:51.328 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:54:51.369 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:54:51.430 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:54:51.450 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:51.577 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:51.603 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0118s
+2026-06-29 00:54:51.637 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0140s
+2026-06-29 00:54:51.666 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0088s
+2026-06-29 00:54:51.687 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:54:51.738 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0108s
+2026-06-29 00:54:51.839 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:51.969 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:54:52.093 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:52.192 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:52.213 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:54:52.315 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:54:52.340 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0052s
+2026-06-29 00:54:52.427 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0070s
+2026-06-29 00:54:52.454 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0065s
+2026-06-29 00:54:52.495 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:54:52.518 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 00:54:52.607 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:52.690 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:54:52.712 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:54:52.752 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:54:52.784 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0113s
+2026-06-29 00:54:53.048 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:53.080 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0117s
+2026-06-29 00:54:53.125 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:53.147 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0066s
+2026-06-29 00:54:53.209 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0221s
+2026-06-29 00:54:53.240 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0105s
+2026-06-29 00:54:53.271 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0107s
+2026-06-29 00:54:53.333 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:53.574 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:54:53.638 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:53.745 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:54:53.791 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0057s
+2026-06-29 00:54:54.144 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0074s
+2026-06-29 00:54:54.148 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:54.164 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:54:54.232 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0081s
+2026-06-29 00:54:54.305 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0121s
+2026-06-29 00:54:54.340 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0150s
+2026-06-29 00:54:54.372 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0117s
+2026-06-29 00:54:54.393 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:54:54.422 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0085s
+2026-06-29 00:54:54.452 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0104s
+2026-06-29 00:54:54.475 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:54:54.626 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0103s
+2026-06-29 00:54:54.652 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0059s
+2026-06-29 00:54:54.660 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:54.688 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0156s
+2026-06-29 00:54:54.713 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:54:54.756 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:54.797 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:54:54.858 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:54:55.014 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0152s
+2026-06-29 00:54:55.049 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0151s
+2026-06-29 00:54:55.175 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:55.199 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0090s
+2026-06-29 00:54:55.389 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0097s
+2026-06-29 00:54:55.429 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0195s
+2026-06-29 00:54:55.450 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:54:55.482 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0113s
+2026-06-29 00:54:55.511 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0094s
+2026-06-29 00:54:55.543 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0114s
+2026-06-29 00:54:55.587 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0042s
+2026-06-29 00:54:55.611 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0033s
+2026-06-29 00:54:55.678 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:56.122 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:54:56.178 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0131s
+2026-06-29 00:54:56.185 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:56.217 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0186s
+2026-06-29 00:54:56.258 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:54:56.340 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:54:56.362 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:54:56.396 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0138s
+2026-06-29 00:54:56.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0089s
+2026-06-29 00:54:56.693 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:57.194 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:57.315 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:54:57.348 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0122s
+2026-06-29 00:54:57.390 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:54:57.410 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:54:57.437 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0068s
+2026-06-29 00:54:57.587 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0096s
+2026-06-29 00:54:57.682 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0339s
+2026-06-29 00:54:57.706 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:58.207 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:58.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:54:58.453 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0081s
+2026-06-29 00:54:58.477 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:54:58.552 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0147s
+2026-06-29 00:54:58.633 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:54:58.658 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0049s
+2026-06-29 00:54:58.722 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:59.095 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0128s
+2026-06-29 00:54:59.118 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:54:59.149 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0104s
+2026-06-29 00:54:59.176 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:54:59.217 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:54:59.243 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0061s
+2026-06-29 00:54:59.247 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:59.329 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0056s
+2026-06-29 00:54:59.360 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0110s
+2026-06-29 00:54:59.381 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:54:59.407 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0063s
+2026-06-29 00:54:59.458 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0107s
+2026-06-29 00:54:59.480 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:54:59.508 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0073s
+2026-06-29 00:54:59.614 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:54:59.759 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:54:59.763 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:54:59.925 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:54:59.948 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:54:59.978 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0096s
+2026-06-29 00:55:00.094 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0111s
+2026-06-29 00:55:00.168 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0136s
+2026-06-29 00:55:00.290 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0205s
+2026-06-29 00:55:00.295 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:00.336 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:55:00.560 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:55:00.581 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:00.602 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:00.644 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:55:00.666 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:55:00.688 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:55:00.780 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0120s
+2026-06-29 00:55:00.804 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:01.069 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:55:01.111 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:55:01.139 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:55:01.172 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0125s
+2026-06-29 00:55:01.218 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:55:01.285 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0061s
+2026-06-29 00:55:01.317 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:55:01.324 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:01.439 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:55:01.591 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0114s
+2026-06-29 00:55:01.625 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0142s
+2026-06-29 00:55:01.646 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:55:01.774 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0055s
+2026-06-29 00:55:01.807 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0129s
+2026-06-29 00:55:01.846 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0190s
+2026-06-29 00:55:01.852 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:01.870 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:55:01.894 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:55:01.927 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0130s
+2026-06-29 00:55:02.011 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:55:02.056 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:55:02.245 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0085s
+2026-06-29 00:55:02.298 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0127s
+2026-06-29 00:55:02.338 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:02.365 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:02.382 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:55:02.408 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0065s
+2026-06-29 00:55:02.455 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:55:02.742 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0048s
+2026-06-29 00:55:02.778 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0153s
+2026-06-29 00:55:02.818 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:55:02.867 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:02.893 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:55:03.002 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0074s
+2026-06-29 00:55:03.032 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:55:03.052 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:55:03.078 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0053s
+2026-06-29 00:55:03.385 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:03.530 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0105s
+2026-06-29 00:55:03.581 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:55:03.704 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:03.726 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:55:03.893 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:04.395 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:04.831 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:55:04.862 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0105s
+2026-06-29 00:55:04.885 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0031s
+2026-06-29 00:55:04.910 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:05.014 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0082s
+2026-06-29 00:55:05.055 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:05.077 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:55:05.102 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0042s
+2026-06-29 00:55:05.131 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0088s
+2026-06-29 00:55:05.198 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0074s
+2026-06-29 00:55:05.244 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0027s
+2026-06-29 00:55:05.280 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0140s
+2026-06-29 00:55:05.427 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:05.506 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:05.758 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0118s
+2026-06-29 00:55:05.789 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:55:05.822 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0126s
+2026-06-29 00:55:05.843 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:55:05.883 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:05.919 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0157s
+2026-06-29 00:55:05.946 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:06.231 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0110s
+2026-06-29 00:55:06.267 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0153s
+2026-06-29 00:55:06.290 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:55:06.332 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0218s
+2026-06-29 00:55:06.352 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:06.379 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:55:06.409 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0104s
+2026-06-29 00:55:06.454 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:06.491 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:55:06.552 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:55:06.814 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:55:06.835 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:55:06.874 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0186s
+2026-06-29 00:55:06.916 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0219s
+2026-06-29 00:55:06.962 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:07.171 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:55:07.200 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:55:07.229 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:55:07.474 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:07.975 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:08.121 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0097s
+2026-06-29 00:55:08.150 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0081s
+2026-06-29 00:55:08.190 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:08.475 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:08.481 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:08.505 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:55:08.533 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0088s
+2026-06-29 00:55:08.559 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0049s
+2026-06-29 00:55:08.581 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:55:08.691 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0077s
+2026-06-29 00:55:08.772 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:55:08.800 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0072s
+2026-06-29 00:55:08.864 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:55:08.887 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:55:08.929 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:55:08.952 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0029s
+2026-06-29 00:55:08.998 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:09.013 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:09.067 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0143s
+2026-06-29 00:55:09.104 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0161s
+2026-06-29 00:55:09.128 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:55:09.148 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:09.516 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:09.611 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:09.646 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0157s
+2026-06-29 00:55:09.716 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:55:09.737 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:55:09.801 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:55:09.959 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0150s
+2026-06-29 00:55:09.980 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:55:10.005 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:55:10.039 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0139s
+2026-06-29 00:55:10.043 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:10.364 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0044s
+2026-06-29 00:55:10.394 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0102s
+2026-06-29 00:55:10.452 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0172s
+2026-06-29 00:55:10.509 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0168s
+2026-06-29 00:55:10.531 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:55:10.558 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:55:10.563 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:10.594 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0158s
+2026-06-29 00:55:10.661 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:55:10.707 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:55:10.727 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:55:10.963 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0145s
+2026-06-29 00:55:11.033 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0098s
+2026-06-29 00:55:11.077 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:11.213 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:11.244 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:55:11.267 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:55:11.295 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0078s
+2026-06-29 00:55:11.316 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:11.366 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0100s
+2026-06-29 00:55:11.435 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0066s
+2026-06-29 00:55:11.516 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:11.594 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0178s
+2026-06-29 00:55:11.601 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:11.704 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0097s
+2026-06-29 00:55:11.786 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:55:11.907 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:55:11.928 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:11.957 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0089s
+2026-06-29 00:55:12.004 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0268s
+2026-06-29 00:55:12.024 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:12.045 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:12.095 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0092s
+2026-06-29 00:55:12.122 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:12.157 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:55:12.207 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0101s
+2026-06-29 00:55:12.245 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0172s
+2026-06-29 00:55:12.374 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:55:12.394 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:12.638 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:12.677 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:55:12.699 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:55:12.732 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0132s
+2026-06-29 00:55:12.916 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:55:13.142 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:13.651 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:55:13.656 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:13.684 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0130s
+2026-06-29 00:55:13.711 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0073s
+2026-06-29 00:55:13.743 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0116s
+2026-06-29 00:55:13.845 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0187s
+2026-06-29 00:55:13.867 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:55:13.887 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:55:13.911 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0035s
+2026-06-29 00:55:13.931 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:13.992 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:14.023 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0108s
+2026-06-29 00:55:14.049 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0061s
+2026-06-29 00:55:14.071 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:55:14.093 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:55:14.134 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:55:14.158 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:14.395 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:14.483 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0072s
+2026-06-29 00:55:14.633 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:55:14.660 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0076s
+2026-06-29 00:55:14.665 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:14.692 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0112s
+2026-06-29 00:55:14.850 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0150s
+2026-06-29 00:55:14.927 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0170s
+2026-06-29 00:55:14.968 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:55:15.009 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:55:15.074 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0043s
+2026-06-29 00:55:15.181 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:15.195 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:55:15.224 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 00:55:15.249 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0050s
+2026-06-29 00:55:15.280 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0109s
+2026-06-29 00:55:15.317 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0160s
+2026-06-29 00:55:15.340 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:55:15.362 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:55:15.383 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0016s
+2026-06-29 00:55:15.584 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:15.609 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0049s
+2026-06-29 00:55:15.632 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 00:55:15.677 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0242s
+2026-06-29 00:55:15.683 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:15.698 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:15.903 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:55:15.926 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:55:15.948 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:55:15.970 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:55:16.195 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:16.313 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:55:16.392 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0181s
+2026-06-29 00:55:16.426 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0142s
+2026-06-29 00:55:16.468 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:55:16.536 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0073s
+2026-06-29 00:55:16.570 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0148s
+2026-06-29 00:55:16.615 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0043s
+2026-06-29 00:55:16.700 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:16.746 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0101s
+2026-06-29 00:55:16.814 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0067s
+2026-06-29 00:55:16.889 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0128s
+2026-06-29 00:55:16.982 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0135s
+2026-06-29 00:55:17.009 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0068s
+2026-06-29 00:55:17.217 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:17.231 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:17.345 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0130s
+2026-06-29 00:55:17.599 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0141s
+2026-06-29 00:55:17.624 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:55:17.731 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:18.029 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:55:18.051 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:55:18.072 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:18.110 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0175s
+2026-06-29 00:55:18.234 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:55:18.241 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:18.260 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0059s
+2026-06-29 00:55:18.281 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:55:18.307 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0059s
+2026-06-29 00:55:18.359 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0118s
+2026-06-29 00:55:18.391 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:55:18.613 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:55:18.635 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:55:18.664 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:55:18.686 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:55:18.734 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0073s
+2026-06-29 00:55:18.762 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:18.779 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:55:18.799 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:18.822 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:55:18.843 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:55:18.944 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:55:19.045 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0004s
+2026-06-29 00:55:19.135 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0094s
+2026-06-29 00:55:19.281 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:19.358 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0031s
+2026-06-29 00:55:19.385 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:55:19.409 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:55:19.432 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:55:19.463 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:55:19.508 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0042s
+2026-06-29 00:55:19.532 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0042s
+2026-06-29 00:55:19.626 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0137s
+2026-06-29 00:55:19.650 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0044s
+2026-06-29 00:55:19.693 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0220s
+2026-06-29 00:55:19.732 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0166s
+2026-06-29 00:55:19.778 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0226s
+2026-06-29 00:55:19.787 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:19.805 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0063s
+2026-06-29 00:55:19.835 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0100s
+2026-06-29 00:55:19.926 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0111s
+2026-06-29 00:55:20.294 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:20.416 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0049s
+2026-06-29 00:55:20.436 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:20.478 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:55:20.520 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:55:20.725 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0035s
+2026-06-29 00:55:20.746 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:20.768 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:55:20.789 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:55:20.797 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:20.811 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 00:55:20.832 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:21.301 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:21.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0304s
+2026-06-29 00:55:21.449 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0038s
+2026-06-29 00:55:21.478 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0093s
+2026-06-29 00:55:21.503 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0051s
+2026-06-29 00:55:21.525 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:55:21.546 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:21.730 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:55:21.779 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:55:21.800 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0010s
+2026-06-29 00:55:21.803 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:21.821 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:21.942 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:21.968 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0052s
+2026-06-29 00:55:22.013 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0047s
+2026-06-29 00:55:22.046 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0132s
+2026-06-29 00:55:22.066 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:22.103 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0161s
+2026-06-29 00:55:22.132 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0094s
+2026-06-29 00:55:22.176 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:55:22.281 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:55:22.307 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:22.364 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0211s
+2026-06-29 00:55:22.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0013s
+2026-06-29 00:55:22.446 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:22.659 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0119s
+2026-06-29 00:55:22.741 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:22.772 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0114s
+2026-06-29 00:55:22.796 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:55:22.820 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0032s
+2026-06-29 00:55:22.825 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:22.981 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:23.019 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0172s
+2026-06-29 00:55:23.049 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0099s
+2026-06-29 00:55:23.336 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:23.838 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:24.357 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:24.467 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0134s
+2026-06-29 00:55:24.498 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0113s
+2026-06-29 00:55:24.548 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0093s
+2026-06-29 00:55:24.570 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0016s
+2026-06-29 00:55:24.632 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:55:24.857 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:24.937 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:55:25.364 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:25.707 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0054s
+2026-06-29 00:55:25.745 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0181s
+2026-06-29 00:55:25.772 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0049s
+2026-06-29 00:55:25.794 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0027s
+2026-06-29 00:55:25.865 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0103s
+2026-06-29 00:55:25.870 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:25.939 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0133s
+2026-06-29 00:55:26.049 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0090s
+2026-06-29 00:55:26.074 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0057s
+2026-06-29 00:55:26.129 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0349s
+2026-06-29 00:55:26.162 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0128s
+2026-06-29 00:55:26.187 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:55:26.208 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:55:26.249 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:55:26.270 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0016s
+2026-06-29 00:55:26.291 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:26.338 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0069s
+2026-06-29 00:55:26.385 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:26.546 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0070s
+2026-06-29 00:55:26.568 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:55:26.589 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:26.621 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0122s
+2026-06-29 00:55:26.642 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:26.688 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0064s
+2026-06-29 00:55:26.710 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:55:26.750 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0162s
+2026-06-29 00:55:26.793 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 00:55:26.834 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:26.898 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:26.961 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0071s
+2026-06-29 00:55:26.985 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:55:27.008 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0029s
+2026-06-29 00:55:27.049 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 00:55:27.146 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0173s
+2026-06-29 00:55:27.365 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0170s
+2026-06-29 00:55:27.409 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:27.434 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0079s
+2026-06-29 00:55:27.777 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:27.924 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:28.211 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0126s
+2026-06-29 00:55:28.240 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 00:55:28.271 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0105s
+2026-06-29 00:55:28.309 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0178s
+2026-06-29 00:55:28.329 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:28.358 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 00:55:28.425 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:28.441 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0025s
+2026-06-29 00:55:28.481 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:28.502 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:28.685 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:55:28.716 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0109s
+2026-06-29 00:55:28.744 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 00:55:28.931 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:29.433 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:29.588 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:29.612 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:55:29.663 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0105s
+2026-06-29 00:55:29.737 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0137s
+2026-06-29 00:55:29.761 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0041s
+2026-06-29 00:55:29.884 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0022s
+2026-06-29 00:55:29.905 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:55:29.947 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:29.951 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:29.974 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0072s
+2026-06-29 00:55:30.106 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0111s
+2026-06-29 00:55:30.220 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0138s
+2026-06-29 00:55:30.403 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:55:30.430 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0076s
+2026-06-29 00:55:30.455 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:30.495 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:55:30.527 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0115s
+2026-06-29 00:55:30.569 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 00:55:30.630 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:30.680 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:55:30.708 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0077s
+2026-06-29 00:55:30.728 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:30.750 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:55:30.778 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0079s
+2026-06-29 00:55:30.808 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:55:30.831 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:55:30.861 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0104s
+2026-06-29 00:55:30.921 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:55:30.966 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:31.117 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0145s
+2026-06-29 00:55:31.155 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0183s
+2026-06-29 00:55:31.176 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:55:31.226 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0093s
+2026-06-29 00:55:31.247 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0012s
+2026-06-29 00:55:31.270 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:31.433 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:55:31.461 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0077s
+2026-06-29 00:55:31.485 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:31.987 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:32.013 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0100s
+2026-06-29 00:55:32.060 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0066s
+2026-06-29 00:55:32.080 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:32.290 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0068s
+2026-06-29 00:55:32.320 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0099s
+2026-06-29 00:55:32.383 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0028s
+2026-06-29 00:55:32.490 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:32.768 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0016s
+2026-06-29 00:55:32.803 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0143s
+2026-06-29 00:55:32.837 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0139s
+2026-06-29 00:55:32.901 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0039s
+2026-06-29 00:55:32.923 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:55:32.990 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:33.028 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0048s
+2026-06-29 00:55:33.062 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0136s
+2026-06-29 00:55:33.265 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0015s
+2026-06-29 00:55:33.380 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0137s
+2026-06-29 00:55:33.425 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:55:33.467 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0020s
+2026-06-29 00:55:33.491 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:33.516 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0091s
+2026-06-29 00:55:33.539 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0029s
+2026-06-29 00:55:33.622 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:55:33.730 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0073s
+2026-06-29 00:55:33.751 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:33.775 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0045s
+2026-06-29 00:55:33.804 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0087s
+2026-06-29 00:55:33.831 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0066s
+2026-06-29 00:55:33.863 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0116s
+2026-06-29 00:55:33.886 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0031s
+2026-06-29 00:55:33.926 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0199s
+2026-06-29 00:55:33.963 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0173s
+2026-06-29 00:55:34.020 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0166s
+2026-06-29 00:55:34.027 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:34.106 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0059s
+2026-06-29 00:55:34.128 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:55:34.191 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0027s
+2026-06-29 00:55:34.236 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0040s
+2026-06-29 00:55:34.257 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:34.280 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0034s
+2026-06-29 00:55:34.421 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:34.442 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0003s
+2026-06-29 00:55:34.463 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:34.486 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0036s
+2026-06-29 00:55:34.507 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0008s
+2026-06-29 00:55:34.534 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:34.575 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0077s
+2026-06-29 00:55:34.657 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0019s
+2026-06-29 00:55:34.883 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0251s
+2026-06-29 00:55:35.040 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:35.198 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0042s
+2026-06-29 00:55:35.219 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0011s
+2026-06-29 00:55:35.341 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:35.364 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0031s
+2026-06-29 00:55:35.435 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0106s
+2026-06-29 00:55:35.458 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0029s
+2026-06-29 00:55:35.478 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0002s
+2026-06-29 00:55:35.504 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0060s
+2026-06-29 00:55:35.526 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0021s
+2026-06-29 00:55:35.553 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:35.576 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0099s
+2026-06-29 00:55:35.847 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0100s
+2026-06-29 00:55:35.876 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0083s
+2026-06-29 00:55:35.942 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0062s
+2026-06-29 00:55:36.004 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0017s
+2026-06-29 00:55:36.025 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:36.072 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0075s
+2026-06-29 00:55:36.078 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:36.095 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0023s
+2026-06-29 00:55:36.115 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:36.138 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0030s
+2026-06-29 00:55:36.359 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0001s
+2026-06-29 00:55:36.386 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0065s
+2026-06-29 00:55:36.591 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:36.849 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:36.882 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0127s
+2026-06-29 00:55:36.903 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0005s
+2026-06-29 00:55:36.934 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0113s
+2026-06-29 00:55:37.059 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0044s
+2026-06-29 00:55:37.091 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0121s
+2026-06-29 00:55:37.099 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:37.149 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0182s
+2026-06-29 00:55:37.232 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0024s
+2026-06-29 00:55:37.269 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0166s
+2026-06-29 00:55:37.290 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:37.354 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0037s
+2026-06-29 00:55:37.388 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0144s
+2026-06-29 00:55:37.495 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0066s
+2026-06-29 00:55:37.520 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0047s
+2026-06-29 00:55:37.551 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0110s
+2026-06-29 00:55:37.578 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0063s
+2026-06-29 00:55:37.601 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:38.000 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0007s
+2026-06-29 00:55:38.026 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0061s
+2026-06-29 00:55:38.070 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0033s
+2026-06-29 00:55:38.100 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0095s
+2026-06-29 00:55:38.105 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:38.342 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0014s
+2026-06-29 00:55:38.363 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0006s
+2026-06-29 00:55:38.484 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0009s
+2026-06-29 00:55:38.533 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0082s
+2026-06-29 00:55:38.576 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0029s
+2026-06-29 00:55:38.625 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0088s
+2026-06-29 00:55:38.629 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 00:55:39.130 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]

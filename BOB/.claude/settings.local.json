@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(conda run -n rb python3 -c ' *)",
+      "Bash(code --list-extensions)",
+      "Read(//home/loco1/.vscode/extensions/**)",
+      "Bash(cat ~/.config/Code/logs/*/main.log 2>/dev/null | tail -50 || find ~/.config/Code/logs -name \"*.log\" 2>/dev/null | head -10)",
+      "Read(//home/loco1/.config/Code/logs/**)"
+    ]
+  }
+}

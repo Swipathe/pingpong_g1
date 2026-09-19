@@ -1,0 +1,968 @@
+# Review package: 7b46140..e0eff65
+
+## Commits
+e0eff65 feat: add HITTER diagnostic event hub
+
+## Files changed
+ deploy/diagnostics/hitter_task_events.py | 600 +++++++++++++++++++++++++++++++
+ deploy/tests/test_hitter_task_events.py  | 345 ++++++++++++++++++
+ 2 files changed, 945 insertions(+)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_events.py b/deploy/diagnostics/hitter_task_events.py
+new file mode 100644
+index 0000000..26d2718
+--- /dev/null
++++ b/deploy/diagnostics/hitter_task_events.py
+@@ -0,0 +1,600 @@
++from __future__ import annotations
++
++from collections import OrderedDict, deque
++from dataclasses import dataclass, replace
++import json
++import threading
++import time
++from typing import Any, Callable, Deque, Dict, Mapping, Optional, Set, Tuple
++
++from diagnostics.hitter_task_models import (
++    SCHEMA_VERSION,
++    AttemptSummary,
++    EventDraft,
++    HealthSnapshot,
++    JsonValue,
++    LifecycleSnapshot,
++    SnapshotKey,
++    freeze_json_value,
++    to_builtin_json,
++)
++
++
++_RECENT_ATTEMPT_LIMIT = 100
++_MIN_EVENT_BYTES = 1024
++
++
++class _InvalidDraft(ValueError):
++    pass
++
++
++class _EventTooLarge(ValueError):
++    pass
++
++
++@dataclass(frozen=True)
++class PublishedEvent:
++    schema_version: int
++    event_id: int
++    kind: str
++    monotonic_s: float
++    wall_time_us: int
++    scope: str
++    attempt_id: Optional[int]
++    payload: Mapping[str, JsonValue]
++
++    def __post_init__(self) -> None:
++        if self.schema_version != SCHEMA_VERSION:
++            raise ValueError("unsupported schema_version")
++        if self.event_id <= 0:
++            raise ValueError("event_id must be positive")
++        if self.scope not in ("state", "attempt"):
++            raise ValueError("scope must be state or attempt")
++        if self.scope == "attempt" and (
++            self.attempt_id is None or self.attempt_id <= 0
++        ):
++            raise ValueError("attempt scope requires a positive attempt_id")
++        frozen = freeze_json_value(self.payload)
++        if not isinstance(frozen, Mapping):
++            raise TypeError("event payload must be a mapping")
++        object.__setattr__(self, "payload", frozen)
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return to_builtin_json(
++            {
++                "schema_version": self.schema_version,
++                "event_id": self.event_id,
++                "kind": self.kind,
++                "monotonic_s": self.monotonic_s,
++                "wall_time_us": self.wall_time_us,
++                "scope": self.scope,
++                "attempt_id": self.attempt_id,
++                "payload": self.payload,
++            }
++        )
++
++
++@dataclass(frozen=True)
++class CursorBootstrap:
++    mode: str
++    watermark_event_id: int
++
++    def __post_init__(self) -> None:
++        if self.mode not in ("fresh", "resume", "reset"):
++            raise ValueError("invalid cursor bootstrap mode")
++
++
++@dataclass(frozen=True)
++class EventRead:
++    events: Tuple[PublishedEvent, ...]
++    watermark_event_id: int
++    lost_event_ids: Optional[Tuple[int, int]]
++
++    def __post_init__(self) -> None:
++        object.__setattr__(self, "events", tuple(self.events))
++
++
++@dataclass(frozen=True)
++class DiagnosticState:
++    schema_version: int
++    watermark_event_id: int
++    health: HealthSnapshot
++    lifecycle: LifecycleSnapshot
++    current_attempt: Optional[AttemptSummary]
++    recent_attempts: Tuple[AttemptSummary, ...]
++
++    def __post_init__(self) -> None:
++        if self.schema_version != SCHEMA_VERSION:
++            raise ValueError("unsupported schema_version")
++        if self.watermark_event_id < 0:
++            raise ValueError("watermark_event_id must be non-negative")
++        object.__setattr__(
++            self,
++            "recent_attempts",
++            tuple(self.recent_attempts[:_RECENT_ATTEMPT_LIMIT]),
++        )
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return to_builtin_json(
++            {
++                "schema_version": self.schema_version,
++                "watermark_event_id": self.watermark_event_id,
++                "health": self.health.to_json_dict(),
++                "lifecycle": self.lifecycle.to_json_dict(),
++                "current_attempt": (
++                    None
++                    if self.current_attempt is None
++                    else self.current_attempt.to_json_dict()
++                ),
++                "recent_attempts": tuple(
++                    attempt.to_json_dict() for attempt in self.recent_attempts
++                ),
++            }
++        )
++
++
++def _view(payload: Mapping[str, JsonValue], nested_key: str) -> Mapping[str, Any]:
++    nested = payload.get(nested_key)
++    if isinstance(nested, Mapping):
++        return nested
++    return payload
++
++
++def _snapshot_key(value: Any) -> Optional[SnapshotKey]:
++    if value is None:
++        return None
++    if not isinstance(value, Mapping):
++        raise _InvalidDraft("snapshot key must be a mapping")
++    return SnapshotKey(
++        track_epoch=int(value["track_epoch"]),
++        generation=int(value["generation"]),
++    )
++
++
++def _health(payload: Mapping[str, JsonValue]) -> HealthSnapshot:
++    value = _view(payload, "health")
++    try:
++        return HealthSnapshot(
++            lcm_connected=bool(value["lcm_connected"]),
++            message_rate_hz_by_subject=value["message_rate_hz_by_subject"],
++            message_age_s_by_subject=value["message_age_s_by_subject"],
++            source_frame_by_subject=value["source_frame_by_subject"],
++            pelvis_valid=bool(value["pelvis_valid"]),
++            pelvis_age_s=value["pelvis_age_s"],
++            planner_submitted=int(value["planner_submitted"]),
++            planner_completed=int(value["planner_completed"]),
++            planner_failed=int(value["planner_failed"]),
++            planner_dropped_pending=int(value["planner_dropped_pending"]),
++            planner_results_overwritten_before_consume=int(
++                value["planner_results_overwritten_before_consume"]
++            ),
++            raw_samples_dropped=int(value["raw_samples_dropped"]),
++            recorder_event_gaps=int(value["recorder_event_gaps"]),
++            diagnostic_events_dropped=int(value["diagnostic_events_dropped"]),
++            recorder_healthy=bool(value["recorder_healthy"]),
++            recording_complete=bool(value["recording_complete"]),
++            config_name=str(value["config_name"]),
++            session_basename=str(value["session_basename"]),
++            warnings=tuple(value["warnings"]),
++        )
++    except (KeyError, TypeError, ValueError) as exc:
++        raise _InvalidDraft("invalid health snapshot") from exc
++
++
++def _lifecycle(payload: Mapping[str, JsonValue]) -> LifecycleSnapshot:
++    value = _view(payload, "lifecycle")
++    try:
++        return LifecycleSnapshot(
++            phase=str(value["phase"]),
++            last_decision=str(value["last_decision"]),
++            active_key=_snapshot_key(value["active_key"]),
++            cached_key=_snapshot_key(value["cached_key"]),
++            lifecycle_now_s=value["lifecycle_now_s"],
++            obs_now_s=value["obs_now_s"],
++        )
++    except (KeyError, TypeError, ValueError) as exc:
++        raise _InvalidDraft("invalid lifecycle snapshot") from exc
++
++
++def _attempt(payload: Mapping[str, JsonValue]) -> AttemptSummary:
++    value = _view(payload, "attempt")
++    if value is payload:
++        value = _view(payload, "summary")
++    try:
++        return AttemptSummary(
++            attempt_id=int(value["attempt_id"]),
++            status=str(value["status"]),
++            stage=str(value["stage"]),
++            primary_blocker=value["primary_blocker"],
++            ball_speed_mps=value["ball_speed_mps"],
++            predicted_strike_time_s=value["predicted_strike_time_s"],
++            planner_tts_s=value["planner_tts_s"],
++            arm_tts_s=value["arm_tts_s"],
++            task_obs_status=str(value["task_obs_status"]),
++            ab_summary=value["ab_summary"],
++            recording_complete=bool(value["recording_complete"]),
++        )
++    except (KeyError, TypeError, ValueError) as exc:
++        raise _InvalidDraft("invalid attempt snapshot") from exc
++
++
++def reduce_diagnostic_state(
++    state: DiagnosticState,
++    event: PublishedEvent,
++) -> DiagnosticState:
++    """Apply one full-snapshot event without mutating the input state."""
++    if event.kind == "HEALTH_SNAPSHOT":
++        return replace(
++            state,
++            watermark_event_id=event.event_id,
++            health=_health(event.payload),
++        )
++    if event.kind == "LIFECYCLE_SNAPSHOT":
++        return replace(
++            state,
++            watermark_event_id=event.event_id,
++            lifecycle=_lifecycle(event.payload),
++        )
++    if event.kind == "ATTEMPT_CURRENT":
++        return replace(
++            state,
++            watermark_event_id=event.event_id,
++            current_attempt=_attempt(event.payload),
++        )
++    if event.kind == "ATTEMPT_CLOSED":
++        closed = _attempt(event.payload)
++        recent = (closed,) + tuple(
++            item
++            for item in state.recent_attempts
++            if item.attempt_id != closed.attempt_id
++        )
++        current = state.current_attempt
++        if current is not None and current.attempt_id == closed.attempt_id:
++            current = None
++        return replace(
++            state,
++            watermark_event_id=event.event_id,
++            current_attempt=current,
++            recent_attempts=recent[:_RECENT_ATTEMPT_LIMIT],
++        )
++    if event.kind == "DIAGNOSTIC_EVENT_DROPPED":
++        return replace(
++            state,
++            watermark_event_id=event.event_id,
++            health=replace(
++                state.health,
++                diagnostic_events_dropped=(
++                    state.health.diagnostic_events_dropped + 1
++                ),
++            ),
++        )
++    return replace(state, watermark_event_id=event.event_id)
++
++
++Reducer = Callable[[DiagnosticState, PublishedEvent], DiagnosticState]
++
++
++class EventCursor:
++    def __init__(
++        self,
++        hub: "EventHub",
++        *,
++        next_event_id: int,
++        bootstrap: CursorBootstrap,
++    ) -> None:
++        self._hub = hub
++        self._next_event_id = next_event_id
++        self._bootstrap = bootstrap
++        self._closed = False
++
++    @property
++    def bootstrap(self) -> CursorBootstrap:
++        return self._bootstrap
++
++    def read(
++        self,
++        *,
++        limit: int = 128,
++        timeout_s: Optional[float] = None,
++    ) -> EventRead:
++        return self._hub._read(self, limit=limit, timeout_s=timeout_s)
++
++    def close(self) -> None:
++        self._hub._close_cursor(self)
++
++
++class EventHub:
++    def __init__(
++        self,
++        initial_state: DiagnosticState,
++        *,
++        capacity: int = 8192,
++        max_event_bytes: int = 65536,
++        reducer: Optional[Reducer] = None,
++    ) -> None:
++        if capacity <= 0:
++            raise ValueError("capacity must be positive")
++        if max_event_bytes < _MIN_EVENT_BYTES:
++            raise ValueError(
++                "max_event_bytes must be at least {}".format(_MIN_EVENT_BYTES)
++            )
++        self._condition = threading.Condition(threading.RLock())
++        self._capacity = int(capacity)
++        self._max_event_bytes = int(max_event_bytes)
++        self._reducer = reduce_diagnostic_state if reducer is None else reducer
++        self._state = initial_state
++        self._ring: Deque[PublishedEvent] = deque(maxlen=self._capacity)
++        self._next_event_id = initial_state.watermark_event_id + 1
++        self._closed = False
++        self._cursors: Set[EventCursor] = set()
++
++    def publish(self, draft: EventDraft) -> PublishedEvent:
++        with self._condition:
++            if self._closed:
++                raise RuntimeError("event hub is closed")
++            event_id = self._next_event_id
++            fallback = False
++            try:
++                event = self._from_draft(event_id, draft)
++                self._check_size(event)
++            except (TypeError, ValueError, OverflowError, RecursionError) as exc:
++                event = self._drop_event(event_id, draft, exc)
++                self._check_size(event)
++                fallback = True
++
++            try:
++                next_state = self._reducer(self._state, event)
++            except _InvalidDraft as exc:
++                event = self._drop_event(event_id, draft, exc)
++                self._check_size(event)
++                fallback = True
++                next_state = self._reducer(self._state, event)
++
++            if not isinstance(next_state, DiagnosticState):
++                raise TypeError("reducer must return DiagnosticState")
++            if fallback:
++                wanted = self._state.health.diagnostic_events_dropped + 1
++                if next_state.health.diagnostic_events_dropped < wanted:
++                    next_state = replace(
++                        next_state,
++                        health=replace(
++                            next_state.health,
++                            diagnostic_events_dropped=wanted,
++                        ),
++                    )
++            next_state = replace(
++                next_state,
++                schema_version=SCHEMA_VERSION,
++                watermark_event_id=event_id,
++                recent_attempts=next_state.recent_attempts[
++                    :_RECENT_ATTEMPT_LIMIT
++                ],
++            )
++            self._ring.append(event)
++            self._state = next_state
++            self._next_event_id += 1
++            self._condition.notify_all()
++            return event
++
++    def state_snapshot(self) -> DiagnosticState:
++        with self._condition:
++            return self._state
++
++    def open_cursor(self, after_event_id: Optional[int]) -> EventCursor:
++        with self._condition:
++            if self._closed:
++                raise RuntimeError("event hub is closed")
++            watermark = self._state.watermark_event_id
++            oldest = self._ring[0].event_id if self._ring else watermark + 1
++            if after_event_id is None:
++                mode = "fresh"
++                next_event_id = watermark + 1
++            elif (
++                after_event_id < 0
++                or after_event_id > watermark
++                or after_event_id < oldest - 1
++            ):
++                mode = "reset"
++                next_event_id = watermark + 1
++            else:
++                mode = "resume"
++                next_event_id = after_event_id + 1
++            cursor = EventCursor(
++                self,
++                next_event_id=next_event_id,
++                bootstrap=CursorBootstrap(
++                    mode=mode,
++                    watermark_event_id=watermark,
++                ),
++            )
++            self._cursors.add(cursor)
++            return cursor
++
++    def close(self) -> None:
++        with self._condition:
++            if self._closed:
++                return
++            self._closed = True
++            for cursor in self._cursors:
++                cursor._closed = True
++            self._cursors.clear()
++            self._condition.notify_all()
++
++    def _from_draft(self, event_id: int, draft: EventDraft) -> PublishedEvent:
++        return PublishedEvent(
++            schema_version=SCHEMA_VERSION,
++            event_id=event_id,
++            kind=draft.kind,
++            monotonic_s=draft.monotonic_s,
++            wall_time_us=draft.wall_time_us,
++            scope=draft.scope,
++            attempt_id=draft.attempt_id,
++            payload=draft.payload,
++        )
++
++    def _drop_event(
++        self,
++        event_id: int,
++        draft: EventDraft,
++        error: BaseException,
++    ) -> PublishedEvent:
++        return PublishedEvent(
++            schema_version=SCHEMA_VERSION,
++            event_id=event_id,
++            kind="DIAGNOSTIC_EVENT_DROPPED",
++            monotonic_s=draft.monotonic_s,
++            wall_time_us=draft.wall_time_us,
++            scope="state",
++            attempt_id=None,
++            payload={
++                "reason_code": type(error).__name__[:64],
++                "original_kind": draft.kind[:64],
++                "original_attempt_id": draft.attempt_id,
++            },
++        )
++
++    def _check_size(self, event: PublishedEvent) -> None:
++        encoded = json.dumps(
++            event.to_json_dict(),
++            ensure_ascii=False,
++            allow_nan=False,
++            separators=(",", ":"),
++        ).encode("utf-8")
++        if len(encoded) > self._max_event_bytes:
++            raise _EventTooLarge(
++                "event uses {} bytes, maximum is {}".format(
++                    len(encoded),
++                    self._max_event_bytes,
++                )
++            )
++
++    def _read(
++        self,
++        cursor: EventCursor,
++        *,
++        limit: int,
++        timeout_s: Optional[float],
++    ) -> EventRead:
++        if limit <= 0:
++            raise ValueError("limit must be positive")
++        if timeout_s is not None and timeout_s < 0.0:
++            raise ValueError("timeout_s must be non-negative")
++        deadline = None if timeout_s is None else time.monotonic() + timeout_s
++        with self._condition:
++            while True:
++                if self._closed:
++                    raise RuntimeError("event hub is closed")
++                if cursor._closed:
++                    raise RuntimeError("event cursor is closed")
++                watermark = self._state.watermark_event_id
++                if cursor._next_event_id <= watermark:
++                    oldest = (
++                        self._ring[0].event_id
++                        if self._ring
++                        else watermark + 1
++                    )
++                    if cursor._next_event_id < oldest:
++                        lost = (cursor._next_event_id, oldest - 1)
++                        cursor._next_event_id = watermark + 1
++                        return EventRead(
++                            events=(),
++                            watermark_event_id=watermark,
++                            lost_event_ids=lost,
++                        )
++                    events = tuple(
++                        event
++                        for event in self._ring
++                        if event.event_id >= cursor._next_event_id
++                    )[:limit]
++                    if events:
++                        cursor._next_event_id = events[-1].event_id + 1
++                    return EventRead(
++                        events=events,
++                        watermark_event_id=watermark,
++                        lost_event_ids=None,
++                    )
++                if timeout_s == 0.0:
++                    return EventRead(
++                        events=(),
++                        watermark_event_id=watermark,
++                        lost_event_ids=None,
++                    )
++                if deadline is None:
++                    self._condition.wait()
++                    continue
++                remaining = deadline - time.monotonic()
++                if remaining <= 0.0:
++                    return EventRead(
++                        events=(),
++                        watermark_event_id=watermark,
++                        lost_event_ids=None,
++                    )
++                self._condition.wait(remaining)
++
++    def _close_cursor(self, cursor: EventCursor) -> None:
++        with self._condition:
++            if cursor._closed:
++                return
++            cursor._closed = True
++            self._cursors.discard(cursor)
++            self._condition.notify_all()
++
++
++class ProgressMailbox:
++    """Bounded producer-side progress coalescing before EventHub.publish()."""
++
++    def __init__(self, *, capacity: int, min_interval_s: float) -> None:
++        if capacity <= 0:
++            raise ValueError("capacity must be positive")
++        if min_interval_s < 0.0:
++            raise ValueError("min_interval_s must be non-negative")
++        self._capacity = int(capacity)
++        self._min_interval_s = float(min_interval_s)
++        self._lock = threading.Lock()
++        self._pending: "OrderedDict[Tuple[Optional[int], str], EventDraft]" = (
++            OrderedDict()
++        )
++        self._last_emit: "OrderedDict[Tuple[Optional[int], str], float]" = (
++            OrderedDict()
++        )
++
++    def offer(self, draft: EventDraft, *, stage: str) -> Optional[EventDraft]:
++        if not stage:
++            raise ValueError("stage must be non-empty")
++        key = (draft.attempt_id, stage)
++        with self._lock:
++            last = self._last_emit.get(key)
++            if last is None or draft.monotonic_s >= last + self._min_interval_s:
++                self._remember_emit(key, draft.monotonic_s)
++                self._pending.pop(key, None)
++                return draft
++            self._pending[key] = draft
++            self._pending.move_to_end(key)
++            while len(self._pending) > self._capacity:
++                self._pending.popitem(last=False)
++            return None
++
++    def drain_ready(
++        self,
++        *,
++        now_monotonic_s: float,
++    ) -> Tuple[EventDraft, ...]:
++        ready = []
++        with self._lock:
++            for key, draft in tuple(self._pending.items()):
++                last = self._last_emit.get(key)
++                if last is None or now_monotonic_s >= last + self._min_interval_s:
++                    ready.append(draft)
++                    del self._pending[key]
++                    self._remember_emit(key, now_monotonic_s)
++        return tuple(ready)
++
++    def _remember_emit(
++        self,
++        key: Tuple[Optional[int], str],
++        monotonic_s: float,
++    ) -> None:
++        self._last_emit[key] = monotonic_s
++        self._last_emit.move_to_end(key)
++        while len(self._last_emit) > self._capacity:
++            self._last_emit.popitem(last=False)
+diff --git a/deploy/tests/test_hitter_task_events.py b/deploy/tests/test_hitter_task_events.py
+new file mode 100644
+index 0000000..a0ac14a
+--- /dev/null
++++ b/deploy/tests/test_hitter_task_events.py
+@@ -0,0 +1,345 @@
++from __future__ import annotations
++
++import json
++import threading
++import unittest
++from dataclasses import replace
++
++from diagnostics.hitter_task_events import (
++    DiagnosticState,
++    EventHub,
++    ProgressMailbox,
++    reduce_diagnostic_state,
++)
++from diagnostics.hitter_task_models import (
++    AttemptSummary,
++    EventDraft,
++    HealthSnapshot,
++    LifecycleSnapshot,
++)
++
++
++def _health(*, dropped: int = 0) -> HealthSnapshot:
++    return HealthSnapshot(
++        lcm_connected=True,
++        message_rate_hz_by_subject={"ball": 360.0},
++        message_age_s_by_subject={"ball": 0.01},
++        source_frame_by_subject={"ball": 10},
++        pelvis_valid=True,
++        pelvis_age_s=0.01,
++        planner_submitted=0,
++        planner_completed=0,
++        planner_failed=0,
++        planner_dropped_pending=0,
++        planner_results_overwritten_before_consume=0,
++        raw_samples_dropped=0,
++        recorder_event_gaps=0,
++        diagnostic_events_dropped=dropped,
++        recorder_healthy=True,
++        recording_complete=True,
++        config_name="hitter",
++        session_basename="test-session",
++        warnings=(),
++    )
++
++
++def _lifecycle(*, phase: str = "TRACKING") -> LifecycleSnapshot:
++    return LifecycleSnapshot(
++        phase=phase,
++        last_decision="NONE",
++        active_key=None,
++        cached_key=None,
++        lifecycle_now_s=None,
++        obs_now_s=None,
++    )
++
++
++def _summary(attempt_id: int, *, status: str = "ACTIVE") -> AttemptSummary:
++    return AttemptSummary(
++        attempt_id=attempt_id,
++        status=status,
++        stage="DETECTED",
++        primary_blocker=None,
++        ball_speed_mps=None,
++        predicted_strike_time_s=None,
++        planner_tts_s=None,
++        arm_tts_s=None,
++        task_obs_status="PENDING",
++        ab_summary=None,
++        recording_complete=True,
++    )
++
++
++def _state() -> DiagnosticState:
++    return DiagnosticState(
++        schema_version=1,
++        watermark_event_id=0,
++        health=_health(),
++        lifecycle=_lifecycle(),
++        current_attempt=None,
++        recent_attempts=(),
++    )
++
++
++def _draft(
++    sequence: int,
++    *,
++    kind: str = "PROGRESS",
++    attempt_id: int = 1,
++    payload=None,
++) -> EventDraft:
++    return EventDraft(
++        kind=kind,
++        monotonic_s=float(sequence),
++        wall_time_us=sequence,
++        scope="attempt",
++        attempt_id=attempt_id,
++        payload={"sequence": sequence} if payload is None else payload,
++    )
++
++
++class EventHubTests(unittest.TestCase):
++    def test_eight_publishers_allocate_one_contiguous_sequence(self) -> None:
++        hub = EventHub(_state(), capacity=256)
++        published = []
++        published_lock = threading.Lock()
++
++        def worker(worker_id: int) -> None:
++            local = [
++                hub.publish(_draft(worker_id * 25 + offset))
++                for offset in range(25)
++            ]
++            with published_lock:
++                published.extend(local)
++
++        threads = [threading.Thread(target=worker, args=(index,)) for index in range(8)]
++        for thread in threads:
++            thread.start()
++        for thread in threads:
++            thread.join()
++
++        ids = sorted(event.event_id for event in published)
++        self.assertEqual(ids, list(range(1, 201)))
++        self.assertEqual(hub.state_snapshot().watermark_event_id, 200)
++        cursor = hub.open_cursor(0)
++        self.assertEqual(
++            tuple(event.event_id for event in cursor.read(limit=256).events),
++            tuple(range(1, 201)),
++        )
++
++    def test_independent_cursors_read_the_same_events(self) -> None:
++        hub = EventHub(_state(), capacity=8)
++        first = hub.open_cursor(0)
++        second = hub.open_cursor(0)
++        for index in range(1, 4):
++            hub.publish(_draft(index))
++
++        first_events = first.read(limit=8).events
++        second_events = second.read(limit=8).events
++        self.assertEqual([event.event_id for event in first_events], [1, 2, 3])
++        self.assertEqual([event.event_id for event in second_events], [1, 2, 3])
++
++    def test_bootstrap_modes_and_runtime_gap_have_exact_semantics(self) -> None:
++        hub = EventHub(_state(), capacity=2)
++        fresh = hub.open_cursor(None)
++        self.assertEqual(fresh.bootstrap.mode, "fresh")
++        self.assertEqual(fresh.bootstrap.watermark_event_id, 0)
++        lagging = hub.open_cursor(0)
++        for index in range(1, 5):
++            hub.publish(_draft(index))
++
++        self.assertEqual(hub.open_cursor(3).bootstrap.mode, "resume")
++        self.assertEqual(hub.open_cursor(99).bootstrap.mode, "reset")
++        self.assertEqual(hub.open_cursor(0).bootstrap.mode, "reset")
++
++        gap = lagging.read(limit=8)
++        self.assertEqual(gap.events, ())
++        self.assertEqual(gap.lost_event_ids, (1, 2))
++        self.assertEqual(gap.watermark_event_id, 4)
++        self.assertEqual(lagging.read(limit=8, timeout_s=0.0).events, ())
++
++    def test_default_reducer_applies_full_snapshots_and_bounds_recent_attempts(self) -> None:
++        hub = EventHub(_state(), capacity=256)
++        changed_health = replace(_health(), pelvis_valid=False)
++        hub.publish(
++            _draft(
++                1,
++                kind="HEALTH_SNAPSHOT",
++                payload=changed_health.to_json_dict(),
++            )
++        )
++        hub.publish(
++            _draft(
++                2,
++                kind="LIFECYCLE_SNAPSHOT",
++                payload=_lifecycle(phase="RECOVERY").to_json_dict(),
++            )
++        )
++        hub.publish(
++            _draft(3, kind="ATTEMPT_CURRENT", payload=_summary(101).to_json_dict())
++        )
++        for attempt_id in range(1, 102):
++            hub.publish(
++                _draft(
++                    attempt_id + 3,
++                    kind="ATTEMPT_CLOSED",
++                    attempt_id=attempt_id,
++                    payload=_summary(attempt_id, status="FAILED").to_json_dict(),
++                )
++            )
++
++        state = hub.state_snapshot()
++        self.assertFalse(state.health.pelvis_valid)
++        self.assertEqual(state.lifecycle.phase, "RECOVERY")
++        self.assertEqual(len(state.recent_attempts), 100)
++        self.assertEqual(state.recent_attempts[0].attempt_id, 101)
++        self.assertEqual(state.recent_attempts[-1].attempt_id, 2)
++        self.assertIsNone(state.current_attempt)
++        json.dumps(state.to_json_dict(), allow_nan=False)
++
++    def test_payload_is_detached_deeply_immutable_and_never_rewritten(self) -> None:
++        hub = EventHub(_state(), capacity=4)
++        source = {"nested": [{"value": 1}]}
++        draft = _draft(1, payload=source)
++        event = hub.publish(draft)
++        source["nested"][0]["value"] = 99
++        source["nested"].append({"value": 2})
++        with self.assertRaises(TypeError):
++            event.payload["other"] = 3
++        with self.assertRaises(TypeError):
++            event.payload["nested"][0]["value"] = 3
++        self.assertEqual(event.payload["nested"][0]["value"], 1)
++
++        mailbox = ProgressMailbox(capacity=4, min_interval_s=1.0)
++        mailbox.offer(_draft(2), stage="ESTIMATING")
++        mailbox.offer(_draft(3), stage="ESTIMATING")
++        self.assertEqual(event.payload["nested"][0]["value"], 1)
++
++    def test_oversize_and_malformed_drafts_become_small_drop_events_without_id_gaps(self) -> None:
++        hub = EventHub(_state(), capacity=8, max_event_bytes=1024)
++        first = hub.publish(_draft(1))
++        oversize = hub.publish(_draft(2, payload={"blob": "球" * 1000}))
++        malformed = hub.publish(
++            _draft(3, kind="ATTEMPT_CURRENT", payload={"attempt_id": 1})
++        )
++        last = hub.publish(_draft(4))
++
++        self.assertEqual([first.event_id, oversize.event_id, malformed.event_id, last.event_id], [1, 2, 3, 4])
++        self.assertEqual(oversize.kind, "DIAGNOSTIC_EVENT_DROPPED")
++        self.assertEqual(malformed.kind, "DIAGNOSTIC_EVENT_DROPPED")
++        self.assertEqual(hub.state_snapshot().health.diagnostic_events_dropped, 2)
++        json.dumps(oversize.to_json_dict(), allow_nan=False)
++
++    def test_reducer_failure_is_atomic_and_does_not_leave_an_id_hole(self) -> None:
++        def reducer(state, event):
++            if event.kind == "FAIL_REDUCER":
++                raise RuntimeError("no update")
++            return reduce_diagnostic_state(state, event)
++
++        hub = EventHub(_state(), capacity=8, reducer=reducer)
++        self.assertEqual(hub.publish(_draft(1)).event_id, 1)
++        with self.assertRaisesRegex(RuntimeError, "no update"):
++            hub.publish(_draft(2, kind="FAIL_REDUCER"))
++        self.assertEqual(hub.state_snapshot().watermark_event_id, 1)
++        self.assertEqual(hub.publish(_draft(3)).event_id, 2)
++
++    def test_close_is_idempotent_wakes_blocked_read_and_rejects_later_use(self) -> None:
++        hub = EventHub(_state())
++        cursor = hub.open_cursor(None)
++        started = threading.Event()
++        finished = threading.Event()
++        errors = []
++
++        def blocked_reader() -> None:
++            started.set()
++            try:
++                cursor.read()
++            except RuntimeError as exc:
++                errors.append(str(exc))
++            finally:
++                finished.set()
++
++        thread = threading.Thread(target=blocked_reader)
++        thread.start()
++        self.assertTrue(started.wait(timeout=1.0))
++        cursor.close()
++        cursor.close()
++        self.assertTrue(finished.wait(timeout=1.0))
++        thread.join()
++        self.assertEqual(errors, ["event cursor is closed"])
++        with self.assertRaises(RuntimeError):
++            cursor.read(timeout_s=0.0)
++
++        hub.close()
++        hub.close()
++        with self.assertRaises(RuntimeError):
++            hub.publish(_draft(1))
++        with self.assertRaises(RuntimeError):
++            hub.open_cursor(None)
++
++    def test_hub_close_wakes_all_cursor_reads(self) -> None:
++        hub = EventHub(_state())
++        cursor = hub.open_cursor(None)
++        started = threading.Event()
++        finished = threading.Event()
++
++        def blocked_reader() -> None:
++            started.set()
++            with self.assertRaises(RuntimeError):
++                cursor.read()
++            finished.set()
++
++        thread = threading.Thread(target=blocked_reader)
++        thread.start()
++        self.assertTrue(started.wait(timeout=1.0))
++        hub.close()
++        self.assertTrue(finished.wait(timeout=1.0))
++        thread.join()
++
++
++class ProgressMailboxTests(unittest.TestCase):
++    def test_rate_gate_coalesces_before_publish_and_keeps_latest_value(self) -> None:
++        mailbox = ProgressMailbox(capacity=2, min_interval_s=1.0)
++        first = _draft(0, payload={"progress": 1})
++        middle = _draft(0, payload={"progress": 2})
++        latest = EventDraft(
++            kind="PROGRESS",
++            monotonic_s=0.5,
++            wall_time_us=3,
++            scope="attempt",
++            attempt_id=1,
++            payload={"progress": 3},
++        )
++
++        self.assertEqual(mailbox.offer(first, stage="ESTIMATING"), first)
++        self.assertIsNone(mailbox.offer(middle, stage="ESTIMATING"))
++        self.assertIsNone(mailbox.offer(latest, stage="ESTIMATING"))
++        self.assertEqual(mailbox.drain_ready(now_monotonic_s=0.999), ())
++        ready = mailbox.drain_ready(now_monotonic_s=1.0)
++        self.assertEqual(len(ready), 1)
++        self.assertEqual(ready[0].payload["progress"], 3)
++
++    def test_mailbox_pending_keys_are_bounded(self) -> None:
++        mailbox = ProgressMailbox(capacity=2, min_interval_s=10.0)
++        for attempt_id in (1, 2, 3):
++            mailbox.offer(
++                _draft(0, attempt_id=attempt_id),
++                stage="ESTIMATING",
++            )
++            mailbox.offer(
++                EventDraft(
++                    kind="PROGRESS",
++                    monotonic_s=1.0,
++                    wall_time_us=1,
++                    scope="attempt",
++                    attempt_id=attempt_id,
++                    payload={"attempt_id": attempt_id},
++                ),
++                stage="ESTIMATING",
++            )
++        ready = mailbox.drain_ready(now_monotonic_s=10.0)
++        self.assertEqual([item.attempt_id for item in ready], [2, 3])
++
++
++if __name__ == "__main__":
++    unittest.main()

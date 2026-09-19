@@ -1,0 +1,1421 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HITTER Task Observation Monitor</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071019;
+      --surface: #0d1a25;
+      --surface-raised: #122432;
+      --line: #243b4c;
+      --text: #e8f1f7;
+      --muted: #8fa6b5;
+      --blue: #54a7ff;
+      --green: #52d18d;
+      --yellow: #f5c451;
+      --red: #ff6d78;
+      --gray: #5c7080;
+      --shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 10% -10%, #183c55 0, transparent 32rem),
+        var(--bg);
+      color: var(--text);
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #142a39;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      padding: 0.55rem 0.9rem;
+    }
+
+    button:hover,
+    button:focus-visible {
+      border-color: var(--blue);
+      outline: none;
+    }
+
+    button:disabled {
+      cursor: default;
+      opacity: 0.45;
+    }
+
+    header {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 1rem;
+      justify-content: space-between;
+      padding: 1rem clamp(1rem, 3vw, 2.5rem);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.1rem, 2.5vw, 1.55rem);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.25rem;
+    }
+
+    h2 {
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin: 0;
+    }
+
+    .status {
+      align-items: center;
+      background: rgba(82, 209, 141, 0.1);
+      border: 1px solid rgba(82, 209, 141, 0.38);
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 0.78rem;
+      gap: 0.45rem;
+      padding: 0.45rem 0.7rem;
+      white-space: nowrap;
+    }
+
+    .status::before {
+      background: var(--green);
+      border-radius: 50%;
+      content: "";
+      height: 0.55rem;
+      width: 0.55rem;
+    }
+
+    .status.offline {
+      background: rgba(245, 196, 81, 0.1);
+      border-color: rgba(245, 196, 81, 0.45);
+    }
+
+    .status.offline::before {
+      background: var(--yellow);
+    }
+
+    main {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: minmax(0, 1.5fr) minmax(20rem, 1fr);
+      margin: 0 auto;
+      max-width: 1920px;
+      padding: 1rem clamp(1rem, 3vw, 2.5rem) 3rem;
+      width: 100%;
+    }
+
+    .panel {
+      background: rgba(13, 26, 37, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+      padding: 1rem;
+    }
+
+    .span-all {
+      grid-column: 1 / -1;
+    }
+
+    .health-grid {
+      display: grid;
+      gap: 0.7rem;
+      grid-template-columns: repeat(6, minmax(8rem, 1fr));
+    }
+
+    .metric {
+      background: var(--surface-raised);
+      border: 1px solid transparent;
+      border-radius: 9px;
+      min-width: 0;
+      padding: 0.7rem;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      display: block;
+      font-size: 0.69rem;
+      letter-spacing: 0.04em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .metric-value {
+      display: block;
+      font-size: 0.95rem;
+      font-variant-numeric: tabular-nums;
+      margin-top: 0.3rem;
+      overflow-wrap: anywhere;
+    }
+
+    .health-warnings {
+      background: rgba(245, 196, 81, 0.1);
+      border: 1px solid rgba(245, 196, 81, 0.45);
+      border-radius: 9px;
+      color: var(--yellow);
+      margin-top: 0.7rem;
+      padding: 0.65rem 0.8rem;
+    }
+
+    .health-warnings strong {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .health-warnings ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 1.2rem;
+      margin: 0.35rem 0 0;
+      padding-left: 1.2rem;
+    }
+
+    .health-warnings li {
+      overflow-wrap: anywhere;
+    }
+
+    .progress-stages {
+      display: grid;
+      gap: 0.65rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .ball-stages {
+      grid-template-columns: repeat(3, minmax(9rem, 1fr));
+    }
+
+    .gate-stages {
+      grid-template-columns: repeat(5, minmax(8rem, 1fr));
+    }
+
+    .section-heading {
+      margin: 1rem 0 0.65rem;
+    }
+
+    .stage {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      min-height: 6rem;
+      padding: 0.75rem;
+      position: relative;
+    }
+
+    .stage::after {
+      color: var(--gray);
+      content: "→";
+      font-size: 1.1rem;
+      position: absolute;
+      right: -0.75rem;
+      top: 1.8rem;
+      z-index: 2;
+    }
+
+    .stage:last-child::after {
+      content: "";
+    }
+
+    .stage-label {
+      color: var(--muted);
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.035em;
+    }
+
+    .stage-value {
+      display: block;
+      font-size: 0.9rem;
+      margin-top: 0.45rem;
+      overflow-wrap: anywhere;
+    }
+
+    .stage-detail {
+      color: var(--muted);
+      display: block;
+      font-size: 0.7rem;
+      line-height: 1.45;
+      margin-top: 0.4rem;
+      overflow-wrap: anywhere;
+    }
+
+    .telemetry-grid {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: repeat(5, minmax(9rem, 1fr));
+      margin-top: 0.65rem;
+    }
+
+    .stage.progress {
+      border-color: var(--blue);
+      box-shadow: inset 0 0 0 1px rgba(84, 167, 255, 0.12);
+    }
+
+    .stage.pass {
+      border-color: var(--green);
+      box-shadow: inset 0 0 0 1px rgba(82, 209, 141, 0.12);
+    }
+
+    .stage.fail {
+      border-color: var(--red);
+    }
+
+    .stage.warn {
+      border-color: var(--yellow);
+    }
+
+    .attempt-meta {
+      align-items: center;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 0.78rem;
+      gap: 0.55rem 1rem;
+      margin-top: 0.9rem;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.48rem;
+    }
+
+    .notice {
+      background: rgba(245, 196, 81, 0.08);
+      border-left: 3px solid var(--yellow);
+      color: #f3dda1;
+      display: none;
+      font-size: 0.78rem;
+      margin-top: 0.8rem;
+      padding: 0.55rem 0.7rem;
+    }
+
+    .notice.visible {
+      display: block;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 0.65rem 0.55rem;
+      text-align: left;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.67rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      cursor: pointer;
+    }
+
+    tbody tr:hover,
+    tbody tr:focus-within {
+      background: rgba(84, 167, 255, 0.06);
+    }
+
+    .pager {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.9rem;
+    }
+
+    .detail-empty {
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 1rem 0;
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 0.8rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .detail-card {
+      background: var(--surface-raised);
+      border-radius: 9px;
+      min-width: 0;
+      padding: 0.75rem;
+    }
+
+    .detail-card.wide {
+      grid-column: 1 / -1;
+    }
+
+    pre {
+      color: #c8d9e5;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.7rem;
+      line-height: 1.45;
+      margin: 0;
+      max-height: 17rem;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.72rem;
+      margin: 1rem 0 0;
+    }
+
+    @media (max-width: 1180px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .health-grid {
+        grid-template-columns: repeat(3, minmax(8rem, 1fr));
+      }
+
+      .progress-stages {
+        grid-template-columns: repeat(3, minmax(8rem, 1fr));
+      }
+
+      .telemetry-grid {
+        grid-template-columns: repeat(3, minmax(8rem, 1fr));
+      }
+
+      .ball-stages .stage:nth-child(3)::after {
+        content: "";
+      }
+    }
+
+    @media (max-width: 680px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .health-grid,
+      .progress-stages,
+      .telemetry-grid,
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stage::after {
+        bottom: -0.9rem;
+        left: 50%;
+        right: auto;
+        top: auto;
+        transform: rotate(90deg);
+      }
+
+      .ball-stages .stage:nth-child(3)::after {
+        content: "→";
+      }
+
+      .detail-card.wide {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>HITTER Task Observation Monitor</h1>
+      <p class="subtitle">只读旁路诊断 · 不会向机器人发布控制命令</p>
+    </div>
+    <div id="connection-status" class="status offline">正在连接本地诊断服务</div>
+  </header>
+
+  <main>
+    <section class="panel span-all" aria-labelledby="health-title">
+      <h2 id="health-title">运行健康</h2>
+      <div id="health-grid" class="health-grid"></div>
+      <div
+        id="health-warnings"
+        class="health-warnings"
+        aria-live="polite"
+        hidden
+      ></div>
+    </section>
+
+    <section id="current-attempt" class="panel span-all" aria-labelledby="current-title">
+      <h2 id="current-title">当前来球</h2>
+      <div
+        id="live-schema-notice"
+        class="notice"
+        aria-live="polite"
+      ></div>
+      <h3 class="section-heading">球实时状态</h3>
+      <ol id="progress-stages" class="progress-stages ball-stages">
+        <li id="ball-status-card" class="stage" data-stage="detected">
+          <span class="stage-label">球检测</span>
+          <span id="ball-status-value" class="stage-value">UNKNOWN</span>
+          <span id="ball-status-detail" class="stage-detail">age — · frame —</span>
+        </li>
+        <li id="ball-estimator-card" class="stage" data-stage="estimator">
+          <span class="stage-label">ESTIMATOR</span>
+          <span id="estimator-value" class="stage-value">UNKNOWN · —</span>
+          <span id="estimator-detail" class="stage-detail">ready — · reset —</span>
+        </li>
+        <li id="ball-incoming-card" class="stage" data-stage="ball-incoming">
+          <span class="stage-label">BALL-ONLY INCOMING</span>
+          <span id="ball-incoming-value" class="stage-value">UNKNOWN · —</span>
+          <span id="ball-incoming-detail" class="stage-detail">confirmed — · blocker —</span>
+        </li>
+      </ol>
+      <div id="ball-telemetry" class="telemetry-grid">
+        <div class="metric">
+          <span class="metric-label">RAW POSITION</span>
+          <span id="ball-raw-position-value" class="metric-value">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">ESTIMATED POSITION</span>
+          <span id="ball-estimated-position-value" class="metric-value">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">ESTIMATED VELOCITY</span>
+          <span id="ball-velocity-value" class="metric-value">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">SPEED / VX</span>
+          <span id="ball-speed-value" class="metric-value">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">TRACK / GENERATION / FRAME / AGE</span>
+          <span id="ball-identity-value" class="metric-value">—</span>
+        </div>
+      </div>
+
+      <h3 class="section-heading">完整任务门控</h3>
+      <ol id="production-gate-stages" class="progress-stages gate-stages">
+        <li id="gate-pelvis-card" class="stage" data-gate="pelvis">
+          <span class="stage-label">PELVIS</span>
+          <span id="gate-pelvis-value" class="stage-value">UNKNOWN</span>
+          <span id="gate-pelvis-detail" class="stage-detail">subject UNKNOWN</span>
+        </li>
+        <li id="gate-production-incoming-card" class="stage" data-gate="production-incoming">
+          <span class="stage-label">PRODUCTION INCOMING</span>
+          <span id="gate-production-incoming-value" class="stage-value">UNKNOWN · —</span>
+          <span id="gate-production-incoming-detail" class="stage-detail">—</span>
+        </li>
+        <li id="gate-planner-card" class="stage" data-gate="planner">
+          <span class="stage-label">PLANNER</span>
+          <span id="gate-planner-value" class="stage-value">UNKNOWN</span>
+          <span id="gate-planner-detail" class="stage-detail">reason — · TTS —</span>
+        </li>
+        <li id="gate-arm-card" class="stage" data-gate="armed">
+          <span class="stage-label">ARMED</span>
+          <span id="gate-arm-value" class="stage-value">UNKNOWN</span>
+          <span id="gate-arm-detail" class="stage-detail">ARM threshold —</span>
+        </li>
+        <li id="gate-task-card" class="stage" data-gate="task">
+          <span class="stage-label">TASK OBS</span>
+          <span id="gate-task-value" class="stage-value">UNKNOWN · —</span>
+          <span id="gate-task-detail" class="stage-detail">clip count —</span>
+        </li>
+      </ol>
+      <div id="attempt-meta" class="attempt-meta"></div>
+      <div id="attempt-notice" class="notice"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="history-title">
+      <h2 id="history-title">逐球历史</h2>
+      <div class="table-wrap">
+        <table id="attempt-history">
+          <thead>
+            <tr>
+              <th>球</th>
+              <th>速度</th>
+              <th>Estimator</th>
+              <th>Ball-only incoming</th>
+              <th>阶段</th>
+              <th>阻塞点</th>
+              <th>ARM TTS 记录</th>
+              <th>Task Obs</th>
+              <th>A/B</th>
+            </tr>
+          </thead>
+          <tbody id="attempt-history-body"></tbody>
+        </table>
+      </div>
+      <div class="pager">
+        <button id="load-more" type="button" disabled>加载更早记录</button>
+      </div>
+    </section>
+
+    <section id="attempt-detail" class="panel" aria-labelledby="detail-title">
+      <h2 id="detail-title">Attempt 详情</h2>
+      <div id="detail-content" class="detail-empty">选择左侧一颗球查看完整链路。</div>
+      <section id="ab-comparison" aria-labelledby="ab-title">
+        <h3 id="ab-title">3/100 与 1/100 A/B</h3>
+        <div id="ab-content" class="detail-empty">尚无重放结论。</div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    'use strict';
+
+    const MIN_REQUEST_INTERVAL_MS = 100;
+    const REQUEST_WINDOW_MS = 1000;
+    const MAX_REQUESTS_PER_WINDOW = 10;
+    let renderedWatermark = -1;
+    let lastRequestStartedMs = -MIN_REQUEST_INTERVAL_MS;
+    let requestStartTimesMs = [];
+    let refreshPending = false;
+    let refreshTimer = null;
+    let requestInFlight = false;
+    let eventSource = null;
+    let reconnectTimer = null;
+    let reconnectDelayMs = 500;
+    let nextBefore = null;
+    let historyRows = [];
+
+    const byId = (id) => document.getElementById(id);
+
+    const formatOptional = (value, formatter) =>
+      value === null || value === undefined ? '—' : formatter(value);
+
+    function setText(node, value) {
+      node.textContent = formatOptional(value, (item) => String(item));
+    }
+
+    function formatNumber(value, digits, suffix) {
+      return formatOptional(value, (item) => {
+        const numeric = Number(item);
+        return Number.isFinite(numeric)
+          ? numeric.toFixed(digits) + (suffix || '')
+          : '—';
+      });
+    }
+
+    function formatCountPair(count, total) {
+      if (
+        count === null || count === undefined ||
+        total === null || total === undefined
+      ) {
+        return '—';
+      }
+      const numericCount = Number(count);
+      const numericTotal = Number(total);
+      if (
+        !Number.isInteger(numericCount) ||
+        !Number.isInteger(numericTotal) ||
+        numericCount < 0 ||
+        numericTotal < 0
+      ) {
+        return '—';
+      }
+      return String(numericCount) + '/' + String(numericTotal);
+    }
+
+    function formatVector(value, digits, suffix) {
+      if (!Array.isArray(value) || value.length !== 3) {
+        return '—';
+      }
+      const numeric = value.map((item) => Number(item));
+      if (!numeric.every((item) => Number.isFinite(item))) {
+        return '—';
+      }
+      return '[' + numeric.map((item) => item.toFixed(digits)).join(', ')
+        + ']' + (suffix || '');
+    }
+
+    function statusText(value) {
+      return (
+        typeof value === 'string' && value.trim()
+          ? value.trim().toUpperCase()
+          : 'UNKNOWN'
+      );
+    }
+
+    function formatFlag(value) {
+      if (value === true) {
+        return 'TRUE';
+      }
+      if (value === false) {
+        return 'FALSE';
+      }
+      return '—';
+    }
+
+    function formatHealthFlag(value, trueLabel, falseLabel) {
+      if (value === true) {
+        return trueLabel;
+      }
+      if (value === false) {
+        return falseLabel;
+      }
+      return 'UNKNOWN';
+    }
+
+    function liveSnapshotFor(state) {
+      if (
+        Number(state?.schema_version) !== 2 ||
+        !state.live_snapshot ||
+        typeof state.live_snapshot !== 'object' ||
+        Number(state.live_snapshot.schema_version) !== 2
+      ) {
+        return null;
+      }
+      return state.live_snapshot;
+    }
+
+    function schemaNotice(state) {
+      const stateSchema = Number(state?.schema_version);
+      if (Number.isFinite(stateSchema) && stateSchema > 2) {
+        return 'UNSUPPORTED_SCHEMA：后端 schema_version '
+          + String(state.schema_version) + '，停止猜测实时值。';
+      }
+      if (stateSchema !== 2 || !('live_snapshot' in (state || {}))) {
+        return '旧版后端状态：缺少 live_snapshot；请重启 diagnostics 服务。';
+      }
+      if (state.live_snapshot === null) {
+        return '结构化实时快照尚不可用；等待下一次 monitor tick。';
+      }
+      if (
+        typeof state.live_snapshot !== 'object' ||
+        Number(state.live_snapshot.schema_version) !== 2
+      ) {
+        return 'UNSUPPORTED_SCHEMA：live_snapshot 版本不受支持，停止猜测实时值。';
+      }
+      return null;
+    }
+
+    function statusClass(value) {
+      const status = statusText(value);
+      if (new Set([
+        'LIVE',
+        'VALID',
+        'READY',
+        'CONFIRMED',
+        'INCOMING',
+        'ARMED',
+        'AVAILABLE',
+        'PASS',
+        'COMPLETE',
+      ]).has(status)) {
+        return 'pass';
+      }
+      if (new Set([
+        'ESTIMATING',
+        'CONFIRMING',
+        'PENDING',
+        'NOT_ARMED',
+      ]).has(status)) {
+        return 'progress';
+      }
+      if (new Set([
+        'INVALID',
+        'REJECTED',
+        'FAILED',
+        'ERROR',
+      ]).has(status)) {
+        return 'fail';
+      }
+      return 'warn';
+    }
+
+    function setCardStatus(cardId, status) {
+      const node = byId(cardId);
+      node.className = 'stage';
+      node.classList.add(statusClass(status));
+    }
+
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) {
+        element.className = className;
+      }
+      if (text !== undefined) {
+        setText(element, text);
+      }
+      return element;
+    }
+
+    function setConnection(online, message) {
+      const node = byId('connection-status');
+      node.classList.toggle('offline', !online);
+      setText(node, message);
+    }
+
+    function metric(label, value) {
+      const card = makeElement('div', 'metric');
+      card.appendChild(makeElement('span', 'metric-label', label));
+      card.appendChild(makeElement('span', 'metric-value', value));
+      return card;
+    }
+
+    function subjectMetric(label, subject) {
+      const value = subject && typeof subject === 'object' ? subject : {};
+      return metric(
+        label,
+        [
+          statusText(value.status),
+          formatNumber(value.rate_hz, 1, ' Hz'),
+          formatNumber(value.age_s, 3, ' s'),
+          'frame ' + formatOptional(
+            value.source_frame,
+            (item) => String(item),
+          ),
+        ].join(' · '),
+      );
+    }
+
+    function renderHealth(state) {
+      const health = state.health || {};
+      const live = liveSnapshotFor(state);
+      const subjects = live && live.subjects ? live.subjects : {};
+      const warnings = Array.isArray(health.warnings)
+        ? health.warnings.map((item) => String(item))
+        : [];
+      const plannerCounts = [
+        health.planner_submitted,
+        health.planner_completed,
+        health.planner_failed,
+      ];
+      const plannerCountText = plannerCounts.some(
+        (item) => item === null || item === undefined,
+      )
+        ? '—'
+        : plannerCounts.map((item) => String(item)).join(' / ');
+      const values = [
+        subjectMetric('BALL', subjects.ball),
+        subjectMetric('PELVIS', subjects.g1pelvis),
+        subjectMetric('TABLE', subjects.table),
+        metric(
+          'transport',
+          formatHealthFlag(health.lcm_connected, 'ONLINE', 'OFFLINE'),
+        ),
+        metric('planner S/C/F', plannerCountText),
+        metric(
+          'planner drops',
+          formatOptional(
+            health.planner_dropped_pending,
+            (item) => String(item),
+          )
+            + ' pending · '
+            + formatOptional(
+              health.planner_results_overwritten_before_consume,
+              (item) => String(item),
+            )
+            + ' result',
+        ),
+        metric(
+          'phase',
+          statusText(state.lifecycle && state.lifecycle.phase),
+        ),
+        metric(
+          'diagnostic drops',
+          formatOptional(
+            health.raw_samples_dropped,
+            (item) => String(item),
+          )
+            + ' raw · '
+            + formatOptional(
+              health.diagnostic_events_dropped,
+              (item) => String(item),
+            )
+            + ' event',
+        ),
+        metric(
+          'recorder',
+          formatHealthFlag(
+            health.recorder_healthy,
+            'HEALTHY',
+            'DEGRADED',
+          ),
+        ),
+        metric(
+          'recording',
+          formatHealthFlag(
+            health.recording_complete,
+            'COMPLETE',
+            'INCOMPLETE',
+          ),
+        ),
+        metric(
+          'config',
+          formatOptional(health.config_name, (item) => String(item)),
+        ),
+        metric(
+          'session',
+          formatOptional(health.session_basename, (item) => String(item)),
+        ),
+      ];
+      const grid = byId('health-grid');
+      grid.replaceChildren(...values);
+      const warningPanel = byId('health-warnings');
+      if (warnings.length > 0) {
+        const warningList = makeElement('ul');
+        warnings.forEach((warning) => {
+          warningList.appendChild(makeElement('li', '', warning));
+        });
+        warningPanel.replaceChildren(
+          makeElement('strong', '', '健康告警'),
+          warningList,
+        );
+        warningPanel.hidden = false;
+      } else {
+        warningPanel.replaceChildren();
+        warningPanel.hidden = true;
+      }
+      const heartbeatStale = warnings.includes('LCM_HEARTBEAT_STALE');
+      const connected = Boolean(health.lcm_connected) && !heartbeatStale;
+      let connectionMessage = 'LCM 数据在线';
+      if (heartbeatStale) {
+        connectionMessage = 'LCM 数据离线：心跳超时；保留最近画面';
+      } else if (!connected) {
+        connectionMessage = 'LCM 数据离线；保留最近画面';
+      }
+      setConnection(connected, connectionMessage);
+    }
+
+    function renderCurrentAttempt(state) {
+      const live = liveSnapshotFor(state);
+      const subjects = live && live.subjects ? live.subjects : {};
+      const ballSubject = subjects.ball || {};
+      const pelvisSubject = subjects.g1pelvis || {};
+      const ball = live && live.ball ? live.ball : {};
+      const gate = live && live.production_gate
+        ? live.production_gate
+        : {};
+      const attempt = live ? live.current_attempt : null;
+
+      const schemaMessage = schemaNotice(state);
+      const liveNotice = byId('live-schema-notice');
+      liveNotice.classList.toggle('visible', schemaMessage !== null);
+      setText(liveNotice, schemaMessage === null ? '' : schemaMessage);
+
+      const ballSubjectStatus = statusText(ballSubject.status);
+      setCardStatus('ball-status-card', ballSubjectStatus);
+      setText(byId('ball-status-value'), ballSubjectStatus);
+      setText(
+        byId('ball-status-detail'),
+        'rate ' + formatNumber(ballSubject.rate_hz, 1, ' Hz')
+          + ' · age ' + formatNumber(ballSubject.age_s, 3, ' s')
+          + ' · frame ' + formatOptional(
+            ballSubject.source_frame,
+            (item) => String(item),
+          ),
+      );
+
+      const estimatorStatus = statusText(ball.status);
+      setCardStatus('ball-estimator-card', estimatorStatus);
+      setText(
+        byId('estimator-value'),
+        estimatorStatus + ' · ' + formatCountPair(
+          ball.estimator_sample_count,
+          ball.estimator_window_size,
+        ),
+      );
+      setText(
+        byId('estimator-detail'),
+        'ready ' + formatFlag(ball.estimator_ready)
+          + ' · reset ' + formatOptional(
+            ball.last_estimator_reset_reason,
+            (item) => String(item),
+          ),
+      );
+
+      const diagnosticIncomingStatus = statusText(ball.incoming_status);
+      setCardStatus('ball-incoming-card', diagnosticIncomingStatus);
+      setText(
+        byId('ball-incoming-value'),
+        diagnosticIncomingStatus + ' · ' + formatCountPair(
+          ball.ball_only_incoming_count,
+          ball.ball_only_incoming_required,
+        ),
+      );
+      setText(
+        byId('ball-incoming-detail'),
+        'confirmed ' + formatFlag(ball.ball_only_incoming_confirmed)
+          + ' · blocker ' + formatOptional(
+            ball.blocker,
+            (item) => String(item),
+          ),
+      );
+
+      setText(
+        byId('ball-raw-position-value'),
+        formatVector(ball.raw_position_w, 3, ' m'),
+      );
+      setText(
+        byId('ball-estimated-position-value'),
+        formatVector(ball.estimated_position_w, 3, ' m'),
+      );
+      setText(
+        byId('ball-velocity-value'),
+        formatVector(ball.estimated_velocity_w, 3, ' m/s'),
+      );
+      const speedAvailable = (
+        ball.speed_mps !== null && ball.speed_mps !== undefined
+      );
+      const vxAvailable = (
+        ball.velocity_x_mps !== null && ball.velocity_x_mps !== undefined
+      );
+      setText(
+        byId('ball-speed-value'),
+        speedAvailable || vxAvailable
+          ? formatNumber(ball.speed_mps, 3, ' m/s')
+            + ' · vx ' + formatNumber(ball.velocity_x_mps, 3, ' m/s')
+          : '—',
+      );
+      setText(
+        byId('ball-identity-value'),
+        'track ' + formatOptional(ball.track_epoch, (item) => String(item))
+          + ' · gen ' + formatOptional(ball.generation, (item) => String(item))
+          + ' · frame ' + formatOptional(
+            ball.source_frame,
+            (item) => String(item),
+          )
+          + ' · age ' + formatNumber(ball.age_s, 3, ' s'),
+      );
+
+      const pelvisStatus = statusText(gate.pelvis_status);
+      setCardStatus('gate-pelvis-card', pelvisStatus);
+      setText(byId('gate-pelvis-value'), pelvisStatus);
+      setText(
+        byId('gate-pelvis-detail'),
+        'subject ' + statusText(pelvisSubject.status),
+      );
+
+      const productionIncomingStatus = statusText(
+        gate.production_incoming_status,
+      );
+      setCardStatus(
+        'gate-production-incoming-card',
+        productionIncomingStatus,
+      );
+      setText(
+        byId('gate-production-incoming-value'),
+        productionIncomingStatus + ' · ' + formatCountPair(
+          gate.production_incoming_count,
+          gate.production_incoming_required,
+        ),
+      );
+      setText(byId('gate-production-incoming-detail'), 'production gate');
+
+      const plannerStatus = statusText(gate.planner_status);
+      setCardStatus('gate-planner-card', plannerStatus);
+      setText(byId('gate-planner-value'), plannerStatus);
+      setText(
+        byId('gate-planner-detail'),
+        'reason ' + formatOptional(
+          gate.planner_reason_code,
+          (item) => String(item),
+        )
+          + ' · TTS ' + formatNumber(gate.planner_tts_s, 3, ' s'),
+      );
+
+      const armStatus = statusText(gate.arm_status);
+      setCardStatus('gate-arm-card', armStatus);
+      setText(byId('gate-arm-value'), armStatus);
+      setText(
+        byId('gate-arm-detail'),
+        'ARM threshold ' + formatNumber(
+          gate.arm_trigger_tts_s,
+          3,
+          ' s',
+        ),
+      );
+
+      const taskStatus = statusText(gate.task_observation_status);
+      setCardStatus('gate-task-card', taskStatus);
+      setText(
+        byId('gate-task-value'),
+        taskStatus + ' · ' + formatCountPair(
+          gate.task_observation_valid_dimensions,
+          gate.task_observation_total_dimensions,
+        ),
+      );
+      setText(
+        byId('gate-task-detail'),
+        'clip count ' + formatOptional(
+          gate.task_observation_clip_count,
+          (item) => String(item),
+        ),
+      );
+
+      const meta = byId('attempt-meta');
+      meta.replaceChildren();
+      if (!live) {
+        [
+          'Attempt UNKNOWN',
+          '速度 —',
+          '预测击球 —',
+          'planner TTS —',
+          'ARM threshold —',
+        ].forEach(
+          (item) => meta.appendChild(makeElement('span', 'badge', item)),
+        );
+      } else if (!attempt) {
+        meta.appendChild(makeElement('span', '', '当前无 active attempt'));
+      } else {
+        const items = [
+          'Attempt #' + String(attempt.attempt_id),
+          '速度 ' + formatNumber(ball.speed_mps, 2, ' m/s'),
+          '预测击球 ' + formatNumber(attempt.predicted_strike_time_s, 3, ' s'),
+          'planner TTS ' + formatNumber(gate.planner_tts_s, 3, ' s'),
+          'ARM threshold ' + formatNumber(
+            gate.arm_trigger_tts_s,
+            3,
+            ' s',
+          ),
+        ];
+        items.forEach((item) => meta.appendChild(makeElement('span', 'badge', item)));
+      }
+
+      const specialStates = new Set([
+        'WAITING_FOR_PREVIOUS_RECOVERY',
+        'CACHED_DURING_RECOVERY',
+        'REACQUIRE_GRACE',
+        'POST_DEADLINE_TAIL',
+      ]);
+      const notice = byId('attempt-notice');
+      const special = attempt && (
+        specialStates.has(attempt.stage) ||
+        specialStates.has(attempt.status)
+      );
+      notice.classList.toggle('visible', Boolean(special));
+      setText(notice, special ? (attempt.stage || attempt.status) : '');
+    }
+
+    function summaryCell(row, key, fallback) {
+      const value = row[key];
+      return value === null || value === undefined ? fallback : String(value);
+    }
+
+    function renderHistoryTable() {
+      const body = byId('attempt-history-body');
+      body.replaceChildren();
+      historyRows.forEach((row) => {
+        const tr = document.createElement('tr');
+        tr.tabIndex = 0;
+        const attemptId = String(row.attempt_id);
+        const values = [
+          ['#' + attemptId, ''],
+          [formatNumber(row.ball_speed_mps, 2, ' m/s'), ''],
+          [
+            formatCountPair(
+              row.estimator_sample_count,
+              row.estimator_window_size,
+            ),
+            'history-estimator-' + attemptId,
+          ],
+          [
+            formatCountPair(
+              row.incoming_count,
+              row.incoming_required_count,
+            ),
+            'history-incoming-' + attemptId,
+          ],
+          [summaryCell(row, 'stage', '—'), ''],
+          [summaryCell(row, 'primary_blocker', '—'), ''],
+          [formatNumber(row.arm_tts_s, 3, ' s'), ''],
+          [summaryCell(row, 'task_obs_status', '—'), ''],
+          [summaryCell(row, 'ab_summary', 'pending'), ''],
+        ];
+        values.forEach(([value, id]) => {
+          const cell = makeElement('td', '', value);
+          if (id) {
+            cell.id = id;
+          }
+          tr.appendChild(cell);
+        });
+        const open = () => loadAttemptDetail(row.attempt_id);
+        tr.addEventListener('click', open);
+        tr.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            open();
+          }
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    function renderHistoryRows(rows, append) {
+      const safeRows = Array.isArray(rows) ? rows : [];
+      if (!append) {
+        historyRows = [];
+      }
+      safeRows.forEach((row) => {
+        const index = historyRows.findIndex(
+          (item) => item.attempt_id === row.attempt_id,
+        );
+        if (index >= 0) {
+          historyRows[index] = row;
+        } else {
+          historyRows.push(row);
+        }
+      });
+      renderHistoryTable();
+    }
+
+    function mergeRecentHistoryRows(rows) {
+      const safeRows = Array.isArray(rows) ? rows : [];
+      const recentIds = new Set(safeRows.map((row) => row.attempt_id));
+      const recent = [];
+      safeRows.forEach((row) => {
+        if (recent.some((item) => item.attempt_id === row.attempt_id)) {
+          return;
+        }
+        recent.push(row);
+      });
+      historyRows = recent.concat(
+        historyRows.filter((row) => !recentIds.has(row.attempt_id)),
+      );
+      renderHistoryTable();
+    }
+
+    function pretty(value) {
+      return JSON.stringify(value === undefined ? null : value, null, 2);
+    }
+
+    function detailCard(title, value, wide) {
+      const card = makeElement('section', 'detail-card' + (wide ? ' wide' : ''));
+      card.appendChild(makeElement('h3', '', title));
+      const pre = document.createElement('pre');
+      setText(pre, pretty(value));
+      card.appendChild(pre);
+      return card;
+    }
+
+    function renderAttemptDetail(detail) {
+      const content = byId('detail-content');
+      content.className = 'detail-grid';
+      const summary = detail.summary || {};
+      content.replaceChildren(
+        detailCard('Primary blocker', summary.primary_blocker || 'none', false),
+        detailCard('11 维 pre-clip', detail.task_observation_pre_clip, false),
+        detailCard('11 维 post-clip', detail.task_observation_post_clip, false),
+        detailCard('clip count', detail.task_observation_clip_count, false),
+        detailCard('planner inputs', detail.planner_inputs, true),
+        detailCard('planner results', detail.planner_results, true),
+        detailCard('stage timeline', detail.stage_timeline, true),
+      );
+      const ab = byId('ab-content');
+      ab.className = 'detail-grid';
+      ab.replaceChildren(
+        detailCard('variant outcomes', detail.variant_outcomes, true),
+        detailCard('A/B deltas', detail.ab_deltas, true),
+      );
+    }
+
+    async function loadAttemptDetail(attemptId) {
+      const numeric = Number(attemptId);
+      if (!Number.isInteger(numeric) || numeric <= 0) {
+        return;
+      }
+      try {
+        const response = await fetch('/api/attempts/' + encodeURIComponent(String(numeric)), {
+          cache: 'no-store',
+        });
+        if (!response.ok) {
+          throw new Error('detail HTTP ' + String(response.status));
+        }
+        renderAttemptDetail(await response.json());
+      } catch (error) {
+        const content = byId('detail-content');
+        content.className = 'detail-empty';
+        setText(content, '详情暂不可用：' + String(error));
+      }
+    }
+
+    async function loadHistory(before, append) {
+      let url = '/api/attempts?limit=50';
+      if (before !== null && before !== undefined) {
+        url += '&before=' + encodeURIComponent(String(before));
+      }
+      const response = await fetch(url, {cache: 'no-store'});
+      if (!response.ok) {
+        throw new Error('history HTTP ' + String(response.status));
+      }
+      const page = await response.json();
+      renderHistoryRows(Array.isArray(page.items) ? page.items : [], append);
+      nextBefore = page.next_before;
+      byId('load-more').disabled = !page.has_more || nextBefore === null;
+    }
+
+    function renderState(state) {
+      const watermark = Number(state.watermark_event_id);
+      if (
+        Number.isFinite(watermark) &&
+        Number(state.watermark_event_id) < renderedWatermark
+      ) {
+        return;
+      }
+      if (Number.isFinite(watermark)) {
+        renderedWatermark = watermark;
+      }
+      renderHealth(state);
+      renderCurrentAttempt(state);
+      const rows = Array.isArray(state.recent_attempts) ? state.recent_attempts : [];
+      mergeRecentHistoryRows(rows);
+    }
+
+    async function performStateRefresh() {
+      if (requestInFlight) {
+        refreshPending = true;
+        return;
+      }
+      requestInFlight = true;
+      refreshPending = false;
+      lastRequestStartedMs = performance.now();
+      requestStartTimesMs = requestStartTimesMs.filter(
+        (atMs) => atMs > lastRequestStartedMs - REQUEST_WINDOW_MS,
+      );
+      requestStartTimesMs.push(lastRequestStartedMs);
+      try {
+        const response = await fetch('/api/state', {cache: 'no-store'});
+        if (!response.ok) {
+          throw new Error('state HTTP ' + String(response.status));
+        }
+        renderState(await response.json());
+      } catch (error) {
+        setConnection(false, '诊断服务断开，保留最近画面 · ' + String(error));
+      } finally {
+        requestInFlight = false;
+        if (refreshPending) {
+          scheduleStateRefresh();
+        }
+      }
+    }
+
+    function scheduleStateRefresh() {
+      refreshPending = true;
+      if (refreshTimer !== null) {
+        return;
+      }
+      const nowMs = performance.now();
+      requestStartTimesMs = requestStartTimesMs.filter(
+        (atMs) => atMs > nowMs - REQUEST_WINDOW_MS,
+      );
+      const elapsed = nowMs - lastRequestStartedMs;
+      const intervalWait = Math.max(
+        0,
+        MIN_REQUEST_INTERVAL_MS - elapsed,
+      );
+      const windowWait = requestStartTimesMs.length >= MAX_REQUESTS_PER_WINDOW
+        ? Math.max(
+          0,
+          requestStartTimesMs[0] + REQUEST_WINDOW_MS - nowMs,
+        )
+        : 0;
+      const wait = Math.max(intervalWait, windowWait);
+      refreshTimer = window.setTimeout(() => {
+        refreshTimer = null;
+        performStateRefresh();
+      }, wait);
+    }
+
+    function closeEvents() {
+      if (eventSource !== null) {
+        eventSource.close();
+        eventSource = null;
+      }
+    }
+
+    function connectEvents() {
+      closeEvents();
+      eventSource = new EventSource('/events');
+      eventSource.addEventListener('ready', () => {
+        reconnectDelayMs = 500;
+        scheduleStateRefresh();
+      });
+      eventSource.addEventListener('invalidate', () => {
+        scheduleStateRefresh();
+      });
+      eventSource.addEventListener('reset', () => {
+        scheduleStateRefresh();
+      });
+      eventSource.addEventListener('heartbeat', () => {
+        scheduleStateRefresh();
+      });
+      eventSource.onerror = () => {
+        setConnection(false, '事件流断开，正在重连；最近画面仍可查看');
+        closeEvents();
+        if (reconnectTimer !== null) {
+          window.clearTimeout(reconnectTimer);
+        }
+        reconnectTimer = window.setTimeout(() => {
+          reconnectTimer = null;
+          connectEvents();
+        }, reconnectDelayMs);
+        reconnectDelayMs = Math.min(reconnectDelayMs * 2, 10000);
+      };
+    }
+
+    byId('load-more').addEventListener('click', () => {
+      loadHistory(nextBefore, true).catch((error) => {
+        setConnection(false, '历史分页失败：' + String(error));
+      });
+    });
+
+    window.addEventListener('pagehide', () => {
+      closeEvents();
+      if (reconnectTimer !== null) {
+        window.clearTimeout(reconnectTimer);
+      }
+    });
+
+    scheduleStateRefresh();
+    loadHistory(null, false).catch(() => {});
+    connectEvents();
+  </script>
+</body>
+</html>

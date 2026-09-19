@@ -1,0 +1,910 @@
+2026-08-20 15:17:09.246 | INFO     | __main__:main:27 - Log saved to /home/loco1/BOB/Hitter/RobotBridge4/deploy/outputs/2026-08-20/15-17-09/eval.log
+2026-08-20 15:17:10.024 | INFO     | utils.motion_lib.torch_humanoid_batch:<module>:41 - Using Humanoid Batch
+2026-08-20 15:17:10.153 | DEBUG    | utils.kinematics:__init__:34 - [MujocoKinematics] loaded model from ./data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+2026-08-20 15:17:10.153 | DEBUG    | utils.kinematics:update_joint_names_subset:94 - [MujocoKinematics] set fk with 29 joints
+2026-08-20 15:17:10.153 | INFO     | simulator.base_sim:_setup:41 - Robot-level Control Frequency Set to 200.0HZ
+2026-08-20 15:17:10.153 | INFO     | simulator.base_sim:_setup:42 - Policy-level Control Frequency Set to 50.0HZ
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_pitch_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_roll_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_roll_joint  Default Angles -0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.154 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-08-20 15:17:10.155 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-20 15:17:10.155 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-08-20 15:17:10.155 | INFO     | simulator.base_sim:_load_asset:56 - Total Number of dof: 29
+2026-08-20 15:17:10.155 | INFO     | simulator.base_sim:_load_asset:57 - Number of Action: 29
+2026-08-20 15:17:10.155 | INFO     | simulator.real_world:_init_low_state:139 - [RealWorld] terminate_on_r2=True
+2026-08-20 15:17:10.157 | INFO     | simulator.real_world:_root_state_handler:868 - State Estimator Information Received!
+2026-08-20 15:17:10.157 | INFO     | simulator.real_world:_root_state_handler:869 - Root Translation: [-0.25861746  0.06729522  0.57239461], Root Linear Velocity: [-1.25471786e-06 -6.08494065e-06 -1.72943874e-05]
+2026-08-20 15:17:10.158 | INFO     | simulator.real_world:_joint_state_handler:1376 - Communication build successfully between the policy and the transition layer!
+2026-08-20 15:17:10.158 | INFO     | simulator.real_world:_joint_state_handler:1377 - First signal arrives after 0.002263307571411133s!
+2026-08-20 15:17:10.158 | INFO     | utils.history_handler:__init__:19 - History Handler initialized!
+2026-08-20 15:17:10.159 | INFO     | envs.hitter:__init__:141 - HITTER ball planner configured.
+2026-08-20 15:17:10.159 | INFO     | simulator.real_world:_ingest_vicon_v2_message:962 - Vicon root information received!
+2026-08-20 15:17:10.163 | INFO     | agents.base_agent:load_onnx_policy:22 - Loading ONNX Checkpoint from ./data/model/hitter/hitter_model20500_20260818_104.onnx
+2026-08-20 15:17:10.163 | INFO     | simulator.real_world:_ingest_vicon_v2_message:963 - Root Translation World: [-0.71292778 -0.08877356  0.62998662]
+2026-08-20 15:17:10.163 | INFO     | envs.hitter:configure_from_modelmeta:192 - Applying HITTER joint configuration from ONNX model.
+2026-08-20 15:17:10.166 | INFO     | envs.hitter:configure_from_modelmeta:234 - HITTER policy metadata configured, 29 degrees of freedom.
+2026-08-20 15:17:10.166 | INFO     | agents.hitter_agent:load_onnx_policy:19 - HITTER policy metadata loaded. Joints: 29 Anchor body: pelvis
+2026-08-20 15:17:10.166 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:17:10.167 | INFO     | simulator.real_world:calibrate:1602 - Calibraiting..., Press R2 to continue
+2026-08-20 15:17:21.596 | INFO     | simulator.real_world:calibrate:1604 - R2 button pressed, Start Calibrating...
+2026-08-20 15:17:21.798 | INFO     | simulator.real_world:calibrate:1622 - Calibration Done. Press R2 to continue
+2026-08-20 15:17:29.779 | WARNING  | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210249779280 state=rejected admitted=false pending=false no_ball_gap_s=none required_no_ball_s=0.200 policy_session_open=false latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=policy_session_closed,no_ball_timer_unset
+2026-08-20 15:17:56.856 | INFO     | simulator.real_world:calibrate:1627 - R2 pressed again, Communication built between policy layer and transition layer!
+2026-08-20 15:17:56.860 | INFO     | simulator.real_world:reset_heading:833 - [RealWorld] heading reset enabled, yaw0=-0.658 rad
+2026-08-20 15:17:56.867 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.4419078826904297, -0.1276020109653473].
+2026-08-20 15:17:56.873 | INFO     | envs.base_env:_update_obs:92 - Receive observation: ['actions', 'root_quat', 'root_rpy', 'base_ang_vel', 'base_lin_vel', 'dof_pos', 'dof_vel', 'projected_gravity']
+2026-08-20 15:17:56.885 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.44351643323898315, -0.1267469823360443].
+2026-08-20 15:17:56.885 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210249779280 phase=waiting consumed_track_ids=(1787210249779280,)
+2026-08-20 15:17:56.886 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:01.927 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.418968141078949, -0.20740929245948792].
+2026-08-20 15:18:01.935 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -5.0374412345886235
+2026-08-20 15:18:01.936 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:02.939 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:03.941 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:04.392 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.009501199722290039
+2026-08-20 15:18:04.954 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:05.956 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:06.959 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:07.962 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:08.964 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:09.967 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:10.970 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:11.972 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:12.975 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:13.978 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:14.980 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:15.983 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:16.985 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:17.988 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:18.991 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:19.994 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:20.996 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:21.999 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:23.002 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:24.004 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:24.447 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210304446990 state=admitted admitted=true pending=false no_ball_gap_s=22.523 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:18:24.447 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1368 - Vicon ball information received!
+2026-08-20 15:18:24.447 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1369 - Ball Position World: [ 1.9307636  -0.70347893  0.79693896]
+2026-08-20 15:18:24.466 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210304446990 decision=retained_failure
+2026-08-20 15:18:24.466 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210304446990 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:24.707 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.48698362708091736, -0.20277760922908783].
+2026-08-20 15:18:24.707 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210304446990 decision=cancelled
+2026-08-20 15:18:24.707 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210304446990 phase=waiting consumed_track_ids=(1787210304446990,)
+2026-08-20 15:18:25.007 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1 completed=0 failed=1 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:26.010 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1 completed=0 failed=1 dropped=0 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:26.183 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210306183559 state=admitted admitted=true pending=false no_ball_gap_s=1.480 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:18:26.190 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210306183559 decision=retained_failure
+2026-08-20 15:18:26.190 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210306183559 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:26.310 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210306183559 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:26.416 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.060950736999511715
+2026-08-20 15:18:26.416 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210306183559 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:26.504 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06823132514953613
+2026-08-20 15:18:26.555 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030140142440795898
+2026-08-20 15:18:26.587 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012113313674926757
+2026-08-20 15:18:27.049 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11692784309387207
+2026-08-20 15:18:27.056 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=67 completed=0 failed=55 dropped=11 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:27.198 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12206886291503906
+2026-08-20 15:18:27.277 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05825994491577148
+2026-08-20 15:18:27.614 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09489605903625488
+2026-08-20 15:18:27.706 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07101295471191406
+2026-08-20 15:18:27.859 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07187650680541992
+2026-08-20 15:18:27.917 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03709004402160644
+2026-08-20 15:18:27.960 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0036730575561523433
+2026-08-20 15:18:27.981 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0005411911010742183
+2026-08-20 15:18:28.062 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=119 completed=0 failed=101 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:28.162 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.5198522210121155, -0.20599104464054108].
+2026-08-20 15:18:28.163 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210306183559 decision=cancelled
+2026-08-20 15:18:28.163 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210306183559 phase=waiting consumed_track_ids=(1787210306183559,)
+2026-08-20 15:18:28.544 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210308544227 state=admitted admitted=true pending=false no_ball_gap_s=0.397 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:18:28.563 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210308544227 decision=retained_failure
+2026-08-20 15:18:28.563 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210308544227 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:28.724 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210308544227 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:28.848 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08445046424865722
+2026-08-20 15:18:28.849 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210308544227 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:28.927 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05817435264587402
+2026-08-20 15:18:28.993 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04585884094238281
+2026-08-20 15:18:29.040 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.026784400939941406
+2026-08-20 15:18:29.083 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.022860746383666992
+2026-08-20 15:18:29.084 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=144 completed=0 failed=125 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:29.114 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010875205993652343
+2026-08-20 15:18:29.316 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.5506591796875, -0.204698845744133].
+2026-08-20 15:18:29.316 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210308544227 decision=cancelled
+2026-08-20 15:18:29.316 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210308544227 phase=waiting consumed_track_ids=(1787210308544227,)
+2026-08-20 15:18:30.097 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=145 completed=0 failed=127 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:31.100 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=145 completed=0 failed=127 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:32.103 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=145 completed=0 failed=127 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:33.105 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=145 completed=0 failed=127 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:34.108 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=145 completed=0 failed=127 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:35.111 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=145 completed=0 failed=127 dropped=18 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:35.357 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210315356935 state=admitted admitted=true pending=false no_ball_gap_s=6.053 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:18:35.372 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210315356935 decision=retained_failure
+2026-08-20 15:18:35.372 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210315356935 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:35.472 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210315356935 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:35.652 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.14011977195739747
+2026-08-20 15:18:35.659 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210315356935 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:35.749 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07038233757019043
+2026-08-20 15:18:35.789 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.019013385772705078
+2026-08-20 15:18:35.820 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01146815299987793
+2026-08-20 15:18:35.850 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.009364585876464843
+2026-08-20 15:18:36.045 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.17504451751708985
+2026-08-20 15:18:36.165 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09998462677001953
+2026-08-20 15:18:36.166 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=185 completed=0 failed=166 dropped=19 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:36.263 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03753660202026367
+2026-08-20 15:18:36.308 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024826745986938476
+2026-08-20 15:18:36.360 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029654483795166015
+2026-08-20 15:18:36.361 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210315356935 decision=armed
+2026-08-20 15:18:36.361 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210315356935 phase=armed consumed_track_ids=()
+2026-08-20 15:18:36.384 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210315356935 phase=armed consumed_track_ids=()
+2026-08-20 15:18:36.445 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041021327972412105
+2026-08-20 15:18:36.467 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0015818881988525386
+2026-08-20 15:18:36.546 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013487796783447265
+2026-08-20 15:18:36.571 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005114774703979492
+2026-08-20 15:18:36.609 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018158178329467773
+2026-08-20 15:18:36.677 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.022569398880004882
+2026-08-20 15:18:36.699 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0024342346191406246
+2026-08-20 15:18:36.740 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020127992630004882
+2026-08-20 15:18:36.770 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01053903579711914
+2026-08-20 15:18:36.806 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:18:36.819 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210315356935 phase=armed consumed_track_ids=()
+2026-08-20 15:18:36.879 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:18:36.879 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210315356935 generation=106 type=forehand strike_table_y_w=-0.6122 side_source=table_y p_racket_target_w_m=[0.0000,-0.6122,1.1578] raw_racket_normal_speed_mps=1.0173 commanded_racket_normal_speed_mps=1.0173 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-3.5141,-1.0374,-2.3169] speed_ball_in_mps=4.3351 v_ball_out_w_mps=[4.8047,2.3196,1.5716] speed_ball_out_mps=5.5620 v_racket_target_w_mps=[0.8656,0.3493,0.4046] speed_racket_mps=1.0173 v_racket_policy_w_mps=[0.8656,0.3493,0.4046] speed_racket_policy_mps=1.0173 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:18:36.879 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:18:37.180 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=238 completed=37 failed=181 dropped=20 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:18:37.741 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210315356935 phase=recovery consumed_track_ids=(1787210315356935,)
+2026-08-20 15:18:38.182 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=238 completed=37 failed=181 dropped=20 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:18:38.243 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.3384970724582672, -0.14589835703372955].
+2026-08-20 15:18:38.243 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:18:39.185 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=238 completed=37 failed=181 dropped=20 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:40.188 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=238 completed=37 failed=181 dropped=20 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:41.190 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=238 completed=37 failed=181 dropped=20 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:42.193 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=238 completed=37 failed=181 dropped=20 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:43.196 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=238 completed=37 failed=181 dropped=20 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:44.044 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210324044018 state=admitted admitted=true pending=false no_ball_gap_s=6.304 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:18:44.058 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210324044018 decision=retained_failure
+2026-08-20 15:18:44.058 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210324044018 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:44.158 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210324044018 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:44.324 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12275193214416504
+2026-08-20 15:18:44.324 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210324044018 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:44.324 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=256 completed=37 failed=197 dropped=20 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:44.394 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.049248914718627926
+2026-08-20 15:18:44.667 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041434984207153316
+2026-08-20 15:18:44.718 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03153822898864746
+2026-08-20 15:18:44.719 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210324044018 decision=armed
+2026-08-20 15:18:44.739 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210324044018 phase=armed consumed_track_ids=()
+2026-08-20 15:18:44.739 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210324044018 phase=armed consumed_track_ids=()
+2026-08-20 15:18:44.794 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014964799880981445
+2026-08-20 15:18:44.824 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010222892761230468
+2026-08-20 15:18:44.856 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011313896179199218
+2026-08-20 15:18:44.881 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.004897098541259765
+2026-08-20 15:18:44.913 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010606746673583984
+2026-08-20 15:18:44.941 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.008243780136108398
+2026-08-20 15:18:44.964 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0022370624542236324
+2026-08-20 15:18:44.989 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005675773620605468
+2026-08-20 15:18:45.019 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007298212051391601
+2026-08-20 15:18:45.051 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012207250595092773
+2026-08-20 15:18:45.073 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.001295070648193359
+2026-08-20 15:18:45.095 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0016264724731445308
+2026-08-20 15:18:45.136 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021189193725585937
+2026-08-20 15:18:45.168 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011588554382324218
+2026-08-20 15:18:45.189 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:18:45.190 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00227640151977539
+2026-08-20 15:18:45.191 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210324044018 phase=armed consumed_track_ids=()
+2026-08-20 15:18:45.342 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005755643844604492
+2026-08-20 15:18:45.343 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=armed submitted=339 completed=90 failed=227 dropped=22 completed_overflow=0 policy_tts=0.001
+2026-08-20 15:18:45.362 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:18:45.363 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210324044018 generation=133 type=forehand strike_table_y_w=-0.5235 side_source=table_y p_racket_target_w_m=[0.0000,-0.5235,0.8657] raw_racket_normal_speed_mps=1.6147 commanded_racket_normal_speed_mps=1.6147 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-2.3014,-0.9631,2.4968] speed_ball_in_mps=3.5296 v_ball_out_w_mps=[4.8004,2.1098,2.2592] speed_ball_out_mps=5.7095 v_racket_target_w_mps=[1.4812,0.5000,0.0000] speed_racket_mps=1.5633 v_racket_policy_w_mps=[1.4812,0.5000,0.0000] speed_racket_policy_mps=1.5633 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:18:45.363 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:18:45.824 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210324044018 phase=recovery consumed_track_ids=(1787210324044018,)
+2026-08-20 15:18:46.345 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=341 completed=91 failed=228 dropped=22 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:18:46.407 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210326407673 state=admitted admitted=true pending=false no_ball_gap_s=0.594 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:18:46.425 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=ESTIMATOR_NOT_READY track_id=1787210326407673 phase=recovery consumed_track_ids=()
+2026-08-20 15:18:46.526 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.4000380337238312, -0.040977202355861664].
+2026-08-20 15:18:46.526 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:18:46.526 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210326407673 decision=retained_failure
+2026-08-20 15:18:46.526 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210326407673 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:46.546 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210326407673 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:46.728 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.14182065010070802
+2026-08-20 15:18:46.731 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210326407673 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:46.812 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06264446258544921
+2026-08-20 15:18:46.844 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011290531158447265
+2026-08-20 15:18:46.888 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023740510940551757
+2026-08-20 15:18:46.933 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02420804977416992
+2026-08-20 15:18:47.216 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03988049507141113
+2026-08-20 15:18:47.264 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02724431037902832
+2026-08-20 15:18:47.264 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210326407673 phase=tracking consumed_track_ids=()
+2026-08-20 15:18:47.285 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210326407673 decision=armed
+2026-08-20 15:18:47.355 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0026283073425292965
+2026-08-20 15:18:47.355 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=armed submitted=408 completed=98 failed=281 dropped=29 completed_overflow=0 policy_tts=0.648
+2026-08-20 15:18:47.387 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011870126724243164
+2026-08-20 15:18:47.430 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023424129486083984
+2026-08-20 15:18:47.473 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.022559385299682617
+2026-08-20 15:18:47.513 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01936600685119629
+2026-08-20 15:18:47.537 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210326407673 phase=armed consumed_track_ids=()
+2026-08-20 15:18:47.558 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0014946269989013668
+2026-08-20 15:18:47.579 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0013334560394287105
+2026-08-20 15:18:47.601 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0017444896697998043
+2026-08-20 15:18:47.625 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0031351852416992183
+2026-08-20 15:18:47.647 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0021197605133056636
+2026-08-20 15:18:47.678 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.009167413711547851
+2026-08-20 15:18:47.710 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011779766082763671
+2026-08-20 15:18:47.732 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0016615200042724605
+2026-08-20 15:18:47.753 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0013971138000488277
+2026-08-20 15:18:47.784 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01053903579711914
+2026-08-20 15:18:47.795 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:18:47.805 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210326407673 phase=armed consumed_track_ids=()
+2026-08-20 15:18:48.018 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:18:48.019 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210326407673 generation=265 type=forehand strike_table_y_w=-0.5008 side_source=table_y p_racket_target_w_m=[0.0000,-0.5008,1.1915] raw_racket_normal_speed_mps=2.0471 commanded_racket_normal_speed_mps=2.0471 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-1.8159,-0.7227,0.4419] speed_ball_in_mps=2.0038 v_ball_out_w_mps=[4.7936,2.0538,1.4921] speed_ball_out_mps=5.4243 v_racket_target_w_mps=[1.8674,0.5000,0.2967] speed_racket_mps=1.9558 v_racket_policy_w_mps=[1.8674,0.5000,0.2967] speed_racket_policy_mps=1.9558 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:18:48.019 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:18:48.359 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:18:48.780 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210326407673 phase=recovery consumed_track_ids=(1787210326407673,)
+2026-08-20 15:18:49.062 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.2793351113796234, -0.014473453164100647].
+2026-08-20 15:18:49.062 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:18:49.362 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:50.365 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:51.367 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:52.370 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:53.373 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:54.376 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:55.378 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:56.381 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:57.384 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:58.386 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:18:59.389 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:00.392 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:01.394 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:02.397 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:03.400 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:04.403 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:05.405 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:06.408 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:07.411 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:08.413 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=469 completed=153 failed=287 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:08.894 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210348894102 state=admitted admitted=true pending=false no_ball_gap_s=20.116 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:08.894 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210348894102 decision=retained_failure
+2026-08-20 15:19:08.894 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210348894102 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:08.907 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:09.015 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210348894102 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:09.356 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.2812439799308777, -0.035646066069602966].
+2026-08-20 15:19:09.356 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210348894102 decision=cancelled
+2026-08-20 15:19:09.356 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210348894102 phase=waiting consumed_track_ids=(1787210348894102,)
+2026-08-20 15:19:09.416 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=487 completed=153 failed=305 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:10.418 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=487 completed=153 failed=305 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:11.421 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=487 completed=153 failed=305 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:12.424 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=487 completed=153 failed=305 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:12.438 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210352437961 state=admitted admitted=true pending=false no_ball_gap_s=3.084 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:12.444 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210352437961 decision=retained_failure
+2026-08-20 15:19:12.444 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210352437961 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:12.564 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210352437961 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:12.645 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04141138076782226
+2026-08-20 15:19:12.646 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210352437961 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:12.740 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.074573974609375
+2026-08-20 15:19:12.841 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07644699096679687
+2026-08-20 15:19:12.909 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.045757513046264645
+2026-08-20 15:19:13.128 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.015653352737426757
+2026-08-20 15:19:13.189 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04072402000427246
+2026-08-20 15:19:13.190 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210352437961 decision=armed
+2026-08-20 15:19:13.190 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210352437961 phase=armed consumed_track_ids=()
+2026-08-20 15:19:13.222 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011885623931884765
+2026-08-20 15:19:13.242 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210352437961 phase=armed consumed_track_ids=()
+2026-08-20 15:19:13.439 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=armed submitted=555 completed=178 failed=347 dropped=29 completed_overflow=0 policy_tts=0.642
+2026-08-20 15:19:13.479 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0005185413360595699
+2026-08-20 15:19:13.505 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005372028350830078
+2026-08-20 15:19:13.533 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00263951301574707
+2026-08-20 15:19:13.565 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011212329864501953
+2026-08-20 15:19:13.587 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0017738151550292965
+2026-08-20 15:19:13.619 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012220125198364257
+2026-08-20 15:19:13.641 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00182316780090332
+2026-08-20 15:19:13.666 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:13.667 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005329351425170898
+2026-08-20 15:19:13.768 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00017188072204589802
+2026-08-20 15:19:13.790 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0019101905822753902
+2026-08-20 15:19:13.811 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0008008289337158199
+2026-08-20 15:19:13.832 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0010764408111572261
+2026-08-20 15:19:13.859 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006467084884643554
+2026-08-20 15:19:13.896 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016802053451538086
+2026-08-20 15:19:13.928 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01205275535583496
+2026-08-20 15:19:13.953 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.004933576583862304
+2026-08-20 15:19:13.981 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007189970016479492
+2026-08-20 15:19:14.003 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0020746994018554683
+2026-08-20 15:19:14.024 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=BALL_NOT_INCOMING track_id=1787210352437961 phase=armed consumed_track_ids=()
+2026-08-20 15:19:14.084 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:19:14.084 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210352437961 generation=120 type=forehand strike_table_y_w=-0.5438 side_source=table_y p_racket_target_w_m=[0.0000,-0.5438,0.9449] raw_racket_normal_speed_mps=1.9039 commanded_racket_normal_speed_mps=1.9039 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-1.8223,-0.6492,-1.6515] speed_ball_in_mps=2.5436 v_ball_out_w_mps=[4.8002,2.1574,2.0726] speed_ball_out_mps=5.6562 v_racket_target_w_mps=[1.5567,0.5000,0.8754] speed_racket_mps=1.8546 v_racket_policy_w_mps=[1.5567,0.5000,0.8754] speed_racket_policy_mps=1.8546 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:19:14.084 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:19:14.385 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210352437961 phase=recovery consumed_track_ids=(1787210352437961,)
+2026-08-20 15:19:14.445 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=613 completed=225 failed=359 dropped=29 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:19:14.947 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.31928256154060364, -0.030952738597989082].
+2026-08-20 15:19:14.947 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:19:15.448 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=613 completed=225 failed=359 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:16.450 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=613 completed=225 failed=359 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:17.453 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=613 completed=225 failed=359 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:18.456 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=613 completed=225 failed=359 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:19.458 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=613 completed=225 failed=359 dropped=29 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:19.531 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210359531269 state=admitted admitted=true pending=false no_ball_gap_s=5.154 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:19.539 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210359531269 decision=retained_failure
+2026-08-20 15:19:19.539 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210359531269 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:19.659 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210359531269 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:19.741 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041221361160278316
+2026-08-20 15:19:19.742 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210359531269 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:19.785 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023085575103759765
+2026-08-20 15:19:19.818 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012638072967529296
+2026-08-20 15:19:19.901 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06257722854614257
+2026-08-20 15:19:19.971 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05009029388427734
+2026-08-20 15:19:20.050 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0552570629119873
+2026-08-20 15:19:20.190 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11910079002380371
+2026-08-20 15:19:20.215 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005285959243774414
+2026-08-20 15:19:20.454 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.038109998703002926
+2026-08-20 15:19:20.493 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018793325424194336
+2026-08-20 15:19:20.493 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210359531269 decision=armed
+2026-08-20 15:19:20.493 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210359531269 phase=armed consumed_track_ids=()
+2026-08-20 15:19:20.494 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210359531269 phase=armed consumed_track_ids=()
+2026-08-20 15:19:20.494 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=armed submitted=675 completed=229 failed=407 dropped=39 completed_overflow=0 policy_tts=0.684
+2026-08-20 15:19:20.967 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:20.986 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210359531269 phase=armed consumed_track_ids=()
+2026-08-20 15:19:21.170 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0007581520080566402
+2026-08-20 15:19:21.212 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020786504745483398
+2026-08-20 15:19:21.213 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:19:21.213 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210359531269 generation=172 type=forehand strike_table_y_w=-0.6084 side_source=table_y p_racket_target_w_m=[0.0000,-0.6084,1.0181] raw_racket_normal_speed_mps=1.8796 commanded_racket_normal_speed_mps=1.8796 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-2.0406,-0.7550,1.9174] speed_ball_in_mps=2.9001 v_ball_out_w_mps=[4.8054,2.3111,1.9007] speed_ball_out_mps=5.6609 v_racket_target_w_mps=[1.7154,0.5000,0.0000] speed_racket_mps=1.7867 v_racket_policy_w_mps=[1.7154,0.5000,0.0000] speed_racket_policy_mps=1.7867 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:19:21.213 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:19:21.493 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:19:21.714 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210359531269 phase=recovery consumed_track_ids=(1787210359531269,)
+2026-08-20 15:19:22.416 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.4230065941810608, -0.14726947247982025].
+2026-08-20 15:19:22.416 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:19:22.496 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:23.499 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:24.501 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:25.504 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:26.507 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:27.509 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:28.512 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:29.515 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:30.517 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:31.520 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:32.523 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:33.526 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:34.528 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:35.531 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:36.534 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:37.536 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=737 completed=283 failed=415 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:37.732 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210377732740 state=admitted admitted=true pending=false no_ball_gap_s=16.031 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:37.737 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210377732740 decision=retained_failure
+2026-08-20 15:19:37.737 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210377732740 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:37.749 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:37.857 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210377732740 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:38.029 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:38.299 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.43210089206695557, -0.1749328225851059].
+2026-08-20 15:19:38.299 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210377732740 decision=cancelled
+2026-08-20 15:19:38.299 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210377732740 phase=waiting consumed_track_ids=(1787210377732740,)
+2026-08-20 15:19:38.539 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=764 completed=283 failed=442 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:39.542 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=764 completed=283 failed=442 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:40.544 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=764 completed=283 failed=442 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:41.547 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=764 completed=283 failed=442 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:42.550 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=764 completed=283 failed=442 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:43.458 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210383458629 state=admitted admitted=true pending=false no_ball_gap_s=5.163 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:43.472 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210383458629 decision=retained_failure
+2026-08-20 15:19:43.472 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210383458629 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:43.552 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=772 completed=283 failed=450 dropped=39 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:43.572 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210383458629 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:43.695 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0775043773651123
+2026-08-20 15:19:43.697 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210383458629 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:43.781 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06359932899475097
+2026-08-20 15:19:43.852 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05109761238098144
+2026-08-20 15:19:43.921 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04924843788146972
+2026-08-20 15:19:44.124 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08207319259643554
+2026-08-20 15:19:44.236 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08826706886291504
+2026-08-20 15:19:44.306 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04936597824096679
+2026-08-20 15:19:44.375 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04903886795043945
+2026-08-20 15:19:44.557 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=832 completed=283 failed=504 dropped=45 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:44.965 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210384965461 state=pending admitted=false pending=true no_ball_gap_s=0.004 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-08-20 15:19:44.979 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.44030794501304626, -0.19445879757404327].
+2026-08-20 15:19:44.979 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210383458629 decision=cancelled
+2026-08-20 15:19:44.979 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210383458629 phase=waiting consumed_track_ids=(1787210383458629,)
+2026-08-20 15:19:45.162 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1353 - HITTER Vicon pending-track admission: track_id=1787210384965461 state=promoted admitted=true deadline_monotonic_s=20739.590735 promoted_at_monotonic_s=20739.591147
+2026-08-20 15:19:45.179 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210384965461 decision=retained_failure
+2026-08-20 15:19:45.179 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210384965461 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:45.460 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.4458425045013428, -0.20789596438407898].
+2026-08-20 15:19:45.460 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210384965461 decision=cancelled
+2026-08-20 15:19:45.460 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210384965461 phase=waiting consumed_track_ids=(1787210384965461,)
+2026-08-20 15:19:45.560 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=849 completed=283 failed=521 dropped=45 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:46.302 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210386302220 state=admitted admitted=true pending=false no_ball_gap_s=0.850 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:46.322 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210386302220 decision=retained_failure
+2026-08-20 15:19:46.322 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210386302220 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:46.422 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210386302220 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:46.545 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06246254920959472
+2026-08-20 15:19:46.551 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210386302220 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:46.605 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03954957008361816
+2026-08-20 15:19:46.608 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=868 completed=283 failed=538 dropped=45 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:46.657 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03112171173095703
+2026-08-20 15:19:46.744 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06687210083007812
+2026-08-20 15:19:46.832 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:47.047 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017587642669677734
+2026-08-20 15:19:47.154 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04585860252380371
+2026-08-20 15:19:47.168 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:47.344 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04958341598510742
+2026-08-20 15:19:47.385 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020558576583862304
+2026-08-20 15:19:47.465 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06046746253967285
+2026-08-20 15:19:47.512 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.026381711959838867
+2026-08-20 15:19:47.588 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05590985298156738
+2026-08-20 15:19:47.639 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:47.641 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03284953117370605
+2026-08-20 15:19:47.642 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=931 completed=283 failed=598 dropped=50 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:47.698 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:47.881 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.038403015136718746
+2026-08-20 15:19:47.934 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03308008193969726
+2026-08-20 15:19:47.972 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01743124008178711
+2026-08-20 15:19:48.116 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11769149780273437
+2026-08-20 15:19:48.187 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05039880752563476
+2026-08-20 15:19:48.226 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016852598190307617
+2026-08-20 15:19:48.227 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:48.285 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:48.588 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.4545019567012787, -0.21559764444828033].
+2026-08-20 15:19:48.588 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210386302220 decision=cancelled
+2026-08-20 15:19:48.588 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210386302220 phase=waiting consumed_track_ids=(1787210386302220,)
+2026-08-20 15:19:48.647 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=971 completed=283 failed=637 dropped=51 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:48.925 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210388925476 state=admitted admitted=true pending=false no_ball_gap_s=0.343 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:48.928 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210388925476 decision=retained_failure
+2026-08-20 15:19:48.928 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210388925476 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:49.049 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210388925476 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:49.172 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08234451293945312
+2026-08-20 15:19:49.173 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210388925476 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:49.298 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10511181831359863
+2026-08-20 15:19:49.350 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.031849365234374996
+2026-08-20 15:19:49.436 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06595514297485351
+2026-08-20 15:19:49.529 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07270000457763671
+2026-08-20 15:19:49.600 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04701517105102539
+2026-08-20 15:19:49.681 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06126473426818847
+2026-08-20 15:19:49.681 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1014 completed=283 failed=676 dropped=55 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:50.016 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11389205932617187
+2026-08-20 15:19:50.067 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03173540115356445
+2026-08-20 15:19:50.068 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210388925476 decision=armed
+2026-08-20 15:19:50.069 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210388925476 phase=armed consumed_track_ids=()
+2026-08-20 15:19:50.069 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210388925476 phase=armed consumed_track_ids=()
+2026-08-20 15:19:50.144 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014693241119384765
+2026-08-20 15:19:50.167 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0020975875854492183
+2026-08-20 15:19:50.196 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.008731822967529296
+2026-08-20 15:19:50.218 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0015921401977539058
+2026-08-20 15:19:50.248 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010487298965454101
+2026-08-20 15:19:50.272 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0031344699859619136
+2026-08-20 15:19:50.300 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006986122131347656
+2026-08-20 15:19:50.321 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0008599567413330074
+2026-08-20 15:19:50.343 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0010032463073730465
+2026-08-20 15:19:50.363 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0003945636749267574
+2026-08-20 15:19:50.395 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011713008880615234
+2026-08-20 15:19:50.423 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007497768402099609
+2026-08-20 15:19:50.451 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00027392387390136677
+2026-08-20 15:19:50.453 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:50.687 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=BALL_NOT_INCOMING track_id=1787210388925476 phase=armed consumed_track_ids=()
+2026-08-20 15:19:50.687 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=armed submitted=1097 completed=336 failed=706 dropped=55 completed_overflow=0 policy_tts=0.255
+2026-08-20 15:19:50.948 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:19:50.948 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210388925476 generation=162 type=forehand strike_table_y_w=-0.4998 side_source=table_y p_racket_target_w_m=[0.0000,-0.4998,0.7932] raw_racket_normal_speed_mps=1.7962 commanded_racket_normal_speed_mps=1.7962 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-1.8447,-0.5924,-2.1737] speed_ball_in_mps=2.9118 v_ball_out_w_mps=[4.8006,2.0543,2.4299] speed_ball_out_mps=5.7594 v_racket_target_w_mps=[1.4032,0.5000,0.9721] speed_racket_mps=1.7788 v_racket_policy_w_mps=[1.4032,0.5000,0.9721] speed_racket_policy_mps=1.7788 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:19:50.948 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:19:51.168 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210388925476 phase=recovery consumed_track_ids=(1787210388925476,)
+2026-08-20 15:19:51.175 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210391175529 state=pending admitted=false pending=true no_ball_gap_s=0.010 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-08-20 15:19:51.365 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1353 - HITTER Vicon pending-track admission: track_id=1787210391175529 state=promoted admitted=true deadline_monotonic_s=20745.794307 promoted_at_monotonic_s=20745.794545
+2026-08-20 15:19:51.369 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=BALL_NOT_INCOMING track_id=1787210391175529 phase=recovery consumed_track_ids=()
+2026-08-20 15:19:51.690 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=1144 completed=336 failed=753 dropped=55 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:19:52.011 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.40884432196617126, -0.04767800495028496].
+2026-08-20 15:19:52.011 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:19:52.011 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210391175529 decision=retained_failure
+2026-08-20 15:19:52.011 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210391175529 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:52.533 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.40767714381217957, -0.06898220628499985].
+2026-08-20 15:19:52.533 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210391175529 decision=cancelled
+2026-08-20 15:19:52.533 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210391175529 phase=waiting consumed_track_ids=(1787210391175529,)
+2026-08-20 15:19:52.693 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1188 completed=336 failed=797 dropped=55 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:52.729 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210392729720 state=admitted admitted=true pending=false no_ball_gap_s=0.208 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:19:52.733 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210392729720 decision=retained_failure
+2026-08-20 15:19:52.733 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210392729720 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:52.853 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210392729720 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:52.956 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06207035064697265
+2026-08-20 15:19:52.957 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210392729720 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:53.053 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07619355201721191
+2026-08-20 15:19:53.192 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11095045089721679
+2026-08-20 15:19:53.278 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0615894603729248
+2026-08-20 15:19:53.379 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08056185722351074
+2026-08-20 15:19:53.443 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.035337429046630855
+2026-08-20 15:19:53.594 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.1310930061340332
+2026-08-20 15:19:53.695 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1244 completed=336 failed=845 dropped=63 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:53.781 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04557869911193847
+2026-08-20 15:19:53.781 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210392729720 decision=armed
+2026-08-20 15:19:53.781 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210392729720 phase=armed consumed_track_ids=()
+2026-08-20 15:19:53.801 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210392729720 phase=armed consumed_track_ids=()
+2026-08-20 15:19:53.853 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011674623489379882
+2026-08-20 15:19:53.893 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01998279571533203
+2026-08-20 15:19:53.915 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.001646499633789062
+2026-08-20 15:19:53.937 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.001606206893920898
+2026-08-20 15:19:53.960 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002856950759887695
+2026-08-20 15:19:53.982 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0020172405242919918
+2026-08-20 15:19:54.013 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01084254264831543
+2026-08-20 15:19:54.066 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011457424163818359
+2026-08-20 15:19:54.100 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013139944076538086
+2026-08-20 15:19:54.141 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02115748405456543
+2026-08-20 15:19:54.176 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014651517868041992
+2026-08-20 15:19:54.197 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0006005573272705074
+2026-08-20 15:19:54.228 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010907154083251953
+2026-08-20 15:19:54.249 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.001531581878662109
+2026-08-20 15:19:54.271 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0017905044555664058
+2026-08-20 15:19:54.293 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0010688114166259761
+2026-08-20 15:19:54.294 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:54.313 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210392729720 phase=armed consumed_track_ids=()
+2026-08-20 15:19:54.399 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005746583938598632
+2026-08-20 15:19:54.431 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011996488571166992
+2026-08-20 15:19:54.462 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010402183532714843
+2026-08-20 15:19:54.483 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0013208198547363277
+2026-08-20 15:19:54.513 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.009721736907958984
+2026-08-20 15:19:54.533 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=BALL_NOT_INCOMING track_id=1787210392729720 phase=armed consumed_track_ids=()
+2026-08-20 15:19:54.614 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:19:54.614 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210392729720 generation=159 type=forehand strike_table_y_w=-0.5260 side_source=table_y p_racket_target_w_m=[0.0000,-0.5260,1.0874] raw_racket_normal_speed_mps=2.0315 commanded_racket_normal_speed_mps=2.0315 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-1.8736,-0.6442,-0.6221] speed_ball_in_mps=2.0767 v_ball_out_w_mps=[4.7963,2.1138,1.7370] speed_ball_out_mps=5.5218 v_racket_target_w_mps=[1.7845,0.5000,0.6311] speed_racket_mps=1.9577 v_racket_policy_w_mps=[1.7845,0.5000,0.6311] speed_racket_policy_mps=1.9577 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:19:54.614 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:19:54.714 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=1323 completed=398 failed=862 dropped=63 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:19:55.022 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210395021906 state=pending admitted=false pending=true no_ball_gap_s=0.003 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-08-20 15:19:55.035 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210392729720 phase=recovery consumed_track_ids=(1787210392729720,)
+2026-08-20 15:19:55.222 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1353 - HITTER Vicon pending-track admission: track_id=1787210395021906 state=promoted admitted=true deadline_monotonic_s=20749.647493 promoted_at_monotonic_s=20749.651196
+2026-08-20 15:19:55.235 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=BALL_NOT_INCOMING track_id=1787210395021906 phase=recovery consumed_track_ids=()
+2026-08-20 15:19:55.657 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.39414021372795105, -0.0512203611433506].
+2026-08-20 15:19:55.657 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:19:55.677 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210395021906 decision=retained_failure
+2026-08-20 15:19:55.677 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210395021906 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:55.717 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1353 completed=398 failed=892 dropped=63 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:55.880 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10350010871887207
+2026-08-20 15:19:55.880 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210395021906 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:55.973 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012384157180786132
+2026-08-20 15:19:56.016 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02264354705810547
+2026-08-20 15:19:56.049 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012088041305541992
+2026-08-20 15:19:56.087 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017739038467407226
+2026-08-20 15:19:56.139 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03157375335693359
+2026-08-20 15:19:56.205 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.045827608108520504
+2026-08-20 15:19:56.266 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04073355674743652
+2026-08-20 15:19:56.340 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05024908065795898
+2026-08-20 15:19:56.414 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05096648216247558
+2026-08-20 15:19:56.467 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.032374124526977535
+2026-08-20 15:19:56.521 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.034177761077880855
+2026-08-20 15:19:56.632 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07066987037658691
+2026-08-20 15:19:56.700 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.044906120300292965
+2026-08-20 15:19:56.742 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02149174690246582
+2026-08-20 15:19:56.742 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1407 completed=398 failed=938 dropped=71 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:56.762 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210395021906 decision=armed
+2026-08-20 15:19:56.782 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210395021906 phase=armed consumed_track_ids=()
+2026-08-20 15:19:56.782 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210395021906 phase=armed consumed_track_ids=()
+2026-08-20 15:19:56.823 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00025127410888671833
+2026-08-20 15:19:56.908 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020143728256225586
+2026-08-20 15:19:56.929 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0010161209106445308
+2026-08-20 15:19:56.965 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.015189628601074218
+2026-08-20 15:19:57.009 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024019222259521484
+2026-08-20 15:19:57.050 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020677785873413086
+2026-08-20 15:19:57.072 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0017030048370361324
+2026-08-20 15:19:57.095 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0029580402374267574
+2026-08-20 15:19:57.223 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:19:57.227 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210395021906 phase=armed consumed_track_ids=()
+2026-08-20 15:19:57.267 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:19:57.267 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210395021906 generation=300 type=forehand strike_table_y_w=-0.5435 side_source=table_y p_racket_target_w_m=[0.0000,-0.5435,1.1393] raw_racket_normal_speed_mps=1.0063 commanded_racket_normal_speed_mps=1.0063 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-3.3282,-1.1592,-2.4436] speed_ball_in_mps=4.2886 v_ball_out_w_mps=[4.7978,2.1554,1.6150] speed_ball_out_mps=5.5020 v_racket_target_w_mps=[0.8457,0.3450,0.4224] speed_racket_mps=1.0063 v_racket_policy_w_mps=[0.8457,0.3450,0.4224] speed_racket_policy_mps=1.0063 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:19:57.267 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:19:57.748 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=1453 completed=439 failed=943 dropped=71 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:19:58.025 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210398025033 state=pending admitted=false pending=true no_ball_gap_s=0.003 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-08-20 15:19:58.029 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210395021906 phase=recovery consumed_track_ids=(1787210395021906,)
+2026-08-20 15:19:58.225 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1353 - HITTER Vicon pending-track admission: track_id=1787210398025033 state=promoted admitted=true deadline_monotonic_s=20752.650826 promoted_at_monotonic_s=20752.654149
+2026-08-20 15:19:58.229 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=BALL_NOT_INCOMING track_id=1787210398025033 phase=recovery consumed_track_ids=()
+2026-08-20 15:19:58.671 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.39560091495513916, -0.04483566805720329].
+2026-08-20 15:19:58.671 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:19:58.671 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210398025033 decision=retained_failure
+2026-08-20 15:19:58.671 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210398025033 phase=tracking consumed_track_ids=()
+2026-08-20 15:19:58.751 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1497 completed=439 failed=987 dropped=71 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:19:59.753 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1581 completed=439 failed=1071 dropped=71 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:00.385 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07036660194396972
+2026-08-20 15:20:00.385 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210398025033 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:00.442 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03637383460998535
+2026-08-20 15:20:00.507 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.044765691757202145
+2026-08-20 15:20:00.562 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.035464029312133785
+2026-08-20 15:20:00.638 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05553339004516601
+2026-08-20 15:20:00.675 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01533792495727539
+2026-08-20 15:20:00.749 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051076869964599605
+2026-08-20 15:20:00.812 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.039844970703124996
+2026-08-20 15:20:00.813 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1653 completed=439 failed=1134 dropped=79 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:00.862 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.028354864120483398
+2026-08-20 15:20:00.914 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03170917510986328
+2026-08-20 15:20:00.969 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03577611923217773
+2026-08-20 15:20:01.046 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05585811614990234
+2026-08-20 15:20:01.162 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.035227279663085934
+2026-08-20 15:20:01.256 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07376168251037597
+2026-08-20 15:20:01.373 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09651921272277832
+2026-08-20 15:20:01.564 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.1714646625518799
+2026-08-20 15:20:01.635 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05027459144592285
+2026-08-20 15:20:01.738 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08247206687927246
+2026-08-20 15:20:01.818 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1709 completed=439 failed=1181 dropped=89 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:01.996 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03449867248535156
+2026-08-20 15:20:01.996 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210398025033 decision=armed
+2026-08-20 15:20:02.018 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0017101573944091793
+2026-08-20 15:20:02.018 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210398025033 phase=armed consumed_track_ids=()
+2026-08-20 15:20:02.039 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210398025033 phase=armed consumed_track_ids=()
+2026-08-20 15:20:02.144 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002463321685791015
+2026-08-20 15:20:02.167 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002556543350219726
+2026-08-20 15:20:02.211 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023634414672851562
+2026-08-20 15:20:02.243 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012110214233398437
+2026-08-20 15:20:02.265 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0020696926116943355
+2026-08-20 15:20:02.298 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013398151397705078
+2026-08-20 15:20:02.320 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.001646499633789062
+2026-08-20 15:20:02.356 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012734155654907226
+2026-08-20 15:20:02.379 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0022778320312499996
+2026-08-20 15:20:02.401 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0019316482543945308
+2026-08-20 15:20:02.443 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021913270950317382
+2026-08-20 15:20:02.486 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02242229461669922
+2026-08-20 15:20:02.516 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010440568923950195
+2026-08-20 15:20:02.526 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:02.537 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210398025033 phase=armed consumed_track_ids=()
+2026-08-20 15:20:02.733 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=BALL_NOT_INCOMING track_id=1787210398025033 phase=armed consumed_track_ids=()
+2026-08-20 15:20:02.773 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:20:02.773 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210398025033 generation=985 type=forehand strike_table_y_w=-0.4430 side_source=table_y p_racket_target_w_m=[0.0000,-0.4430,1.1339] raw_racket_normal_speed_mps=2.0040 commanded_racket_normal_speed_mps=2.0040 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-1.9567,-0.5872,0.3227] speed_ball_in_mps=2.0682 v_ball_out_w_mps=[4.7883,1.9165,1.6274] speed_ball_out_mps=5.4083 v_racket_target_w_mps=[1.8486,0.5000,0.3576] speed_racket_mps=1.9481 v_racket_policy_w_mps=[1.8486,0.5000,0.3576] speed_racket_policy_mps=1.9481 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:20:02.773 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:20:02.833 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=1791 completed=499 failed=1203 dropped=89 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:20:03.836 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=1791 completed=499 failed=1203 dropped=89 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:20:03.857 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.38121604919433594, -0.05326142534613609].
+2026-08-20 15:20:03.857 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:20:03.896 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210398025033 phase=waiting consumed_track_ids=(1787210398025033,)
+2026-08-20 15:20:04.839 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1791 completed=499 failed=1203 dropped=89 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:05.165 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210405165394 state=admitted admitted=true pending=false no_ball_gap_s=1.287 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:20:05.180 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210405165394 decision=retained_failure
+2026-08-20 15:20:05.180 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210405165394 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:05.280 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210405165394 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:05.325 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:05.661 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.389348566532135, -0.08403322845697403].
+2026-08-20 15:20:05.662 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210405165394 decision=cancelled
+2026-08-20 15:20:05.662 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210405165394 phase=waiting consumed_track_ids=(1787210405165394,)
+2026-08-20 15:20:05.841 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1811 completed=499 failed=1223 dropped=89 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:06.844 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1811 completed=499 failed=1223 dropped=89 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:07.445 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210407445797 state=admitted admitted=true pending=false no_ball_gap_s=1.787 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:20:07.466 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210407445797 decision=retained_failure
+2026-08-20 15:20:07.466 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210407445797 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:07.566 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210407445797 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:07.636 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029111366271972656
+2026-08-20 15:20:07.636 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210407445797 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:07.735 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07902453422546386
+2026-08-20 15:20:07.800 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04393814086914062
+2026-08-20 15:20:07.876 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05567834854125976
+2026-08-20 15:20:07.881 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1837 completed=499 failed=1245 dropped=92 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:07.954 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05349920272827148
+2026-08-20 15:20:08.049 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07459686279296875
+2026-08-20 15:20:08.263 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05276010513305664
+2026-08-20 15:20:08.323 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.039824943542480465
+2026-08-20 15:20:08.324 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210407445797 decision=armed
+2026-08-20 15:20:08.324 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210407445797 phase=armed consumed_track_ids=()
+2026-08-20 15:20:08.344 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210407445797 phase=armed consumed_track_ids=()
+2026-08-20 15:20:08.616 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00021503448486328083
+2026-08-20 15:20:08.662 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02628324508666992
+2026-08-20 15:20:08.685 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0021967697143554683
+2026-08-20 15:20:08.705 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0004484462738037105
+2026-08-20 15:20:08.736 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010413150787353515
+2026-08-20 15:20:08.737 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:08.903 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=armed submitted=1915 completed=547 failed=1275 dropped=93 completed_overflow=0 policy_tts=0.259
+2026-08-20 15:20:09.073 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=BALL_NOT_INCOMING track_id=1787210407445797 phase=armed consumed_track_ids=()
+2026-08-20 15:20:09.173 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:20:09.173 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210407445797 generation=131 type=forehand strike_table_y_w=-0.5191 side_source=table_y p_racket_target_w_m=[0.0000,-0.5191,1.0625] raw_racket_normal_speed_mps=2.0139 commanded_racket_normal_speed_mps=2.0139 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-1.7841,-0.6274,-0.9922] speed_ball_in_mps=2.1357 v_ball_out_w_mps=[4.7959,2.0977,1.7955] speed_ball_out_mps=5.5339 v_racket_target_w_mps=[1.7327,0.5000,0.7341] speed_racket_mps=1.9471 v_racket_policy_w_mps=[1.7327,0.5000,0.7341] speed_racket_policy_mps=1.9471 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:20:09.174 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:20:09.715 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210407445797 phase=recovery consumed_track_ids=(1787210407445797,)
+2026-08-20 15:20:09.915 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=1939 completed=560 failed=1286 dropped=93 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:20:10.277 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.3684034049510956, -0.0484803132712841].
+2026-08-20 15:20:10.277 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:20:10.918 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1939 completed=560 failed=1286 dropped=93 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:11.920 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1939 completed=560 failed=1286 dropped=93 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:12.923 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1939 completed=560 failed=1286 dropped=93 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:13.251 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210413251812 state=admitted admitted=true pending=false no_ball_gap_s=3.546 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:20:13.264 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210413251812 decision=retained_failure
+2026-08-20 15:20:13.264 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210413251812 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:13.312 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:13.425 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210413251812 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:13.585 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:13.816 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:13.926 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1987 completed=560 failed=1334 dropped=93 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:14.087 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.37829315662384033, -0.07293066382408142].
+2026-08-20 15:20:14.087 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210413251812 decision=cancelled
+2026-08-20 15:20:14.087 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210413251812 phase=waiting consumed_track_ids=(1787210413251812,)
+2026-08-20 15:20:14.929 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=1987 completed=560 failed=1334 dropped=93 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:15.822 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210415821979 state=admitted admitted=true pending=false no_ball_gap_s=1.740 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:20:15.831 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210415821979 decision=retained_failure
+2026-08-20 15:20:15.831 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210415821979 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:15.931 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210415821979 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:15.932 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=1996 completed=560 failed=1343 dropped=93 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:16.077 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10308835983276367
+2026-08-20 15:20:16.078 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210415821979 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:16.142 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04457853317260742
+2026-08-20 15:20:16.210 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04296753883361816
+2026-08-20 15:20:16.238 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00847003936767578
+2026-08-20 15:20:16.301 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04231284141540527
+2026-08-20 15:20:16.360 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03904483795166015
+2026-08-20 15:20:16.433 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05250380516052246
+2026-08-20 15:20:16.598 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.14430234909057618
+2026-08-20 15:20:16.656 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.035753946304321285
+2026-08-20 15:20:16.712 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.036174993515014645
+2026-08-20 15:20:17.029 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11582420349121093
+2026-08-20 15:20:17.029 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2064 completed=560 failed=1395 dropped=108 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:17.137 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08807538032531738
+2026-08-20 15:20:17.270 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.112737398147583
+2026-08-20 15:20:17.302 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012066822052001953
+2026-08-20 15:20:17.514 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03141067504882812
+2026-08-20 15:20:17.583 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.048571090698242184
+2026-08-20 15:20:17.611 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0073568630218505855
+2026-08-20 15:20:17.611 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210415821979 decision=armed
+2026-08-20 15:20:17.611 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210415821979 phase=armed consumed_track_ids=()
+2026-08-20 15:20:17.612 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210415821979 phase=armed consumed_track_ids=()
+2026-08-20 15:20:17.656 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.003228645324707031
+2026-08-20 15:20:17.688 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011348466873168945
+2026-08-20 15:20:17.710 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0015198993682861324
+2026-08-20 15:20:17.731 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0014347839355468746
+2026-08-20 15:20:17.755 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0018048095703124996
+2026-08-20 15:20:17.786 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010338525772094726
+2026-08-20 15:20:17.819 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01285837173461914
+2026-08-20 15:20:17.852 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012243728637695312
+2026-08-20 15:20:17.878 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006104450225830078
+2026-08-20 15:20:17.900 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0023312377929687496
+2026-08-20 15:20:17.945 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024349431991577148
+2026-08-20 15:20:17.977 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011975984573364257
+2026-08-20 15:20:18.000 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002500991821289062
+2026-08-20 15:20:18.042 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012854557037353515
+2026-08-20 15:20:18.043 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=armed submitted=2141 completed=603 failed=1426 dropped=112 completed_overflow=0 policy_tts=0.155
+2026-08-20 15:20:18.066 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:18.068 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00601170539855957
+2026-08-20 15:20:18.069 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210415821979 phase=armed consumed_track_ids=()
+2026-08-20 15:20:18.188 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01981161117553711
+2026-08-20 15:20:18.211 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002381782531738281
+2026-08-20 15:20:18.211 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:20:18.212 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210415821979 generation=285 type=forehand strike_table_y_w=-0.6385 side_source=table_y p_racket_target_w_m=[0.0000,-0.6385,0.9417] raw_racket_normal_speed_mps=1.0886 commanded_racket_normal_speed_mps=1.0886 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-2.9872,-1.1817,-3.0295] speed_ball_in_mps=4.4156 v_ball_out_w_mps=[4.8100,2.3838,2.0814] speed_ball_out_mps=5.7577 v_racket_target_w_mps=[0.8504,0.3888,0.5574] speed_racket_mps=1.0886 v_racket_policy_w_mps=[0.8504,0.3888,0.5574] speed_racket_policy_mps=1.0886 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:20:18.219 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:20:18.713 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210415821979 phase=recovery consumed_track_ids=(1787210415821979,)
+2026-08-20 15:20:19.054 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:20:19.536 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.37957563996315, -0.06528568267822266].
+2026-08-20 15:20:19.536 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:20:20.056 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:21.059 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:22.062 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:23.064 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:24.067 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:25.070 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:26.072 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:27.075 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:28.078 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:29.080 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:30.083 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:31.086 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:32.088 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:33.091 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:34.094 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2157 completed=613 failed=1432 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:34.656 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210434656001 state=admitted admitted=true pending=false no_ball_gap_s=15.944 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:20:34.675 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210434656001 decision=retained_failure
+2026-08-20 15:20:34.675 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210434656001 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:34.775 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210434656001 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:35.096 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2196 completed=613 failed=1471 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:35.115 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:35.377 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210434656001 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:35.391 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:35.398 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00032995223999023396
+2026-08-20 15:20:35.683 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10458157539367675
+2026-08-20 15:20:35.767 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06316755294799804
+2026-08-20 15:20:35.827 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.038520555496215816
+2026-08-20 15:20:35.931 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08455155372619629
+2026-08-20 15:20:36.015 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0630698013305664
+2026-08-20 15:20:36.104 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06655691146850586
+2026-08-20 15:20:36.104 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2264 completed=613 failed=1539 dropped=112 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:36.192 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06838558197021484
+2026-08-20 15:20:36.345 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.13131616592407228
+2026-08-20 15:20:36.422 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05662057876586914
+2026-08-20 15:20:36.514 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06682894706726074
+2026-08-20 15:20:36.587 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051089029312133785
+2026-08-20 15:20:36.655 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.048174600601196285
+2026-08-20 15:20:36.804 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12847469329833985
+2026-08-20 15:20:36.921 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09551737785339355
+2026-08-20 15:20:36.933 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:36.991 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:37.122 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2329 completed=613 failed=1596 dropped=120 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:37.544 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.3729996979236603, -0.0777270495891571].
+2026-08-20 15:20:37.544 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210434656001 decision=cancelled
+2026-08-20 15:20:37.544 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210434656001 phase=waiting consumed_track_ids=(1787210434656001,)
+2026-08-20 15:20:37.919 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210437919096 state=admitted admitted=true pending=false no_ball_gap_s=0.377 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:20:37.924 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210437919096 decision=retained_failure
+2026-08-20 15:20:37.925 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210437919096 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:38.085 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210437919096 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:38.125 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2359 completed=613 failed=1626 dropped=120 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:38.612 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12511585235595704
+2026-08-20 15:20:38.615 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210437919096 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:38.706 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07124231338500976
+2026-08-20 15:20:38.801 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07368681907653808
+2026-08-20 15:20:38.951 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.13018224716186524
+2026-08-20 15:20:39.032 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.060743074417114254
+2026-08-20 15:20:39.132 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2424 completed=613 failed=1687 dropped=124 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:39.207 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03440878868103027
+2026-08-20 15:20:39.244 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016233901977539062
+2026-08-20 15:20:39.244 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> armed track_id=1787210437919096 decision=armed
+2026-08-20 15:20:39.244 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=HIT_HEIGHT_OUT_OF_RANGE track_id=1787210437919096 phase=armed consumed_track_ids=()
+2026-08-20 15:20:39.267 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_discontinuity reason=OVERRIDE_DISCONTINUITY track_id=1787210437919096 phase=armed consumed_track_ids=()
+2026-08-20 15:20:39.403 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.004411439895629882
+2026-08-20 15:20:39.442 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011612157821655273
+2026-08-20 15:20:39.473 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011201839447021484
+2026-08-20 15:20:39.505 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011618356704711914
+2026-08-20 15:20:39.528 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0022005844116210933
+2026-08-20 15:20:39.550 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002256851196289062
+2026-08-20 15:20:39.583 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01283095359802246
+2026-08-20 15:20:39.623 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011719446182250976
+2026-08-20 15:20:39.655 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011931400299072265
+2026-08-20 15:20:39.678 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002844791412353515
+2026-08-20 15:20:39.701 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0020019817352294918
+2026-08-20 15:20:39.741 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011416654586791992
+2026-08-20 15:20:39.742 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1364 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-08-20 15:20:39.761 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_committed reason=ESTIMATOR_NOT_READY track_id=1787210437919096 phase=armed consumed_track_ids=()
+2026-08-20 15:20:39.781 | INFO     | simulator.real_world:reset_ball_state_estimator:384 - [RealWorld] ball state estimator reset.
+2026-08-20 15:20:39.782 | INFO     | envs.hitter:_log_hitter_strike_target:1303 - HITTER strike target: track_id=1787210437919096 generation=253 type=forehand strike_table_y_w=-0.6814 side_source=table_y p_racket_target_w_m=[0.0000,-0.6814,1.4567] raw_racket_normal_speed_mps=1.0575 commanded_racket_normal_speed_mps=1.0575 minimum_racket_normal_speed_mps=1.0000 racket_speed_floor_applied=false command_kind=planner_target_not_measured v_ball_in_w_mps=[-3.3969,-1.3805,-1.9779] speed_ball_in_mps=4.1661 v_ball_out_w_mps=[4.8165,2.4879,0.8660] speed_ball_out_mps=5.4899 v_racket_target_w_mps=[0.9129,0.4300,0.3161] speed_racket_mps=1.0575 v_racket_policy_w_mps=[0.9129,0.4300,0.3161] speed_racket_policy_mps=1.0575 policy_velocity_magnitude_increment_mps=0.0000 policy_vx_offset_mps=0.0000 policy_vy_offset_mps=0.0000
+2026-08-20 15:20:39.782 | INFO     | envs.hitter:_log_hitter_advance_transitions:1645 - HITTER lifecycle transition: armed -> recovery
+2026-08-20 15:20:40.143 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=recovery submitted=2481 completed=660 failed=1695 dropped=126 completed_overflow=0 policy_tts=0.000
+2026-08-20 15:20:40.463 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=TRACK_ENDED track_id=1787210437919096 phase=recovery consumed_track_ids=(1787210437919096,)
+2026-08-20 15:20:40.942 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1317 - HITTER Vicon new-track admission: track_id=1787210440942237 state=admitted admitted=true pending=false no_ball_gap_s=0.483 required_no_ball_s=0.200 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-08-20 15:20:40.945 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_recovery reason=ESTIMATOR_NOT_READY track_id=1787210440942237 phase=recovery consumed_track_ids=()
+2026-08-20 15:20:41.006 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.30682575702667236, -0.2535911798477173].
+2026-08-20 15:20:41.006 | INFO     | envs.hitter:_log_hitter_advance_transitions:1661 - HITTER lifecycle transition: recovery -> waiting
+2026-08-20 15:20:41.006 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: waiting -> tracking track_id=1787210440942237 decision=retained_failure
+2026-08-20 15:20:41.006 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=ESTIMATOR_NOT_READY track_id=1787210440942237 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:41.045 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=BALL_NOT_INCOMING track_id=1787210440942237 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:41.145 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2498 completed=660 failed=1712 dropped=126 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:41.443 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051438312530517574
+2026-08-20 15:20:41.443 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=retained_failure reason=NO_FUTURE_CROSSING track_id=1787210440942237 phase=tracking consumed_track_ids=()
+2026-08-20 15:20:41.518 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05508039474487304
+2026-08-20 15:20:41.556 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01701949119567871
+2026-08-20 15:20:41.594 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017992000579833984
+2026-08-20 15:20:41.648 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03362272262573242
+2026-08-20 15:20:41.695 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.027249555587768554
+2026-08-20 15:20:41.847 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11140535354614257
+2026-08-20 15:20:41.941 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06968186378479004
+2026-08-20 15:20:41.973 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011511545181274414
+2026-08-20 15:20:42.153 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=tracking submitted=2564 completed=660 failed=1771 dropped=133 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:42.319 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.043290119171142574
+2026-08-20 15:20:42.444 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04432294845581054
+2026-08-20 15:20:42.587 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11989090919494629
+2026-08-20 15:20:42.653 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.046366195678710934
+2026-08-20 15:20:42.875 | INFO     | envs.hitter:_capture_hitter_waiting_base_anchor:738 - HITTER waiting base anchor captured at world xy [-0.7554421424865723, -0.39257559180259705].
+2026-08-20 15:20:42.875 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:1595 - HITTER lifecycle transition: tracking -> waiting track_id=1787210440942237 decision=cancelled
+2026-08-20 15:20:42.875 | WARNING  | envs.hitter:_log_hitter_safety_decision:1619 - HITTER lifecycle safety decision: decision=cancelled reason=TRACK_ENDED track_id=1787210440942237 phase=waiting consumed_track_ids=(1787210440942237,)
+2026-08-20 15:20:43.155 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:44.158 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:45.160 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:46.163 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:47.166 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:48.169 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:49.171 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:50.174 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:51.177 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:52.179 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:53.182 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:54.185 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:55.187 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:56.190 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:57.193 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:58.196 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:20:59.199 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:00.201 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:01.204 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:02.207 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:03.209 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:04.212 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:05.215 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:06.217 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:07.220 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:08.223 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920
+2026-08-20 15:21:09.226 | INFO     | envs.hitter:_log_hitter_status:1689 - HITTER realtime status: phase=waiting submitted=2596 completed=660 failed=1802 dropped=134 completed_overflow=0 policy_tts=0.920

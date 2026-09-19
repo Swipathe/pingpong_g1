@@ -1,0 +1,813 @@
+2026-07-30 14:31:25.198 | INFO     | __main__:main:27 - Log saved to /home/loco1/BOB/Hitter/RobotBridge2/deploy/outputs/2026-07-30/14-31-25/eval.log
+2026-07-30 14:31:26.088 | INFO     | utils.motion_lib.torch_humanoid_batch:<module>:41 - Using Humanoid Batch
+2026-07-30 14:31:26.215 | DEBUG    | utils.kinematics:__init__:34 - [MujocoKinematics] loaded model from ./data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+2026-07-30 14:31:26.215 | DEBUG    | utils.kinematics:update_joint_names_subset:94 - [MujocoKinematics] set fk with 29 joints
+2026-07-30 14:31:26.215 | INFO     | simulator.base_sim:_setup:41 - Robot-level Control Frequency Set to 200.0HZ
+2026-07-30 14:31:26.215 | INFO     | simulator.base_sim:_setup:42 - Policy-level Control Frequency Set to 50.0HZ
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_pitch_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_roll_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_roll_joint  Default Angles -0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:56 - Total Number of dof: 29
+2026-07-30 14:31:26.216 | INFO     | simulator.base_sim:_load_asset:57 - Number of Action: 29
+2026-07-30 14:31:26.217 | INFO     | simulator.real_world:_init_low_state:96 - [RealWorld] terminate_on_r2=True
+2026-07-30 14:31:26.219 | INFO     | simulator.real_world:_root_state_handler:299 - State Estimator Information Received!
+2026-07-30 14:31:26.219 | INFO     | simulator.real_world:_root_state_handler:300 - Root Translation: [-0.21389575 -0.22604969  0.68017697], Root Linear Velocity: [ 0.00247999  0.01581168 -0.01718359]
+2026-07-30 14:31:26.220 | INFO     | simulator.real_world:_joint_state_handler:402 - Communication build successfully between the policy and the transition layer!
+2026-07-30 14:31:26.220 | INFO     | simulator.real_world:_joint_state_handler:403 - First signal arrives after 0.002444744110107422s!
+2026-07-30 14:31:26.220 | INFO     | simulator.real_world:_vicon_state_handler:349 - Vicon root information received!
+2026-07-30 14:31:26.221 | INFO     | simulator.real_world:_vicon_state_handler:350 - Root Translation World: [-0.33367148  0.21383825  0.6669905 ]
+2026-07-30 14:31:26.221 | INFO     | utils.history_handler:__init__:19 - History Handler initialized!
+2026-07-30 14:31:26.222 | INFO     | envs.hitter:__init__:104 - HITTER ball planner configured.
+2026-07-30 14:31:26.225 | INFO     | agents.base_agent:load_onnx_policy:22 - Loading ONNX Checkpoint from /home/loco1/BOB/Hitter/RobotBridge2/deploy/data/model/hitter/hitter_model5400_vx4to8_vz4to8_104_20260730.onnx
+2026-07-30 14:31:26.226 | INFO     | envs.hitter:configure_from_modelmeta:155 - Applying HITTER joint configuration from ONNX model.
+2026-07-30 14:31:26.229 | INFO     | envs.hitter:configure_from_modelmeta:197 - HITTER policy metadata configured, 29 degrees of freedom.
+2026-07-30 14:31:26.229 | INFO     | agents.hitter_agent:load_onnx_policy:19 - HITTER policy metadata loaded. Joints: 29 Anchor body: pelvis
+2026-07-30 14:31:26.229 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-07-30 14:31:26.230 | INFO     | simulator.real_world:calibrate:613 - Calibraiting..., Press R2 to continue
+2026-07-30 14:31:36.547 | INFO     | simulator.real_world:calibrate:616 - R2 button pressed, Start Calibrating...
+2026-07-30 14:31:36.728 | INFO     | simulator.real_world:calibrate:636 - Calibration Done. Press R2 to continue
+2026-07-30 14:32:13.228 | INFO     | simulator.real_world:calibrate:641 - R2 pressed again, Communication built between policy layer and transition layer!
+2026-07-30 14:32:13.229 | INFO     | simulator.real_world:reset_heading:267 - [RealWorld] heading reset enabled, yaw0=-0.039 rad
+2026-07-30 14:32:13.231 | INFO     | envs.hitter:_capture_hitter_waiting_base_target:499 - HITTER waiting base target captured at world position [-0.4000000059604645, 0.0, 0.669098436832428].
+2026-07-30 14:32:13.232 | INFO     | envs.base_env:_update_obs:92 - Receive observation: ['actions', 'root_quat', 'root_rpy', 'base_ang_vel', 'base_lin_vel', 'dof_pos', 'dof_vel', 'projected_gravity']
+2026-07-30 14:32:13.232 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-07-30 14:32:14.235 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-07-30 14:32:15.238 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-07-30 14:32:16.186 | INFO     | simulator.real_world:_update_ball_state_from_vicon:394 - Vicon ball information received!
+2026-07-30 14:32:16.186 | INFO     | simulator.real_world:_update_ball_state_from_vicon:395 - Ball Position World: [ 2.7306063  -0.18249589  0.9419845 ]
+2026-07-30 14:32:16.241 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=6 completed=0 failed=6 dropped=0 result_age_s=0.001 epoch=1 generation=21 policy_tts=0.920
+2026-07-30 14:32:16.547 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08516619682312011
+2026-07-30 14:32:16.602 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03415058135986328
+2026-07-30 14:32:16.672 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.048948268890380855
+2026-07-30 14:32:16.723 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029503564834594726
+2026-07-30 14:32:16.853 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.049613456726074215
+2026-07-30 14:32:17.226 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03225419998168945
+2026-07-30 14:32:17.254 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=83 completed=0 failed=74 dropped=7 result_age_s=0.025 epoch=1 generation=275 policy_tts=0.920
+2026-07-30 14:32:17.296 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04877756118774414
+2026-07-30 14:32:17.401 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08271835327148437
+2026-07-30 14:32:17.498 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07094548225402832
+2026-07-30 14:32:17.571 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05280206680297851
+2026-07-30 14:32:17.623 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0317587661743164
+2026-07-30 14:32:17.681 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0358326244354248
+2026-07-30 14:32:17.715 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012965421676635742
+2026-07-30 14:32:17.845 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05005524635314941
+2026-07-30 14:32:17.895 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.028341989517211914
+2026-07-30 14:32:17.944 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.028688411712646484
+2026-07-30 14:32:18.015 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04948304176330566
+2026-07-30 14:32:18.073 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03546069145202636
+2026-07-30 14:32:18.158 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06455228805541992
+2026-07-30 14:32:18.249 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06697295188903808
+2026-07-30 14:32:18.258 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=145 completed=0 failed=120 dropped=23 result_age_s=0.024 epoch=1 generation=398 policy_tts=0.920
+2026-07-30 14:32:18.377 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06538532257080078
+2026-07-30 14:32:18.437 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.038929204940795895
+2026-07-30 14:32:18.476 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01881549835205078
+2026-07-30 14:32:18.596 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07755349159240722
+2026-07-30 14:32:18.649 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030728321075439453
+2026-07-30 14:32:18.694 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023535232543945312
+2026-07-30 14:32:18.779 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.064885835647583
+2026-07-30 14:32:18.842 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03563306808471679
+2026-07-30 14:32:18.889 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.026590566635131836
+2026-07-30 14:32:18.991 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08042095184326171
+2026-07-30 14:32:19.070 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.058738212585449215
+2026-07-30 14:32:19.136 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04447100639343261
+2026-07-30 14:32:19.223 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04724476814270019
+2026-07-30 14:32:19.276 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03171132087707519
+2026-07-30 14:32:19.276 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=205 completed=0 failed=164 dropped=39 result_age_s=0.044 epoch=1 generation=535 policy_tts=0.920
+2026-07-30 14:32:19.333 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03719995498657226
+2026-07-30 14:32:19.394 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.040087203979492184
+2026-07-30 14:32:19.495 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08028767585754394
+2026-07-30 14:32:19.549 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03193495750427246
+2026-07-30 14:32:19.636 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06458590507507324
+2026-07-30 14:32:19.705 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041523199081420895
+2026-07-30 14:32:19.787 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.060505132675170895
+2026-07-30 14:32:19.928 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11604307174682617
+2026-07-30 14:32:20.067 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11862299919128418
+2026-07-30 14:32:20.290 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=270 completed=0 failed=217 dropped=53 result_age_s=0.004 epoch=1 generation=698 policy_tts=0.920
+2026-07-30 14:32:20.528 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016996126174926757
+2026-07-30 14:32:20.589 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.040488939285278316
+2026-07-30 14:32:20.654 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04348490715026855
+2026-07-30 14:32:20.870 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07430480003356933
+2026-07-30 14:32:20.960 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06798718452453613
+2026-07-30 14:32:21.003 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023143987655639648
+2026-07-30 14:32:21.111 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08682964324951171
+2026-07-30 14:32:21.160 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.026596765518188476
+2026-07-30 14:32:21.194 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012652854919433593
+2026-07-30 14:32:21.256 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04134295463562011
+2026-07-30 14:32:21.303 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=337 completed=0 failed=275 dropped=61 result_age_s=0.001 epoch=1 generation=903 policy_tts=0.920
+2026-07-30 14:32:21.353 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07523868560791015
+2026-07-30 14:32:21.433 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.059015970230102535
+2026-07-30 14:32:21.473 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01957819938659668
+2026-07-30 14:32:21.537 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.044016342163085934
+2026-07-30 14:32:21.606 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04750130653381347
+2026-07-30 14:32:21.652 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.022496681213378906
+2026-07-30 14:32:21.704 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011799077987670898
+2026-07-30 14:32:21.864 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.056212882995605465
+2026-07-30 14:32:21.972 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08722088813781738
+2026-07-30 14:32:22.055 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06333110809326171
+2026-07-30 14:32:22.184 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10175250053405761
+2026-07-30 14:32:22.256 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05250571250915527
+2026-07-30 14:32:22.307 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030533771514892578
+2026-07-30 14:32:22.309 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=394 completed=0 failed=325 dropped=67 result_age_s=0.021 epoch=1 generation=1012 policy_tts=0.920
+2026-07-30 14:32:22.412 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0025508213043212886
+2026-07-30 14:32:22.622 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0880174446105957
+2026-07-30 14:32:22.645 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0025856304168701168
+2026-07-30 14:32:22.713 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04718611717224121
+2026-07-30 14:32:22.764 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03086207389831543
+2026-07-30 14:32:22.824 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04008386611938476
+2026-07-30 14:32:22.874 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029486637115478515
+2026-07-30 14:32:22.976 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08168337821960449
+2026-07-30 14:32:23.081 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0852091121673584
+2026-07-30 14:32:23.155 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05284140586853027
+2026-07-30 14:32:23.179 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:23.184 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.008817653656005859
+2026-07-30 14:32:23.290 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02507160186767578
+2026-07-30 14:32:23.351 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=459 completed=0 failed=380 dropped=77 result_age_s=0.029 epoch=1 generation=1201 policy_tts=0.920
+2026-07-30 14:32:23.366 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05581806182861328
+2026-07-30 14:32:23.462 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.053508977890014645
+2026-07-30 14:32:23.530 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04615948677062988
+2026-07-30 14:32:23.645 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09417675018310546
+2026-07-30 14:32:23.699 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0335130500793457
+2026-07-30 14:32:23.726 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006951313018798828
+2026-07-30 14:32:23.796 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04908297538757324
+2026-07-30 14:32:23.917 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06071804046630859
+2026-07-30 14:32:24.013 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07557390213012695
+2026-07-30 14:32:24.108 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07405970573425293
+2026-07-30 14:32:24.170 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041068534851074215
+2026-07-30 14:32:24.207 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016462068557739257
+2026-07-30 14:32:24.278 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029715042114257812
+2026-07-30 14:32:24.381 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07959220886230468
+2026-07-30 14:32:24.384 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=517 completed=0 failed=430 dropped=85 result_age_s=0.023 epoch=1 generation=1323 policy_tts=0.920
+2026-07-30 14:32:24.440 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03681490898132324
+2026-07-30 14:32:24.522 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06113813400268554
+2026-07-30 14:32:24.566 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02381084442138672
+2026-07-30 14:32:24.606 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018510560989379882
+2026-07-30 14:32:24.776 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.048577527999877926
+2026-07-30 14:32:24.886 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08853481292724609
+2026-07-30 14:32:24.893 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:24.923 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016219120025634765
+2026-07-30 14:32:25.243 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:25.385 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=584 completed=0 failed=495 dropped=89 result_age_s=0.100 epoch=1 generation=1550 policy_tts=0.920
+2026-07-30 14:32:25.706 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=7 invalid_epoch=9 generation=1589
+2026-07-30 14:32:25.766 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=9 invalid_epoch=11 generation=1598
+2026-07-30 14:32:25.828 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=12 invalid_epoch=14 generation=1615
+2026-07-30 14:32:25.906 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=15 invalid_epoch=17 generation=1641
+2026-07-30 14:32:26.267 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=23 invalid_epoch=24 generation=1667
+2026-07-30 14:32:26.374 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:26.388 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=628 completed=0 failed=539 dropped=89 result_age_s=0.009 epoch=29 generation=1703 policy_tts=0.920
+2026-07-30 14:32:27.391 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=637 completed=0 failed=548 dropped=89 result_age_s=0.794 epoch=36 generation=1730 policy_tts=0.920
+2026-07-30 14:32:28.394 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=637 completed=0 failed=548 dropped=89 result_age_s=1.797 epoch=36 generation=1730 policy_tts=0.920
+2026-07-30 14:32:29.397 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=637 completed=0 failed=548 dropped=89 result_age_s=2.800 epoch=36 generation=1730 policy_tts=0.920
+2026-07-30 14:32:30.400 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=637 completed=0 failed=548 dropped=89 result_age_s=3.803 epoch=36 generation=1730 policy_tts=0.920
+2026-07-30 14:32:31.402 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=637 completed=0 failed=548 dropped=89 result_age_s=4.806 epoch=36 generation=1730 policy_tts=0.920
+2026-07-30 14:32:31.974 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:32.246 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:32.405 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=693 completed=0 failed=604 dropped=89 result_age_s=0.001 epoch=38 generation=1950 policy_tts=0.920
+2026-07-30 14:32:32.447 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:32.571 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.004797439575195312
+2026-07-30 14:32:32.571 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command armed: epoch=38 generation=2004 type=forehand tts=0.901s
+2026-07-30 14:32:32.571 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:861 - HITTER lifecycle transition: waiting -> armed
+2026-07-30 14:32:32.631 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=39 invalid_epoch=40 generation=2026
+2026-07-30 14:32:33.313 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=40 invalid_epoch=41 generation=2227
+2026-07-30 14:32:33.414 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=armed submitted=773 completed=1 failed=683 dropped=89 result_age_s=0.009 epoch=41 generation=2261 policy_tts=0.059
+2026-07-30 14:32:33.474 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-07-30 14:32:33.474 | INFO     | envs.hitter:_log_hitter_strike_target:613 - HITTER strike target: epoch=38 generation=2004 type=forehand v_ball_in_w_mps=[-0.2499,0.0518,3.2740] speed_ball_in_mps=3.2839 v_ball_out_w_mps=[4.2708,1.4283,2.1979] speed_ball_out_mps=5.0111 v_racket_target_w_mps=[1.5619,0.4756,-0.3718] speed_racket_mps=1.6745
+2026-07-30 14:32:33.474 | INFO     | envs.hitter:_log_hitter_advance_transitions:884 - HITTER lifecycle transition: armed -> recovery
+2026-07-30 14:32:33.697 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:34.417 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=recovery submitted=858 completed=1 failed=768 dropped=89 result_age_s=0.009 epoch=43 generation=2601 policy_tts=0.000
+2026-07-30 14:32:34.457 | INFO     | envs.hitter:_log_hitter_advance_transitions:900 - HITTER lifecycle transition: recovery -> waiting
+2026-07-30 14:32:34.585 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:35.420 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=949 completed=1 failed=859 dropped=89 result_age_s=0.002 epoch=45 generation=2965 policy_tts=0.920
+2026-07-30 14:32:36.040 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.038372259140014645
+2026-07-30 14:32:36.090 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02794764518737793
+2026-07-30 14:32:36.213 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06250737190246582
+2026-07-30 14:32:36.311 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0773050594329834
+2026-07-30 14:32:36.395 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06365130424499511
+2026-07-30 14:32:36.427 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:36.431 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013725500106811523
+2026-07-30 14:32:36.431 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1024 completed=1 failed=932 dropped=91 result_age_s=0.003 epoch=45 generation=3222 policy_tts=0.920
+2026-07-30 14:32:36.511 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00012276649475097615
+2026-07-30 14:32:36.551 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01971242904663086
+2026-07-30 14:32:36.614 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:36.649 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05685780525207519
+2026-07-30 14:32:36.804 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09333775520324707
+2026-07-30 14:32:36.826 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0010330486297607418
+2026-07-30 14:32:36.885 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:36.892 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.046529750823974605
+2026-07-30 14:32:36.915 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0023960876464843746
+2026-07-30 14:32:37.034 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03830335617065429
+2026-07-30 14:32:37.095 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0398607063293457
+2026-07-30 14:32:37.211 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05482385635375976
+2026-07-30 14:32:37.284 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.049613695144653316
+2026-07-30 14:32:37.332 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.027556638717651367
+2026-07-30 14:32:37.387 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03332112312316894
+2026-07-30 14:32:37.401 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:37.448 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1091 completed=1 failed=993 dropped=97 result_age_s=0.002 epoch=45 generation=3437 policy_tts=0.920
+2026-07-30 14:32:37.532 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:37.534 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006158094406127929
+2026-07-30 14:32:37.744 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10897062301635742
+2026-07-30 14:32:37.813 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0483903694152832
+2026-07-30 14:32:37.860 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01161334991455078
+2026-07-30 14:32:38.000 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03917739868164062
+2026-07-30 14:32:38.004 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:38.135 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.034054021835327145
+2026-07-30 14:32:38.249 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:38.373 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014672975540161132
+2026-07-30 14:32:38.452 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1162 completed=1 failed=1061 dropped=100 result_age_s=0.000 epoch=45 generation=3705 policy_tts=0.920
+2026-07-30 14:32:38.460 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.046219806671142574
+2026-07-30 14:32:38.522 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0012252140045166011
+2026-07-30 14:32:38.626 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:38.626 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041951875686645504
+2026-07-30 14:32:38.768 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018533687591552734
+2026-07-30 14:32:38.848 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.059751491546630855
+2026-07-30 14:32:38.967 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09670732498168945
+2026-07-30 14:32:39.029 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04233596801757812
+2026-07-30 14:32:39.137 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06634638786315918
+2026-07-30 14:32:39.196 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03810475349426269
+2026-07-30 14:32:39.236 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.019160490036010742
+2026-07-30 14:32:39.272 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016272048950195312
+2026-07-30 14:32:39.344 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051134567260742184
+2026-07-30 14:32:39.409 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04155753135681152
+2026-07-30 14:32:39.472 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04322383880615234
+2026-07-30 14:32:39.485 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1227 completed=1 failed=1119 dropped=105 result_age_s=0.013 epoch=45 generation=3876 policy_tts=0.920
+2026-07-30 14:32:39.566 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.061680059432983395
+2026-07-30 14:32:39.669 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0019874382019042965
+2026-07-30 14:32:39.796 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.046728115081787105
+2026-07-30 14:32:39.871 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013074378967285156
+2026-07-30 14:32:39.927 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03527710914611816
+2026-07-30 14:32:40.075 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12586162567138673
+2026-07-30 14:32:40.148 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04763219833374023
+2026-07-30 14:32:40.172 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.003221492767333984
+2026-07-30 14:32:40.256 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03733203887939453
+2026-07-30 14:32:40.347 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06979058265686035
+2026-07-30 14:32:40.426 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05839846611022949
+2026-07-30 14:32:40.489 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1284 completed=1 failed=1174 dropped=107 result_age_s=0.015 epoch=45 generation=4061 policy_tts=0.920
+2026-07-30 14:32:40.548 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0817606258392334
+2026-07-30 14:32:40.609 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04138253211975097
+2026-07-30 14:32:40.675 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024217824935913086
+2026-07-30 14:32:40.790 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:41.007 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07069633483886718
+2026-07-30 14:32:41.160 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.132677059173584
+2026-07-30 14:32:41.501 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1358 completed=1 failed=1249 dropped=108 result_age_s=0.008 epoch=46 generation=4326 policy_tts=0.920
+2026-07-30 14:32:41.786 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:42.437 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:32:42.505 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1448 completed=1 failed=1339 dropped=108 result_age_s=0.006 epoch=47 generation=4686 policy_tts=0.920
+2026-07-30 14:32:42.894 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007843475341796875
+2026-07-30 14:32:42.894 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:861 - HITTER lifecycle transition: waiting -> tracking
+2026-07-30 14:32:42.972 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017386417388916015
+2026-07-30 14:32:43.119 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12310026168823242
+2026-07-30 14:32:43.219 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07927153587341308
+2026-07-30 14:32:43.348 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10748670578002929
+2026-07-30 14:32:43.409 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04052112579345703
+2026-07-30 14:32:43.466 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03650115013122558
+2026-07-30 14:32:43.507 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1520 completed=3 failed=1400 dropped=117 result_age_s=0.010 epoch=47 generation=4913 policy_tts=0.920
+2026-07-30 14:32:43.697 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.1500425148010254
+2026-07-30 14:32:43.767 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04476783752441406
+2026-07-30 14:32:43.809 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020633678436279296
+2026-07-30 14:32:44.003 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033675651550292965
+2026-07-30 14:32:44.125 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0805704402923584
+2026-07-30 14:32:44.202 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.056498031616210934
+2026-07-30 14:32:44.280 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.058346014022827145
+2026-07-30 14:32:44.349 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.026276569366455078
+2026-07-30 14:32:44.462 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012079219818115234
+2026-07-30 14:32:44.522 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04027483940124511
+2026-07-30 14:32:44.526 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1586 completed=3 failed=1462 dropped=120 result_age_s=0.005 epoch=47 generation=5108 policy_tts=0.920
+2026-07-30 14:32:44.594 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04802153587341308
+2026-07-30 14:32:44.741 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10636065483093261
+2026-07-30 14:32:44.814 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.046746473312377926
+2026-07-30 14:32:44.907 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06961272239685058
+2026-07-30 14:32:45.001 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07317660331726074
+2026-07-30 14:32:45.087 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06475780487060546
+2026-07-30 14:32:45.528 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1615 completed=3 failed=1488 dropped=124 result_age_s=0.442 epoch=47 generation=5164 policy_tts=0.920
+2026-07-30 14:32:46.130 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=49 invalid_epoch=50 generation=5223
+2026-07-30 14:32:46.495 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=53 invalid_epoch=54 generation=5296
+2026-07-30 14:32:46.532 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1654 completed=3 failed=1527 dropped=124 result_age_s=0.002 epoch=54 generation=5305 policy_tts=0.920
+2026-07-30 14:32:46.592 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=55 invalid_epoch=56 generation=5316
+2026-07-30 14:32:46.913 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=61 invalid_epoch=62 generation=5394
+2026-07-30 14:32:47.436 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=67 invalid_epoch=68 generation=5560
+2026-07-30 14:32:47.515 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=68 invalid_epoch=69 generation=5569
+2026-07-30 14:32:47.535 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1723 completed=3 failed=1596 dropped=124 result_age_s=0.033 epoch=69 generation=5569 policy_tts=0.920
+2026-07-30 14:32:47.775 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=71 invalid_epoch=72 generation=5597
+2026-07-30 14:32:48.096 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=76 invalid_epoch=78 generation=5638
+2026-07-30 14:32:48.538 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=0.447 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:49.541 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=1.450 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:50.543 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=2.453 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:51.546 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=3.456 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:52.549 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=4.459 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:53.552 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=5.462 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:54.555 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=6.465 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:55.558 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=7.468 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:56.561 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=8.470 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:57.564 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=9.473 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:58.567 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=10.476 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:32:59.570 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=11.479 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:00.573 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=12.482 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:01.576 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=13.485 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:02.578 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=14.488 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:03.581 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=15.491 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:04.584 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=16.494 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:05.587 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=17.497 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:06.590 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=18.499 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:07.593 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=19.502 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:08.596 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=20.505 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:09.599 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=21.508 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:10.601 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=22.511 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:11.604 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=23.514 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:12.607 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=24.517 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:13.610 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=25.520 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:14.613 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=26.523 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:15.616 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=27.526 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:16.619 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=28.528 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:17.622 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=29.531 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:18.625 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=30.534 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:19.627 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=31.537 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:20.630 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=32.540 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:21.633 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=33.543 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:22.636 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1743 completed=3 failed=1616 dropped=124 result_age_s=34.546 epoch=78 generation=5638 policy_tts=0.920
+2026-07-30 14:33:23.077 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=78 invalid_epoch=80 generation=5645
+2026-07-30 14:33:23.639 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=0.393 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:24.642 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=1.396 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:25.645 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=2.399 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:26.648 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=3.402 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:27.651 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=4.405 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:28.654 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=5.408 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:29.657 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=6.410 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:30.659 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=7.413 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:31.662 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=8.416 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:32.665 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=9.419 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:33.668 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=10.422 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:34.671 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=11.425 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:35.674 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=12.428 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:36.677 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=13.431 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:37.680 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1748 completed=3 failed=1621 dropped=124 result_age_s=14.434 epoch=80 generation=5650 policy_tts=0.920
+2026-07-30 14:33:38.683 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1753 completed=3 failed=1626 dropped=124 result_age_s=0.142 epoch=85 generation=5665 policy_tts=0.920
+2026-07-30 14:33:39.428 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=86 invalid_epoch=87 generation=5723
+2026-07-30 14:33:39.686 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=0.259 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:40.689 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=1.262 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:41.692 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=2.265 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:42.695 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=3.268 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:43.698 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=4.271 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:44.701 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=5.273 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:45.703 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=6.276 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:46.706 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=7.279 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:47.709 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=8.282 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:48.712 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=9.285 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:49.715 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=10.288 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:50.718 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=11.291 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:51.721 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=12.294 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:52.724 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=13.297 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:53.727 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=14.300 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:54.730 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=15.302 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:55.733 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=16.306 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:56.736 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=17.309 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:57.739 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=18.311 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:58.741 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=19.314 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:33:59.744 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=20.317 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:00.747 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=21.320 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:01.750 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=22.323 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:02.753 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=23.326 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:03.756 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=24.329 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:04.759 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=25.332 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:05.763 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=26.336 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:06.766 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1768 completed=3 failed=1641 dropped=124 result_age_s=27.339 epoch=87 generation=5723 policy_tts=0.920
+2026-07-30 14:34:07.010 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=88 invalid_epoch=89 generation=5770
+2026-07-30 14:34:07.769 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=0.761 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:08.772 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=1.764 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:09.774 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=2.767 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:10.777 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=3.770 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:11.780 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=4.772 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:12.783 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=5.775 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:13.786 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=6.778 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:14.789 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=7.781 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:15.792 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=8.784 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:16.795 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=9.787 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:17.798 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=10.790 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:18.801 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=11.793 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:19.804 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=12.796 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:20.807 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=13.799 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:21.810 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=14.802 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:22.813 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=15.805 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:23.816 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=16.808 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:24.819 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=17.811 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:25.821 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=18.814 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:26.824 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=19.817 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:27.827 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=20.819 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:28.830 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=21.822 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:29.833 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=22.825 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:30.836 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=23.828 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:31.839 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=24.831 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:32.842 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=25.834 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:33.845 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=26.837 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:34.848 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=27.840 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:35.850 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=28.843 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:36.853 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=29.846 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:37.856 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=30.848 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:38.859 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=31.851 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:39.862 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=32.854 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:40.865 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=33.857 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:41.868 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=34.860 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:42.870 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=35.863 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:43.873 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=36.865 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:44.876 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=37.868 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:45.879 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=38.871 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:46.882 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=39.874 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:47.885 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=40.877 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:48.888 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1781 completed=3 failed=1654 dropped=124 result_age_s=41.880 epoch=89 generation=5770 policy_tts=0.920
+2026-07-30 14:34:49.891 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1793 completed=3 failed=1666 dropped=124 result_age_s=0.005 epoch=90 generation=5814 policy_tts=0.920
+2026-07-30 14:34:50.053 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:34:50.275 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=92 invalid_epoch=93 generation=5913
+2026-07-30 14:34:50.572 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:34:50.673 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=94 invalid_epoch=95 generation=6021
+2026-07-30 14:34:50.693 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=95 invalid_epoch=96 generation=6023
+2026-07-30 14:34:50.894 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1847 completed=3 failed=1720 dropped=124 result_age_s=0.211 epoch=96 generation=6023 policy_tts=0.920
+2026-07-30 14:34:51.897 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1878 completed=3 failed=1751 dropped=124 result_age_s=0.008 epoch=96 generation=6144 policy_tts=0.920
+2026-07-30 14:34:52.157 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=97 invalid_epoch=98 generation=6166
+2026-07-30 14:34:52.183 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:34:52.356 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:34:52.602 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:34:52.900 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=1950 completed=3 failed=1823 dropped=124 result_age_s=0.008 epoch=99 generation=6428 policy_tts=0.920
+2026-07-30 14:34:52.930 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:34:53.664 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:34:53.903 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2041 completed=3 failed=1914 dropped=124 result_age_s=0.000 epoch=99 generation=6792 policy_tts=0.920
+2026-07-30 14:34:54.906 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2131 completed=3 failed=2004 dropped=124 result_age_s=0.003 epoch=99 generation=7152 policy_tts=0.920
+2026-07-30 14:34:55.909 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2221 completed=3 failed=2094 dropped=124 result_age_s=0.006 epoch=99 generation=7512 policy_tts=0.920
+2026-07-30 14:34:56.912 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2311 completed=3 failed=2184 dropped=124 result_age_s=0.009 epoch=99 generation=7872 policy_tts=0.920
+2026-07-30 14:34:57.915 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2357 completed=3 failed=2230 dropped=124 result_age_s=0.198 epoch=100 generation=8055 policy_tts=0.920
+2026-07-30 14:34:58.918 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2357 completed=3 failed=2230 dropped=124 result_age_s=1.201 epoch=100 generation=8055 policy_tts=0.920
+2026-07-30 14:34:59.921 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2365 completed=3 failed=2238 dropped=124 result_age_s=0.355 epoch=101 generation=8086 policy_tts=0.920
+2026-07-30 14:35:00.924 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2370 completed=3 failed=2243 dropped=124 result_age_s=0.280 epoch=104 generation=8104 policy_tts=0.920
+2026-07-30 14:35:01.207 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=109 invalid_epoch=110 generation=8157
+2026-07-30 14:35:01.927 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2391 completed=3 failed=2264 dropped=124 result_age_s=0.541 epoch=113 generation=8173 policy_tts=0.920
+2026-07-30 14:35:02.930 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2391 completed=3 failed=2264 dropped=124 result_age_s=1.544 epoch=113 generation=8173 policy_tts=0.920
+2026-07-30 14:35:03.933 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2391 completed=3 failed=2264 dropped=124 result_age_s=2.547 epoch=113 generation=8173 policy_tts=0.920
+2026-07-30 14:35:04.936 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2391 completed=3 failed=2264 dropped=124 result_age_s=3.549 epoch=113 generation=8173 policy_tts=0.920
+2026-07-30 14:35:05.938 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2391 completed=3 failed=2264 dropped=124 result_age_s=4.552 epoch=113 generation=8173 policy_tts=0.920
+2026-07-30 14:35:06.941 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2391 completed=3 failed=2264 dropped=124 result_age_s=5.555 epoch=113 generation=8173 policy_tts=0.920
+2026-07-30 14:35:07.944 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2391 completed=3 failed=2264 dropped=124 result_age_s=6.558 epoch=113 generation=8173 policy_tts=0.920
+2026-07-30 14:35:08.947 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2392 completed=3 failed=2265 dropped=124 result_age_s=0.505 epoch=114 generation=8175 policy_tts=0.920
+2026-07-30 14:35:09.890 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=116 invalid_epoch=118 generation=8207
+2026-07-30 14:35:09.950 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2402 completed=3 failed=2275 dropped=124 result_age_s=0.005 epoch=118 generation=8208 policy_tts=0.920
+2026-07-30 14:35:10.369 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017813186645507812
+2026-07-30 14:35:10.461 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07145236015319824
+2026-07-30 14:35:10.490 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007861595153808593
+2026-07-30 14:35:10.511 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:10.777 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.14507387161254884
+2026-07-30 14:35:10.811 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013452272415161132
+2026-07-30 14:35:10.918 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005851249694824218
+2026-07-30 14:35:10.988 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.049035291671752926
+2026-07-30 14:35:10.991 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2476 completed=3 failed=2342 dropped=129 result_age_s=0.012 epoch=120 generation=8453 policy_tts=0.920
+2026-07-30 14:35:11.115 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06246970176696777
+2026-07-30 14:35:11.194 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05736849784851074
+2026-07-30 14:35:11.245 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02901576042175293
+2026-07-30 14:35:11.310 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04443428993225097
+2026-07-30 14:35:11.368 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03663847923278808
+2026-07-30 14:35:11.450 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05078337669372558
+2026-07-30 14:35:11.505 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.034497957229614254
+2026-07-30 14:35:11.564 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03736279487609863
+2026-07-30 14:35:11.617 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03309152603149414
+2026-07-30 14:35:11.711 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06870100975036621
+2026-07-30 14:35:11.770 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.036698322296142574
+2026-07-30 14:35:11.872 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05767391204833984
+2026-07-30 14:35:11.931 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03791687965393066
+2026-07-30 14:35:11.992 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0404405403137207
+2026-07-30 14:35:11.993 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2528 completed=3 failed=2381 dropped=143 result_age_s=0.016 epoch=120 generation=8555 policy_tts=0.920
+2026-07-30 14:35:12.033 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:12.262 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04820273399353027
+2026-07-30 14:35:12.325 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04127786636352539
+2026-07-30 14:35:12.392 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.047281723022460934
+2026-07-30 14:35:12.459 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04659293174743652
+2026-07-30 14:35:12.521 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041362981796264645
+2026-07-30 14:35:12.667 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04483960151672363
+2026-07-30 14:35:12.790 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08140299797058105
+2026-07-30 14:35:12.883 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0721640396118164
+2026-07-30 14:35:12.917 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013486366271972656
+2026-07-30 14:35:12.960 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0022325325012207027
+2026-07-30 14:35:13.000 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2595 completed=3 failed=2442 dropped=150 result_age_s=0.006 epoch=120 generation=8769 policy_tts=0.920
+2026-07-30 14:35:13.087 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.027135591506958007
+2026-07-30 14:35:13.131 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.022695283889770507
+2026-07-30 14:35:13.722 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06802127838134765
+2026-07-30 14:35:13.753 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007705907821655273
+2026-07-30 14:35:13.780 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:14.000 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.044458847045898434
+2026-07-30 14:35:14.005 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2676 completed=3 failed=2522 dropped=151 result_age_s=0.007 epoch=121 generation=9065 policy_tts=0.920
+2026-07-30 14:35:14.069 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02891371726989746
+2026-07-30 14:35:14.109 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01965330123901367
+2026-07-30 14:35:14.135 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005132179260253906
+2026-07-30 14:35:14.153 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:14.333 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05693386077880859
+2026-07-30 14:35:14.436 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08090827941894531
+2026-07-30 14:35:14.504 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04780958175659179
+2026-07-30 14:35:14.661 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.055980901718139645
+2026-07-30 14:35:14.745 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06399295806884765
+2026-07-30 14:35:14.769 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0036010551452636715
+2026-07-30 14:35:14.902 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03309391021728515
+2026-07-30 14:35:14.951 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.027365188598632812
+2026-07-30 14:35:15.012 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2747 completed=3 failed=2584 dropped=160 result_age_s=0.007 epoch=121 generation=9312 policy_tts=0.920
+2026-07-30 14:35:15.544 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:15.630 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:15.681 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:15.839 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:15.858 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=131 invalid_epoch=132 generation=9530
+2026-07-30 14:35:15.881 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:15.930 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:15.940 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=133 invalid_epoch=134 generation=9556
+2026-07-30 14:35:15.964 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:15.979 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=134 invalid_epoch=135 generation=9565
+2026-07-30 14:35:15.989 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:16.019 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2817 completed=3 failed=2654 dropped=160 result_age_s=0.003 epoch=135 generation=9580 policy_tts=0.920
+2026-07-30 14:35:16.099 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=135 invalid_epoch=137 generation=9603
+2026-07-30 14:35:16.119 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=137 invalid_epoch=138 generation=9606
+2026-07-30 14:35:16.722 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:16.781 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=140 invalid_epoch=141 generation=9627
+2026-07-30 14:35:16.870 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:17.022 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=141 invalid_epoch=142 generation=9714
+2026-07-30 14:35:17.022 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2852 completed=3 failed=2689 dropped=160 result_age_s=0.009 epoch=142 generation=9714 policy_tts=0.920
+2026-07-30 14:35:17.064 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:17.912 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:18.026 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2942 completed=3 failed=2779 dropped=160 result_age_s=0.009 epoch=142 generation=10074 policy_tts=0.920
+2026-07-30 14:35:18.146 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=142 invalid_epoch=143 generation=10118
+2026-07-30 14:35:19.028 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2963 completed=3 failed=2800 dropped=160 result_age_s=0.706 epoch=146 generation=10149 policy_tts=0.920
+2026-07-30 14:35:19.129 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=147 invalid_epoch=148 generation=10172
+2026-07-30 14:35:19.309 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=151 invalid_epoch=152 generation=10223
+2026-07-30 14:35:19.470 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=152 invalid_epoch=153 generation=10232
+2026-07-30 14:35:20.032 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3026 completed=3 failed=2863 dropped=160 result_age_s=0.007 epoch=154 generation=10388 policy_tts=0.920
+2026-07-30 14:35:20.153 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:20.517 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:20.730 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:21.035 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3099 completed=3 failed=2936 dropped=160 result_age_s=0.010 epoch=155 generation=10679 policy_tts=0.920
+2026-07-30 14:35:22.038 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3107 completed=3 failed=2944 dropped=160 result_age_s=0.924 epoch=155 generation=10711 policy_tts=0.920
+2026-07-30 14:35:23.041 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3172 completed=3 failed=3009 dropped=160 result_age_s=0.007 epoch=157 generation=10969 policy_tts=0.920
+2026-07-30 14:35:23.237 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03531644821166992
+2026-07-30 14:35:23.312 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04893658638000488
+2026-07-30 14:35:23.415 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06333921432495117
+2026-07-30 14:35:23.468 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03262231826782226
+2026-07-30 14:35:23.684 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09324357986450195
+2026-07-30 14:35:23.774 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04974530220031738
+2026-07-30 14:35:23.847 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012422304153442382
+2026-07-30 14:35:23.942 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07463810920715332
+2026-07-30 14:35:23.943 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=157 invalid_epoch=158 generation=11176
+2026-07-30 14:35:24.043 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3236 completed=3 failed=3065 dropped=168 result_age_s=0.102 epoch=158 generation=11176 policy_tts=0.920
+2026-07-30 14:35:24.103 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:25.046 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3326 completed=3 failed=3155 dropped=168 result_age_s=0.010 epoch=158 generation=11534 policy_tts=0.920
+2026-07-30 14:35:25.200 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 14:35:25.631 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02165029525756836
+2026-07-30 14:35:25.763 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0701339054107666
+2026-07-30 14:35:25.859 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07598827362060546
+2026-07-30 14:35:25.913 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033490877151489254
+2026-07-30 14:35:25.980 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04677651405334472
+2026-07-30 14:35:26.066 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06106565475463867
+2026-07-30 14:35:26.067 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3403 completed=3 failed=3224 dropped=175 result_age_s=0.005 epoch=160 generation=11776 policy_tts=0.920
+2026-07-30 14:35:26.107 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020194034576416015
+2026-07-30 14:35:26.187 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.059284667968749996
+2026-07-30 14:35:26.254 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.046638231277465816
+2026-07-30 14:35:26.405 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0297133731842041
+2026-07-30 14:35:26.463 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03469989776611328
+2026-07-30 14:35:26.526 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0435077953338623
+2026-07-30 14:35:26.564 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01693699836730957
+2026-07-30 14:35:26.614 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030056219100952148
+2026-07-30 14:35:26.681 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04647419929504394
+2026-07-30 14:35:26.757 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05523131370544433
+2026-07-30 14:35:27.078 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3471 completed=3 failed=3284 dropped=184 result_age_s=0.001 epoch=162 generation=11973 policy_tts=0.920
+2026-07-30 14:35:28.081 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=0.679 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:29.084 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=1.681 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:30.087 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=2.684 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:31.090 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=3.687 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:32.093 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=4.690 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:33.096 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=5.693 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:34.099 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=6.696 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:35.102 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=7.699 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:36.105 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=8.702 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:37.108 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=9.705 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:38.111 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=10.708 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:39.113 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=11.711 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:40.116 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=12.714 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:41.119 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=13.716 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:42.122 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=14.719 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:43.125 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=15.722 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:44.128 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=16.725 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:45.131 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=17.728 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:46.134 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=18.731 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:47.137 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=19.734 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:48.140 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=20.737 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:49.143 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=21.740 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:50.146 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=22.743 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:51.148 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=23.746 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:52.151 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=24.749 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:53.154 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=25.751 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:54.157 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=26.754 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:55.160 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=27.757 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:56.163 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=28.760 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:57.166 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=29.763 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:58.169 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=30.766 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:35:59.171 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=31.769 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:00.174 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=32.771 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:01.177 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=33.774 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:02.180 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=34.777 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:03.183 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=35.780 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:04.186 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=36.783 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:05.189 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=37.786 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:06.192 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=38.789 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:07.195 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=39.792 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:08.198 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=40.795 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:09.200 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=41.798 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:10.203 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=42.801 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:11.206 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=43.804 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:12.209 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=44.806 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:13.212 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=45.809 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:14.215 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=46.812 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:15.218 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=47.815 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:16.221 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=48.818 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:17.224 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=49.821 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:18.226 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=50.824 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:19.229 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=51.827 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:20.232 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=52.829 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:21.235 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=53.832 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:22.238 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=54.835 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:23.241 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=55.838 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:24.244 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=56.841 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:25.247 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=57.844 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:26.250 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=58.847 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:27.253 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=59.850 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:28.255 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=60.853 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:29.258 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=61.855 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:30.261 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=62.858 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:31.264 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=63.861 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:32.267 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=64.864 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:33.270 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=65.867 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:34.273 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=66.870 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:35.276 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=67.873 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:36.279 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=68.876 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:37.282 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=69.879 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:38.285 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=70.882 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:39.287 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=71.885 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:40.290 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=72.887 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:41.293 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=73.890 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:42.296 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=74.893 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:43.299 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=75.896 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:44.302 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=76.899 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:45.305 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=77.902 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:46.307 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=78.905 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:47.310 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=79.908 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:48.313 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=80.910 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:49.316 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=81.913 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:50.319 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=82.916 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:51.322 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=83.919 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:52.325 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=84.922 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:53.328 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=85.925 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:54.331 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=86.928 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:55.334 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=87.931 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:56.337 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=88.934 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:57.340 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=89.937 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:58.342 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=90.940 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:36:59.345 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=91.943 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:00.349 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=92.946 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:01.352 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=93.949 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:02.355 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=94.952 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:03.357 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=95.955 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:04.360 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=96.958 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:05.363 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=97.961 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:06.366 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=98.964 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:07.369 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=99.966 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:08.372 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=100.969 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:09.375 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=101.972 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:10.378 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=102.975 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:11.381 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=103.978 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:12.384 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=104.981 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:13.386 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=105.984 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:14.389 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=106.987 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:15.392 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=107.989 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:16.395 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=108.992 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:17.398 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=109.995 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:18.401 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=110.998 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:19.404 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=112.001 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:20.407 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=113.004 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:21.410 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=114.007 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:22.413 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=115.010 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:23.416 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=116.013 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:24.418 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=117.016 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:25.424 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=118.021 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:26.427 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=119.024 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:27.430 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=120.027 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:28.433 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=121.030 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:29.435 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=122.033 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:30.438 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=123.036 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:31.441 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=124.038 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:32.444 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=125.041 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:33.447 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=126.044 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:34.450 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=127.047 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:35.453 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=128.050 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:36.456 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=129.053 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:37.459 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=130.056 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:38.462 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=131.059 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:39.465 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=132.062 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:40.468 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=133.065 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:41.470 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=134.068 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:42.473 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=135.071 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:43.476 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=136.074 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:44.479 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=137.076 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:45.482 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=138.079 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:46.485 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=139.082 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:47.488 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=140.085 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:48.491 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=141.088 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:49.493 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=142.091 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:50.496 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=143.094 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:51.499 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=144.097 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:52.502 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=145.099 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:53.505 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=146.102 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:54.508 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=147.105 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:55.511 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=148.108 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:56.514 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=149.111 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:57.517 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=150.114 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:58.522 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=151.119 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:37:59.525 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=152.122 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:00.528 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=153.125 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:01.531 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=154.128 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:02.534 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=155.131 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:03.536 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=156.134 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:04.539 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=157.137 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:05.542 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=158.139 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:06.545 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=159.142 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:07.548 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=160.145 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:08.551 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=161.148 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:09.554 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=162.151 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:10.557 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3494 completed=3 failed=3307 dropped=184 result_age_s=163.154 epoch=163 generation=12063 policy_tts=0.920
+2026-07-30 14:38:11.119 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=164 invalid_epoch=165 generation=12069
+2026-07-30 14:38:11.560 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=0.458 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:12.563 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=1.461 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:13.566 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=2.464 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:14.569 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=3.467 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:15.572 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=4.470 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:16.575 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=5.473 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:17.577 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=6.476 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:18.580 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=7.479 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:19.583 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=8.482 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:20.586 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=9.484 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:21.589 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=10.487 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:22.592 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=11.490 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:23.595 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=12.493 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:24.598 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=13.496 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:25.601 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=14.499 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:26.604 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=15.502 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:27.607 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=16.505 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:28.609 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=17.508 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:29.612 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=18.511 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:30.615 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=19.514 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:31.618 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=20.517 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:32.621 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=21.519 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:33.624 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=22.522 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:34.627 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=23.525 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:35.630 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=24.528 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:36.633 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=25.531 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:37.636 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=26.534 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:38.639 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=27.537 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:39.642 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=28.540 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:40.645 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=29.543 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:41.648 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=30.546 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:42.651 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=31.549 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:43.653 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=32.552 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:44.656 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=33.555 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:45.659 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=34.557 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:46.662 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=35.560 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:47.665 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=36.563 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:48.668 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=37.566 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:49.671 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=38.569 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:50.674 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=39.572 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:51.677 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=40.575 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:52.679 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=41.578 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:53.682 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=42.581 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:54.685 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=43.584 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:55.688 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=44.587 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:56.691 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=45.590 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:57.694 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=46.592 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:58.697 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=47.595 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:38:59.700 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=48.598 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:39:00.703 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=49.601 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:39:01.706 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=50.604 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:39:02.709 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=51.607 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:39:03.712 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=52.610 epoch=165 generation=12069 policy_tts=0.920
+2026-07-30 14:39:04.715 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3496 completed=3 failed=3309 dropped=184 result_age_s=53.613 epoch=165 generation=12069 policy_tts=0.920

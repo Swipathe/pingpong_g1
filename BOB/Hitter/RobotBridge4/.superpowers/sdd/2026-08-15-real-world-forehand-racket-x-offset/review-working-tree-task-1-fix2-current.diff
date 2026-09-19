@@ -1,0 +1,711 @@
+# Review package: working tree task 1 after fix round 2 against HEAD 9872a9ccbf64e6ad92892f9d596669ce1114cb3b
+
+## Files changed
+ deploy/config/mimic/hitter.yaml                    |  23 ++-
+ deploy/envs/hitter.py                              | 199 ++++++++++++++++++++-
+ .../test_hitter_runtime_single_shot_integration.py |  65 +++++++
+ deploy/tests/test_hitter_strike_target_logging.py  |  33 ++++
+ 4 files changed, 303 insertions(+), 17 deletions(-)
+ deploy/tests/test_hitter_forehand_policy_vx_offset.py | untracked new test file (included below)
+
+## Tracked diff
+diff --git a/deploy/config/mimic/hitter.yaml b/deploy/config/mimic/hitter.yaml
+index fa9241b..b700ea1 100644
+--- a/deploy/config/mimic/hitter.yaml
++++ b/deploy/config/mimic/hitter.yaml
+@@ -1,61 +1,68 @@
+ policy:
+-  checkpoint: ./data/model/hitter/hitter.onnx
++  checkpoint: ./data/model/hitter/hitter_model7100_A100_20260815_resume6700_posstd012_104.onnx
+   action_beta: 1.0
+-  real_world_first_frame_transition_s: 2.0
++  real_world_forehand_racket_velocity_x_offset_mps: 0.25
++  real_world_first_frame_transition_s: 5.0
+   hitter_seed: 0
+   save_video: false
+ 
+ motion:
+   playback_speed: 1.0
+   reset_ball_on_command: true
++  mujoco_serve_times_s: [0.0, 20.0]
+   vicon_consumer:
+     channel: vicon_state_data_v2
+     base_subject: G2Pelvis
+     stream_timeout_s: 0.40
+     ball_timeout_s: 0.40
+-    new_serve_no_ball_s: 0.50
++    new_serve_no_ball_s: 0.20
+     event_queue_capacity: 64
+   waiting_time_to_strike_s: 0.92
+   waiting_base_target_xy_w: [-0.4, 0.0]  # MuJoCo only
+ 
+   ball_planner:
+     table_center_xy_w: [1.365369, 0.0]
+     table_height: 0.760000
+     table_length: 2.730738
+     table_width: 1.512451
+     ball_radius: 0.02
+     virtual_hit_plane_x: 0.0
+     desired_landing_point_w: [2.05, 0.0, 0.78]
+     post_hit_flight_time: 0.48
+     racket_restitution: 0.85
++    minimum_racket_normal_speed_mps: 1.0
+     prediction_horizon_s: 2.0
+     prediction_dt: 0.005
+-    planner_update_rate_hz: 50.0
++    planner_update_rate_hz: 100.0
+     completed_result_queue_capacity: 64
+     minimum_stable_incoming_speed_x_mps: 0.20
+     stable_incoming_confirmation_snapshots: 3
+     require_future_hit_plane_crossing: true
+     state_estimator_window_size: 31
+     state_estimator_sample_rate_hz: 360.0
+     state_estimator_bounce_height_tolerance: 0.03
+     state_estimator_bounce_velocity_threshold: 0.10
+     state_estimator_bounce_min_separation_s: 0.20
+     vertical_restitution: 0.897474
+     horizontal_restitution: 0.764604
+     drag_coefficient: 0.098847
+-    target_base_height_w: 0.793
++    target_base_height_w: 0.78
+     racket_x_offset_b: 0.40
+     arm_time_to_strike_s: 0.92
+     minimum_arm_time_to_strike_s: 0.30
+     maximum_policy_time_to_strike_s: 0.92
+-    maximum_hit_height_above_table_m: 0.50
+     armed_cancel_consecutive_failures: 3
+     commit_time_to_strike_s: 0.30
+     maximum_racket_target_override_delta_m: 0.05
+     maximum_racket_velocity_override_delta_mps: 0.75
+     maximum_strike_deadline_override_delta_s: 0.05
++    racket_target_z_range_b_m: [0.0, 0.7]
+     maximum_prediction_horizon_s: 5.0
++    racket_velocity_component_ranges_mps:
++      x: [0.0, 6.0]
++      y: [-0.5, 0.5]
++      z: [0.0, 6.0]
+     swing_duration_range: [1.75, 1.95]
+     force_strike_type: null
+-    forehand_nominal_racket_y_b: -0.225
+-    backhand_nominal_racket_y_b: 0.0
++    forehand_nominal_racket_y_b: -0.5
++    backhand_nominal_racket_y_b: 0.22
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index 266a2f9..6342867 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -1,11 +1,12 @@
+ from __future__ import annotations
++from collections.abc import Mapping
+ from typing import Dict, List, Optional, Union
+ import threading
+ 
+ import numpy as np
+ from loguru import logger
+ from omegaconf import DictConfig, OmegaConf
+ from scipy.spatial.transform import Rotation as sRot
+ 
+ from envs.base_env import BaseEnv
+ 
+@@ -71,20 +72,25 @@ class HitterEnv(BaseEnv):
+             is_real_world=bool(getattr(self.simulator, "is_real", False)),
+         )
+         self.hitter_runtime_settings = resolve_hitter_runtime_settings(
+             policy_config=self.policy_cfg,
+             motion_config=self.motion_cfg,
+             control_config=control_cfg,
+         )
+ 
+         self.playback_speed = float(self.motion_cfg.get("playback_speed", 1.0))
+         self.action_beta = float(self.policy_cfg.get("action_beta", 1.0))
++        self.forehand_policy_vx_offset_mps = (
++            self._forehand_policy_vx_offset_from_policy_cfg(
++                self.policy_cfg
++            )
++        )
+         self.real_world_first_frame_transition_s = float(
+             self.policy_cfg.get("real_world_first_frame_transition_s", 0.0)
+         )
+         self._real_world_first_frame_transition_pending = False
+         self.hitter_rng = np.random.default_rng(
+             self.hitter_runtime_settings.hitter_seed
+         )
+ 
+         self.policy_model_meta: Optional[HitterModelMeta] = None
+         self.policy_action_scales: Optional[np.ndarray] = None
+@@ -599,27 +605,24 @@ class HitterEnv(BaseEnv):
+                     ),
+                 )
+                 return
+             if track_id in self.hitter_command_lifecycle.consumed_track_ids:
+                 consume = getattr(self.simulator, "consume_hitter_track", None)
+                 if callable(consume):
+                     consume(track_id, reason="lifecycle_already_consumed")
+                 return
+ 
+             phase = self.hitter_command_lifecycle.phase
+-            if phase is CommandPhase.RECOVERY:
+-                self._consume_hitter_track_locked(
+-                    track_id,
+-                    reason="snapshot_during_recovery",
+-                )
+-                return
+-            if snapshot.new_track and phase is not CommandPhase.WAITING:
++            if snapshot.new_track and phase not in {
++                CommandPhase.WAITING,
++                CommandPhase.RECOVERY,
++            }:
+                 self._consume_hitter_track_locked(
+                     track_id,
+                     reason=f"new_track_during_{phase.value}",
+                 )
+                 return
+ 
+             eligible = getattr(
+                 self.simulator,
+                 "hitter_snapshot_planning_eligible",
+                 None,
+@@ -870,20 +873,87 @@ class HitterEnv(BaseEnv):
+     def _validated_vector(value, *, name: str, size: int) -> np.ndarray:
+         array = np.asarray(value, dtype=np.float32)
+         if array.shape != (size,):
+             raise ValueError(
+                 f"HITTER command `{name}` must have shape ({size},), got {array.shape}."
+             )
+         if not np.isfinite(array).all():
+             raise ValueError(f"HITTER command `{name}` contains non-finite values.")
+         return array.copy()
+ 
++    @staticmethod
++    def _validated_forehand_policy_vx_offset(value) -> float:
++        if isinstance(value, (bool, np.bool_)) or not isinstance(
++            value,
++            (int, float, np.integer, np.floating),
++        ):
++            raise TypeError(
++                "policy.real_world_forehand_racket_velocity_x_offset_mps "
++                "must be a real number."
++            )
++        result = float(value)
++        if not np.isfinite(result) or result < 0.0:
++            raise ValueError(
++                "policy.real_world_forehand_racket_velocity_x_offset_mps "
++                "must be finite and non-negative."
++            )
++        if result > float(np.finfo(np.float32).max):
++            raise ValueError(
++                "policy.real_world_forehand_racket_velocity_x_offset_mps "
++                "must be representable as float32."
++            )
++        return result
++
++    @classmethod
++    def _forehand_policy_vx_offset_from_policy_cfg(cls, policy_cfg) -> float:
++        if not isinstance(policy_cfg, Mapping):
++            raise TypeError("policy configuration must be a mapping.")
++        return cls._validated_forehand_policy_vx_offset(
++            policy_cfg.get(
++                "real_world_forehand_racket_velocity_x_offset_mps",
++                0.0,
++            )
++        )
++
++    def _policy_racket_target_velocity_w(
++        self,
++        racket_velocity_w,
++        *,
++        strike_type: str,
++    ) -> tuple[np.ndarray, float]:
++        velocity = self._validated_vector(
++            racket_velocity_w,
++            name="v_racket_target_w",
++            size=3,
++        ).astype(np.float32)
++        offset = 0.0
++        if (
++            bool(getattr(self.simulator, "is_real", False))
++            and strike_type == "forehand"
++        ):
++            offset = self._validated_forehand_policy_vx_offset(
++                getattr(self, "forehand_policy_vx_offset_mps", 0.0)
++            )
++            policy_velocity_x = float(
++                np.float64(velocity[0]) + np.float64(offset)
++            )
++            if (
++                not np.isfinite(policy_velocity_x)
++                or abs(policy_velocity_x) > float(np.finfo(np.float32).max)
++            ):
++                raise ValueError(
++                    "v_racket_target_w[0] plus policy offset must be "
++                    "finite and representable as float32."
++                )
++            velocity[0] = np.float32(policy_velocity_x)
++        return velocity, offset
++
+     @staticmethod
+     def _validated_snapshot_vector(
+         value,
+         *,
+         name: str,
+         size: int,
+         reject_nonfinite: bool = False,
+     ) -> np.ndarray:
+         array = np.asarray(value, dtype=np.float64)
+         if array.shape != (size,):
+@@ -933,34 +1003,100 @@ class HitterEnv(BaseEnv):
+         racket_velocity = self._validated_vector(
+             command.v_racket_target_w,
+             name="v_racket_target_w",
+             size=3,
+         )
+         ball_in_velocity = self._validated_vector(
+             strike_plan.v_ball_in,
+             name="strike_plan.v_ball_in",
+             size=3,
+         )
++        speed_diagnostics = {}
++        for name in (
++            "raw_racket_normal_speed_mps",
++            "commanded_racket_normal_speed_mps",
++            "minimum_racket_normal_speed_mps",
++        ):
++            raw_value = getattr(strike_plan, name)
++            if isinstance(raw_value, (bool, np.bool_)) or not isinstance(
++                raw_value,
++                (int, float, np.integer, np.floating),
++            ):
++                raise TypeError(
++                    f"HITTER strike_plan.{name} must be a real number."
++                )
++            value = float(raw_value)
++            if not np.isfinite(value):
++                raise ValueError(f"HITTER strike_plan.{name} must be finite.")
++            speed_diagnostics[name] = value
++        if speed_diagnostics["minimum_racket_normal_speed_mps"] < 0.0:
++            raise ValueError(
++                "HITTER strike_plan.minimum_racket_normal_speed_mps "
++                "must be non-negative."
++            )
++        floor_applied = strike_plan.racket_speed_floor_applied
++        if type(floor_applied) is not bool:
++            raise TypeError(
++                "HITTER strike_plan.racket_speed_floor_applied must be bool."
++            )
++        raw_normal_speed = speed_diagnostics[
++            "raw_racket_normal_speed_mps"
++        ]
++        commanded_normal_speed = speed_diagnostics[
++            "commanded_racket_normal_speed_mps"
++        ]
++        minimum_normal_speed = speed_diagnostics[
++            "minimum_racket_normal_speed_mps"
++        ]
++        expected_commanded_speed = (
++            max(raw_normal_speed, minimum_normal_speed)
++            if minimum_normal_speed > 0.0
++            else raw_normal_speed
++        )
++        expected_floor_applied = bool(
++            minimum_normal_speed > 0.0
++            and raw_normal_speed < minimum_normal_speed
++        )
++        if not np.isclose(
++            commanded_normal_speed,
++            expected_commanded_speed,
++            rtol=1.0e-9,
++            atol=1.0e-9,
++        ) or floor_applied is not expected_floor_applied:
++            raise ValueError(
++                "HITTER strike_plan racket speed diagnostics "
++                "are inconsistent."
++            )
+         base_height = float(self._hitter_target_base_height_w())
+         if not np.isfinite(base_height):
+             raise ValueError("HITTER target base height must be finite.")
+         return {
+             "strike_type": strike_type,
+             "strike_type_index": 0 if strike_type == "forehand" else 1,
+             "strike_table_y_w": strike_table_y_w,
+             "strike_side_source": strike_side_source,
+             "time_to_strike": time_to_strike,
+             "base_target": base_target,
+             "base_height": np.float32(base_height),
+             "racket_target": racket_target,
+             "racket_velocity": racket_velocity,
+             "ball_in_velocity": ball_in_velocity,
++            "raw_racket_normal_speed_mps": speed_diagnostics[
++                "raw_racket_normal_speed_mps"
++            ],
++            "commanded_racket_normal_speed_mps": speed_diagnostics[
++                "commanded_racket_normal_speed_mps"
++            ],
++            "minimum_racket_normal_speed_mps": speed_diagnostics[
++                "minimum_racket_normal_speed_mps"
++            ],
++            "racket_speed_floor_applied": floor_applied,
+         }
+ 
+     @staticmethod
+     def _format_hitter_velocity_log_vector(value: np.ndarray) -> str:
+         return "[" + ",".join(
+             f"{float(component):.4f}" for component in value
+         ) + "]"
+ 
+     def _log_hitter_strike_target(
+         self,
+@@ -971,43 +1107,70 @@ class HitterEnv(BaseEnv):
+                 raise ValueError("active planner result is missing a command")
+             command = active_result.command
+             fields = self._validated_hitter_command_fields(command)
+             ball_in_velocity = fields["ball_in_velocity"].copy()
+             ball_out_velocity = self._validated_vector(
+                 command.strike_plan.v_ball_out,
+                 name="strike_plan.v_ball_out",
+                 size=3,
+             )
+             racket_velocity = fields["racket_velocity"].copy()
++            policy_racket_velocity, policy_vx_offset = (
++                self._policy_racket_target_velocity_w(
++                    racket_velocity,
++                    strike_type=fields["strike_type"],
++                )
++            )
+             logger.info(
+                 "HITTER strike target: track_id={} generation={} type={} "
+                 "strike_table_y_w={:.4f} side_source={} "
++                "p_racket_target_w_m={} "
++                "raw_racket_normal_speed_mps={:.4f} "
++                "commanded_racket_normal_speed_mps={:.4f} "
++                "minimum_racket_normal_speed_mps={:.4f} "
++                "racket_speed_floor_applied={} "
++                "command_kind=planner_target_not_measured "
+                 "v_ball_in_w_mps={} speed_ball_in_mps={:.4f} "
+                 "v_ball_out_w_mps={} speed_ball_out_mps={:.4f} "
+-                "v_racket_target_w_mps={} speed_racket_mps={:.4f}",
++                "v_racket_target_w_mps={} speed_racket_mps={:.4f} "
++                "v_racket_policy_w_mps={} "
++                "speed_racket_policy_mps={:.4f} "
++                "policy_vx_offset_mps={:.4f}",
+                 int(active_result.track_id),
+                 int(active_result.source_generation),
+                 fields["strike_type"],
+                 fields["strike_table_y_w"],
+                 fields["strike_side_source"],
++                self._format_hitter_velocity_log_vector(
++                    fields["racket_target"]
++                ),
++                fields["raw_racket_normal_speed_mps"],
++                fields["commanded_racket_normal_speed_mps"],
++                fields["minimum_racket_normal_speed_mps"],
++                str(fields["racket_speed_floor_applied"]).lower(),
+                 self._format_hitter_velocity_log_vector(
+                     ball_in_velocity
+                 ),
+                 float(np.linalg.norm(ball_in_velocity)),
+                 self._format_hitter_velocity_log_vector(
+                     ball_out_velocity
+                 ),
+                 float(np.linalg.norm(ball_out_velocity)),
+                 self._format_hitter_velocity_log_vector(
+                     racket_velocity
+                 ),
+                 float(np.linalg.norm(racket_velocity)),
++                self._format_hitter_velocity_log_vector(
++                    policy_racket_velocity
++                ),
++                float(np.linalg.norm(policy_racket_velocity)),
++                policy_vx_offset,
+             )
+         except Exception as exc:
+             try:
+                 logger.warning(
+                     "Failed to log HITTER strike target: {}",
+                     exc,
+                 )
+             except Exception:
+                 pass
+ 
+@@ -1560,30 +1723,48 @@ class HitterEnv(BaseEnv):
+ 
+         obs_base_ang_vel = np.asarray(self.base_ang_vel, dtype=np.float32).reshape(-1)[:3]
+         obs_projected_gravity = np.asarray(self.projected_gravity, dtype=np.float32).reshape(-1)[:3]
+         obs_base_forward_xy = matrix_from_quat(robot_anchor_quat_w)[:, 0][:2].astype(np.float32)
+         if self.hitter_command_initialized:
+             policy_time_to_strike_s = (
+                 self.hitter_command_lifecycle.policy_tts(
+                     now=time.monotonic()
+                 )
+             )
++            active_command = getattr(
++                self.hitter_command_lifecycle.active_result,
++                "command",
++                None,
++            )
++            strike_type = getattr(active_command, "strike_type", None)
++            if strike_type not in {"forehand", "backhand"}:
++                strike_type = (
++                    "forehand"
++                    if getattr(self, "hitter_strike_type", 1) == 0
++                    else "backhand"
++                )
++            policy_racket_target_velocity_w, _ = (
++                self._policy_racket_target_velocity_w(
++                    self.hitter_racket_target_vel_w,
++                    strike_type=strike_type,
++                )
++            )
+             active_task_observation = (
+                 assemble_active_hitter_task_observation(
+                     robot_anchor_position_w=robot_anchor_pos_w,
+                     robot_anchor_quaternion_xyzw=robot_anchor_quat_w,
+                     base_target_xy_w=self.hitter_base_target_xy_w,
+                     racket_target_position_w=(
+                         self.hitter_racket_target_pos_w_fixed
+                     ),
+                     racket_target_velocity_w=(
+-                        self.hitter_racket_target_vel_w
++                        policy_racket_target_velocity_w
+                     ),
+                     policy_time_to_strike_s=policy_time_to_strike_s,
+                     maximum_policy_time_to_strike_s=(
+                         self.hitter_command_lifecycle.maximum_policy_tts
+                     ),
+                     obs_clip_value=getattr(
+                         self.cfg.control,
+                         "obs_clip_value",
+                         None,
+                     ),
+diff --git a/deploy/tests/test_hitter_runtime_single_shot_integration.py b/deploy/tests/test_hitter_runtime_single_shot_integration.py
+index b9b77f2..c402097 100644
+--- a/deploy/tests/test_hitter_runtime_single_shot_integration.py
++++ b/deploy/tests/test_hitter_runtime_single_shot_integration.py
+@@ -282,20 +282,85 @@ def test_central_decision_application_copies_only_lifecycle_active_command():
+     env._apply_hitter_lifecycle_decision(decision, now=10.0)
+ 
+     assert env.hitter_command_initialized is True
+     assert env.hitter_strike_type == 0
+     assert (
+         env.hitter_strike_time_s
+         == frozen_active.command.time_to_strike
+     )
+ 
+ 
++def _result_for_strike_side(side: str):
++    result = success_result(track_id=41, generation=1, marker=0.0)
++    command = result.command
++    y_w = -0.10 if side == "forehand" else 0.10
++    position = np.asarray(
++        command.strike_plan.p_racket_target,
++        dtype=np.float64,
++    ).copy()
++    position[1] = y_w
++    plan = replace(command.strike_plan, p_racket_target=position)
++    return replace(
++        result,
++        command=replace(
++            command,
++            strike_type=side,
++            strike_table_y_w=y_w,
++            strike_plan=plan,
++        ),
++    )
++
++
++@pytest.mark.parametrize(
++    "is_real,side,expected",
++    [
++        (True, "forehand", [1.25, 0.1, 0.2]),
++        (True, "backhand", [1.0, 0.1, 0.2]),
++        (False, "forehand", [1.0, 0.1, 0.2]),
++    ],
++)
++def test_policy_racket_velocity_x_offset_is_real_forehand_only(
++    is_real,
++    side,
++    expected,
++):
++    env = make_hitter_env_for_test(is_real=is_real)
++    env.forehand_policy_vx_offset_mps = 0.25
++    result = _result_for_strike_side(side)
++    decision = env.hitter_command_lifecycle.ingest(result, now=10.0)
++    env._apply_hitter_lifecycle_decision(decision, now=10.0)
++    env.compute_observation()
++    np.testing.assert_allclose(env.obs_buf_dict["obs"][0, 13:16], expected)
++
++
++def test_real_forehand_policy_racket_velocity_x_offset_does_not_accumulate():
++    env = make_hitter_env_for_test(is_real=True)
++    env.forehand_policy_vx_offset_mps = 0.25
++    result = _result_for_strike_side("forehand")
++    decision = env.hitter_command_lifecycle.ingest(result, now=10.0)
++    env._apply_hitter_lifecycle_decision(decision, now=10.0)
++    frozen = env.hitter_command_lifecycle.active_result.command
++
++    env.compute_observation()
++    first = env.obs_buf_dict["obs"][0, 13:16].copy()
++    env.compute_observation()
++    second = env.obs_buf_dict["obs"][0, 13:16].copy()
++
++    np.testing.assert_allclose(first, [1.25, 0.1, 0.2])
++    np.testing.assert_allclose(second, first)
++    np.testing.assert_allclose(frozen.v_racket_target_w, [1.0, 0.1, 0.2])
++    np.testing.assert_allclose(
++        frozen.strike_plan.v_racket_target,
++        [1.0, 0.1, 0.2],
++    )
++
++
+ @pytest.mark.parametrize(
+     "side_source,strike_type,strike_table_y_w",
+     [
+         ("unexpected-source", "forehand", -0.1),
+         ("table_y", "backhand", -0.1),
+         ("table_y", "forehand", 0.0),
+     ],
+ )
+ def test_env_incompatible_side_contract_cancels_before_arming(
+     side_source,
+diff --git a/deploy/tests/test_hitter_strike_target_logging.py b/deploy/tests/test_hitter_strike_target_logging.py
+index ac1bdb3..b540b55 100644
+--- a/deploy/tests/test_hitter_strike_target_logging.py
++++ b/deploy/tests/test_hitter_strike_target_logging.py
+@@ -156,20 +156,53 @@ class StrikeTargetPayloadTests(unittest.TestCase):
+         )
+         self.assertIn(
+             "v_racket_target_w_mps=[1.4000,-0.1000,0.7000]",
+             message,
+         )
+         self.assertIn(
+             f"speed_racket_mps={np.linalg.norm(racket_velocity):.4f}",
+             message,
+         )
+ 
++    def test_real_forehand_logs_raw_and_policy_racket_velocity(self):
++        env = minimal_env()
++        env.simulator = SimpleNamespace(is_real=True)
++        env.forehand_policy_vx_offset_mps = 0.25
++        racket_velocity = np.array([1.4, -0.1, 0.7], dtype=np.float64)
++        result = planner_result(
++            command=fake_command(
++                strike_type="forehand",
++                racket_velocity=racket_velocity,
++            )
++        )
++
++        with captured_log_messages() as messages:
++            env._log_hitter_strike_target(result)
++
++        target_messages = [
++            message
++            for message in messages
++            if message.startswith("HITTER strike target:")
++        ]
++        self.assertEqual(len(target_messages), 1)
++        message = target_messages[0]
++        self.assertIn(
++            "v_racket_target_w_mps=[1.4000,-0.1000,0.7000]",
++            message,
++        )
++        self.assertIn(
++            "v_racket_policy_w_mps=[1.6500,-0.1000,0.7000]",
++            message,
++        )
++        self.assertIn("speed_racket_policy_mps=1.7951", message)
++        self.assertIn("policy_vx_offset_mps=0.2500", message)
++
+     def test_invalid_ball_out_is_rejected_by_typed_lifecycle_validation(self):
+         env = minimal_env()
+         command = fake_command(ball_out=[np.nan, 0.0, 0.0])
+ 
+         decision = env.hitter_command_lifecycle.ingest(
+             planner_result(command=command), now=10.0
+         )
+         self.assertEqual(decision.kind, "cancelled")
+         self.assertEqual(
+             decision.cancel_reason.value,
+
+## Untracked test diff
+diff --git a/deploy/tests/test_hitter_forehand_policy_vx_offset.py b/deploy/tests/test_hitter_forehand_policy_vx_offset.py
+new file mode 100644
+index 0000000..f9c9eba
+--- /dev/null
++++ b/deploy/tests/test_hitter_forehand_policy_vx_offset.py
+@@ -0,0 +1,77 @@
++from __future__ import annotations
++
++from pathlib import Path
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++from omegaconf import OmegaConf
++
++from envs.hitter import HitterEnv
++
++
++DEPLOY_DIR = Path(__file__).resolve().parents[1]
++
++
++def test_forehand_policy_vx_offset_reads_deployment_key_and_defaults_to_zero():
++    mimic_config = OmegaConf.to_container(
++        OmegaConf.load(DEPLOY_DIR / "config/mimic/hitter.yaml"),
++        resolve=True,
++    )
++
++    assert (
++        HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
++            mimic_config["policy"]
++        )
++        == 0.25
++    )
++    assert HitterEnv._forehand_policy_vx_offset_from_policy_cfg({}) == 0.0
++
++
++def test_forehand_policy_vx_offset_accepts_dictconfig_policy_node():
++    mimic_config = OmegaConf.load(DEPLOY_DIR / "config/mimic/hitter.yaml")
++
++    assert (
++        HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
++            mimic_config.policy
++        )
++        == 0.25
++    )
++    assert HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
++        OmegaConf.create({})
++    ) == 0.0
++
++
++@pytest.mark.parametrize(
++    "value",
++    [
++        True,
++        "0.25",
++        float("nan"),
++        float("inf"),
++        -0.01,
++        float(np.finfo(np.float32).max) * 2.0,
++        1.0e100,
++    ],
++)
++def test_forehand_policy_vx_offset_rejects_invalid_or_unrepresentable_values(
++    value,
++):
++    with pytest.raises((TypeError, ValueError)):
++        HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
++            {
++                "real_world_forehand_racket_velocity_x_offset_mps": value,
++            }
++        )
++
++
++def test_real_forehand_policy_velocity_rejects_float32_addition_overflow():
++    env = HitterEnv.__new__(HitterEnv)
++    env.simulator = SimpleNamespace(is_real=True)
++    env.forehand_policy_vx_offset_mps = float(np.finfo(np.float32).max)
++
++    with pytest.raises(ValueError, match="float32"):
++        env._policy_racket_target_velocity_w(
++            [np.finfo(np.float32).max, 0.1, 0.2],
++            strike_type="forehand",
++        )

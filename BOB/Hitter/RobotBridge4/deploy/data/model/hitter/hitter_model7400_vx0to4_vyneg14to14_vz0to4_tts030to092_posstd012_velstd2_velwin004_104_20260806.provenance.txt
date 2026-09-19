@@ -1,0 +1,43 @@
+Artifact
+========
+Filename: hitter_model7400_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_104_20260806.onnx
+Exported: 2026-08-06 on loco1
+ONNX SHA256: 99848ef51495dbc0ac30e5ddefd27778eef2f82b6388acef618269c1cffe6ded
+ONNX size: 891384 bytes
+ONNX opset: 18
+Contract: float32 obs [1,104] -> float32 actions [1,29]
+
+Source checkpoint
+=================
+Run: /share/project/manipu_backup/sijie/tmp/root-20260623-124001-extracted/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-08-06_16-25-02_hitter_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_resume7300_8xa100_env50000_20260806_162058
+Checkpoint: model_7400.pt
+Checkpoint iteration: 7400
+Checkpoint SHA256: 9dddc7410d6ce1d396cd499c62bb941065c4218930991487befe147aa35c5c30
+params/agent.yaml SHA256: 1d0615f4221cc315a731a4a859fb64b02f03fa97615b8017a86238434e143cc3
+params/env.yaml SHA256: 584e3d2dc12a1ead3ef004253bfd30983572dfbd898035805fc991d995abad5e
+source_snapshot/flat_env_cfg.py SHA256: e183c8fad97614934b8ea7ccc98eb85a5e99bf6cff08c389363d3a5ce151f6be
+
+Export
+======
+Host: loco1
+MOSAIC root: /home/loco1/BOB/Hitter/MOSAIC-main
+Python: /home/loco1/miniconda3/envs/isaaclab/bin/python
+Entry point: scripts/rsl_rl/play.py
+Task: Hitter-Striking-PlannerDomain-Flat-G1-v0
+Motion: data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean
+Options: --num_envs=1 --skip_critic --headless --device=cuda:0 --video --video_length=1
+
+Validation
+==========
+onnx.checker: PASS
+Input/output: obs [1,104] -> actions [1,29]
+Metadata: 11 keys; base_target_xy present and base_target_pos absent
+ONNX Runtime CPU: zero and ramp observations both produced finite [1,29] actions
+
+Provenance boundary
+===================
+The checkpoint, params, source snapshot, play.py, exporter.py, and motion data
+were hash-checked. The loco1 flat_env_cfg.py differed from the training snapshot
+only in reward std/window values; observation/action configuration was unchanged.
+Reward terms do not become RobotBridge2 runtime inputs. No physical-robot or
+MuJoCo behavior is claimed by these structural and numerical checks.

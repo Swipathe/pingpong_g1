@@ -1,0 +1,327 @@
+# Review package: c4399c5c8749130d85785b39d3555d5a5a0d26fe..15f19158ad47098812668fb418dbe71bdd81c7ef
+
+## Commits
+15f1915 fix: delay Chingmu ball admission by 40 cm
+
+## Files changed
+ deploy/mocap_bridge/chingmu_table_lcm_bridge.py    |   6 +-
+ .../tests/test_chingmu_ball_tracker_roi.py         |  57 +++++++
+ .../2026-07-31-chingmu-ball-far-edge-margin.md     | 185 +++++++++++++++++++++
+ 3 files changed, 247 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+index 4a53d4d..676a98b 100644
+--- a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
++++ b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+@@ -53,20 +53,21 @@ class CalibrationResult:
+ 
+ PELVIS_ORIENTATION_FORMAT = "robotbridge2_chingmu_pelvis_orientation_v1"
+ PELVIS_ROTATION_CONVENTION = (
+     "R_world_pelvis = R_world_rigid @ R_rigid_from_pelvis"
+ )
+ MIN_PELVIS_CALIBRATION_SAMPLES = 30
+ MIN_PELVIS_CALIBRATION_DURATION_S = 1.0
+ MAX_PELVIS_CALIBRATION_POSITION_RMS_M = 0.002
+ MAX_PELVIS_CALIBRATION_ANGULAR_RMS_DEG = 0.3
+ MAX_PELVIS_BODY_POSE_FRAME_AGE_S = 0.1
++BALL_TRACKING_FAR_EDGE_MARGIN_M = 0.40
+ 
+ 
+ @dataclass(frozen=True)
+ class PelvisOrientationCalibration:
+     rotation_rigid_from_pelvis: np.ndarray
+     sample_count: int
+     source_duration_s: float
+     position_rms_m: float
+     angular_rms_deg: float
+ 
+@@ -850,30 +851,33 @@ class BallTracker:
+ 
+     def update(
+         self,
+         unlabeled_markers_mm,
+         *,
+         frame_number: int,
+         table: TableFrame,
+         config: BridgeConfig,
+     ) -> BallTrackUpdate:
+         candidates = []
++        maximum_ball_x_m = (
++            config.table_length_m - BALL_TRACKING_FAR_EDGE_MARGIN_M
++        )
+         for raw_marker in np.asarray(unlabeled_markers_mm, dtype=np.float64).reshape(-1, 3):
+             corner_distance = float(
+                 np.min(np.linalg.norm(table.corners_raw_mm - raw_marker, axis=1))
+             )
+             if corner_distance <= config.corner_exclusion_radius_mm:
+                 continue
+             world = raw_to_table_world(raw_marker, table, config)
+             if not np.isfinite(world).all():
+                 continue
+-            if world[0] > config.table_length_m:
++            if world[0] > maximum_ball_x_m:
+                 continue
+             if abs(float(world[1])) > 0.5 * config.table_width_m:
+                 continue
+             if world[2] <= config.table_height_m:
+                 continue
+             candidates.append(world)
+ 
+         active = self.position_world is not None and self.frame_number is not None
+         if not candidates:
+             if active:
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py b/deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py
+new file mode 100644
+index 0000000..35f460a
+--- /dev/null
++++ b/deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py
+@@ -0,0 +1,57 @@
++import unittest
++
++import numpy as np
++
++from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
++    BallTracker,
++    BridgeConfig,
++    TableFrame,
++)
++
++
++class ChingMuBallTrackerRoiTest(unittest.TestCase):
++    def setUp(self):
++        self.config = BridgeConfig()
++        self.table = TableFrame(
++            center_raw_mm=np.zeros(3, dtype=np.float64),
++            x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
++            y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
++            z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
++            corners_raw_mm=np.zeros((4, 3), dtype=np.float64),
++            rectangle_score=0.0,
++        )
++
++    def raw_from_world(self, position_world):
++        position = np.asarray(position_world, dtype=np.float64)
++        return np.array(
++            [
++                (position[0] - 0.5 * self.config.table_length_m) * 1000.0,
++                position[1] * 1000.0,
++                (position[2] - self.config.table_height_m) * 1000.0,
++            ],
++            dtype=np.float64,
++        )
++
++    def test_far_edge_margin_cutoff_is_inclusive(self):
++        cutoff_x = self.config.table_length_m - 0.40
++        accepted = BallTracker().update(
++            [self.raw_from_world([cutoff_x, 0.0, 0.90])],
++            frame_number=1,
++            table=self.table,
++            config=self.config,
++        )
++        rejected = BallTracker().update(
++            [self.raw_from_world([cutoff_x + 0.001, 0.0, 0.90])],
++            frame_number=1,
++            table=self.table,
++            config=self.config,
++        )
++
++        self.assertIsNotNone(accepted.position_world)
++        self.assertFalse(accepted.ended)
++        self.assertIsNone(rejected.position_world)
++        self.assertFalse(rejected.ended)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/docs/superpowers/plans/2026-07-31-chingmu-ball-far-edge-margin.md b/docs/superpowers/plans/2026-07-31-chingmu-ball-far-edge-margin.md
+new file mode 100644
+index 0000000..7a32e8c
+--- /dev/null
++++ b/docs/superpowers/plans/2026-07-31-chingmu-ball-far-edge-margin.md
+@@ -0,0 +1,185 @@
++# Chingmu Ball Far-Edge Margin Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
++
++**Goal:** 将 Chingmu 球追踪区域的 X 上界从真实桌长收紧为真实桌长减去固定的 `0.40 m`，且不改变桌面标定、真实桌长和其他 Y/Z 门控。
++
++**Architecture:** 在 `BallTracker` 模块中定义固定远端留白常量，并仅用它计算球候选点的最大 X。通过独立的边界测试同时证明新上界是包含边界的：等于上界时接受，略大于上界时拒绝。
++
++**Tech Stack:** Python 3.8、`unittest`、NumPy、RobotBridge2 Chingmu mocap bridge。
++
++## Global Constraints
++
++- 修改后的球候选范围必须是 `0 < x <= table_length_m - 0.40 m`。
++- `|y| <= table_width_m / 2` 保持不变。
++- `z > table_height_m` 保持不变。
++- 不修改 `table_length_m`、桌面标定 JSON、桌面发布位置或 planner 参数。
++- 不增加命令行参数或配置项。
++- 保留当前 dirty worktree 中所有无关改动。
++
++---
++
++### Task 1: 收紧 BallTracker 远端 X 边界
++
++**Files:**
++- Create: `deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py`
++- Modify: `deploy/mocap_bridge/chingmu_table_lcm_bridge.py:54-63`
++- Modify: `deploy/mocap_bridge/chingmu_table_lcm_bridge.py:859-875`
++
++**Interfaces:**
++- Consumes: `BridgeConfig.table_length_m: float`、`BallTracker.update(...) -> BallTrackUpdate`。
++- Produces: `BALL_TRACKING_FAR_EDGE_MARGIN_M: float = 0.40`，以及包含边界 `x <= table_length_m - BALL_TRACKING_FAR_EDGE_MARGIN_M` 的球候选过滤行为。
++
++- [ ] **Step 1: 写入失败的包含边界测试**
++
++创建 `deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py`：
++
++```python
++import unittest
++
++import numpy as np
++
++from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
++    BallTracker,
++    BridgeConfig,
++    TableFrame,
++)
++
++
++class ChingMuBallTrackerRoiTest(unittest.TestCase):
++    def setUp(self):
++        self.config = BridgeConfig()
++        self.table = TableFrame(
++            center_raw_mm=np.zeros(3, dtype=np.float64),
++            x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
++            y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
++            z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
++            corners_raw_mm=np.zeros((4, 3), dtype=np.float64),
++            rectangle_score=0.0,
++        )
++
++    def raw_from_world(self, position_world):
++        position = np.asarray(position_world, dtype=np.float64)
++        return np.array(
++            [
++                (position[0] - 0.5 * self.config.table_length_m) * 1000.0,
++                position[1] * 1000.0,
++                (position[2] - self.config.table_height_m) * 1000.0,
++            ],
++            dtype=np.float64,
++        )
++
++    def test_far_edge_margin_cutoff_is_inclusive(self):
++        cutoff_x = self.config.table_length_m - 0.40
++        accepted = BallTracker().update(
++            [self.raw_from_world([cutoff_x, 0.0, 0.90])],
++            frame_number=1,
++            table=self.table,
++            config=self.config,
++        )
++        rejected = BallTracker().update(
++            [self.raw_from_world([cutoff_x + 0.001, 0.0, 0.90])],
++            frame_number=1,
++            table=self.table,
++            config=self.config,
++        )
++
++        self.assertIsNotNone(accepted.position_world)
++        self.assertFalse(accepted.ended)
++        self.assertIsNone(rejected.position_world)
++        self.assertFalse(rejected.ended)
++
++
++if __name__ == "__main__":
++    unittest.main()
++```
++
++- [ ] **Step 2: 运行测试并确认旧实现正确失败**
++
++Run:
++
++```bash
++/home/loco1/miniconda3/envs/rb/bin/python -m unittest \
++  deploy.mocap_bridge.tests.test_chingmu_ball_tracker_roi -v
++```
++
++Expected: `FAIL`，因为旧实现仍接受 `x = table_length_m - 0.399 m` 的候选球，`rejected.position_world` 不是 `None`。
++
++- [ ] **Step 3: 写入最小生产实现**
++
++在桥接模块常量区加入：
++
++```python
++BALL_TRACKING_FAR_EDGE_MARGIN_M = 0.40
++```
++
++在 `BallTracker.update()` 的候选遍历前计算：
++
++```python
++maximum_ball_x_m = (
++    config.table_length_m - BALL_TRACKING_FAR_EDGE_MARGIN_M
++)
++```
++
++将原过滤条件：
++
++```python
++if world[0] > config.table_length_m:
++```
++
++替换为：
++
++```python
++if world[0] > maximum_ball_x_m:
++```
++
++- [ ] **Step 4: 运行专用边界测试并确认通过**
++
++Run:
++
++```bash
++/home/loco1/miniconda3/envs/rb/bin/python -m unittest \
++  deploy.mocap_bridge.tests.test_chingmu_ball_tracker_roi -v
++```
++
++Expected: `Ran 1 test` 和 `OK`。
++
++- [ ] **Step 5: 运行 Chingmu 相关回归测试**
++
++Run:
++
++```bash
++/home/loco1/miniconda3/envs/rb/bin/python -m unittest \
++  deploy.mocap_bridge.tests.test_chingmu_ball_tracker_roi \
++  deploy.mocap_bridge.tests.test_chingmu_pelvis_orientation -v
++```
++
++Expected: 全部测试通过，无 traceback。
++
++- [ ] **Step 6: 检查差异范围和 Python 语法**
++
++Run:
++
++```bash
++/home/loco1/miniconda3/envs/rb/bin/python -m py_compile \
++  deploy/mocap_bridge/chingmu_table_lcm_bridge.py \
++  deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py
++git diff --check -- \
++  deploy/mocap_bridge/chingmu_table_lcm_bridge.py \
++  deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py
++```
++
++Expected: 两条命令均退出码 `0`，没有输出错误。
++
++- [ ] **Step 7: 仅提交本任务文件**
++
++```bash
++git add -- \
++  deploy/mocap_bridge/chingmu_table_lcm_bridge.py \
++  deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py \
++  docs/superpowers/plans/2026-07-31-chingmu-ball-far-edge-margin.md
++git diff --cached --check
++git commit -m "fix: delay Chingmu ball admission by 40 cm"
++```
++
++提交前确认暂存区不包含当前 dirty worktree 的其他文件。

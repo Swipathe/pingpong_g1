@@ -1,0 +1,305 @@
+robot:
+  asset:
+    asset_root: ./data/assets/g1
+    asset_file: g1_29dof_hitter_racket.xml
+    default_root_pos:
+    - 0.0
+    - 0.0
+    - 0.76
+    num_action: 29
+    num_dof: 29
+    joint_order:
+      left_hip_pitch_joint: 0
+      left_hip_roll_joint: 1
+      left_hip_yaw_joint: 2
+      left_knee_joint: 3
+      left_ankle_pitch_joint: 4
+      left_ankle_roll_joint: 5
+      right_hip_pitch_joint: 6
+      right_hip_roll_joint: 7
+      right_hip_yaw_joint: 8
+      right_knee_joint: 9
+      right_ankle_pitch_joint: 10
+      right_ankle_roll_joint: 11
+      waist_yaw_joint: 12
+      waist_roll_joint: 13
+      waist_pitch_joint: 14
+      left_shoulder_pitch_joint: 15
+      left_shoulder_roll_joint: 16
+      left_shoulder_yaw_joint: 17
+      left_elbow_joint: 18
+      left_wrist_roll_joint: 19
+      left_wrist_pitch_joint: 20
+      left_wrist_yaw_joint: 21
+      right_shoulder_pitch_joint: 22
+      right_shoulder_roll_joint: 23
+      right_shoulder_yaw_joint: 24
+      right_elbow_joint: 25
+      right_wrist_roll_joint: 26
+      right_wrist_pitch_joint: 27
+      right_wrist_yaw_joint: 28
+    frozen_num_dof: 0
+    frozen_dof_names: []
+    default_angles:
+    - -0.312
+    - 0.0
+    - 0.0
+    - 0.669
+    - -0.363
+    - 0.0
+    - -0.312
+    - 0.0
+    - 0.0
+    - 0.669
+    - -0.363
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - 0.2
+    - 0.0
+    - 0.6
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - -0.2
+    - 0.0
+    - 0.6
+    - 0.0
+    - 0.0
+    - 0.0
+    kps:
+    - 40.179238
+    - 99.098428
+    - 40.179238
+    - 99.098428
+    - 28.501246
+    - 28.501246
+    - 40.179238
+    - 99.098428
+    - 40.179238
+    - 99.098428
+    - 28.501246
+    - 28.501246
+    - 40.179238
+    - 28.501246
+    - 28.501246
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 16.778327
+    - 16.778327
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 16.778327
+    - 16.778327
+    kds:
+    - 2.55789
+    - 6.308802
+    - 2.55789
+    - 6.308802
+    - 1.814446
+    - 1.814446
+    - 2.55789
+    - 6.308802
+    - 2.55789
+    - 6.308802
+    - 1.814446
+    - 1.814446
+    - 2.55789
+    - 1.814446
+    - 1.814446
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 1.068142
+    - 1.068142
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 1.068142
+    - 1.068142
+    torso_name: torso_link
+    kinematic_joint_names:
+    - left_hip_pitch_joint
+    - left_hip_roll_joint
+    - left_hip_yaw_joint
+    - left_knee_joint
+    - left_ankle_pitch_joint
+    - left_ankle_roll_joint
+    - right_hip_pitch_joint
+    - right_hip_roll_joint
+    - right_hip_yaw_joint
+    - right_knee_joint
+    - right_ankle_pitch_joint
+    - right_ankle_roll_joint
+    - waist_yaw_joint
+    - waist_roll_joint
+    - waist_pitch_joint
+    - left_shoulder_pitch_joint
+    - left_shoulder_roll_joint
+    - left_shoulder_yaw_joint
+    - left_elbow_joint
+    - left_wrist_roll_joint
+    - left_wrist_pitch_joint
+    - left_wrist_yaw_joint
+    - right_shoulder_pitch_joint
+    - right_shoulder_roll_joint
+    - right_shoulder_yaw_joint
+    - right_elbow_joint
+    - right_wrist_roll_joint
+    - right_wrist_pitch_joint
+    - right_wrist_yaw_joint
+  control:
+    low_dt: 0.005
+    decimation: 4
+    obs_clip_value: 1000
+    action_scale: 1.0
+    action_clip_value: 10000.0
+    torque_clip_value:
+    - 88
+    - 139
+    - 88
+    - 139
+    - 50
+    - 50
+    - 88
+    - 139
+    - 88
+    - 139
+    - 50
+    - 50
+    - 88
+    - 50
+    - 50
+    - 25
+    - 25
+    - 25
+    - 25
+    - 25
+    - 5
+    - 5
+    - 25
+    - 25
+    - 25
+    - 25
+    - 25
+    - 5
+    - 5
+    use_residual: false
+    residual_joint_indices: []
+    is_mosaic: true
+    update_with_fk: true
+    use_teleop: false
+    reset_heading_on_start: true
+    viewer: false
+    real_time: false
+obs:
+  obs_dict: {}
+  obs_scales: {}
+  obs_auxiliary: {}
+  obs_dims: []
+sim:
+  _target_: simulator.mujoco.Mujoco
+  _recursive_: false
+  config:
+    marker: true
+    random_init_heading: false
+    control: ${robot.control}
+    asset: ${robot.asset}
+env:
+  _target_: envs.hitter.HitterEnv
+  _recursive_: false
+  config:
+    device: ${device}
+    simulator: ${sim}
+    obs: ${obs}
+    control: ${robot.control}
+    collect_dataset: false
+    motion: ${mimic.motion}
+    policy: ${mimic.policy}
+agent:
+  _target_: agents.hitter_agent.HitterAgent
+  _recursive_: true
+  env: ${env}
+  config:
+    checkpoint: ${mimic.policy.checkpoint}
+    device: ${device}
+mimic:
+  policy:
+    checkpoint: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-06_12-29-09_hitter_userchanges_oldbaai_2xa100_env50000_20260606_122855/exported/policy.onnx
+    without_state_estimator: true
+    action_beta: 1.0
+    max_timestep: 1000
+    use_estimator: false
+    eval_mode: false
+    history_length: 1
+    hitter_mode: true
+    hitter_seed: 0
+    save_video: true
+    video_dir: /root/Hitter/RobotBridge/deploy/videos_offline/hitter_robotbridge_model1300_20s_20260607_1536
+    video_width: 640
+    video_height: 480
+    video_fps: 50
+  motion:
+    playback_speed: 1.0
+    use_ball_planner: false
+    reset_ball_on_command: false
+    physical_table_width: 1.525
+    base_target_origin_xy_w:
+    - 0.0
+    - 0.0
+    target_base_height_w: 0.78
+    strike_plane_x: 0.4
+    base_target_x_offset: 0.0
+    time_to_strike_range:
+    - 0.8
+    - 0.92
+    swing_duration_range:
+    - 1.75
+    - 1.95
+    strike_type_sampling_ratios:
+      forehand: 0.5
+      backhand: 0.5
+    force_strike_type: null
+    forehand_nominal_racket_y_b: -0.5
+    backhand_nominal_racket_y_b: 0.22
+    forehand_racket_y_range:
+    - -0.7625
+    - 0.0
+    backhand_racket_y_range:
+    - 0.0
+    - 0.7625
+    racket_z_range:
+    - 0.05
+    - 0.35
+    forehand_racket_velocity_x_range:
+    - 2.6
+    - 3.4
+    backhand_racket_velocity_x_range:
+    - 2.6
+    - 3.4
+    forehand_racket_velocity_y_range:
+    - 0.0
+    - 1.4
+    backhand_racket_velocity_y_range:
+    - -1.4
+    - 0.0
+    racket_velocity_z_range:
+    - 2.0
+    - 2.7
+    backhand_racket_velocity_z_range:
+    - 2.0
+    - 2.7
+device: cpu

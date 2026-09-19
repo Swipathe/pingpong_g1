@@ -1,0 +1,53 @@
+policy:
+  checkpoint: ./data/model/hitter/hitter_model7400_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_104_20260806.onnx
+  action_beta: 1.0
+  hitter_seed: 0
+  save_video: false
+
+motion:
+  playback_speed: 1.0
+  reset_ball_on_command: true
+  mujoco_serve_times_s: [0.0, 20.0]
+  waiting_time_to_strike_s: 0.92
+  waiting_base_target_mode: last_planner_target
+  waiting_base_target_xy_w: [-0.4, 0.0]
+
+  ball_planner:
+    table_center_xy_w: [1.365369, 0.0]
+    table_height: 0.760000
+    table_length: 2.730738
+    table_width: 1.512451
+    ball_radius: 0.02
+    virtual_hit_plane_x: -0.2
+    desired_landing_point_w: [2.05, 0.0, 0.78]
+    post_hit_flight_time: 0.48
+    racket_restitution: 0.85
+    prediction_horizon_s: 2.0
+    prediction_dt: 0.005
+    planner_update_rate_hz: 100.0
+    minimum_stable_incoming_speed_x_mps: 0.20
+    stable_incoming_confirmation_snapshots: 3
+    require_future_hit_plane_crossing: true
+    state_estimator_window_size: 31
+    state_estimator_sample_rate_hz: 360.0
+    state_estimator_bounce_height_tolerance: 0.03
+    state_estimator_bounce_velocity_threshold: 0.10
+    state_estimator_bounce_min_separation_s: 0.20
+    vertical_restitution: 0.897474
+    horizontal_restitution: 0.764604
+    drag_coefficient: 0.098847
+    target_base_height_w: 0.78
+    racket_x_offset_b: 0.40
+    arm_time_to_strike_s: 0.92
+    minimum_arm_time_to_strike_s: 0.30
+    maximum_policy_time_to_strike_s: 0.92
+    maximum_hit_height_above_table_m: 0.69
+    maximum_prediction_horizon_s: 5.0
+    racket_velocity_component_ranges_mps:
+      x: [0.0, 4.0]
+      y: [-1.4, 1.4]
+      z: [0.0, 4.0]
+    swing_duration_range: [1.75, 1.95]
+    force_strike_type: null
+    forehand_nominal_racket_y_b: -0.5
+    backhand_nominal_racket_y_b: 0.22

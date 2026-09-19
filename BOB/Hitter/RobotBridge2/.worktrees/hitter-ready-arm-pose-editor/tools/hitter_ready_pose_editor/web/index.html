@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HITTER 双臂准备姿态编辑器</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">RobotBridge2 · robot_base_default</p>
+        <h1>HITTER 双臂准备姿态</h1>
+      </div>
+      <div class="save-stack">
+        <button id="save-pose" class="primary-action" type="button" disabled>
+          检查并保存独立姿态
+        </button>
+        <p id="save-reason">正在确认模型与验证服务状态。</p>
+      </div>
+    </header>
+
+    <main class="editor-layout">
+      <aside id="left-arm-panel" class="arm-panel" aria-labelledby="left-arm-title">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">LEFT ARM</p>
+            <h2 id="left-arm-title">左臂 7 关节</h2>
+          </div>
+          <span class="joint-count">7</span>
+        </div>
+        <div class="joint-list"></div>
+        <button id="reset-left" class="panel-reset" type="button">左臂恢复默认</button>
+      </aside>
+
+      <section class="viewport-panel" aria-label="机器人三维视图">
+        <div class="viewport-toolbar">
+          <div class="view-presets" role="group" aria-label="视角预设">
+            <button type="button" data-camera-preset="front">前</button>
+            <button type="button" data-camera-preset="back">后</button>
+            <button type="button" data-camera-preset="left">左</button>
+            <button type="button" data-camera-preset="right">右</button>
+          </div>
+          <div class="view-toggles">
+            <label><input id="ghost-toggle" type="checkbox" checked> 默认姿态</label>
+            <label><input id="table-toggle" type="checkbox" checked> 球台</label>
+          </div>
+        </div>
+
+        <div class="canvas-shell">
+          <canvas id="robot-canvas" aria-label="完整 G1 机器人、球拍与球台实时视图"></canvas>
+          <p class="canvas-hint">拖动旋转 · 滚轮缩放 · 双击适配</p>
+        </div>
+
+        <div class="viewport-footer">
+          <button id="reset-all" type="button">全部恢复默认</button>
+          <div class="status-stack">
+            <div id="editor-status" class="status-message" role="status" aria-live="polite"></div>
+            <div id="editor-error" class="status-error" role="alert" aria-live="assertive" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <aside id="right-arm-panel" class="arm-panel" aria-labelledby="right-arm-title">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">RIGHT ARM · RACKET</p>
+            <h2 id="right-arm-title">右臂 7 关节</h2>
+          </div>
+          <span class="joint-count accent">7</span>
+        </div>
+        <div class="joint-list"></div>
+        <button id="reset-right" class="panel-reset" type="button">右臂恢复默认</button>
+      </aside>
+    </main>
+
+    <section class="saved-poses-panel" aria-labelledby="saved-poses-title">
+      <div class="saved-poses-heading">
+        <div>
+          <p class="panel-kicker">SERVER-LISTED POSES</p>
+          <h2 id="saved-poses-title">已保存独立姿态</h2>
+        </div>
+        <button id="refresh-pose-list" type="button">刷新列表</button>
+      </div>
+      <p id="pose-list-status" class="status-message" role="status" aria-live="polite"></p>
+      <p id="pose-list-error" class="status-error" role="alert" aria-live="assertive" hidden></p>
+      <ol id="saved-pose-list" class="saved-pose-list"></ol>
+    </section>
+
+    <dialog id="save-dialog" aria-labelledby="save-dialog-title">
+      <form method="dialog" class="dialog-heading">
+        <div>
+          <p class="panel-kicker">TWO-STAGE SAVE</p>
+          <h2 id="save-dialog-title">验证并保存独立姿态</h2>
+        </div>
+        <button type="submit" value="cancel" aria-label="关闭">关闭</button>
+      </form>
+
+      <p id="validation-status" class="status-message" role="status" aria-live="polite"></p>
+      <p id="validation-error" class="status-error" role="alert" aria-live="assertive" hidden></p>
+
+      <div id="validation-details" hidden>
+        <section>
+          <h3>14-D radians 快照</h3>
+          <ol id="validation-joints" class="mono-list"></ol>
+        </section>
+        <section>
+          <h3>29-D 映射标识</h3>
+          <p id="validation-mapping" class="mono-block"></p>
+        </section>
+        <section>
+          <h3>MuJoCo robot_base_default FK 与误差</h3>
+          <dl id="validation-fk" class="validation-definitions"></dl>
+        </section>
+        <section>
+          <h3>启动资产哈希</h3>
+          <dl id="validation-hashes" class="validation-definitions hashes"></dl>
+        </section>
+        <section>
+          <h3>Soft-limit 警告</h3>
+          <ul id="validation-warnings"></ul>
+        </section>
+      </div>
+
+      <label id="soft-confirm-row" class="soft-confirm-row" hidden>
+        <input id="soft-confirm" type="checkbox">
+        我确认该姿态超出 90% soft range，但仍在 hard limit 内
+      </label>
+
+      <div id="save-result" class="save-result" hidden>
+        <h3>服务器已保存</h3>
+        <dl class="validation-definitions">
+          <dt>JSON 绝对路径</dt>
+          <dd id="saved-json-path"></dd>
+          <dt>YAML 绝对路径</dt>
+          <dd id="saved-yaml-path"></dd>
+        </dl>
+        <p id="storage-warning" class="storage-warning" hidden></p>
+      </div>
+
+      <div class="dialog-actions">
+        <button id="retry-validation" type="button" hidden>重新检查</button>
+        <button id="confirm-save" class="primary-action" type="button" disabled>
+          确认保存独立 YAML + JSON
+        </button>
+      </div>
+    </dialog>
+
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>

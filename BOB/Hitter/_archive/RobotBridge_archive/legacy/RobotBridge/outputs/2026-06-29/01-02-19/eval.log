@@ -1,0 +1,323 @@
+2026-06-29 01:02:19.376 | INFO     | __main__:main:65 - Log saved to /home/loco1/BOB/Hitter/RobotBridge/outputs/2026-06-29/01-02-19/eval.log
+2026-06-29 01:02:20.226 | INFO     | utils.motion_lib.torch_humanoid_batch:<module>:41 - Using Humanoid Batch
+2026-06-29 01:02:20.372 | DEBUG    | utils.kinematics:__init__:34 - [MujocoKinematics] loaded model from ./data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+2026-06-29 01:02:20.372 | DEBUG    | utils.kinematics:update_joint_names_subset:94 - [MujocoKinematics] set fk with 29 joints
+2026-06-29 01:02:20.372 | INFO     | simulator.base_sim:_setup:47 - Robot-level Control Frequency Set to 200.0HZ
+2026-06-29 01:02:20.372 | INFO     | simulator.base_sim:_setup:48 - Policy-level Control Frequency Set to 50.0HZ
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint waist_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint waist_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint waist_pitch_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_shoulder_roll_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint left_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_shoulder_roll_joint  Default Angles -0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:61 - Joint right_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:62 - Total Number of dof: 29
+2026-06-29 01:02:20.373 | INFO     | simulator.base_sim:_load_asset:63 - Number of Action: 29
+2026-06-29 01:02:20.374 | INFO     | simulator.real_world:_init_low_state:123 - [RealWorld] terminate_on_r2=False
+2026-06-29 01:02:20.374 | INFO     | utils.history_handler:__init__:19 - History Handler initialized!
+2026-06-29 01:02:20.376 | INFO     | envs.hitter:__init__:141 - HITTER planner config: use_ball_planner=True planner_only=True wait_for_ball=True max_timestep=-1
+2026-06-29 01:02:20.376 | INFO     | simulator.real_world:_vicon_state_handler:199 - Vicon root information received!
+2026-06-29 01:02:20.378 | INFO     | simulator.real_world:_vicon_state_handler:200 - Root Translation World: [-0.7936774  -0.05854458  0.7868389 ]
+2026-06-29 01:02:20.379 | INFO     | envs.loco_hitter:__init__:65 - LocoHitterEnv initialized | Total DoF: 29, Lower: 12, Upper: 17, auto_switch_on_ball=True
+2026-06-29 01:02:20.384 | INFO     | simulator.real_world:_root_state_handler:164 - State Estimator Information Received!
+2026-06-29 01:02:20.384 | INFO     | agents.loco_hitter_agent:_load_locomotion_policy:151 - Loaded locomotion policy from ./data/model/locomotion/loco_level.pt
+2026-06-29 01:02:20.384 | INFO     | simulator.real_world:_root_state_handler:165 - Root Translation: [ 0.02734283 -0.00195454  0.71664947], Root Linear Velocity: [-1.01234455e-07 -2.06184396e-07 -5.47389072e-06]
+2026-06-29 01:02:20.388 | INFO     | envs.hitter:configure_from_modelmeta:210 - Applying HITTER joint configuration from ONNX model.
+2026-06-29 01:02:20.390 | INFO     | envs.hitter:configure_from_modelmeta:252 - HITTER policy metadata configured, 29 degrees of freedom.
+2026-06-29 01:02:20.390 | INFO     | simulator.real_world:_joint_state_handler:209 - Communication build successfully between the policy and the transition layer!
+2026-06-29 01:02:20.393 | INFO     | envs.loco_hitter:configure_from_modelmeta:91 - HITTER policy configured; runtime starts in locomotion mode.
+2026-06-29 01:02:20.393 | INFO     | simulator.real_world:_joint_state_handler:210 - First signal arrives after 0.016365528106689453s!
+2026-06-29 01:02:20.393 | INFO     | agents.loco_hitter_agent:_load_hitter_policy:162 - Loaded HITTER policy from /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body.onnx | joints=29 anchor=pelvis
+2026-06-29 01:02:20.393 | INFO     | agents.loco_hitter_agent:__init__:145 - LocoHitterAgent initialized. Runtime starts in locomotion mode.
+2026-06-29 01:02:20.398 | INFO     | simulator.real_world:calibrate:376 - Calibraiting..., Press R2 to continue
+2026-06-29 01:02:27.216 | INFO     | simulator.real_world:calibrate:379 - R2 button pressed, Start Calibrating...
+2026-06-29 01:02:27.417 | INFO     | simulator.real_world:calibrate:399 - Calibration Done. Press R2 to continue
+2026-06-29 01:02:29.501 | INFO     | simulator.real_world:calibrate:402 - R2 pressed again, Communication built between policy layer and transition layer!
+2026-06-29 01:02:29.503 | INFO     | simulator.real_world:reset_heading:133 - [RealWorld] heading reset enabled, yaw0=-0.047 rad
+2026-06-29 01:02:29.504 | INFO     | envs.base_env:_update_obs:92 - Receive observation: ['actions', 'root_quat', 'root_rpy', 'base_ang_vel', 'base_lin_vel', 'dof_pos', 'dof_vel', 'projected_gravity']
+2026-06-29 01:02:29.508 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:29.533 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0086s
+2026-06-29 01:02:30.018 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:30.520 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:31.022 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:31.525 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:32.027 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:32.546 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:33.048 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:33.549 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:34.052 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:34.553 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:35.055 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:35.556 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:36.058 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:36.559 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:37.061 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:37.574 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:38.085 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:38.586 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:39.087 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:39.589 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:40.091 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:40.592 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:41.094 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:41.596 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:41.814 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0208s
+2026-06-29 01:02:42.100 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:42.619 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:43.121 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:43.623 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:44.125 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:44.626 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:45.131 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:45.649 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:46.151 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:46.653 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:47.154 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:47.659 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:48.180 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:48.680 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:49.181 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:49.687 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:50.208 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:50.726 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:51.234 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:51.750 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:52.252 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:52.754 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:53.255 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:53.757 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:54.259 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:54.760 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:54.838 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0208s
+2026-06-29 01:02:55.263 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:55.765 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:56.267 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:56.768 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:57.270 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:57.772 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:58.273 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:58.775 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:59.277 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:02:59.779 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:00.281 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:00.782 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:01.284 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:01.785 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:02.288 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:02.788 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:03.290 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:03.792 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:04.294 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:04.794 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:05.296 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:05.798 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:06.302 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:06.822 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:07.323 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:07.825 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:07.881 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0197s
+2026-06-29 01:03:08.326 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:08.827 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:09.329 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:09.831 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:10.333 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:10.834 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:11.336 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:11.838 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:12.278 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 01:03:12.342 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:12.843 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:13.345 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:13.847 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:14.349 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:14.850 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:15.354 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:15.855 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:16.359 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:16.859 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:17.379 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:17.881 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:18.382 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:18.884 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:19.386 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:19.887 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:20.389 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:20.911 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0240s
+2026-06-29 01:03:20.916 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:21.417 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:21.918 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:22.421 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:22.921 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:23.423 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:23.925 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:24.426 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:24.928 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:25.430 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:25.932 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:26.433 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:26.935 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:27.437 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:27.939 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:28.441 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:28.942 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:29.445 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:29.946 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:30.448 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:30.950 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:31.451 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:31.953 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:32.455 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:32.956 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:33.459 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:33.677 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0211s
+2026-06-29 01:03:33.961 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:34.463 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:34.965 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:35.467 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:35.968 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:36.470 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:36.909 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0018s
+2026-06-29 01:03:36.974 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:37.477 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:37.997 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:38.502 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:39.021 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:39.522 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:40.026 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:40.546 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:41.047 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:41.549 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:42.051 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:42.555 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:43.077 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:43.596 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:43.726 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0131s
+2026-06-29 01:03:43.759 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0127s
+2026-06-29 01:03:44.107 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:44.626 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:45.130 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:45.632 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:46.151 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:46.488 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0202s
+2026-06-29 01:03:46.652 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:47.153 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:47.655 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:48.159 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:48.216 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0026s
+2026-06-29 01:03:48.661 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:49.163 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:49.668 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:50.172 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:50.688 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:51.190 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:51.691 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:52.193 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:52.694 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:53.196 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:53.697 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:54.199 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:54.701 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:55.202 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:55.707 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:56.226 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:56.727 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:57.229 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:57.731 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:58.232 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:58.734 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:59.235 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:03:59.353 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0209s
+2026-06-29 01:03:59.738 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:00.239 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:00.741 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:01.243 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:01.745 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:02.246 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:02.748 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:03.250 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:03.751 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:04.253 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:04.754 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:05.256 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:05.758 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:06.259 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:06.761 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:07.266 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:07.631 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0107s
+2026-06-29 01:04:07.775 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:08.277 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:08.778 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:09.280 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:09.783 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:10.284 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:10.788 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:11.307 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:11.809 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:12.310 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:12.409 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0226s
+2026-06-29 01:04:12.814 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:13.315 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:13.817 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:14.318 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:14.820 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:15.321 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:15.822 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:16.329 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:16.846 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:17.347 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:17.849 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:18.351 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:18.852 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:19.354 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:19.855 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:20.356 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:20.794 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0000s
+2026-06-29 01:04:20.823 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0084s
+2026-06-29 01:04:20.867 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:21.368 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:21.870 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:22.371 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:22.873 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:23.375 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:23.880 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:24.399 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:24.903 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:25.442 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0228s
+2026-06-29 01:04:25.446 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:25.950 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:26.468 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:26.970 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:27.471 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:27.973 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:28.475 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:28.979 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:29.177 | WARNING  | agents.loco_hitter_agent:run:244 - Step timeout: -0.0033s
+2026-06-29 01:04:29.481 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:29.983 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:30.484 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:30.986 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:31.487 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:31.988 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]
+2026-06-29 01:04:32.490 | INFO     | envs.hitter:_log_ball_planner_wait_state:618 - Waiting for ball estimator: samples=0/31 visible=False ready=False pos=[0. 0. 0.] vel=[0. 0. 0.]

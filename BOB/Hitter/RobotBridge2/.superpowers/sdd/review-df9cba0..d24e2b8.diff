@@ -1,0 +1,431 @@
+# Review package: df9cba0..d24e2b8
+
+## Commits
+d24e2b8 feat: persist ChingMu pelvis orientation calibration
+
+## Files changed
+ deploy/mocap_bridge/chingmu_table_lcm_bridge.py    | 172 +++++++++++++++++++++
+ .../tests/test_chingmu_pelvis_orientation.py       | 167 ++++++++++++++++++++
+ 2 files changed, 339 insertions(+)
+
+## Diff
+diff --git a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+index 7e99297..ac1fd1e 100644
+--- a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
++++ b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+@@ -1,17 +1,19 @@
+ #!/usr/bin/env python3
+ from __future__ import annotations
+ 
+ import argparse
+ import itertools
+ import json
++import os
+ import sys
++import tempfile
+ import time
+ from dataclasses import dataclass
+ from pathlib import Path
+ from typing import Iterable, Optional, Sequence
+ 
+ import numpy as np
+ from scipy.spatial.transform import Rotation
+ 
+ 
+ ROOT = Path(__file__).resolve().parents[2]
+@@ -433,20 +435,190 @@ def _validate_pelvis_orientation_calibration(
+         or calibration.angular_rms_deg
+         > MAX_PELVIS_CALIBRATION_ANGULAR_RMS_DEG
+     ):
+         raise ValueError(
+             "pelvis orientation angular RMS "
+             f"{calibration.angular_rms_deg!r} deg exceeds "
+             f"{MAX_PELVIS_CALIBRATION_ANGULAR_RMS_DEG:.1f} deg"
+         )
+ 
+ 
++def save_pelvis_orientation_calibration(
++    path,
++    calibration: PelvisOrientationCalibration,
++    config: BridgeConfig,
++) -> None:
++    _validate_pelvis_orientation_calibration(calibration)
++    quaternion = quaternion_xyzw_from_rotation(
++        calibration.rotation_rigid_from_pelvis
++    )
++    payload = {
++        "format": PELVIS_ORIENTATION_FORMAT,
++        "base_subject": config.base_subject,
++        "quaternion_convention": "xyzw",
++        "rotation_convention": PELVIS_ROTATION_CONVENTION,
++        "quaternion_rigid_from_pelvis_xyzw": quaternion.tolist(),
++        "sample_count": int(calibration.sample_count),
++        "source_duration_s": float(calibration.source_duration_s),
++        "position_rms_m": float(calibration.position_rms_m),
++        "angular_rms_deg": float(calibration.angular_rms_deg),
++    }
++    serialized = json.dumps(payload, indent=2, sort_keys=True) + "\n"
++
++    calibration_path = Path(path)
++    calibration_path.parent.mkdir(parents=True, exist_ok=True)
++    temporary_path = None
++    try:
++        with tempfile.NamedTemporaryFile(
++            mode="w",
++            encoding="utf-8",
++            dir=calibration_path.parent,
++            prefix=f".{calibration_path.name}.",
++            suffix=".tmp",
++            delete=False,
++        ) as handle:
++            temporary_path = Path(handle.name)
++            handle.write(serialized)
++            handle.flush()
++            os.fsync(handle.fileno())
++        temporary_path.replace(calibration_path)
++    finally:
++        if temporary_path is not None:
++            temporary_path.unlink(missing_ok=True)
++
++
++def load_pelvis_orientation_calibration(
++    path,
++    config: BridgeConfig,
++) -> PelvisOrientationCalibration:
++    calibration_path = Path(path)
++    try:
++        payload = json.loads(
++            calibration_path.read_text(encoding="utf-8")
++        )
++    except (OSError, json.JSONDecodeError) as exc:
++        raise ValueError(
++            f"failed to read pelvis orientation calibration "
++            f"{calibration_path}: {exc}"
++        ) from exc
++
++    if not isinstance(payload, dict):
++        raise ValueError(
++            f"pelvis orientation calibration {calibration_path} "
++            "must contain a JSON object"
++        )
++    if payload.get("format") != PELVIS_ORIENTATION_FORMAT:
++        raise ValueError(
++            f"unsupported pelvis orientation calibration format in "
++            f"{calibration_path}"
++        )
++    if payload.get("base_subject") != config.base_subject:
++        raise ValueError(
++            f"pelvis orientation calibration base_subject="
++            f"{payload.get('base_subject')!r} does not match "
++            f"{config.base_subject!r}"
++        )
++    if payload.get("quaternion_convention") != "xyzw":
++        raise ValueError(
++            "pelvis orientation quaternion_convention must be 'xyzw'"
++        )
++    if (
++        payload.get("rotation_convention")
++        != PELVIS_ROTATION_CONVENTION
++    ):
++        raise ValueError(
++            "pelvis orientation rotation_convention does not match "
++            f"{PELVIS_ROTATION_CONVENTION!r}"
++        )
++
++    try:
++        quaternion_value = payload[
++            "quaternion_rigid_from_pelvis_xyzw"
++        ]
++        sample_count = payload["sample_count"]
++        source_duration_value = payload["source_duration_s"]
++        position_rms_value = payload["position_rms_m"]
++        angular_rms_value = payload["angular_rms_deg"]
++    except KeyError as exc:
++        raise ValueError(
++            f"invalid pelvis orientation fields in {calibration_path}: "
++            f"missing {exc.args[0]!r}"
++        ) from exc
++
++    if (
++        not isinstance(quaternion_value, list)
++        or len(quaternion_value) != 4
++        or any(
++            isinstance(component, bool)
++            or not isinstance(component, (int, float))
++            for component in quaternion_value
++        )
++    ):
++        raise ValueError(
++            "pelvis orientation quaternion must contain exactly four "
++            "numeric xyzw components"
++        )
++    quaternion = np.asarray(
++        quaternion_value,
++        dtype=np.float64,
++    )
++    quaternion_norm = float(np.linalg.norm(quaternion))
++    if (
++        not np.isfinite(quaternion).all()
++        or not np.isclose(
++            quaternion_norm,
++            1.0,
++            atol=1.0e-6,
++            rtol=0.0,
++        )
++    ):
++        raise ValueError(
++            "pelvis orientation quaternion must be finite and unit length"
++        )
++    if (
++        not isinstance(sample_count, int)
++        or isinstance(sample_count, bool)
++    ):
++        raise ValueError(
++            "pelvis orientation sample_count must be an integer"
++        )
++
++    quality_values = {
++        "source_duration_s": source_duration_value,
++        "position_rms_m": position_rms_value,
++        "angular_rms_deg": angular_rms_value,
++    }
++    for field, value in quality_values.items():
++        if (
++            isinstance(value, bool)
++            or not isinstance(value, (int, float))
++        ):
++            raise ValueError(
++                f"pelvis orientation {field} must be numeric"
++            )
++    source_duration_s = float(source_duration_value)
++    position_rms_m = float(position_rms_value)
++    angular_rms_deg = float(angular_rms_value)
++
++    calibration = PelvisOrientationCalibration(
++        rotation_rigid_from_pelvis=(
++            Rotation.from_quat(quaternion).as_matrix()
++        ),
++        sample_count=sample_count,
++        source_duration_s=source_duration_s,
++        position_rms_m=position_rms_m,
++        angular_rms_deg=angular_rms_deg,
++    )
++    _validate_pelvis_orientation_calibration(calibration)
++    return calibration
++
++
+ def calibrate_pelvis_orientation_from_frames(
+     frames: Iterable,
+     table: TableFrame,
+     config: BridgeConfig,
+ ) -> PelvisOrientationCalibration:
+     positions_world = []
+     rotation_matrices_world = []
+     source_times_s = []
+     for frame in frames:
+         pose = body_pose_to_table_world(
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+index a5b6cb5..144c81d 100644
+--- a/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
++++ b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+@@ -7,20 +7,22 @@ from pathlib import Path
+ 
+ import numpy as np
+ from scipy.spatial.transform import Rotation
+ 
+ from deploy.mocap_bridge.chingmu_sdk_client import MocapFrame
+ from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
+     BridgeConfig,
+     PelvisOrientationCalibration,
+     TableFrame,
+     calibrate_pelvis_orientation_from_frames,
++    load_pelvis_orientation_calibration,
++    save_pelvis_orientation_calibration,
+ )
+ 
+ 
+ def identity_table() -> TableFrame:
+     return TableFrame(
+         center_raw_mm=np.zeros(3, dtype=np.float64),
+         x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
+         y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
+         z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
+         corners_raw_mm=np.zeros((4, 3), dtype=np.float64),
+@@ -167,12 +169,177 @@ class PelvisOrientationCalibrationMathTest(unittest.TestCase):
+         ]
+ 
+         with self.assertRaisesRegex(ValueError, "angular RMS"):
+             calibrate_pelvis_orientation_from_frames(
+                 frames,
+                 self.table,
+                 self.config,
+             )
+ 
+ 
++class PelvisOrientationCalibrationJsonTest(unittest.TestCase):
++    def setUp(self):
++        self.config = BridgeConfig()
++
++    def test_json_round_trip_preserves_rotation_and_quality(self):
++        expected = valid_orientation_calibration(
++            Rotation.from_euler("xyz", [0.2, -0.1, 0.4])
++        )
++        with tempfile.TemporaryDirectory() as directory:
++            path = Path(directory) / "pelvis_orientation.json"
++
++            save_pelvis_orientation_calibration(
++                path,
++                expected,
++                self.config,
++            )
++            loaded = load_pelvis_orientation_calibration(
++                path,
++                self.config,
++            )
++            payload = json.loads(path.read_text(encoding="utf-8"))
++
++        np.testing.assert_allclose(
++            loaded.rotation_rigid_from_pelvis,
++            expected.rotation_rigid_from_pelvis,
++            atol=1.0e-12,
++        )
++        self.assertEqual(loaded.sample_count, expected.sample_count)
++        self.assertEqual(
++            payload["rotation_convention"],
++            "R_world_pelvis = R_world_rigid @ R_rigid_from_pelvis",
++        )
++        self.assertGreaterEqual(
++            payload["quaternion_rigid_from_pelvis_xyzw"][3],
++            0.0,
++        )
++        self.assertAlmostEqual(
++            np.linalg.norm(
++                payload["quaternion_rigid_from_pelvis_xyzw"]
++            ),
++            1.0,
++        )
++
++    def test_rejects_invalid_json_fields(self):
++        valid_payload = {
++            "format": "robotbridge2_chingmu_pelvis_orientation_v1",
++            "base_subject": "G1Pelvis",
++            "quaternion_convention": "xyzw",
++            "rotation_convention": (
++                "R_world_pelvis = "
++                "R_world_rigid @ R_rigid_from_pelvis"
++            ),
++            "quaternion_rigid_from_pelvis_xyzw": [0.0, 0.0, 0.0, 1.0],
++            "sample_count": 61,
++            "source_duration_s": 1.5,
++            "position_rms_m": 0.0002,
++            "angular_rms_deg": 0.05,
++        }
++        mutations = {
++            "format": {"format": "wrong"},
++            "subject": {"base_subject": "OtherBody"},
++            "quaternion_convention": {"quaternion_convention": "wxyz"},
++            "rotation_convention": {"rotation_convention": "wrong"},
++            "quaternion_non_unit": {
++                "quaternion_rigid_from_pelvis_xyzw": [0.0, 0.0, 0.0, 2.0]
++            },
++            "quaternion_non_finite": {
++                "quaternion_rigid_from_pelvis_xyzw": [
++                    0.0,
++                    0.0,
++                    float("nan"),
++                    1.0,
++                ]
++            },
++            "quaternion_wrong_size": {
++                "quaternion_rigid_from_pelvis_xyzw": [0.0, 0.0, 1.0]
++            },
++            "sample_count": {"sample_count": 29},
++            "source_duration": {"source_duration_s": 0.5},
++            "position_quality": {"position_rms_m": 0.0021},
++            "angular_quality": {"angular_rms_deg": 0.31},
++            "non_finite_quality": {"position_rms_m": float("inf")},
++        }
++
++        with tempfile.TemporaryDirectory() as directory:
++            path = Path(directory) / "pelvis_orientation.json"
++            for label, mutation in mutations.items():
++                with self.subTest(label=label):
++                    payload = dict(valid_payload)
++                    payload.update(mutation)
++                    path.write_text(
++                        json.dumps(payload),
++                        encoding="utf-8",
++                    )
++                    with self.assertRaises(ValueError):
++                        load_pelvis_orientation_calibration(
++                            path,
++                            self.config,
++                        )
++
++            for missing_field in valid_payload:
++                with self.subTest(missing_field=missing_field):
++                    missing_field_payload = dict(valid_payload)
++                    del missing_field_payload[missing_field]
++                    path.write_text(
++                        json.dumps(missing_field_payload),
++                        encoding="utf-8",
++                    )
++                    with self.assertRaises(ValueError):
++                        load_pelvis_orientation_calibration(
++                            path,
++                            self.config,
++                        )
++
++            path.write_text("[]", encoding="utf-8")
++            with self.assertRaises(ValueError):
++                load_pelvis_orientation_calibration(
++                    path,
++                    self.config,
++                )
++
++            path.write_text("{", encoding="utf-8")
++            with self.assertRaises(ValueError):
++                load_pelvis_orientation_calibration(
++                    path,
++                    self.config,
++                )
++
++    def test_missing_json_file_is_rejected(self):
++        with tempfile.TemporaryDirectory() as directory:
++            path = Path(directory) / "missing.json"
++            with self.assertRaisesRegex(
++                ValueError,
++                "failed to read pelvis orientation calibration",
++            ):
++                load_pelvis_orientation_calibration(
++                    path,
++                    self.config,
++                )
++
++    def test_failed_save_does_not_overwrite_existing_file(self):
++        invalid = PelvisOrientationCalibration(
++            rotation_rigid_from_pelvis=np.eye(3),
++            sample_count=61,
++            source_duration_s=1.5,
++            position_rms_m=0.5,
++            angular_rms_deg=0.05,
++        )
++        with tempfile.TemporaryDirectory() as directory:
++            path = Path(directory) / "pelvis_orientation.json"
++            path.write_text("keep-existing\n", encoding="utf-8")
++
++            with self.assertRaisesRegex(ValueError, "position RMS"):
++                save_pelvis_orientation_calibration(
++                    path,
++                    invalid,
++                    self.config,
++                )
++
++            self.assertEqual(
++                path.read_text(encoding="utf-8"),
++                "keep-existing\n",
++            )
++
++
+ if __name__ == "__main__":
+     unittest.main()

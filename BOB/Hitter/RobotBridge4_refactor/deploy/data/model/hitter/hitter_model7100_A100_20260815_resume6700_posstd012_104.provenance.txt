@@ -1,0 +1,63 @@
+产物
+====
+文件名: hitter_model7100_A100_20260815_resume6700_posstd012_104.onnx
+导出时间: 2026-08-15T09:52:31+08:00
+ONNX SHA256: 795dc5851bebf13d974038563d07ae41cee2242df74f93627a930e959c4a2f89
+ONNX 大小: 891384 bytes
+ONNX opset: 18
+接口: float32 obs [1,104] -> float32 actions [1,29]
+
+源 checkpoint
+===============
+原始文件: /home/loco1/Downloads/model_7100_A100_20260815_resume6700_posstd012.pt
+导出副本: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/model7100_A100_20260815_resume6700_posstd012_export/model_7100.pt
+Checkpoint iteration: 7100
+Checkpoint SHA256: 9bdd108d7e55a10d4f99f939599075ec94124f3752fa229e399a3a863fae0256
+Checkpoint 大小: 6515938 bytes
+Actor: 104 -> 512 -> 256 -> 128 -> 29，ELU
+Critic input: 301
+Normalizer: 使用该 checkpoint 自带的 policy normalizer [1,104]；没有沿用旧模型数值
+
+兼容性依据与边界
+================
+新 checkpoint 的顶层键、actor/critic 张量形状、dtype 及 policy/privileged normalizer
+形状均与当前 104 维部署链一致，所有浮点张量均为有限值。新 checkpoint 的 normalizer
+数值与 model56600 不同，已随新模型正确导入 ONNX。
+
+该 checkpoint 本身不包含 observation/joint/action 语义元数据，Downloads 中也没有同名
+agent.yaml、env.yaml、source 或 motion bundle。因此导出复用了已部署 model17500 链的隔离
+源码、任务、运动和元数据快照。形状兼容和数值一致性不能单独证明 A100 训练端的 104 个
+观测字段顺序、关节顺序及 action scale 未变化；若训练端改过这些语义，必须用对应训练 bundle
+重新导出。
+
+导出环境
+========
+MOSAIC root: /home/loco1/BOB/Hitter/MOSAIC-main
+Run directory: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/model7100_A100_20260815_resume6700_posstd012_export
+兼容源码快照: /home/loco1/BOB/Hitter/MOSAIC-main/imports/8x4090_20260808_model17500
+Task: Hitter-Striking-PlannerDomain-Flat-G1-v0
+Motion: motion/20260806_mqy_g1_npz_raw_peak43_aligned
+Python: /home/loco1/miniconda3/envs/isaaclab/bin/python (3.10.18)
+PyTorch: 2.5.1+cu121
+ONNX: 1.16.1
+ONNX Runtime 验证: 1.19.2
+play.py SHA256: f86484c04f1a86dc0171391b300331c7dc63f5bd6d3a45d36ace9d9c6ddd453e
+exporter.py SHA256: 4e05cd5af77bb5f5dad2015cfbf72f3106df390f0166c546b389e6e2fee55513
+params/agent.yaml SHA256: 0faf11a3af8c6b6d9e1b205cf03610fcf7024a566e615e72d1171d8f1dd51674
+params/env.yaml SHA256: 89599ed41e9ffc1da2d021bc451d8d1a583c57baa43d5c39f494164d02fab1e5
+选项: --num_envs=1 --skip_critic --headless --device=cuda:0 --video --video_length=1
+
+验证
+====
+Exporter exit code: 0
+onnx.checker: PASS
+输入/输出: obs [1,104] -> actions [1,29]
+元数据: 11 项，键和值均与当前部署的 model56600 完全一致
+ONNX Runtime CPU: 10 组输入全部输出有限值
+PyTorch checkpoint 与 ONNX: max_abs=1.90734863e-06，allclose(rtol=1e-5, atol=1e-6) PASS
+导出产物与部署副本 SHA256 一致: PASS
+
+证据范围
+========
+已验证 checkpoint 加载、ONNX 导出、结构、部署元数据、normalizer 数值路径及 CPU 推理一致性。
+未运行 MuJoCo 行为测试或真机测试；这些离线检查不证明新策略的稳定性或实际击球效果。

@@ -1,0 +1,61 @@
+RobotBridge4 policy artifact provenance
+======================================
+
+Prepared: 2026-08-18
+
+Source checkpoint
+-----------------
+Path: /home/loco1/Downloads/20260818_model_20500.pt
+Size: 6516018 bytes
+SHA256: c36d1e3e6d1edf9a644c398fabd2bd3b53cef12d402104aac712e8b38198cc48
+Checkpoint iteration: 20500
+
+Checkpoint structure
+--------------------
+Actor: 104 -> 512 -> 256 -> 128 -> 29, ELU activations
+Critic: 301 -> 512 -> 256 -> 128 -> 1, ELU activations
+Actor observation normalizer shape: [1, 104]
+Privileged observation normalizer shape: [1, 301]
+All floating tensors inspected in the model and normalizer state dictionaries were finite.
+
+Export
+------
+Export run: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/model20500_20260818_export
+Task: Hitter-Striking-PlannerDomain-Flat-G1-v0
+Motion: /home/loco1/BOB/Hitter/MOSAIC-main/imports/8x4090_20260808_model17500/motion/20260806_mqy_g1_npz_raw_peak43_aligned
+Options: one environment, skip critic, headless, cuda:0, video length 1
+Environment: isaaclab
+Agent and environment YAML files were copied from the isolated model17500 source snapshot into the export run params directory.
+
+Exporter sources
+----------------
+/home/loco1/BOB/Hitter/MOSAIC-main/scripts/rsl_rl/play.py
+SHA256: f86484c04f1a86dc0171391b300331c7dc63f5bd6d3a45d36ace9d9c6ddd453e
+
+/home/loco1/BOB/Hitter/MOSAIC-main/imports/8x4090_20260808_model17500/source/whole_body_tracking/whole_body_tracking/utils/exporter.py
+SHA256: 4e05cd5af77bb5f5dad2015cfbf72f3106df390f0166c546b389e6e2fee55513
+
+Deployed ONNX
+-------------
+Path: /home/loco1/BOB/Hitter/RobotBridge4/deploy/data/model/hitter/hitter_model20500_20260818_104.onnx
+Size: 891384 bytes
+SHA256: abae7119dd0df196292e5daf7f75f6c0a9adeb3f8ae185bf1519f1d48f90d423
+ONNX opset: 18
+Input: obs, tensor(float), [1, 104]
+Output: actions, tensor(float), [1, 29]
+ONNX checker: PASS
+Metadata: 11 items; exactly equal to the previously deployed model10595 ONNX metadata.
+
+Numerical verification
+----------------------
+Compared the checkpoint actor plus observation normalizer against ONNX Runtime on 10 deterministic inputs.
+All outputs were finite.
+Maximum absolute error: 8.34465027e-06
+Maximum relative error: 1.04659266e-04
+Allclose result: PASS (rtol=1e-5, atol=1e-5)
+
+Compatibility boundary
+----------------------
+The checkpoint contains no explicit semantic description of its observation ordering, joint ordering, action ordering, or training task. The export therefore reuses the established model17500/model10595 104-dimensional deployment chain. Matching tensor shapes and metadata prove structural compatibility, but do not independently prove that the new training run used identical observation and action semantics.
+
+No MuJoCo behavior test or real-robot motion test was performed while preparing this artifact.

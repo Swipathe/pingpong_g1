@@ -1,0 +1,142 @@
+[
+  {
+    "name": "trans_ldd",
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2/bin/trans"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "trans_dynamic",
+    "command": [
+      "readelf",
+      "-d",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2/bin/trans"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "vicon_bridge_ldd",
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "vicon_bridge_dynamic",
+    "command": [
+      "readelf",
+      "-d",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "vicon_frame_stream_ldd",
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_frame_stream"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "vicon_frame_stream_dynamic",
+    "command": [
+      "readelf",
+      "-d",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_frame_stream"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "test_transformation_t_v2",
+    "command": [
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/test_transformation_t_v2"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "test_vicon_ball_track_v2",
+    "command": [
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/test_vicon_ball_track_v2"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "bridge_help",
+    "command": [
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2",
+      "--help"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "calibration_preflight",
+    "command": [
+      "bash",
+      "deploy/mocap_bridge/run_robotbridge4_vicon_real.sh",
+      "--check-only"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "config_mujoco",
+    "command": [
+      "/home/yhl/miniforge3/envs/isaaclab/bin/python",
+      "run.py",
+      "--config-name=hitter",
+      "sim=mujoco",
+      "device=cpu",
+      "--cfg",
+      "job",
+      "--resolve"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy",
+    "exit_code": 0
+  },
+  {
+    "name": "config_real_world",
+    "command": [
+      "/home/yhl/miniforge3/envs/isaaclab/bin/python",
+      "run.py",
+      "--config-name=hitter",
+      "sim=real_world",
+      "device=cpu",
+      "--cfg",
+      "job",
+      "--resolve"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy",
+    "exit_code": 0
+  },
+  {
+    "name": "python_helper_ldd",
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/bin/vicon_frame_stream"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  },
+  {
+    "name": "python_helper_help",
+    "command": [
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/bin/vicon_frame_stream",
+      "--help"
+    ],
+    "cwd": "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+    "exit_code": 0
+  }
+]

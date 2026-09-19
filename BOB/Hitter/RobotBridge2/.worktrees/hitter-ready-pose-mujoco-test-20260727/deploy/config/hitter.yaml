@@ -1,0 +1,18 @@
+defaults:
+  - robot: g1_hitter_racket
+  - obs: hitter
+  - sim: real_world
+  - env: hitter
+  - agent: hitter
+  - mimic: hitter
+  - _self_
+
+device: cpu
+
+sim:
+  config:
+    motion: ${mimic.motion}
+    table_tennis:
+      enabled: true
+      ball_body_name: hitter_ball
+      ball_joint_name: hitter_ball_freejoint

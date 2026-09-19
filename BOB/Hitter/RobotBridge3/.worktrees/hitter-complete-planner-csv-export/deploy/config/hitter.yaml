@@ -1,0 +1,30 @@
+defaults:
+  - robot: g1_hitter_racket
+  - obs: hitter
+  - sim: real_world
+  - env: hitter
+  - agent: hitter
+  - mimic: hitter
+  - _self_
+
+device: cpu
+
+sim:
+  config:
+    motion: ${mimic.motion}
+    table_tennis:
+      enabled: true
+      ball_body_name: hitter_ball
+      ball_joint_name: hitter_ball_freejoint
+      ball_geom_name: hitter_ball_geom
+      racket_face_geom_name: right_racket_face_collision
+      use_analytic_table_bounce: true
+      use_analytic_racket_hit: true
+      table_center_xy_w: ${mimic.motion.ball_planner.table_center_xy_w}
+      table_height: ${mimic.motion.ball_planner.table_height}
+      table_length: ${mimic.motion.ball_planner.table_length}
+      table_width: ${mimic.motion.ball_planner.table_width}
+      ball_radius: ${mimic.motion.ball_planner.ball_radius}
+      drag_coefficient: ${mimic.motion.ball_planner.drag_coefficient}
+      vertical_restitution: ${mimic.motion.ball_planner.vertical_restitution}
+      horizontal_restitution: ${mimic.motion.ball_planner.horizontal_restitution}

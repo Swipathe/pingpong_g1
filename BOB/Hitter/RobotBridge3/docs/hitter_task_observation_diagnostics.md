@@ -1,0 +1,198 @@
+# HITTER 任务观测旁路诊断运行手册
+
+这套诊断程序是独立的只读 shadow 进程。它只订阅动捕 LCM 数据，在本进程中复现 estimator、100 Hz planner、50 Hz lifecycle 与 11 维 task observation 的组装过程，并把状态展示在本机网页上。它不启动 ONNX policy，不连接机器人控制链路，也不会发送 LCM 控制消息；页面结论只代表诊断 shadow 链路，不代表生产 policy 实际收到的 observation。
+
+当前 schema v2 把两件事明确分开：
+
+- **球诊断链路**只依赖 `ball` 数据；没有 `G2Pelvis` 时，BALL subject、ESTIMATOR 和 BALL-ONLY INCOMING 仍可更新。
+- **完整任务门控**忠实保留生产条件；没有有效 pelvis 时，production incoming、planner、ARM 和 task observation 不会被伪造成已经执行。
+
+## 启动与重启
+
+先确认当前使用的是 RobotBridge2 仓库中的配置和标定文件。若当前没有进程向 `vicon_state_data` 发布 ChingMu 数据，打开终端 A 启动发布桥；已有发布桥时不要重复启动。
+
+终端 A（按需）：发布 `ball`、`table`，并在有效刚体位姿存在时发布 `G2Pelvis`。
+
+```bash
+cd /home/loco1/BOB/Hitter/RobotBridge2
+/home/loco1/miniconda3/envs/rb/bin/python deploy/mocap_bridge/chingmu_table_lcm_bridge.py \
+  --host 192.168.2.100 \
+  --base-subject G2Pelvis \
+  --table-calib deploy/mocap_bridge/calibrations/chingmu_table_frame_latest.json \
+  --pelvis-orientation-calib deploy/mocap_bridge/calibrations/chingmu_g2_pelvis_orientation_latest.json \
+  --lcm-url 'udpm://239.255.76.67:7667?ttl=255' \
+  --channel vicon_state_data \
+  --publish
+```
+
+桥启动时仍必须从 ChingMu hierarchy 解析出 `G2Pelvis`，正常运行模式也必须读取 `--pelvis-orientation-calib`；“球诊断不需要 pelvis”指运行中不需要持续收到**有效 pelvis 位姿**，不表示可以删除 subject 或标定参数。桥成功启动后，pelvis 位姿未被相机看到、无效或过期时，球仍可独立发布，页面的球诊断区仍应推进。当前 CLI 没有单独的 “ball-only” 开关，不要删除或虚构参数。
+
+终端 B：在 **8766** 启动只读诊断进程，不运行机器人 policy。
+
+```bash
+cd /home/loco1/BOB/Hitter/RobotBridge2/deploy
+PYTHONPATH=. /home/loco1/miniconda3/envs/rb/bin/python -m diagnostics.hitter_task_monitor \
+  --mimic-config config/mimic/hitter.yaml \
+  --control-config config/control/g1_hitter_racket.yaml \
+  --table-calib mocap_bridge/calibrations/chingmu_table_frame_latest.json \
+  --pelvis-calib mocap_bridge/calibrations/chingmu_g2_pelvis_orientation_latest.json \
+  --lcm-url 'udpm://239.255.76.67:7667?ttl=255' \
+  --channel vicon_state_data \
+  --base-name G2Pelvis \
+  --ball-name ball \
+  --port 8766
+```
+
+终端 B 打印页面地址和本次 session 名称后，在本机浏览器打开：
+
+```text
+http://127.0.0.1:8766/
+```
+
+HTTP 服务固定只监听 loopback，不提供远程 bind 参数。这个命令不会启动 `deploy/run.py`、robot policy、R2 或 action 发布。
+
+即使现场只验球，monitor 启动时仍要保留 `--pelvis-calib` 文件参数；“无 pelvis”同样指没有有效的实时 `G2Pelvis` 消息，而不是省略启动配置。
+
+### 加载新代码必须重启 monitor
+
+Python 进程不会自动热加载新代码。若页面显示：
+
+```text
+旧版后端状态：缺少 live_snapshot；请重启 diagnostics 服务。
+```
+
+说明当前 monitor 仍是 schema v1 旧进程。只在终端 B 中按 `Ctrl-C` 正常停止旧 monitor，然后重新执行：
+
+```bash
+cd /home/loco1/BOB/Hitter/RobotBridge2/deploy
+PYTHONPATH=. /home/loco1/miniconda3/envs/rb/bin/python -m diagnostics.hitter_task_monitor \
+  --mimic-config config/mimic/hitter.yaml \
+  --control-config config/control/g1_hitter_racket.yaml \
+  --table-calib mocap_bridge/calibrations/chingmu_table_frame_latest.json \
+  --pelvis-calib mocap_bridge/calibrations/chingmu_g2_pelvis_orientation_latest.json \
+  --lcm-url 'udpm://239.255.76.67:7667?ttl=255' \
+  --channel vicon_state_data \
+  --base-name G2Pelvis \
+  --ball-name ball \
+  --port 8766
+```
+
+再刷新 `http://127.0.0.1:8766/`。不需要、也不要因此重启或启动机器人控制进程。若旧 monitor 仍占用 8766，不要并行启动第二个 monitor。
+
+## 页面字段的真实含义
+
+页面实时值只读取 schema v2 的 `live_snapshot`，不再从 human-readable `stage` 文本或默认常量反推状态。
+
+| 页面区域 | 字段 | 含义 |
+| --- | --- | --- |
+| 运行健康 | BALL / G2PELVIS / TABLE | `NEVER_SEEN` 表示本进程尚未收到该 subject；`LIVE` 表示新鲜；`STALE` 表示 age 超阈值；`INVALID` 表示消息明确无效或 occluded。rate、age 和 source frame 都来自实际 LCM 到达状态。 |
+| 球实时状态 | ESTIMATOR | `NOT_SEEN` 尚未见球；`ESTIMATING n/window` 正在填充 estimator；`READY n/window` 已有可用估计；`INVALID` 是估计无效；`TRACK_ENDED` 是本条球轨迹结束。当前配置的 window 是 31。 |
+| 球实时状态 | BALL-ONLY INCOMING | diagnostics-only 连续来球判断，不读取 pelvis。当前配置要求 `vx <= -0.20 m/s`，连续 3 个已评估 snapshot 后 confirmed；非 incoming snapshot 会把真实连续计数重置为 0。 |
+| 完整任务门控 | PELVIS | 只有 subject 新鲜且 `valid=true` 才是 `READY`，否则为 `BLOCKED`。 |
+| 完整任务门控 | PRODUCTION INCOMING | 生产等价 incoming 判断。它必须先有有效 pelvis 和 ready estimator；上游条件缺失时是 `NOT_EVALUATED`，不是失败次数 0。 |
+| 完整任务门控 | PLANNER | `BLOCKED` 表示上游 gate 未满足，`PENDING` 表示已提交但暂时无命令，`READY` 表示已有可用命令，`REJECTED` 会同时给出真实 reason code。只有真实 planner deadline 可用时才显示动态 TTS。 |
+| 完整任务门控 | ARMED | `ARMED` 是 lifecycle 已进入 arm 窗口；`NOT_ARMED` 是 planner ready 但尚未进入窗口；`NOT_EVALUATED` 是 planner 尚未 ready。`ARM threshold` 是配置中的 `arm_time_to_strike_s`（当前为 0.92 s），不是实时 TTS 倒计时。 |
+| 完整任务门控 | TASK OBS | `AVAILABLE` 表示本 tick 有真实的 11 维 shadow task observation；`NOT_AVAILABLE` 表示上游尚未允许组装；`ERROR` 表示已经尝试但结果无效。 |
+
+所有后端 `null` 在页面统一显示为 `—`。`—` 表示“没有可用值”，不能读成数值 0、通过或完成。enum 缺失则显示 `UNKNOWN`。
+
+### pelvis 缺失时的精确预期
+
+当 `G2Pelvis` 从未出现、过期或无效，而球仍正常发布时，页面应同时呈现两组不冲突的事实：
+
+- BALL subject 的 rate、age、frame 继续刷新；
+- ESTIMATOR 可从 `ESTIMATING n/31` 到 `READY 31/31`；
+- BALL-ONLY INCOMING 可从 `1/3` 到 `3/3` 并显示 confirmed；
+- PELVIS 为 `BLOCKED`，subject 细节可能是 `NEVER_SEEN`、`STALE` 或 `INVALID`；
+- PRODUCTION INCOMING 为 `NOT_EVALUATED · —`；
+- PLANNER 为 `BLOCKED`，reason 为 `PELVIS_UNAVAILABLE`，TTS 为 `—`；
+- ARMED 为 `NOT_EVALUATED`；其 `ARM threshold` 仍只是配置值；
+- TASK OBS 为 `NOT_AVAILABLE · —`，clip count 为 `—`；
+- 当前 attempt 的 primary blocker 为 `PELVIS_UNAVAILABLE`，实时 planner/ARM TTS 都为 `—`。
+
+`REACQUIRE_GRACE` 表示短暂丢球后仍在等待同一颗球恢复；超过 grace 才关闭 attempt。`WAITING_FOR_PREVIOUS_RECOVERY`、`CACHED_DURING_RECOVERY` 和 `POST_DEADLINE_TAIL` 都是展示层状态，不会改变生产算法的 lifecycle。
+
+## 现场验收：静止球与来球
+
+### 静止球
+
+把球保持在相机可见范围内时，应该看到：
+
+- BALL 为 `LIVE`，rate/age/source frame 持续刷新；
+- estimator 样本数先递增，窗口填满后可到 `READY 31/31`；
+- 估计速度接近 0 时，BALL-ONLY INCOMING 为 `NOT_INCOMING · 0/3`，blocker 为 `INCOMING_SPEED_REJECTED`。
+
+静止球**不应该**让 incoming 连续计数增长到 `3/3`，也不应仅凭“球可见”就推进到 planner ready、ARMED 或 task observation available。若 pelvis 有效，生产 incoming 通常显示 `REJECTED · 0/3`，planner 显示 `BLOCKED / INCOMING_NOT_CONFIRMED`；若 pelvis 缺失，则优先显示上面的 `PELVIS_UNAVAILABLE`。
+
+### 抛出的有效 incoming 球
+
+球沿 table-world `-X` 方向来球并达到当前阈值时，应该看到：
+
+- BALL rate/age/source frame 持续刷新，ESTIMATOR 到 `READY 31/31`；
+- BALL-ONLY INCOMING 连续计数按新 snapshot 从 `1/3 → 2/3 → 3/3`，随后 confirmed；
+- 即使 pelvis 缺失，上述球区仍可完成，但生产区仍保持 `NOT_EVALUATED / BLOCKED / NOT_AVAILABLE`；
+- pelvis 同时有效时，PRODUCTION INCOMING 应从 `CONFIRMING` 到 `CONFIRMED`，planner 随后进入 `PENDING`、`READY` 或给出明确的 `REJECTED` reason；只有 planner ready 且进入 arm 窗口后才会显示 `ARMED`，之后才可能出现 `TASK OBS AVAILABLE · 11/11`。
+
+“抛出一颗球”本身不保证 planner ready；方向、速度、未来击球平面交点或轨迹几何不满足时，页面应显示对应 blocker/reason，而不是伪造后续阶段。
+
+## 五步排障清单
+
+1. **LCM 与球新鲜度**：先看连接状态、BALL subject 的 rate 和 age。rate 为 `—/0`、age 不刷新或变成 `STALE` 时，核对终端 A 是否带 `--publish`，并确认两端的 `--lcm-url`、`--channel vicon_state_data` 和球名 `ball` 一致。
+2. **schema/version**：页面必须读取外层 schema v2 和 `live_snapshot` schema v2。出现“旧版后端”就重启 monitor；出现 `UNSUPPORTED_SCHEMA` 时停止解读实时值，不要用 stage 猜测。
+3. **estimator count**：可见球应从 `ESTIMATING n/31` 递增到 `READY 31/31`。卡住时检查 BALL age、source frame、track/generation 和 `last reset`，确认球没有反复变成 invalid/不可见。
+4. **BALL-ONLY INCOMING**：estimator ready 后查看 estimated `vx`。当前阈值为 `vx <= -0.20 m/s`，有效来球应到 `1/3 → 2/3 → 3/3`；静止或反方向样本显示 `NOT_INCOMING · 0/3` 是正确结果。
+5. **production blocker**：球区正常但生产区不动时，先看 PELVIS。缺失 pelvis 的精确组合是 PRODUCTION INCOMING `NOT_EVALUATED · —`、PLANNER `BLOCKED / PELVIS_UNAVAILABLE`、TASK OBS `NOT_AVAILABLE · —`；pelvis ready 后再按 planner reason 继续排查 incoming confirmation 或轨迹拒绝。
+
+顶部 raw、event、recorder 出现 drop 或 incomplete 时，本次记录不能用于稳定的 replay 结论。
+
+## 记录与复现
+
+默认记录根目录固定为：
+
+```text
+/home/loco1/BOB/Hitter/RobotBridge2/recordings/hitter_task_diagnostics
+```
+
+它不受启动目录影响。每次运行会创建权限为 `0700` 的独立 session 目录，其中包含：
+
+- `session.json`：配置、标定 SHA-256、LCM URL、命令行、Git 状态和版本快照；
+- `ball_samples.csv`：按实际到达顺序保存的动捕输入；
+- `events.jsonl`：planner、lifecycle、attempt 和 task observation 事件；
+- `attempts.csv` 与 `attempt_details/<id>.json`：逐球终态和详情；
+- `replay_inputs/attempt-<id>.json`：权限为 `0600` 的逐球完整重放输入；采用原子写入，不跟随符号链接；
+- `replay_jobs.jsonl`、`replay_analysis.jsonl`：离线 replay 的任务状态和分析结果。
+
+可以用 `--output-dir /明确/目录` 覆盖记录根目录；相对路径按执行命令时的当前目录解析，并把解析结果写入磁盘 metadata。网页/API 只显示 session basename，不显示本机绝对路径。
+
+每个 attempt 关闭后会自动生成 replay input，并先记录 `QUEUED`。只有当前没有 active attempt 或 `REACQUIRE_GRACE` 时，独立 spawn 子进程才会运行 `3/100` baseline parity；完全一致后才继续运行使用全新 planner 的 `1/100` 反事实。新球出现时，replay 会暂停并在下一个空闲窗口从同一磁盘输入重新开始，不会阻塞 50 Hz tick 或 LCM 输入 FIFO。
+
+完成后，`attempt_details/<id>.json` 和网页详情会写入两个 variant outcome、A/B delta 与摘要。`replay_jobs.jsonl` 的正常顺序为 `QUEUED → RUNNING → COMPLETED`；暂停时会出现 `PAUSED`，子进程异常时为 `FAILED`。以下情况一律显示 `INCONCLUSIVE`，不能解读为 `1/100` 的效果结论：
+
+- raw、event 或输入 FIFO 溢出，导致 `recording_complete=false`；
+- baseline 与线上 canonical stage、planner call、50 Hz policy tick、terminal 或 recovery 数据不一致；
+- replay 仍在排队、运行、暂停，或最终失败；
+- 结果落在 ARM 边界敏感窗口。
+
+Replay 的输入和事件各最多保留 8192 条，约等于 22.8 秒的 360 Hz 输入窗口；超过窗口会明确设置 `recording_complete=false`。A/B 结果只有在 replay job、analysis 和页面事件全部排空并完成 `fsync` 后才会写入 attempt 结论，写盘异常不会显示为通过。
+
+需要自动结束 smoke 或定时采集时加 `--duration`，例如：
+
+```bash
+PYTHONPATH=. /home/loco1/miniconda3/envs/rb/bin/python -m diagnostics.hitter_task_monitor \
+  --mimic-config config/mimic/hitter.yaml \
+  --control-config config/control/g1_hitter_racket.yaml \
+  --table-calib mocap_bridge/calibrations/chingmu_table_frame_latest.json \
+  --pelvis-calib mocap_bridge/calibrations/chingmu_g2_pelvis_orientation_latest.json \
+  --port 8766 \
+  --duration 30
+```
+
+## 停止与异常
+
+正常停止使用终端 B 的 `Ctrl-C`。进程会依次停止 LCM 接收、关闭 planner/replay、drain recorder、写入并 flush session 终态、关闭 HTTP，所有 join 都有有限超时。不要直接删除仍在写入的 session 目录。
+
+若五步排障仍未定位问题，查看 session 中的 `events.jsonl` 和 `session.json`，确认是否出现 `LCM_HEARTBEAT_STALE`、pelvis blocker、drop 或 recorder error。端口占用时先确认是否已有 monitor；不要改成非 loopback 地址，也不要通过启动 robot policy 来验证这条只读链路。
+
+## 性能验收
+
+2026-07-27 在本机执行 60 秒、360 Hz、21600 条输入验收：输入/raw/event drop 均为 0，LCM handler 的 p99 为 0.022 ms，RSS 增长 55,545,856 bytes，网页状态读取 8.55 Hz。这里的 handler 延迟只覆盖 decode 与 FIFO enqueue；处理线程积压由独立的 bounded FIFO、pending 计数和 drop/incomplete 状态监控。

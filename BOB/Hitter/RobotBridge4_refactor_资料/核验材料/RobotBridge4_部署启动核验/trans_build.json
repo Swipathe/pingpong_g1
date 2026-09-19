@@ -1,0 +1,26 @@
+[
+  {
+    "command": [
+      "cmake",
+      "-S",
+      "/home/yhl/Desktop/RobotBridge4_refactor/unitree_sdk2",
+      "-B",
+      "/home/yhl/Desktop/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_CXX_FLAGS=-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-DCMAKE_EXE_LINKER_FLAGS=-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib -Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "cmake",
+      "--build",
+      "/home/yhl/Desktop/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2",
+      "--target",
+      "trans",
+      "-j2"
+    ],
+    "exit_code": 0
+  }
+]

@@ -1,0 +1,87 @@
+{
+  "source_event_file": "events.out.tfevents.1786697110.g0701.3028793.0",
+  "source_event_mtime_cst": "2026-08-15 07:22:01 CST",
+  "scalar_tag": "Metrics/motion/hitter_strike_racket_ori_error",
+  "reward_tag": "Episode_Reward/racket_ori",
+  "definition": "error = 1 - dot(signed_strike_face_normal_w, normalized_racket_target_vel_w)",
+  "angle_conversion": "theta_equiv_deg = degrees(arccos(1 - aggregated_error))",
+  "abs_normal_alignment": false,
+  "strike_metric_window_s": 0.01,
+  "orientation_reward_std": 0.45,
+  "orientation_reward_window_s": 0.03,
+  "orientation_reward_weight": 30.0,
+  "count": 8624,
+  "step_min": 0,
+  "step_max": 8623,
+  "steps_contiguous": true,
+  "nan_count": 0,
+  "warmup_first100": {
+    "steps": "0-99",
+    "n": 100,
+    "mean_error": 0.2549526122957468,
+    "equiv_deg_from_mean_error": 41.83683066542935,
+    "point_deg_mean": 37.5195560512641,
+    "point_deg_std": 21.09838515559042,
+    "mean_ori_reward": 0.11613384037278593
+  },
+  "early_stable_500_999": {
+    "steps": "500-999",
+    "n": 500,
+    "mean_error": 0.035177171550691125,
+    "equiv_deg_from_mean_error": 15.242264154807035,
+    "point_deg_mean": 15.223821011463635,
+    "point_deg_std": 0.7589303580823396,
+    "mean_ori_reward": 1.0001549986600875
+  },
+  "middle_5000_5999": {
+    "steps": "5000-5999",
+    "n": 1000,
+    "mean_error": 0.06628432535007596,
+    "equiv_deg_from_mean_error": 20.978365918009327,
+    "point_deg_mean": 20.973916841443494,
+    "point_deg_std": 0.4421133897344544,
+    "mean_ori_reward": 0.9724629106521606
+  },
+  "final_8124_8623": {
+    "steps": "8124-8623",
+    "n": 500,
+    "mean_error": 0.05992935508489609,
+    "equiv_deg_from_mean_error": 19.936576314291173,
+    "point_deg_mean": 19.931225626524697,
+    "point_deg_std": 0.47180557925322314,
+    "mean_ori_reward": 0.9813574428558349
+  },
+  "final_8524_8623": {
+    "steps": "8524-8623",
+    "n": 100,
+    "mean_error": 0.059729697853326796,
+    "equiv_deg_from_mean_error": 19.903000226076056,
+    "point_deg_mean": 19.901888546871675,
+    "point_deg_std": 0.21476149210901394,
+    "mean_ori_reward": 0.9817547887563706
+  },
+  "best_rolling100": {
+    "end_step": 858,
+    "start_step": 759,
+    "mean_error": 0.03132481588050723,
+    "equiv_deg": 14.378783480173686,
+    "mean_ori_reward": 1.0030107533931731
+  },
+  "single_point_best": {
+    "step": 777,
+    "error": 0.02886348031461239,
+    "equiv_deg": 13.799461995176976
+  },
+  "last_point": {
+    "step": 8623,
+    "error": 0.057567961513996124,
+    "equiv_deg": 19.535919387105622,
+    "ori_reward": 0.9860814809799194
+  },
+  "early_stable_to_final": {
+    "error_absolute_change": 0.024752183534204962,
+    "error_percent_change": 70.36433699206455,
+    "equiv_deg_change": 4.694312159484138,
+    "ori_reward_change": -0.018797555804252575
+  }
+}

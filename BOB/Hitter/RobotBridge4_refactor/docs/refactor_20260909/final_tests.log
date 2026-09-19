@@ -1,0 +1,2137 @@
+........................................................................ [  9%]
+..........................................FF....................... [ 17%]
+.............................. [ 21%]
+.................FF...F........................................F......F. [ 30%]
+..........................................................................FFsFFFF.F...............................s................ [ 47%]
+..............FFF.FF.F......FFFF.F.FF.F..FFFFFF..F................................FF.....FF....FF....FFF [ 60%]
+.........F.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.........FFFF.... [ 67%]
+FFF..F...........FFFFFFFFFFFFFFF..................F.....F.FFF.F.F [ 75%]
+...............................F......................F..F.............. [ 84%]
+.......................................................................................................................                                   [100%]
+=================================== FAILURES ===================================
+_ StrikePlannerRacketVelocityAlignmentTests.test_component_ranges_clip_racket_velocity_before_command_output _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_planner_velocity_alignment.py", line 48, in test_component_ranges_clip_racket_velocity_before_command_output
+    plan = planner.plan(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/utils/hitter_planner.py", line 945, in plan
+    v_out = self.desired_outgoing_ball_velocity(
+TypeError: FixedVelocityStrikePlanner.desired_outgoing_ball_velocity() got an unexpected keyword argument 'strike_type'
+_ StrikePlannerRacketVelocityAlignmentTests.test_default_planner_keeps_raw_racket_velocity _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_planner_velocity_alignment.py", line 29, in test_default_planner_keeps_raw_racket_velocity
+    plan = planner.plan(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/utils/hitter_planner.py", line 945, in plan
+    v_out = self.desired_outgoing_ball_velocity(
+TypeError: FixedVelocityStrikePlanner.desired_outgoing_ball_velocity() got an unexpected keyword argument 'strike_type'
+_________ test_listener_consumes_every_snapshot_during_recovery[False] _________
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_runtime_single_shot_integration.py", line 441, in test_listener_consumes_every_snapshot_during_recovery
+    assert env.hitter_planner_worker.submitted == []
+AssertionError
+_________ test_listener_consumes_every_snapshot_during_recovery[True] __________
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_runtime_single_shot_integration.py", line 441, in test_listener_consumes_every_snapshot_during_recovery
+    assert env.hitter_planner_worker.submitted == []
+AssertionError
+______ test_listener_rechecks_phase_after_waiting_outside_lifecycle_lock _______
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_runtime_single_shot_integration.py", line 505, in test_listener_rechecks_phase_after_waiting_outside_lifecycle_lock
+    assert env.hitter_planner_worker.submitted == []
+AssertionError
+________________ test_recovery_consumes_new_id_without_caching _________________
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_single_shot_lifecycle.py", line 307, in test_recovery_consumes_new_id_without_caching
+    assert decision.kind == "consumed_during_recovery"
+AssertionError
+_________ test_continuous_override_only_updates_position_and_velocity __________
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_single_shot_lifecycle.py", line 400, in test_continuous_override_only_updates_position_and_velocity
+    np.testing.assert_array_equal(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/numpy/testing/_private/utils.py", line 920, in assert_array_equal
+    assert_array_compare(operator.__eq__, x, y, err_msg=err_msg,
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/contextlib.py", line 79, in inner
+    return func(*args, **kwds)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/numpy/testing/_private/utils.py", line 797, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 3 / 3 (100%)
+Max absolute difference: 93.3
+Max relative difference: 919.
+ x: array([91., 92., 93.])
+ y: array([-2. ,  0.1, -0.3])
+_ HitterTaskDiagnosticsIntegrationTest.test_360hz_estimator_to_100hz_planner_to_11_field_pass _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_integration.py", line 453, in test_360hz_estimator_to_100hz_planner_to_11_field_pass
+    settings=_settings(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_integration.py", line 268, in _settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskDiagnosticsIntegrationTest.test_capture_keeps_post_ball_pelvis_and_baseline_parity _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_integration.py", line 292, in test_capture_keeps_post_ball_pelvis_and_baseline_parity
+    settings = _settings()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_integration.py", line 268, in _settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskDiagnosticsPerformanceTest.test_default_raw_and_event_buffers_remain_bounded_under_burst _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_performance.py", line 229, in test_default_raw_and_event_buffers_remain_bounded_under_burst
+    _initial_state(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_performance.py", line 62, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskDiagnosticsSafetyTest.test_disconnected_sse_client_does_not_stop_state_progress _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_safety.py", line 406, in test_disconnected_sse_client_does_not_stop_state_progress
+    monitor = build_monitor(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2591, in build_monitor
+    initial = _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskDiagnosticsSafetyTest.test_event_lane_failure_does_not_stop_core_ticks _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_safety.py", line 373, in test_event_lane_failure_does_not_stop_core_ticks
+    monitor = build_monitor(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2591, in build_monitor
+    initial = _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskDiagnosticsSafetyTest.test_fake_lcm_publish_is_never_called_and_shutdown_releases_workers _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_safety.py", line 267, in test_fake_lcm_publish_is_never_called_and_shutdown_releases_workers
+    monitor = build_monitor(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2591, in build_monitor
+    initial = _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskDiagnosticsSafetyTest.test_recorder_drain_failure_does_not_stop_core_ticks _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_diagnostics_safety.py", line 341, in test_recorder_drain_failure_does_not_stop_core_ticks
+    monitor = build_monitor(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2591, in build_monitor
+    initial = _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskMonitorTest.test_attempt_close_runs_disk_ab_and_merges_completed_detail _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 2548, in test_attempt_close_runs_disk_ab_and_merges_completed_detail
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+_ HitterTaskMonitorTest.test_attempt_ignores_legacy_count_without_canonical_ball_snapshot _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1799, in test_attempt_ignores_legacy_count_without_canonical_ball_snapshot
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+_ HitterTaskMonitorTest.test_attempt_projection_uses_same_ball_window_and_required_counts _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1740, in test_attempt_projection_uses_same_ball_window_and_required_counts
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+__ HitterTaskMonitorTest.test_blocked_pelvis_does_not_leak_stale_command_tts ___
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1273, in test_blocked_pelvis_does_not_leak_stale_command_tts
+    _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskMonitorTest.test_build_loads_resolved_values_and_writes_complete_metadata _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 2700, in test_build_loads_resolved_values_and_writes_complete_metadata
+    monitor = build_monitor(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2591, in build_monitor
+    initial = _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskMonitorTest.test_close_waits_for_tick_before_final_attempt_mailbox_drain _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 2679, in test_close_waits_for_tick_before_final_attempt_mailbox_drain
+    self.assertTrue(tick_waiting.wait(1.0))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 687, in assertTrue
+    raise self.failureException(msg)
+AssertionError: False is not true
+_ HitterTaskMonitorTest.test_fd_owner_decodes_and_ingests_in_exact_arrival_order _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 505, in test_fd_owner_decodes_and_ingests_in_exact_arrival_order
+    self.assertTrue(pipeline.ingest_event.wait(1.0))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 687, in assertTrue
+    raise self.failureException(msg)
+AssertionError: False is not true
+_ HitterTaskMonitorTest.test_full_input_fifo_is_explicitly_incomplete_without_stopping_lcm _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 599, in test_full_input_fifo_is_explicitly_incomplete_without_stopping_lcm
+    self.assertTrue(monitor.adapter.entered.wait(1.0))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 687, in assertTrue
+    raise self.failureException(msg)
+AssertionError: False is not true
+_ HitterTaskMonitorTest.test_health_requires_fresh_heartbeat_and_reports_result_overwrite _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1826, in test_health_requires_fresh_heartbeat_and_reports_result_overwrite
+    never_received = monitor._health_snapshot(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2210, in _health_snapshot
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskMonitorTest.test_import_does_not_load_runtime_or_inference_modules _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 2785, in test_import_does_not_load_runtime_or_inference_modules
+    completed = subprocess.run(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/subprocess.py", line 503, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/subprocess.py", line 971, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/subprocess.py", line 1863, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/loco1/miniconda3/envs/rb/bin/python'
+_ HitterTaskMonitorTest.test_new_ball_before_tick_closes_old_attempt_into_replay_once _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 2302, in test_new_ball_before_tick_closes_old_attempt_into_replay_once
+    tracker.observe_ball_sample(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_attempts.py", line 25, in locked
+    return method(self, *args, **kwargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_attempts.py", line 122, in observe_ball_sample
+    sample = self._sample_with_snapshot_identity(sample, snapshot_key)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_attempts.py", line 506, in _sample_with_snapshot_identity
+    if sample.track_id == snapshot_key.track_id:
+AttributeError: 'types.SimpleNamespace' object has no attribute 'track_id'
+_ HitterTaskMonitorTest.test_slow_adapter_never_blocks_lcm_decode_and_fifo_is_preserved _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 537, in test_slow_adapter_never_blocks_lcm_decode_and_fifo_is_preserved
+    self.assertTrue(monitor.adapter.entered.wait(1.0))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 687, in assertTrue
+    raise self.failureException(msg)
+AssertionError: False is not true
+_ HitterTaskMonitorTest.test_stale_tick_binding_cannot_recreate_or_project_new_attempt _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 2179, in test_stale_tick_binding_cannot_recreate_or_project_new_attempt
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+_ HitterTaskMonitorTest.test_subject_health_distinguishes_never_live_stale_and_invalid _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1208, in test_subject_health_distinguishes_never_live_stale_and_invalid
+    _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskMonitorTest.test_tick_clocks_are_sampled_after_waiting_input_commits _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1172, in test_tick_clocks_are_sampled_after_waiting_input_commits
+    self.assertEqual(tick_errors, [])
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1051, in assertListEqual
+    self.assertSequenceEqual(list1, list2, msg, seq_type=list)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1033, in assertSequenceEqual
+    self.fail(msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: Lists differ: [TypeError("LifecycleSnapshot.__init__() g[44 chars]y'")] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+TypeError("LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'")
+
+- [TypeError("LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'")]
++ []
+_ HitterTaskMonitorTest.test_tick_close_never_waits_for_slow_repository_commit _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1962, in test_tick_close_never_waits_for_slow_repository_commit
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+_ HitterTaskMonitorTest.test_tick_closes_attempt_into_repository_recorder_and_state _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1917, in test_tick_closes_attempt_into_repository_recorder_and_state
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+____ HitterTaskMonitorTest.test_tick_never_scans_recorder_filesystem_status ____
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1995, in test_tick_never_scans_recorder_filesystem_status
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+_ HitterTaskMonitorTest.test_tick_publishes_one_coherent_v2_live_snapshot_without_pelvis _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 736, in test_tick_publishes_one_coherent_v2_live_snapshot_without_pelvis
+    _initial_state(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 599, in _initial_state
+    health=HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskMonitorTest.test_tick_reads_semantic_monotonic_twice_and_projects_stage _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 704, in test_tick_reads_semantic_monotonic_twice_and_projects_stage
+    monitor._tick_once()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+    self._tick_once_under_projection()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+    lifecycle = LifecycleSnapshot(
+TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+_ HitterTaskMonitorTest.test_upstream_gate_precedence_dominates_stale_downstream_state (name='planner rejected') _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 498, in subTest
+    yield
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1561, in test_upstream_gate_precedence_dominates_stale_downstream_state
+    gate = monitor._production_gate_snapshot(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 1836, in _production_gate_snapshot
+    planner_reason = planner_reason_code(command)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_pipeline.py", line 511, in planner_reason_code
+    if result.failure_reason is None:
+AttributeError: 'types.SimpleNamespace' object has no attribute 'failure_reason'
+_ HitterTaskMonitorTest.test_upstream_gate_precedence_dominates_stale_downstream_state (name='stale armed task result') _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 498, in subTest
+    yield
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1561, in test_upstream_gate_precedence_dominates_stale_downstream_state
+    gate = monitor._production_gate_snapshot(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 1836, in _production_gate_snapshot
+    planner_reason = planner_reason_code(command)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_pipeline.py", line 511, in planner_reason_code
+    if result.failure_reason is None:
+AttributeError: 'types.SimpleNamespace' object has no attribute 'failure_reason'
+_ HitterTaskMonitorTest.test_zero_message_duration_stops_unsubscribes_and_joins _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 664, in test_zero_message_duration_stops_unsubscribes_and_joins
+    self.assertEqual(monitor.run(), 0)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 838, in _baseAssertEqual
+    raise self.failureException(msg)
+AssertionError: 1 != 0
+_ ShadowTaskPipelineTests.test_bundle_requires_exact_success_and_failure_identity _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 1782, in test_bundle_requires_exact_success_and_failure_identity
+    self.assertTrue(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 687, in assertTrue
+    raise self.failureException(msg)
+AssertionError: False is not true
+_ ShadowTaskPipelineTests.test_completed_result_batch_ingests_each_result_in_order _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 1980, in test_completed_result_batch_ingests_each_result_in_order
+    self.assertEqual(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1051, in assertListEqual
+    self.assertSequenceEqual(list1, list2, msg, seq_type=list)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1033, in assertSequenceEqual
+    self.fail(msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: Lists differ: ['none', 'none'] != ['tracking', 'tracking']
+
+First differing element 0:
+'none'
+'tracking'
+
+- ['none', 'none']
++ ['tracking', 'tracking']
+_ ShadowTaskPipelineTests.test_lifecycle_tracking_tick_uses_latest_result_ownership _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 2094, in test_lifecycle_tracking_tick_uses_latest_result_ownership
+    self.assertEqual(tick.phase, "tracking")
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: 'waiting' != 'tracking'
+- waiting
++ tracking
+
+_ ShadowTaskPipelineTests.test_mismatched_bundle_does_not_poison_corrected_same_key _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 1706, in test_mismatched_bundle_does_not_poison_corrected_same_key
+    self.assertEqual(corrected.lifecycle_decision, "armed")
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: 'none' != 'armed'
+- none
++ armed
+
+_ ShadowTaskPipelineTests.test_recovery_result_consumption_uses_next_attempt_ownership _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 2134, in test_recovery_result_consumption_uses_next_attempt_ownership
+    self.assertEqual(raw.items[-1][1].attempt_id, 2)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 838, in _baseAssertEqual
+    raise self.failureException(msg)
+AssertionError: 1 != 2
+_ ShadowTaskPipelineTests.test_recovery_result_is_consumed_and_does_not_rearm_after_recovery _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 2187, in test_recovery_result_is_consumed_and_does_not_rearm_after_recovery
+    self.assertEqual(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: 'waiting' != 'armed'
+- waiting
++ armed
+
+_ ShadowTaskPipelineTests.test_tick_arms_with_same_source_fields_and_latest_pelvis_then_resets_at_strike _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 1528, in test_tick_arms_with_same_source_fields_and_latest_pelvis_then_resets_at_strike
+    self.assertEqual(armed.phase, "armed")
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: 'waiting' != 'armed'
+- waiting
++ armed
+
+____ ShadowTaskPipelineTests.test_tick_records_armed_then_task_failure_once ____
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 1472, in test_tick_records_armed_then_task_failure_once
+    self.assertEqual(first.lifecycle_decision, "armed")
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: 'none' != 'armed'
+- none
++ armed
+
+___________ ShadowTaskPipelineTests.test_tick_records_late_skip_once ___________
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_pipeline.py", line 1418, in test_tick_records_late_skip_once
+    self.assertEqual(first.lifecycle_decision, "skipped")
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: 'none' != 'skipped'
+- none
++ skipped
+
+_ SessionPathAndRepositoryTests.test_detail_repository_uses_safe_ids_lru_and_descending_pagination _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 282, in test_detail_repository_uses_safe_ids_lru_and_descending_pagination
+    self.assertEqual(payload["schema_version"], 1)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 838, in _baseAssertEqual
+    raise self.failureException(msg)
+AssertionError: 2 != 1
+----------------------------- Captured stdout call -----------------------------
+uuuu
+_ SessionPathAndRepositoryTests.test_session_paths_are_exclusive_and_files_are_private _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 228, in test_session_paths_are_exclusive_and_files_are_private
+    hub = _hub()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+----------------------------- Captured stdout call -----------------------------
+uuuuu
+_ SessionRecorderTests.test_all_session_files_have_parseable_committed_schema __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1475, in test_all_session_files_have_parseable_committed_schema
+    hub = _hub()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_attempt_csv_preserves_progress_counts_and_blanks_unknowns _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 492, in test_attempt_csv_preserves_progress_counts_and_blanks_unknowns
+    recorder, paths, _repository, hub, _raw_lane = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_attempt_fsync_crossing_deadline_rolls_back_terminal_truth _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 990, in test_attempt_fsync_crossing_deadline_rolls_back_terminal_truth
+    recorder, paths, repository, hub, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_attempt_row_crossing_deadline_is_discarded_and_inconclusive _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 949, in test_attempt_row_crossing_deadline_is_discarded_and_inconclusive
+    recorder, paths, _, _, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_concurrent_drain_and_terminal_close_are_serialized _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1556, in test_concurrent_drain_and_terminal_close_are_serialized
+    recorder, paths, _, _, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_confirm_replay_persistence_drains_entry_snapshot_and_fsyncs _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1117, in test_confirm_replay_persistence_drains_entry_snapshot_and_fsyncs
+    recorder, paths, _, hub, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_confirm_replay_persistence_fails_closed_on_entry_backlog _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1171, in test_confirm_replay_persistence_fails_closed_on_entry_backlog
+    recorder, _, _, hub, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_confirm_replay_persistence_fails_closed_on_write_error _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1199, in test_confirm_replay_persistence_fails_closed_on_write_error
+    recorder, _, _, hub, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_directory_fsync_timeout_keeps_offer_fail_closed_inconclusive _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1035, in test_directory_fsync_timeout_keeps_offer_fail_closed_inconclusive
+    recorder, paths, repository, hub, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_drop_metadata_overflow_marks_whole_session_incomplete _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 812, in test_drop_metadata_overflow_marks_whole_session_incomplete
+    recorder, _, _, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_expired_terminal_close_discards_buffered_raw_rows __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 783, in test_expired_terminal_close_discards_buffered_raw_rows
+    recorder, paths, _, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_final_attempt_writes_once_and_pending_shutdown_writes_inconclusive _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 660, in test_final_attempt_writes_once_and_pending_shutdown_writes_inconclusive
+    recorder, paths, _, _, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+___ SessionRecorderTests.test_flushes_after_one_second_or_one_thousand_rows ____
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1429, in test_flushes_after_one_second_or_one_thousand_rows
+    recorder, paths, _, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_identical_shared_detail_is_not_physically_recommitted _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1090, in test_identical_shared_detail_is_not_physically_recommitted
+    recorder, _, repository, hub, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_io_error_is_sticky_for_future_attempts_without_offer_exception _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1402, in test_io_error_is_sticky_for_future_attempts_without_offer_exception
+    recorder, _, repository, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_late_raw_drop_revises_completed_attempt_before_first_csv_row _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 721, in test_late_raw_drop_revises_completed_attempt_before_first_csv_row
+    recorder, paths, repository, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_nonterminal_drain_consumes_only_entry_offer_snapshot _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1237, in test_nonterminal_drain_consumes_only_entry_offer_snapshot
+    recorder, _, _, _, _ = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+__ SessionRecorderTests.test_offer_queues_are_bounded_and_close_is_idempotent __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 697, in test_offer_queues_are_bounded_and_close_is_idempotent
+    recorder, _, _, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_one_drain_round_is_fair_at_512_raw_and_128_events __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 574, in test_one_drain_round_is_fair_at_512_raw_and_128_events
+    hub = _hub(capacity=1024)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+___ SessionRecorderTests.test_partial_start_closes_every_file_already_opened ___
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1524, in test_partial_start_closes_every_file_already_opened
+    hub = _hub()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_public_mark_incomplete_forces_attempt_ab_inconclusive _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 534, in test_public_mark_incomplete_forces_attempt_ab_inconclusive
+    recorder, paths, repository, hub, _raw_lane = self._recorder(Path(temp_dir))
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_raw_drop_and_event_gap_make_pending_attempt_inconclusive _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 612, in test_raw_drop_and_event_gap_make_pending_attempt_inconclusive
+    hub = _hub(capacity=2)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_terminal_checks_absolute_deadline_before_each_detail_io _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 895, in test_terminal_checks_absolute_deadline_before_each_detail_io
+    recorder, _, repository, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_terminal_timeout_marks_attempt_incomplete_before_finalizing _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 833, in test_terminal_timeout_marks_attempt_incomplete_before_finalizing
+    recorder, paths, repository, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_terminal_timeout_records_only_persisted_event_watermark _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 748, in test_terminal_timeout_records_only_persisted_event_watermark
+    hub = _hub(capacity=512)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_timed_drain_uses_one_snapshot_across_all_producer_lanes _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 1271, in test_timed_drain_uses_one_snapshot_across_all_producer_lanes
+    hub = _hub(capacity=1024)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ SessionRecorderTests.test_zero_terminal_deadline_skips_large_history_and_marks_incomplete _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 859, in test_zero_terminal_deadline_skips_large_history_and_marks_incomplete
+    recorder, paths, repository, _, _ = self._recorder(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 557, in _recorder
+    hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_recording.py", line 115, in _hub
+    health = HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskReplayTest.test_analysis_stops_before_one_frame_when_parity_diverges _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1308, in test_analysis_stops_before_one_frame_when_parity_diverges
+    comparison = analyze_attempt_ab(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2691, in analyze_attempt_ab
+    baseline = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskReplayTest.test_analysis_uses_fresh_planner_for_each_variant_after_parity _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1336, in test_analysis_uses_fresh_planner_for_each_variant_after_parity
+    comparison = analyze_attempt_ab(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2691, in analyze_attempt_ab
+    baseline = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+__ HitterTaskReplayTest.test_incomplete_recording_never_claims_variant_result __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1356, in test_incomplete_recording_never_claims_variant_result
+    comparison = analyze_attempt_ab(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2691, in analyze_attempt_ab
+    baseline = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskReplayTest.test_observation_sees_plan_completed_after_lifecycle_clock _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1183, in test_observation_sees_plan_completed_after_lifecycle_clock
+    trace = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskReplayTest.test_one_frame_early_full_plan_records_offline_measured_duration _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1209, in test_one_frame_early_full_plan_records_offline_measured_duration
+    seed_trace = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskReplayTest.test_one_frame_warns_when_following_candidate_is_unstable _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1241, in test_one_frame_warns_when_following_candidate_is_unstable
+    trace = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskReplayTest.test_replay_bundle_json_round_trip_is_private_and_nofollow_safe _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 649, in test_replay_bundle_json_round_trip_is_private_and_nofollow_safe
+    seed = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskReplayTest.test_replay_is_deterministic_and_reuses_online_snapshot_durations _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1116, in test_replay_is_deterministic_and_reuses_online_snapshot_durations
+    seed_trace = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+___ HitterTaskReplayTest.test_same_input_late_baseline_is_saved_by_one_frame ___
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 1265, in test_same_input_late_baseline_is_saved_by_one_frame
+    seed_trace = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskReplayTest.test_top_level_disk_worker_runs_real_parity_and_checkpoints_events _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_replay.py", line 698, in test_top_level_disk_worker_runs_real_parity_and_checkpoints_events
+    seed = replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 2387, in replay_attempt
+    return _replay_attempt(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1824, in _replay_attempt
+    settings = _runtime_settings(
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_replay.py", line 1723, in _runtime_settings
+    return HitterRuntimeSettings(
+TypeError: HitterRuntimeSettings.__init__() missing 6 required positional arguments: 'completed_result_queue_capacity', 'armed_cancel_consecutive_failures', 'commit_time_to_strike_s', 'maximum_racket_target_override_delta_m', 'maximum_racket_velocity_override_delta_mps', and 'maximum_strike_deadline_override_delta_s'
+_ HitterTaskWebTests.test_attempt_list_and_detail_preserve_truthful_progress_counts _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 446, in test_attempt_list_and_detail_preserve_truthful_progress_counts
+    _hub_value, _repository, server = self._server(repository=reader)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_attempts_are_descending_exclusive_and_strictly_paginated _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 378, in test_attempts_are_descending_exclusive_and_strictly_paginated
+    _hub_value, _repository, server = self._server(repository=repository)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_binds_only_loopback_and_reports_the_ephemeral_address _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 313, in test_binds_only_loopback_and_reports_the_ephemeral_address
+    _hub_value, _repository, server = self._server()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+----------------------------- Captured stdout call -----------------------------
+uuuu
+_ HitterTaskWebTests.test_detail_uses_only_numeric_repository_ids_and_leaks_no_paths _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 536, in test_detail_uses_only_numeric_repository_ids_and_leaks_no_paths
+    _hub_value, _repository, server = self._server(repository=reader)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_disconnect_and_server_close_release_cursor_without_polling _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 780, in test_disconnect_and_server_close_release_cursor_without_polling
+    initial = DiagnosticState(1, 0, _health(), _lifecycle(), None, ())
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_errors_methods_hosts_and_paths_use_one_json_contract _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 570, in test_errors_methods_hosts_and_paths_use_one_json_contract
+    _hub_value, _repository, server = self._server()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_fresh_sse_sends_ready_then_only_invalidates_full_get_state _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 652, in test_fresh_sse_sends_ready_then_only_invalidates_full_get_state
+    hub, _repository, server = self._server()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_handler_and_sse_limits_return_503_and_release_on_close _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 749, in test_handler_and_sse_limits_return_503_and_release_on_close
+    _hub_value, _repository, total_server = self._server(config=total_config)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_heartbeat_uses_injected_clock_without_wall_clock_sleep _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 730, in test_heartbeat_uses_injected_clock_without_wall_clock_sleep
+    _hub_value, _repository, server = self._server(clock=clock)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+__ HitterTaskWebTests.test_legacy_attempt_progress_is_null_in_list_and_detail __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 488, in test_legacy_attempt_progress_is_null_in_list_and_detail
+    _hub_value, _repository, server = self._server(repository=repository)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_ordinary_connection_uses_the_configured_socket_timeout _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 813, in test_ordinary_connection_uses_the_configured_socket_timeout
+    _hub_value, _repository, server = self._server(config=config)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_real_monitor_page_is_served_only_from_the_fixed_root_route _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 354, in test_real_monitor_page_is_served_only_from_the_fixed_root_route
+    hub=_hub(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+___ HitterTaskWebTests.test_sse_initialization_failure_is_complete_json_503 ____
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 643, in test_sse_initialization_failure_is_complete_json_503
+    hub, _repository, server = self._server()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_sse_resume_replays_invalidators_and_gap_resets_to_watermark _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 676, in test_sse_resume_replays_invalidators_and_gap_resets_to_watermark
+    hub = _hub(capacity=2)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+_ HitterTaskWebTests.test_state_and_fixed_static_files_have_complete_safe_headers _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 320, in test_state_and_fixed_static_files_have_complete_safe_headers
+    _hub_value, _repository, server = self._server()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 188, in _server
+    selected_hub = _hub() if hub is None else hub
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 70, in _hub
+    health=_health(),
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_web.py", line 31, in _health
+    return HealthSnapshot(
+TypeError: HealthSnapshot.__init__() got an unexpected keyword argument 'planner_results_overwritten_before_consume'
+__ PurePhysicalContactTests.test_xml_defines_only_intended_ball_contact_pairs __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_mujoco_physical_table_tennis.py", line 235, in test_xml_defines_only_intended_ball_contact_pairs
+    self.assertEqual(pair.attrib.get(attribute), expected_value)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 1226, in assertMultiLineEqual
+    self.fail(self._formatMessage(msg, standardMsg))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 675, in fail
+    raise self.failureException(msg)
+AssertionError: '0.20 0.20 0.005 0.0001 0.0001' != '0.20 0.005 0.0001'
+- 0.20 0.20 0.005 0.0001 0.0001
+?     -----      -------
++ 0.20 0.005 0.0001
+
+_ TwoServeScheduleTests.test_command_reset_flag_cannot_create_an_unscheduled_serve _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_mujoco_physical_table_tennis.py", line 566, in test_command_reset_flag_cannot_create_an_unscheduled_serve
+    self.assertTrue(env._update_mujoco_serve_schedule())
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 427, in _update_mujoco_serve_schedule
+    self._hitter_sync_track_id += 1
+AttributeError: 'HitterEnv' object has no attribute '_hitter_sync_track_id'. Did you mean: '_hitter_sync_track_epoch'?
+___ TwoServeScheduleTests.test_missing_schedule_uses_legacy_lifecycle_reset ____
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_mujoco_physical_table_tennis.py", line 651, in test_missing_schedule_uses_legacy_lifecycle_reset
+    result = env._mujoco_planner_result(now=1000.0)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 1282, in _mujoco_planner_result
+    self._hitter_sync_track_id += 1
+AttributeError: 'HitterEnv' object has no attribute '_hitter_sync_track_id'. Did you mean: '_hitter_sync_track_epoch'?
+___ TwoServeScheduleTests.test_mujoco_planner_result_runs_the_serve_schedule ___
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_mujoco_physical_table_tennis.py", line 670, in test_mujoco_planner_result_runs_the_serve_schedule
+    first_result = env._mujoco_planner_result(now=1000.0)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 1279, in _mujoco_planner_result
+    self._update_mujoco_serve_schedule()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 427, in _update_mujoco_serve_schedule
+    self._hitter_sync_track_id += 1
+AttributeError: 'HitterEnv' object has no attribute '_hitter_sync_track_id'. Did you mean: '_hitter_sync_track_epoch'?
+_ TwoServeScheduleTests.test_public_reset_serves_before_the_first_physics_step _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_mujoco_physical_table_tennis.py", line 506, in test_public_reset_serves_before_the_first_physics_step
+    observation = env.reset()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 280, in reset
+    self._prepare_hitter_reset_state()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 222, in _prepare_hitter_reset_state
+    self._reset_real_world_first_frame_transition_pending()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 227, in _reset_real_world_first_frame_transition_pending
+    duration_s = float(self.real_world_first_frame_transition_s)
+AttributeError: 'HitterEnv' object has no attribute 'real_world_first_frame_transition_s'. Did you mean: '_run_real_world_first_frame_transition'?
+_ TwoServeScheduleTests.test_reinitializing_schedule_preserves_completed_serve_quota _
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_mujoco_physical_table_tennis.py", line 586, in test_reinitializing_schedule_preserves_completed_serve_quota
+    self.assertTrue(env._update_mujoco_serve_schedule())
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 427, in _update_mujoco_serve_schedule
+    self._hitter_sync_track_id += 1
+AttributeError: 'HitterEnv' object has no attribute '_hitter_sync_track_id'. Did you mean: '_hitter_sync_track_epoch'?
+__ TwoServeScheduleTests.test_schedule_serves_at_zero_and_twenty_seconds_only __
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_mujoco_physical_table_tennis.py", line 446, in test_schedule_serves_at_zero_and_twenty_seconds_only
+    self.assertTrue(env._update_mujoco_serve_schedule())
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py", line 427, in _update_mujoco_serve_schedule
+    self._hitter_sync_track_id += 1
+AttributeError: 'HitterEnv' object has no attribute '_hitter_sync_track_id'. Did you mean: '_hitter_sync_track_epoch'?
+______ test_early_new_id_is_consumed_and_does_not_revive_after_gate_time _______
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_real_world_v2_consumer.py", line 562, in test_early_new_id_is_consumed_and_does_not_revive_after_gate_time
+    assert world.consumed_ball_track_ids == {7}
+AssertionError
+----------------------------- Captured stderr call -----------------------------
+2026-09-09 18:36:49.363 | INFO     | simulator.real_world:_ingest_vicon_v2_message:893 - Vicon root information received!
+2026-09-09 18:36:49.363 | INFO     | simulator.real_world:_ingest_vicon_v2_message:894 - Root Translation World: [0.2 0.  0.8]
+2026-09-09 18:36:49.363 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=7 state=pending admitted=false pending=true no_ball_gap_s=0.490 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-09-09 18:36:49.363 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1227 - Vicon ball information received!
+2026-09-09 18:36:49.363 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1228 - Ball Position World: [1.5 0.  1. ]
+_____ test_quarantined_new_track_cuts_old_window_without_adding_own_sample _____
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_real_world_v2_consumer.py", line 864, in test_quarantined_new_track_cuts_old_window_without_adding_own_sample
+    assert world.consumed_ball_track_ids == {8}
+AssertionError
+----------------------------- Captured stderr call -----------------------------
+2026-09-09 18:36:49.380 | INFO     | simulator.real_world:_ingest_vicon_v2_message:893 - Vicon root information received!
+2026-09-09 18:36:49.380 | INFO     | simulator.real_world:_ingest_vicon_v2_message:894 - Root Translation World: [0.2 0.  0.8]
+2026-09-09 18:36:49.380 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=7 state=admitted admitted=true pending=false no_ball_gap_s=0.500 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-09-09 18:36:49.380 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1227 - Vicon ball information received!
+2026-09-09 18:36:49.380 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1228 - Ball Position World: [1.5 0.  1. ]
+2026-09-09 18:36:49.381 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=8 state=pending admitted=false pending=true no_ball_gap_s=0.270 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+_______ test_every_valid_ball_clears_no_ball_timer_even_when_quarantined _______
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_real_world_v2_consumer.py", line 895, in test_every_valid_ball_clears_no_ball_timer_even_when_quarantined
+    assert 7 in world.consumed_ball_track_ids
+AssertionError
+----------------------------- Captured stderr call -----------------------------
+2026-09-09 18:36:49.383 | INFO     | simulator.real_world:_ingest_vicon_v2_message:893 - Vicon root information received!
+2026-09-09 18:36:49.383 | INFO     | simulator.real_world:_ingest_vicon_v2_message:894 - Root Translation World: [0.2 0.  0.8]
+2026-09-09 18:36:49.383 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=7 state=pending admitted=false pending=true no_ball_gap_s=0.200 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-09-09 18:36:49.383 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1227 - Vicon ball information received!
+2026-09-09 18:36:49.383 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1228 - Ball Position World: [1.5 0.  1. ]
+=============================== warnings summary ===============================
+<unknown>:4
+<unknown>:4
+  <unknown>:4: DeprecationWarning: invalid escape sequence '\*'
+
+deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_close_waits_for_tick_before_final_attempt_mailbox_drain
+  /tmp/rb4-refactor-tools/_pytest/threadexception.py:58: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-21 (_tick_once)
+  
+  Traceback (most recent call last):
+    File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+      self.run()
+    File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/threading.py", line 953, in run
+      self._target(*self._args, **self._kwargs)
+    File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+      self._tick_once_under_projection()
+    File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+      lifecycle = LifecycleSnapshot(
+  TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_tick_capture_waits_for_inflight_input_projection_boundary
+  /tmp/rb4-refactor-tools/_pytest/threadexception.py:58: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-25 (run_tick)
+  
+  Traceback (most recent call last):
+    File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+      self.run()
+    File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/threading.py", line 953, in run
+      self._target(*self._args, **self._kwargs)
+    File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_hitter_task_monitor.py", line 1004, in run_tick
+      monitor._tick_once()
+    File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2282, in _tick_once
+      self._tick_once_under_projection()
+    File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/diagnostics/hitter_task_monitor.py", line 2300, in _tick_once_under_projection
+      lifecycle = LifecycleSnapshot(
+  TypeError: LifecycleSnapshot.__init__() got an unexpected keyword argument 'cached_key'
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED deploy/tests/test_hitter_planner_velocity_alignment.py::StrikePlannerRacketVelocityAlignmentTests::test_component_ranges_clip_racket_velocity_before_command_output
+FAILED deploy/tests/test_hitter_planner_velocity_alignment.py::StrikePlannerRacketVelocityAlignmentTests::test_default_planner_keeps_raw_racket_velocity
+FAILED deploy/tests/test_hitter_runtime_single_shot_integration.py::test_listener_consumes_every_snapshot_during_recovery[False]
+FAILED deploy/tests/test_hitter_runtime_single_shot_integration.py::test_listener_consumes_every_snapshot_during_recovery[True]
+FAILED deploy/tests/test_hitter_runtime_single_shot_integration.py::test_listener_rechecks_phase_after_waiting_outside_lifecycle_lock
+FAILED deploy/tests/test_hitter_single_shot_lifecycle.py::test_recovery_consumes_new_id_without_caching
+FAILED deploy/tests/test_hitter_single_shot_lifecycle.py::test_continuous_override_only_updates_position_and_velocity
+FAILED deploy/tests/test_hitter_task_diagnostics_integration.py::HitterTaskDiagnosticsIntegrationTest::test_360hz_estimator_to_100hz_planner_to_11_field_pass
+FAILED deploy/tests/test_hitter_task_diagnostics_integration.py::HitterTaskDiagnosticsIntegrationTest::test_capture_keeps_post_ball_pelvis_and_baseline_parity
+FAILED deploy/tests/test_hitter_task_diagnostics_performance.py::HitterTaskDiagnosticsPerformanceTest::test_default_raw_and_event_buffers_remain_bounded_under_burst
+FAILED deploy/tests/test_hitter_task_diagnostics_safety.py::HitterTaskDiagnosticsSafetyTest::test_disconnected_sse_client_does_not_stop_state_progress
+FAILED deploy/tests/test_hitter_task_diagnostics_safety.py::HitterTaskDiagnosticsSafetyTest::test_event_lane_failure_does_not_stop_core_ticks
+FAILED deploy/tests/test_hitter_task_diagnostics_safety.py::HitterTaskDiagnosticsSafetyTest::test_fake_lcm_publish_is_never_called_and_shutdown_releases_workers
+FAILED deploy/tests/test_hitter_task_diagnostics_safety.py::HitterTaskDiagnosticsSafetyTest::test_recorder_drain_failure_does_not_stop_core_ticks
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_attempt_close_runs_disk_ab_and_merges_completed_detail
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_attempt_ignores_legacy_count_without_canonical_ball_snapshot
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_attempt_projection_uses_same_ball_window_and_required_counts
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_blocked_pelvis_does_not_leak_stale_command_tts
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_build_loads_resolved_values_and_writes_complete_metadata
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_close_waits_for_tick_before_final_attempt_mailbox_drain
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_fd_owner_decodes_and_ingests_in_exact_arrival_order
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_full_input_fifo_is_explicitly_incomplete_without_stopping_lcm
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_health_requires_fresh_heartbeat_and_reports_result_overwrite
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_import_does_not_load_runtime_or_inference_modules
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_new_ball_before_tick_closes_old_attempt_into_replay_once
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_slow_adapter_never_blocks_lcm_decode_and_fifo_is_preserved
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_stale_tick_binding_cannot_recreate_or_project_new_attempt
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_subject_health_distinguishes_never_live_stale_and_invalid
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_tick_clocks_are_sampled_after_waiting_input_commits
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_tick_close_never_waits_for_slow_repository_commit
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_tick_closes_attempt_into_repository_recorder_and_state
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_tick_never_scans_recorder_filesystem_status
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_tick_publishes_one_coherent_v2_live_snapshot_without_pelvis
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_tick_reads_semantic_monotonic_twice_and_projects_stage
+SUBFAILED(name='planner rejected') deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_upstream_gate_precedence_dominates_stale_downstream_state
+SUBFAILED(name='stale armed task result') deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_upstream_gate_precedence_dominates_stale_downstream_state
+FAILED deploy/tests/test_hitter_task_monitor.py::HitterTaskMonitorTest::test_zero_message_duration_stops_unsubscribes_and_joins
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_bundle_requires_exact_success_and_failure_identity
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_completed_result_batch_ingests_each_result_in_order
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_lifecycle_tracking_tick_uses_latest_result_ownership
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_mismatched_bundle_does_not_poison_corrected_same_key
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_recovery_result_consumption_uses_next_attempt_ownership
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_recovery_result_is_consumed_and_does_not_rearm_after_recovery
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_tick_arms_with_same_source_fields_and_latest_pelvis_then_resets_at_strike
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_tick_records_armed_then_task_failure_once
+FAILED deploy/tests/test_hitter_task_pipeline.py::ShadowTaskPipelineTests::test_tick_records_late_skip_once
+FAILED deploy/tests/test_hitter_task_recording.py::SessionPathAndRepositoryTests::test_detail_repository_uses_safe_ids_lru_and_descending_pagination
+FAILED deploy/tests/test_hitter_task_recording.py::SessionPathAndRepositoryTests::test_session_paths_are_exclusive_and_files_are_private
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_all_session_files_have_parseable_committed_schema
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_attempt_csv_preserves_progress_counts_and_blanks_unknowns
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_attempt_fsync_crossing_deadline_rolls_back_terminal_truth
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_attempt_row_crossing_deadline_is_discarded_and_inconclusive
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_concurrent_drain_and_terminal_close_are_serialized
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_confirm_replay_persistence_drains_entry_snapshot_and_fsyncs
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_confirm_replay_persistence_fails_closed_on_entry_backlog
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_confirm_replay_persistence_fails_closed_on_write_error
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_directory_fsync_timeout_keeps_offer_fail_closed_inconclusive
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_drop_metadata_overflow_marks_whole_session_incomplete
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_expired_terminal_close_discards_buffered_raw_rows
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_final_attempt_writes_once_and_pending_shutdown_writes_inconclusive
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_flushes_after_one_second_or_one_thousand_rows
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_identical_shared_detail_is_not_physically_recommitted
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_io_error_is_sticky_for_future_attempts_without_offer_exception
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_late_raw_drop_revises_completed_attempt_before_first_csv_row
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_nonterminal_drain_consumes_only_entry_offer_snapshot
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_offer_queues_are_bounded_and_close_is_idempotent
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_one_drain_round_is_fair_at_512_raw_and_128_events
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_partial_start_closes_every_file_already_opened
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_public_mark_incomplete_forces_attempt_ab_inconclusive
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_raw_drop_and_event_gap_make_pending_attempt_inconclusive
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_terminal_checks_absolute_deadline_before_each_detail_io
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_terminal_timeout_marks_attempt_incomplete_before_finalizing
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_terminal_timeout_records_only_persisted_event_watermark
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_timed_drain_uses_one_snapshot_across_all_producer_lanes
+FAILED deploy/tests/test_hitter_task_recording.py::SessionRecorderTests::test_zero_terminal_deadline_skips_large_history_and_marks_incomplete
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_analysis_stops_before_one_frame_when_parity_diverges
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_analysis_uses_fresh_planner_for_each_variant_after_parity
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_incomplete_recording_never_claims_variant_result
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_observation_sees_plan_completed_after_lifecycle_clock
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_one_frame_early_full_plan_records_offline_measured_duration
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_one_frame_warns_when_following_candidate_is_unstable
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_replay_bundle_json_round_trip_is_private_and_nofollow_safe
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_replay_is_deterministic_and_reuses_online_snapshot_durations
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_same_input_late_baseline_is_saved_by_one_frame
+FAILED deploy/tests/test_hitter_task_replay.py::HitterTaskReplayTest::test_top_level_disk_worker_runs_real_parity_and_checkpoints_events
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_attempt_list_and_detail_preserve_truthful_progress_counts
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_attempts_are_descending_exclusive_and_strictly_paginated
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_binds_only_loopback_and_reports_the_ephemeral_address
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_detail_uses_only_numeric_repository_ids_and_leaks_no_paths
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_disconnect_and_server_close_release_cursor_without_polling
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_errors_methods_hosts_and_paths_use_one_json_contract
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_fresh_sse_sends_ready_then_only_invalidates_full_get_state
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_handler_and_sse_limits_return_503_and_release_on_close
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_heartbeat_uses_injected_clock_without_wall_clock_sleep
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_legacy_attempt_progress_is_null_in_list_and_detail
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_ordinary_connection_uses_the_configured_socket_timeout
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_real_monitor_page_is_served_only_from_the_fixed_root_route
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_sse_initialization_failure_is_complete_json_503
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_sse_resume_replays_invalidators_and_gap_resets_to_watermark
+FAILED deploy/tests/test_hitter_task_web.py::HitterTaskWebTests::test_state_and_fixed_static_files_have_complete_safe_headers
+FAILED deploy/tests/test_mujoco_physical_table_tennis.py::PurePhysicalContactTests::test_xml_defines_only_intended_ball_contact_pairs
+FAILED deploy/tests/test_mujoco_physical_table_tennis.py::TwoServeScheduleTests::test_command_reset_flag_cannot_create_an_unscheduled_serve
+FAILED deploy/tests/test_mujoco_physical_table_tennis.py::TwoServeScheduleTests::test_missing_schedule_uses_legacy_lifecycle_reset
+FAILED deploy/tests/test_mujoco_physical_table_tennis.py::TwoServeScheduleTests::test_mujoco_planner_result_runs_the_serve_schedule
+FAILED deploy/tests/test_mujoco_physical_table_tennis.py::TwoServeScheduleTests::test_public_reset_serves_before_the_first_physics_step
+FAILED deploy/tests/test_mujoco_physical_table_tennis.py::TwoServeScheduleTests::test_reinitializing_schedule_preserves_completed_serve_quota
+FAILED deploy/tests/test_mujoco_physical_table_tennis.py::TwoServeScheduleTests::test_schedule_serves_at_zero_and_twenty_seconds_only
+FAILED deploy/tests/test_real_world_v2_consumer.py::test_early_new_id_is_consumed_and_does_not_revive_after_gate_time
+FAILED deploy/tests/test_real_world_v2_consumer.py::test_quarantined_new_track_cuts_old_window_without_adding_own_sample
+FAILED deploy/tests/test_real_world_v2_consumer.py::test_every_valid_ball_clears_no_ball_timer_even_when_quarantined
+110 failed, 680 passed, 2 skipped, 4 warnings, 254 subtests passed in 27.11s

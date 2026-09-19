@@ -1,0 +1,1177 @@
+# Review package: a406253b86aa26abbc803560a74dc701e2738f3f..931ce6da189a0c74f19ebffc257cfe9bfe21e217
+
+## Commits
+931ce6d fix: make HITTER CSV export fail closed
+
+## Files changed
+ deploy/diagnostics/export_hitter_task_csv.py | 250 +++++++++++++--
+ deploy/tests/test_hitter_task_csv_export.py  | 445 ++++++++++++++++++++++++++-
+ docs/hitter_complete_planner_csv_export.md   |  18 +-
+ 3 files changed, 672 insertions(+), 41 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/export_hitter_task_csv.py b/deploy/diagnostics/export_hitter_task_csv.py
+index d10962f..739fe3c 100644
+--- a/deploy/diagnostics/export_hitter_task_csv.py
++++ b/deploy/diagnostics/export_hitter_task_csv.py
+@@ -20,20 +20,21 @@ from typing import (
+     Dict,
+     FrozenSet,
+     Iterable,
+     List,
+     Mapping,
+     Optional,
+     Sequence,
+     Tuple,
+ )
+ import uuid
++import warnings
+ 
+ 
+ EXPORT_SCHEMA_VERSION = 1
+ TASK_OBSERVATION_DIMENSIONS = 11
+ 
+ _KEY_FIELDS = (
+     "attempt_id",
+     "snapshot_key.schema_version",
+     "snapshot_key.track_epoch",
+     "snapshot_key.generation",
+@@ -1195,44 +1196,73 @@ def _interval_for_time(
+ 
+ 
+ def _path_is_within(path: Path, parent: Path) -> bool:
+     try:
+         path.relative_to(parent)
+     except ValueError:
+         return False
+     return True
+ 
+ 
++def _absolute_normalized_path(path: Path) -> Path:
++    return Path(os.path.abspath(str(Path(path))))
++
++
++def _reject_existing_symlink_components(path: Path) -> None:
++    absolute = _absolute_normalized_path(path)
++    current = Path(absolute.anchor)
++    for component in absolute.parts[1:]:
++        current = current / component
++        try:
++            component_stat = os.lstat(str(current))
++        except FileNotFoundError:
++            break
++        if stat.S_ISLNK(component_stat.st_mode):
++            raise ValueError(
++                "output path contains a symlink component: {}".format(
++                    current
++                )
++            )
++
++
+ def _prepare_output_path(
+     session_dir: Path,
+     output_dir: Path,
+     *,
+     overwrite: bool,
+ ) -> Tuple[Path, Path]:
+-    output = Path(output_dir)
+-    if os.path.lexists(str(output)) and output.is_symlink():
+-        raise ValueError("output directory must not be a symlink")
+-    parent = output.parent
+-    parent.mkdir(parents=True, exist_ok=True)
+-    if parent.is_symlink():
++    output = _absolute_normalized_path(output_dir)
++    _reject_existing_symlink_components(output)
++    resolved_session = session_dir.resolve(strict=True)
++    resolved_output = output.resolve(strict=False)
++    if (
++        resolved_output == resolved_session
++        or _path_is_within(resolved_session, resolved_output)
++        or _path_is_within(resolved_output, resolved_session)
++    ):
+         raise ValueError(
+-            "output parent directory must not be a symlink"
++            "output directory must not overlap the source session"
+         )
++    parent = output.parent
++    parent.mkdir(parents=True, exist_ok=True)
++    _reject_existing_symlink_components(output)
+     resolved_output = output.resolve(strict=False)
+-    resolved_session = session_dir.resolve(strict=True)
+     if (
+         resolved_output == resolved_session
+         or _path_is_within(resolved_session, resolved_output)
++        or _path_is_within(resolved_output, resolved_session)
+     ):
+         raise ValueError(
+-            "output directory must not equal or contain the source session"
++            "output directory must not overlap the source session"
+         )
++    output = resolved_output
++    parent = output.parent
+     if os.path.lexists(str(output)):
+         output_stat = os.stat(str(output), follow_symlinks=False)
+         if not stat.S_ISDIR(output_stat.st_mode):
+             raise ValueError(
+                 "existing output path must be a directory"
+             )
+         if not overwrite:
+             raise FileExistsError(
+                 "output directory already exists: {}".format(output)
+             )
+@@ -1292,20 +1322,21 @@ def _validate_csv_source_row(
+ 
+ def _write_raw_lcm_csv(
+     source_path: Path,
+     output_path: Path,
+     intervals: Sequence[_SegmentInterval],
+ ) -> int:
+     interval_starts = tuple(
+         interval.first_monotonic_s for interval in intervals
+     )
+     count = 0
++    previous_input_seq: Optional[int] = None
+     with source_path.open(
+         "r",
+         encoding="utf-8",
+         newline="",
+     ) as source, output_path.open(
+         "w",
+         encoding="utf-8",
+         newline="",
+     ) as target:
+         reader = csv.DictReader(source)
+@@ -1325,36 +1356,60 @@ def _write_raw_lcm_csv(
+             extrasaction="raise",
+         )
+         writer.writeheader()
+         for line_number, row in enumerate(reader, start=2):
+             _validate_csv_source_row(
+                 row,
+                 fieldnames=_SOURCE_RAW_FIELDS,
+                 line_number=line_number,
+                 label="ball_samples.csv",
+             )
++            input_seq_text = row["input_seq"]
++            if (
++                not input_seq_text
++                or any(
++                    character < "0" or character > "9"
++                    for character in input_seq_text
++                )
++            ):
++                raise ValueError(
++                    "ball_samples.csv input_seq must be a non-negative "
++                    "integer at line {}".format(line_number)
++                )
++            input_seq = int(input_seq_text)
++            if (
++                previous_input_seq is not None
++                and input_seq != previous_input_seq + 1
++            ):
++                raise ValueError(
++                    "ball_samples.csv input_seq must increment by one at "
++                    "line {}: previous={}, actual={}".format(
++                        line_number,
++                        previous_input_seq,
++                        input_seq,
++                    )
++                )
++            previous_input_seq = input_seq
+             monotonic_s = _require_finite_float(
+                 row["received_monotonic_s"],
+                 field=(
+                     "ball_samples.csv received_monotonic_s "
+                     "at line {}".format(line_number)
+                 ),
+             )
+             interval = _interval_for_time(
+                 intervals,
+                 interval_starts,
+                 monotonic_s,
+             )
+             if interval is None:
+                 continue
+-            if row["subject"] not in ("ball", "g1pelvis", "table"):
+-                continue
+             output_row: Dict[str, Any] = {
+                 "schema_version": EXPORT_SCHEMA_VERSION,
+                 "interval_attempt_id": interval.attempt_id,
+                 "interval_track_segment_id": (
+                     interval.track_segment_id
+                 ),
+             }
+             output_row.update(row)
+             for vector_field in (
+                 "position_w",
+@@ -1428,20 +1483,23 @@ def _policy_tick_csv_row(
+ def _validate_events_and_write_policy_ticks(
+     source_path: Path,
+     output_path: Path,
+     *,
+     intervals: Sequence[_SegmentInterval],
+     expected_watermark_event_id: int,
+ ) -> Tuple[int, _EventLogValidation]:
+     interval_starts = tuple(
+         interval.first_monotonic_s for interval in intervals
+     )
++    selected_attempt_ids = frozenset(
++        interval.attempt_id for interval in intervals
++    )
+     expected_event_id = 1
+     event_count = 0
+     recorder_event_gap_count = 0
+     policy_count = 0
+     tick_index_by_attempt: Dict[int, int] = {}
+     with source_path.open(
+         "r",
+         encoding="utf-8",
+     ) as source, output_path.open(
+         "w",
+@@ -1521,20 +1579,28 @@ def _validate_events_and_write_policy_ticks(
+                 continue
+             attempt_value = event.get("attempt_id")
+             if attempt_value is None:
+                 continue
+             event_attempt_id = _require_int(
+                 attempt_value,
+                 field="lifecycle_tick attempt_id",
+                 minimum=1,
+             )
+             if event_attempt_id != interval.attempt_id:
++                if event_attempt_id in selected_attempt_ids:
++                    raise ValueError(
++                        "lifecycle_tick attempt_id {} conflicts with "
++                        "interval owner {}".format(
++                            event_attempt_id,
++                            interval.attempt_id,
++                        )
++                    )
+                 continue
+             payload = event.get("payload")
+             if not isinstance(payload, Mapping):
+                 raise ValueError(
+                     "lifecycle_tick payload must be a mapping"
+                 )
+             scope = event.get("scope")
+             if scope != "attempt":
+                 raise ValueError(
+                     "selected lifecycle_tick scope must be attempt"
+@@ -2044,83 +2110,205 @@ def _fsync_directory(path: Path) -> None:
+     flags = os.O_RDONLY
+     flags |= getattr(os, "O_CLOEXEC", 0)
+     flags |= getattr(os, "O_DIRECTORY", 0)
+     descriptor = os.open(str(path), flags)
+     try:
+         os.fsync(descriptor)
+     finally:
+         os.close(descriptor)
+ 
+ 
+-def _unique_backup_path(output_dir: Path) -> Path:
++def _unique_sibling_path(output_dir: Path, label: str) -> Path:
+     for _attempt in range(100):
+         candidate = output_dir.parent / (
+-            ".{}-backup-{}".format(
++            ".{}-{}-{}".format(
+                 output_dir.name,
++                label,
+                 uuid.uuid4().hex,
+             )
+         )
+         if not os.path.lexists(str(candidate)):
+             return candidate
+-    raise RuntimeError("could not allocate a unique output backup path")
++    raise RuntimeError(
++        "could not allocate a unique {} path".format(label)
++    )
++
++
++def _unique_backup_path(output_dir: Path) -> Path:
++    return _unique_sibling_path(output_dir, "backup")
+ 
+ 
+ def replace_output_directory(
+     temporary_dir: Path,
+     output_dir: Path,
+     *,
+     overwrite: bool,
+ ) -> None:
+-    temporary = Path(temporary_dir)
+-    output = Path(output_dir)
+-    if temporary.parent.resolve() != output.parent.resolve():
++    temporary = _absolute_normalized_path(temporary_dir)
++    output = _absolute_normalized_path(output_dir)
++    _reject_existing_symlink_components(temporary)
++    _reject_existing_symlink_components(output)
++    if temporary.parent != output.parent:
+         raise ValueError(
+             "temporary and output directories must share a parent"
+         )
+-    if temporary.is_symlink() or not temporary.is_dir():
++    if not temporary.is_dir():
+         raise ValueError(
+             "temporary output must be a real directory"
+         )
+-    if os.path.lexists(str(output)) and output.is_symlink():
+-        raise ValueError("output directory must not be a symlink")
+     if not os.path.lexists(str(output)):
+         os.replace(str(temporary), str(output))
+-        _fsync_directory(output.parent)
++        try:
++            _fsync_directory(output.parent)
++        except BaseException as install_sync_error:
++            try:
++                os.replace(str(output), str(temporary))
++            except BaseException as withdraw_error:
++                raise RuntimeError(
++                    "new output was installed at {} but parent fsync "
++                    "failed ({!r}); withdrawing it also failed ({!r}), "
++                    "so output may remain visible".format(
++                        output,
++                        install_sync_error,
++                        withdraw_error,
++                    )
++                ) from withdraw_error
++            try:
++                _fsync_directory(output.parent)
++            except BaseException as withdraw_sync_error:
++                raise RuntimeError(
++                    "new output parent fsync failed ({!r}); output was "
++                    "moved back to temporary path {}, but rollback fsync "
++                    "also failed ({!r})".format(
++                        install_sync_error,
++                        temporary,
++                        withdraw_sync_error,
++                    )
++                ) from withdraw_sync_error
++            raise RuntimeError(
++                "new output parent fsync failed ({!r}); uncommitted "
++                "output was moved back to temporary path {}".format(
++                    install_sync_error,
++                    temporary,
++                )
++            ) from install_sync_error
+         return
+     output_stat = os.stat(str(output), follow_symlinks=False)
+     if not stat.S_ISDIR(output_stat.st_mode):
+         raise ValueError("existing output path must be a directory")
+     if not overwrite:
+         raise FileExistsError(
+             "output directory already exists: {}".format(output)
+         )
+     backup = _unique_backup_path(output)
+     os.replace(str(output), str(backup))
+     try:
+         os.replace(str(temporary), str(output))
+     except BaseException as install_error:
+         try:
+             os.replace(str(backup), str(output))
+-            _fsync_directory(output.parent)
+-        except BaseException as restore_error:
++        except BaseException as restore_rename_error:
+             raise RuntimeError(
+                 "failed to install new output ({!r}) and failed to "
+                 "restore old output ({!r}); backup preserved at {}".format(
+                     install_error,
++                    restore_rename_error,
++                    backup,
++                )
++            ) from restore_rename_error
++        try:
++            _fsync_directory(output.parent)
++        except BaseException as restore_sync_error:
++            raise RuntimeError(
++                "failed to install new output ({!r}); old output "
++                "restored at {}, but restore fsync failed ({!r}); "
++                "backup was consumed by the restore".format(
++                    install_error,
++                    output,
++                    restore_sync_error,
++                )
++            ) from restore_sync_error
++        raise
++    try:
++        _fsync_directory(output.parent)
++    except BaseException as install_sync_error:
++        failed_new = _unique_sibling_path(output, "failed-new")
++        try:
++            os.replace(str(output), str(failed_new))
++        except BaseException as quarantine_error:
++            raise RuntimeError(
++                "new output rename succeeded but parent fsync failed "
++                "({!r}); moving the uncommitted output aside also "
++                "failed ({!r}); new output may remain at {} and old "
++                "output remains at {}".format(
++                    install_sync_error,
++                    quarantine_error,
++                    output,
++                    backup,
++                )
++            ) from quarantine_error
++        try:
++            os.replace(str(backup), str(output))
++        except BaseException as restore_error:
++            raise RuntimeError(
++                "new output parent fsync failed ({!r}); uncommitted new "
++                "output was preserved at {}, but restoring old output "
++                "failed ({!r}); old output remains at {}".format(
++                    install_sync_error,
++                    failed_new,
+                     restore_error,
+                     backup,
+                 )
+             ) from restore_error
+-        raise
+-    _fsync_directory(output.parent)
+-    shutil.rmtree(str(backup))
+-    _fsync_directory(output.parent)
++        try:
++            _fsync_directory(output.parent)
++        except BaseException as restore_sync_error:
++            raise RuntimeError(
++                "new output parent fsync failed ({!r}); old output "
++                "restored at {} and uncommitted new output preserved at "
++                "{}, but restore fsync failed ({!r}); backup was "
++                "consumed by the restore".format(
++                    install_sync_error,
++                    output,
++                    failed_new,
++                    restore_sync_error,
++                )
++            ) from restore_sync_error
++        raise RuntimeError(
++            "new output parent fsync failed ({!r}); old output restored "
++            "at {} and uncommitted new output preserved at {}".format(
++                install_sync_error,
++                output,
++                failed_new,
++            )
++        ) from install_sync_error
++    try:
++        shutil.rmtree(str(backup))
++    except OSError as cleanup_error:
++        warnings.warn(
++            "output committed at {}; backup cleanup failed and residual "
++            "backup may remain at {}: {}".format(
++                output,
++                backup,
++                cleanup_error,
++            ),
++            RuntimeWarning,
++        )
++        return
++    try:
++        _fsync_directory(output.parent)
++    except OSError as cleanup_sync_error:
++        warnings.warn(
++            "output committed at {}; backup was removed but cleanup "
++            "fsync failed: {}".format(output, cleanup_sync_error),
++            RuntimeWarning,
++        )
+ 
+ 
+ def _source_files(
+     session_dir: Path,
+     attempt_ids: Sequence[int],
+ ) -> Mapping[str, Path]:
+     paths: Dict[str, Path] = {
+         "session.json": session_dir / "session.json",
+         "events.jsonl": session_dir / "events.jsonl",
+         "ball_samples.csv": session_dir / "ball_samples.csv",
+@@ -2215,24 +2403,20 @@ def export_session_csv(
+         expected_counts["task_observations.csv"] = (
+             _write_task_observations_csv(
+                 temporary / "task_observations.csv",
+                 details,
+             )
+         )
+         row_counts, core_key_hash = validate_written_outputs(
+             temporary,
+             expected_counts,
+         )
+-        _assert_source_files_unchanged(
+-            source_paths,
+-            initial_fingerprints,
+-        )
+         completed_count = len(scan.completed_calls)
+         pending_count = len(scan.pending_replaced_keys)
+         submitted_count = len(scan.submitted_keys)
+         if completed_count + pending_count != submitted_count:
+             raise ValueError(
+                 "completed and pending-replaced counts do not partition "
+                 "submitted calls"
+             )
+         manifest = ExportManifest(
+             schema_version=EXPORT_SCHEMA_VERSION,
+@@ -2285,20 +2469,24 @@ def export_session_csv(
+                 "core_csv_row_counts_equal": True,
+                 "source_files_unchanged_during_export": True,
+             },
+             exported_at_utc=datetime.now(timezone.utc).isoformat(),
+         )
+         _write_manifest(
+             temporary / "export_manifest.json",
+             manifest,
+         )
+         _fsync_directory(temporary)
++        _assert_source_files_unchanged(
++            source_paths,
++            initial_fingerprints,
++        )
+         replace_output_directory(
+             temporary,
+             output,
+             overwrite=bool(overwrite),
+         )
+         return manifest
+     except BaseException:
+         shutil.rmtree(str(temporary), ignore_errors=True)
+         raise
+ 
+diff --git a/deploy/tests/test_hitter_task_csv_export.py b/deploy/tests/test_hitter_task_csv_export.py
+index 1e6f644..0912cd9 100644
+--- a/deploy/tests/test_hitter_task_csv_export.py
++++ b/deploy/tests/test_hitter_task_csv_export.py
+@@ -1156,24 +1156,252 @@ class AlignedPlannerRowsTests(unittest.TestCase):
+             ValueError,
+             "duplicate completed planner call key",
+         ):
+             csv_export.align_completed_calls(
+                 planner_scan((call, call)),
+                 {call.key: input_row},
+             )
+ 
+ 
+ class ExportSessionCsvTests(unittest.TestCase):
++    def test_raw_input_sequence_anomalies_fail_before_replacing_output(self):
++        mutations = {
++            "missing": lambda rows: rows.pop(2),
++            "duplicate": lambda rows: rows[2].__setitem__(
++                "input_seq",
++                rows[1]["input_seq"],
++            ),
++            "reordered": lambda rows: (
++                rows[2].__setitem__("input_seq", "4"),
++                rows[3].__setitem__("input_seq", "3"),
++            ),
++            "negative": lambda rows: rows[2].__setitem__(
++                "input_seq",
++                "-1",
++            ),
++        }
++        for label, mutate in mutations.items():
++            with self.subTest(label=label):
++                with tempfile.TemporaryDirectory() as directory:
++                    session_dir = build_complete_session_fixture(
++                        Path(directory)
++                    )
++                    raw_path = session_dir / "ball_samples.csv"
++                    with raw_path.open(
++                        "r",
++                        encoding="utf-8",
++                        newline="",
++                    ) as stream:
++                        reader = csv.DictReader(stream)
++                        fieldnames = reader.fieldnames
++                        rows = list(reader)
++                    mutate(rows)
++                    with raw_path.open(
++                        "w",
++                        encoding="utf-8",
++                        newline="",
++                    ) as stream:
++                        writer = csv.DictWriter(
++                            stream,
++                            fieldnames=fieldnames,
++                        )
++                        writer.writeheader()
++                        writer.writerows(rows)
++                    output_dir = session_dir.parent / "analysis"
++                    output_dir.mkdir()
++                    sentinel = output_dir / "sentinel.txt"
++                    sentinel.write_text("keep-me", encoding="utf-8")
++
++                    with self.assertRaisesRegex(
++                        ValueError,
++                        "input_seq",
++                    ):
++                        csv_export.export_session_csv(
++                            session_dir=session_dir,
++                            attempt_ids=[1, 2],
++                            output_dir=output_dir,
++                            overwrite=True,
++                        )
++
++                    self.assertEqual(
++                        sentinel.read_text(encoding="utf-8"),
++                        "keep-me",
++                    )
++                    self.assertEqual(
++                        list(output_dir.iterdir()),
++                        [sentinel],
++                    )
++
++    def test_raw_rows_inside_intervals_are_not_subject_filtered(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            raw_path = session_dir / "ball_samples.csv"
++            with raw_path.open(
++                "r",
++                encoding="utf-8",
++                newline="",
++            ) as stream:
++                reader = csv.DictReader(stream)
++                fieldnames = reader.fieldnames
++                rows = list(reader)
++            rows[1]["subject"] = "g2pelvis"
++            with raw_path.open(
++                "w",
++                encoding="utf-8",
++                newline="",
++            ) as stream:
++                writer = csv.DictWriter(stream, fieldnames=fieldnames)
++                writer.writeheader()
++                writer.writerows(rows)
++            output_dir = session_dir.parent / "analysis"
++
++            csv_export.export_session_csv(
++                session_dir=session_dir,
++                attempt_ids=[1, 2],
++                output_dir=output_dir,
++                overwrite=False,
++            )
++
++            with (output_dir / "raw_lcm.csv").open(
++                "r",
++                encoding="utf-8",
++                newline="",
++            ) as stream:
++                subjects = [
++                    row["subject"] for row in csv.DictReader(stream)
++                ]
++            self.assertIn("g2pelvis", subjects)
++            self.assertEqual(len(subjects), 6)
++
++    def test_selected_lifecycle_attempt_conflict_is_rejected(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            events_path = session_dir / "events.jsonl"
++            events = [
++                json.loads(line)
++                for line in events_path.read_text(
++                    encoding="utf-8"
++                ).splitlines()
++            ]
++            tick = next(
++                event
++                for event in events
++                if (
++                    event["kind"] == "lifecycle_tick"
++                    and event["attempt_id"] == 1
++                )
++            )
++            tick["attempt_id"] = 2
++            write_json_lines(events_path, events)
++            output_dir = session_dir.parent / "analysis"
++            output_dir.mkdir()
++            sentinel = output_dir / "sentinel.txt"
++            sentinel.write_text("keep-me", encoding="utf-8")
++
++            with self.assertRaisesRegex(
++                ValueError,
++                "interval owner",
++            ):
++                csv_export.export_session_csv(
++                    session_dir=session_dir,
++                    attempt_ids=[1, 2],
++                    output_dir=output_dir,
++                    overwrite=True,
++                )
++
++            self.assertEqual(
++                sentinel.read_text(encoding="utf-8"),
++                "keep-me",
++            )
++
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            events_path = session_dir / "events.jsonl"
++            events = [
++                json.loads(line)
++                for line in events_path.read_text(
++                    encoding="utf-8"
++                ).splitlines()
++            ]
++            tick = next(
++                event
++                for event in events
++                if (
++                    event["kind"] == "lifecycle_tick"
++                    and event["attempt_id"] == 1
++                )
++            )
++            tick["attempt_id"] = 3
++            write_json_lines(events_path, events)
++            output_dir = session_dir.parent / "analysis"
++
++            csv_export.export_session_csv(
++                session_dir=session_dir,
++                attempt_ids=[1, 2],
++                output_dir=output_dir,
++                overwrite=False,
++            )
++
++            self.assertEqual(
++                csv_row_count(output_dir / "policy_ticks.csv"),
++                1,
++            )
++
++    def test_output_inside_session_cannot_replace_attempt_details(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = build_complete_session_fixture(Path(directory))
++            details_dir = session_dir / "attempt_details"
++            detail_path = details_dir / "1.json"
++            original_detail = detail_path.read_bytes()
++
++            try:
++                with self.assertRaisesRegex(
++                    ValueError,
++                    "overlap",
++                ):
++                    csv_export.export_session_csv(
++                        session_dir=session_dir,
++                        attempt_ids=[1, 2],
++                        output_dir=details_dir,
++                        overwrite=True,
++                    )
++            finally:
++                self.assertTrue(detail_path.is_file())
++                self.assertEqual(detail_path.read_bytes(), original_detail)
++                self.assertFalse(
++                    (details_dir / "export_manifest.json").exists()
++                )
++
++    def test_output_rejects_an_existing_intermediate_symlink(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            session_dir = build_complete_session_fixture(root)
++            real_parent = root / "real-output"
++            real_parent.mkdir()
++            alias = root / "output-alias"
++            alias.symlink_to(real_parent, target_is_directory=True)
++            output_dir = alias / "nested" / "analysis"
++
++            with self.assertRaisesRegex(ValueError, "symlink"):
++                csv_export.export_session_csv(
++                    session_dir=session_dir,
++                    attempt_ids=[1, 2],
++                    output_dir=output_dir,
++                    overwrite=False,
++                )
++
++            self.assertFalse((real_parent / "nested").exists())
++
+     def test_export_writes_complete_aligned_csv_set(self):
+         with tempfile.TemporaryDirectory() as directory:
+             session_dir = build_complete_session_fixture(Path(directory))
+-            output_dir = session_dir / "analysis"
++            output_dir = session_dir.parent / "analysis"
+ 
+             manifest = csv_export.export_session_csv(
+                 session_dir=session_dir,
+                 attempt_ids=[1, 2],
+                 output_dir=output_dir,
+                 overwrite=False,
+             )
+ 
+             self.assertEqual(manifest.completed_call_count, 2)
+             self.assertEqual(manifest.pending_replaced_count, 1)
+@@ -1238,21 +1466,21 @@ class ExportSessionCsvTests(unittest.TestCase):
+     def test_validation_failure_preserves_existing_output(self):
+         with tempfile.TemporaryDirectory() as directory:
+             session_dir = build_complete_session_fixture(Path(directory))
+             detail_path = session_dir / "attempt_details" / "1.json"
+             detail = json.loads(detail_path.read_text(encoding="utf-8"))
+             detail["planner_inputs"] = []
+             detail_path.write_text(
+                 json.dumps(detail, separators=(",", ":")),
+                 encoding="utf-8",
+             )
+-            output_dir = session_dir / "analysis"
++            output_dir = session_dir.parent / "analysis"
+             output_dir.mkdir()
+             sentinel = output_dir / "sentinel.txt"
+             sentinel.write_text("keep-me", encoding="utf-8")
+ 
+             with self.assertRaisesRegex(ValueError, "has no input"):
+                 csv_export.export_session_csv(
+                     session_dir=session_dir,
+                     attempt_ids=[1, 2],
+                     output_dir=output_dir,
+                     overwrite=True,
+@@ -1276,30 +1504,30 @@ class ExportSessionCsvTests(unittest.TestCase):
+                 encoding="utf-8",
+             )
+ 
+             with self.assertRaisesRegex(
+                 ValueError,
+                 "status must be COMPLETE",
+             ):
+                 csv_export.export_session_csv(
+                     session_dir=session_dir,
+                     attempt_ids=[1, 2],
+-                    output_dir=session_dir / "analysis",
++                    output_dir=session_dir.parent / "analysis",
+                     overwrite=False,
+                 )
+ 
+-            self.assertFalse((session_dir / "analysis").exists())
++            self.assertFalse((session_dir.parent / "analysis").exists())
+ 
+     def test_core_csv_validation_rereads_and_rejects_key_reordering(self):
+         with tempfile.TemporaryDirectory() as directory:
+             session_dir = build_complete_session_fixture(Path(directory))
+-            output_dir = session_dir / "analysis"
++            output_dir = session_dir.parent / "analysis"
+             manifest = csv_export.export_session_csv(
+                 session_dir=session_dir,
+                 attempt_ids=[1, 2],
+                 output_dir=output_dir,
+                 overwrite=False,
+             )
+             result_path = output_dir / "planner_results.csv"
+             with result_path.open(
+                 "r",
+                 encoding="utf-8",
+@@ -1363,20 +1591,58 @@ class ExportSessionCsvTests(unittest.TestCase):
+             ],
+             cwd=str(Path(__file__).resolve().parents[1]),
+             env=environment,
+             text=True,
+             capture_output=True,
+             check=False,
+         )
+         self.assertNotEqual(error_result.returncode, 0)
+         self.assertIn("error:", error_result.stderr)
+ 
++    def test_source_mutation_during_manifest_write_preserves_old_output(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            session_dir = build_complete_session_fixture(root)
++            output_dir = root / "analysis"
++            output_dir.mkdir()
++            sentinel = output_dir / "sentinel.txt"
++            sentinel.write_text("keep-me", encoding="utf-8")
++            session_path = session_dir / "session.json"
++            real_write_manifest = csv_export._write_manifest
++
++            def write_manifest_then_mutate_source(path, manifest):
++                real_write_manifest(path, manifest)
++                with session_path.open("a", encoding="utf-8") as stream:
++                    stream.write("\n")
++
++            with mock.patch.object(
++                csv_export,
++                "_write_manifest",
++                side_effect=write_manifest_then_mutate_source,
++            ):
++                with self.assertRaisesRegex(
++                    ValueError,
++                    "source file changed during export",
++                ):
++                    csv_export.export_session_csv(
++                        session_dir=session_dir,
++                        attempt_ids=[1, 2],
++                        output_dir=output_dir,
++                        overwrite=True,
++                    )
++
++            self.assertEqual(
++                sentinel.read_text(encoding="utf-8"),
++                "keep-me",
++            )
++            self.assertEqual(list(output_dir.iterdir()), [sentinel])
++
+     def test_failed_directory_install_restores_existing_output(self):
+         with tempfile.TemporaryDirectory() as directory:
+             parent = Path(directory)
+             output_dir = parent / "analysis"
+             output_dir.mkdir()
+             (output_dir / "sentinel.txt").write_text(
+                 "keep-me",
+                 encoding="utf-8",
+             )
+             temporary_dir = parent / ".hitter-csv-test"
+@@ -1406,13 +1672,182 @@ class ExportSessionCsvTests(unittest.TestCase):
+                         overwrite=True,
+                     )
+ 
+             self.assertEqual(
+                 (output_dir / "sentinel.txt").read_text(encoding="utf-8"),
+                 "keep-me",
+             )
+             self.assertTrue(temporary_dir.is_dir())
+             self.assertFalse(any(parent.glob(".analysis-backup-*")))
+ 
++    def test_install_fsync_failure_restores_existing_output(self):
++        with tempfile.TemporaryDirectory() as directory:
++            parent = Path(directory)
++            output_dir = parent / "analysis"
++            output_dir.mkdir()
++            (output_dir / "sentinel.txt").write_text(
++                "keep-me",
++                encoding="utf-8",
++            )
++            temporary_dir = parent / ".hitter-csv-test"
++            temporary_dir.mkdir()
++            (temporary_dir / "new.txt").write_text(
++                "new-data",
++                encoding="utf-8",
++            )
++
++            with mock.patch.object(
++                csv_export,
++                "_fsync_directory",
++                side_effect=[OSError("install fsync failed"), None],
++            ):
++                with self.assertRaisesRegex(
++                    RuntimeError,
++                    "install fsync failed",
++                ):
++                    csv_export.replace_output_directory(
++                        temporary_dir,
++                        output_dir,
++                        overwrite=True,
++                    )
++
++            self.assertEqual(
++                (output_dir / "sentinel.txt").read_text(encoding="utf-8"),
++                "keep-me",
++            )
++            self.assertFalse((output_dir / "new.txt").exists())
++            failed_new = list(parent.glob(".analysis-failed-new-*"))
++            self.assertEqual(len(failed_new), 1)
++            self.assertEqual(
++                (failed_new[0] / "new.txt").read_text(encoding="utf-8"),
++                "new-data",
++            )
++            self.assertFalse(any(parent.glob(".analysis-backup-*")))
++
++    def test_install_fsync_failure_without_old_output_withdraws_new(self):
++        with tempfile.TemporaryDirectory() as directory:
++            parent = Path(directory)
++            output_dir = parent / "analysis"
++            temporary_dir = parent / ".hitter-csv-test"
++            temporary_dir.mkdir()
++            (temporary_dir / "new.txt").write_text(
++                "new-data",
++                encoding="utf-8",
++            )
++
++            with mock.patch.object(
++                csv_export,
++                "_fsync_directory",
++                side_effect=[OSError("install fsync failed"), None],
++            ):
++                with self.assertRaisesRegex(
++                    RuntimeError,
++                    "install fsync failed",
++                ):
++                    csv_export.replace_output_directory(
++                        temporary_dir,
++                        output_dir,
++                        overwrite=False,
++                    )
++
++            self.assertFalse(output_dir.exists())
++            self.assertEqual(
++                (temporary_dir / "new.txt").read_text(encoding="utf-8"),
++                "new-data",
++            )
++
++    def test_backup_cleanup_failure_warns_after_commit(self):
++        with tempfile.TemporaryDirectory() as directory:
++            parent = Path(directory)
++            output_dir = parent / "analysis"
++            output_dir.mkdir()
++            (output_dir / "sentinel.txt").write_text(
++                "old-data",
++                encoding="utf-8",
++            )
++            temporary_dir = parent / ".hitter-csv-test"
++            temporary_dir.mkdir()
++            (temporary_dir / "new.txt").write_text(
++                "new-data",
++                encoding="utf-8",
++            )
++
++            with mock.patch.object(
++                csv_export.shutil,
++                "rmtree",
++                side_effect=OSError("cleanup failed"),
++            ):
++                with self.assertWarnsRegex(
++                    RuntimeWarning,
++                    "backup cleanup failed",
++                ):
++                    csv_export.replace_output_directory(
++                        temporary_dir,
++                        output_dir,
++                        overwrite=True,
++                    )
++
++            self.assertEqual(
++                (output_dir / "new.txt").read_text(encoding="utf-8"),
++                "new-data",
++            )
++            self.assertFalse((output_dir / "sentinel.txt").exists())
++            backups = list(parent.glob(".analysis-backup-*"))
++            self.assertEqual(len(backups), 1)
++            self.assertEqual(
++                (backups[0] / "sentinel.txt").read_text(encoding="utf-8"),
++                "old-data",
++            )
++
++    def test_restore_fsync_failure_reports_restored_output_state(self):
++        with tempfile.TemporaryDirectory() as directory:
++            parent = Path(directory)
++            output_dir = parent / "analysis"
++            output_dir.mkdir()
++            (output_dir / "sentinel.txt").write_text(
++                "keep-me",
++                encoding="utf-8",
++            )
++            temporary_dir = parent / ".hitter-csv-test"
++            temporary_dir.mkdir()
++            (temporary_dir / "new.txt").write_text(
++                "new-data",
++                encoding="utf-8",
++            )
++            real_replace = os.replace
++            calls = []
++
++            def fail_install_replace(source, target):
++                calls.append((source, target))
++                if len(calls) == 2:
++                    raise OSError("install failed")
++                return real_replace(source, target)
++
++            with mock.patch.object(
++                csv_export.os,
++                "replace",
++                side_effect=fail_install_replace,
++            ), mock.patch.object(
++                csv_export,
++                "_fsync_directory",
++                side_effect=OSError("restore fsync failed"),
++            ):
++                with self.assertRaisesRegex(
++                    RuntimeError,
++                    "old output restored",
++                ) as raised:
++                    csv_export.replace_output_directory(
++                        temporary_dir,
++                        output_dir,
++                        overwrite=True,
++                    )
++
++            self.assertNotIn("backup preserved", str(raised.exception))
++            self.assertEqual(
++                (output_dir / "sentinel.txt").read_text(encoding="utf-8"),
++                "keep-me",
++            )
++            self.assertFalse(any(parent.glob(".analysis-backup-*")))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/docs/hitter_complete_planner_csv_export.md b/docs/hitter_complete_planner_csv_export.md
+index d6e76c2..ad36f49 100644
+--- a/docs/hitter_complete_planner_csv_export.md
++++ b/docs/hitter_complete_planner_csv_export.md
+@@ -25,24 +25,24 @@ PYTHONPATH=. /home/loco1/miniconda3/envs/rb/bin/python \
+   --session ../recordings/hitter_task_diagnostics/20260730_194528_402494-p740921-f85e25f0 \
+   --attempts 1 2 \
+   --output ../recordings/hitter_task_diagnostics/20260730_122056_381218-p994970-d50bc89f/analysis_attempts_1_2_20260730_194528 \
+   --overwrite
+ ```
+ 
+ 四个参数的含义：
+ 
+ - `--session`：完整源 session 目录。
+ - `--attempts`：一个或多个正整数 attempt id。
+-- `--output`：导出目录。不能等于源 session、不能是源 session 的祖先，也不能是符号链接。
++- `--output`：导出目录。使用绝对规范化路径；它不能与源 session 重合，也就是不能等于、包含源 session 或位于源 session 内部。路径中任何已经存在的分量都不能是符号链接。
+ - `--overwrite`：允许事务式替换已有输出目录；省略时，已有目标会直接报错。
+ 
+-命令成功返回 0，并在标准输出打印 manifest JSON；任一完整性、读取、写入或替换错误均返回非零。
++命令成功返回 0，并在标准输出打印 manifest JSON；提交点之前的完整性、读取、写入或替换错误均返回非零。新目录 rename 并完成父目录 fsync 后即视为已经提交；此后旧 backup 清理失败只发出 warning、保留残留 backup，不会把已成功的提交谎报为失败。
+ 
+ ## 完成调用的定义
+ 
+ `planner_inputs.csv`、`planner_calls.csv` 和 `planner_results.csv` 只包含 actual completed calls。每个 key 必须同时存在：
+ 
+ 1. `planner_submit`
+ 2. `planner_trace/start`
+ 3. `planner_trace/complete` 及 result
+ 4. attempt detail 中的 planner input
+ 
+@@ -55,21 +55,21 @@ attempt_id
+ + snapshot_key.generation
+ ```
+ 
+ 三表关闭后会被重新打开，逐行验证 header、行数、key 顺序和唯一性。仅发生 `pending_replaced`、从未 start/complete 的输入不属于完成调用，不会进入这三张表；其数量会单独记录在 summary 和 manifest 中。
+ 
+ ## 输出文件
+ 
+ 导出目录包含八张 CSV 和一个 manifest：
+ 
+ - `summary.csv`：每个 attempt 一行，保留 detail 原有的 `recording_complete` 历史值，并增加 `completed_call_export_complete`、`completed_call_count`、`pending_replaced_count`。
+-- `raw_lcm.csv`：从完整 `ball_samples.csv` 按 segment 闭区间选出的 ball、g1pelvis、table 行。源 `attempt_id` 和 `track_segment_id` 原样保留，`interval_attempt_id` 和 `interval_track_segment_id` 表示离线区间归属。
++- `raw_lcm.csv`：从完整 `ball_samples.csv` 按 segment 闭区间选出的所有源行，不使用固定 subject 白名单。源 `attempt_id`、`track_segment_id` 和任意 subject 原样保留，`interval_attempt_id` 和 `interval_track_segment_id` 表示离线区间归属。
+ - `planner_inputs.csv`：actual completed calls 对应的完整输入。
+ - `planner_calls.csv`：submit/start/complete 时间、耗时及 replacement 元数据。
+ - `planner_results.csv`：真实 command、reason code 或错误结果。
+ - `stage_timeline.csv`：按 attempt detail 原始顺序展开，并增加 `stage_index`；不会按时间重新排序。
+ - `policy_ticks.csv`：从完整 `events.jsonl` 流式提取的 `lifecycle_tick`，使用真实 `event_id`。
+ - `task_observations.csv`：每个 attempt 一行，展开 11 维 pre/post clip；没有 observation 的 attempt 仍保留空值行。
+ - `export_manifest.json`：源 session 绝对路径、attempt ids、所有源文件 SHA-256/stat、各表行数、核心 key 序列 SHA-256、submitted/pending/completed 计数及明确的 completeness checks。
+ 
+ 所有向量和映射均使用紧凑 JSON，不使用 Python `repr`。
+ 
+@@ -77,24 +77,32 @@ attempt_id
+ 
+ 导出器采用 fail-closed 语义。源 session 必须同时满足：
+ 
+ - `status=COMPLETE`
+ - `recording_complete=true`
+ - `recorder_healthy=true`
+ - `last_error=null`、`failure=null`
+ - `input_samples_dropped=0`
+ - persisted/observed event watermark 相等
+ - `events.jsonl` 的 event id 连续、末端与 watermark 一致，且没有 `RECORDER_EVENT_GAP`
++- `ball_samples.csv` 全文件的 `input_seq` 是非负十进制整数；首值可任意，之后每行必须严格 `+1`。该校验先于 attempt 区间和 subject 筛选，因此缺号、重复、倒序和负值都会拒绝整个导出。
+ 
+-Segment 时间必须有限且 `first_monotonic_s <= last_monotonic_s`；重叠或相接的同 attempt 区间会合并，不同 attempt 的区间重叠会拒绝。源文件在导出末尾会重新 stat 和计算 SHA-256，任何导出期间的变化都会使导出失败。
++Segment 时间必须有限且 `first_monotonic_s <= last_monotonic_s`；重叠或相接的同 attempt 区间会合并，不同 attempt 的区间重叠会拒绝。位于所选区间内、但声明为另一个所选 attempt 的 lifecycle tick 会被视为身份冲突并拒绝；不属于所选 attempts 的事件仍会忽略。
+ 
+-所有文件先写入目标同级临时目录并完成重读验证。覆盖已有输出时，旧目录先移动到同级唯一 backup，再安装完整临时目录；安装失败会恢复旧目录。验证失败不会触碰已有输出，成功后 backup 会被清理。
++所有文件先写入目标同级临时目录并完成重读验证。manifest 写完且临时目录 fsync 后，导出器会在最终 replace 之前立即重新 stat 并计算所有源文件的 SHA-256；检测到变化会删除临时输出并保留旧输出。覆盖已有输出时，旧目录先移动到同级唯一 backup，再安装完整临时目录：
++
++- 安装 rename 失败会恢复旧目录；若恢复后的父目录 fsync 失败，错误会准确说明旧目录已回到 output、backup 已被消费。
++- 安装 rename 成功但父目录 fsync 失败时，新目录会移到同级 `failed-new`，旧目录恢复到 output 并再次 fsync；调用仍失败，并报告两个目录的真实位置。
++- 没有旧输出时，安装后的父目录 fsync 失败会把新目录移回临时路径，交给外层清理。
++- 安装 rename 与父目录 fsync 均成功是提交点。之后 backup 删除或清理 fsync 失败只产生 warning；新 output 仍视为成功，可能保留可人工清理的同级 backup。
++
++路径防护会在创建输出父目录前后逐级拒绝所有已经存在的 symlink 分量，并在目录替换前再次检查。不过当前实现仍使用路径式检查和 rename，未使用锁定的 directory fd / `renameat`；攻击者或并发进程若恰好在最后一次检查与 rename 之间替换路径分量，仍存在路径级 TOCTOU。首尾 `input_seq` 连续性也无法单独识别文件尾部被整体截断；若要关闭该风险，录制协议还需持久化 raw row count 或末端 `input_seq` watermark。
+ 
+ ## 当前 Attempt 1/2 的完整结果
+ 
+ 源 session `20260730_194528_402494-p740921-f85e25f0` 的预期结果为：
+ 
+ | 指标 | 行数 |
+ |---|---:|
+ | submitted | 2625 |
+ | pending-replaced | 540 |
+ | actual completed | 2085 |

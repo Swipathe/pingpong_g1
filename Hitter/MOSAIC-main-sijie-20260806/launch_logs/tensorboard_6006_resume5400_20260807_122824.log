@@ -1,0 +1,19 @@
+/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/tensorboard/default.py:30: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+TensorFlow installation not found - running with reduced feature set.
+TensorBoard 2.20.0 at http://127.0.0.1:6006/ (Press CTRL+C to quit)
+Exception in thread Reloader:
+Traceback (most recent call last):
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/tensorboard/backend/event_processing/data_ingester.py", line 108, in _reload
+    self._multiplexer.Reload()
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/tensorboard/backend/event_processing/plugin_event_multiplexer.py", line 263, in Reload
+    Worker()
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/tensorboard/backend/event_processing/plugin_event_multiplexer.py", line 241, in Worker
+    accumulator.Reload()
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/tensorboard/backend/event_processing/plugin_event_accumulator.py", line 203, in Reload
+    self._ProcessEvent(event)
+AttributeError: _ProcessEvent

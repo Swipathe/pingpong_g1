@@ -1,0 +1,177 @@
+# Review package: 08f227b..e51809e
+
+## Commits
+e51809e fix: report interrupted ChingMu calibration
+
+## Files changed
+ deploy/mocap_bridge/chingmu_table_lcm_bridge.py    |  5 ++
+ .../tests/test_chingmu_pelvis_orientation.py       | 93 ++++++++++++++++++++++
+ 2 files changed, 98 insertions(+)
+
+## Diff
+diff --git a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+index 4e6f627..4a53d4d 100644
+--- a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
++++ b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+@@ -1296,17 +1296,22 @@ def main(argv=None) -> int:
+                     f"frame={frame.frame_number} hz={rate:.1f} "
+                     f"dropped={client.dropped_frame_count} "
+                     f"body_markers={len(frame.body_markers_mm)} "
+                     f"unlabeled={len(frame.unlabeled_markers_mm)} "
+                     f"{config.base_subject}={base_text} ball={ball_text}",
+                     flush=True,
+                 )
+                 last_print = now
+     except KeyboardInterrupt:
+         print("Stopped by user", flush=True)
++        if operation_mode in (
++            "table_calibration",
++            "pelvis_calibration",
++        ):
++            return 130
+     finally:
+         client.close()
+     return 0
+ 
+ 
+ if __name__ == "__main__":
+     raise SystemExit(main())
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+index af43e4a..747da1f 100644
+--- a/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
++++ b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+@@ -26,20 +26,21 @@ from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
+     _collect_calibration_frames,
+     _load_runtime_pelvis_orientation,
+     _operation_mode,
+     _validate_calibration_path_roles,
+     _validate_numeric_arguments,
+     build_arg_parser,
+     calibrate_pelvis_orientation_from_frames,
+     load_pelvis_orientation_calibration,
+     raw_to_table_world,
+     save_pelvis_orientation_calibration,
++    save_table_frame,
+     main,
+ )
+ 
+ 
+ def identity_table() -> TableFrame:
+     return TableFrame(
+         center_raw_mm=np.zeros(3, dtype=np.float64),
+         x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
+         y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
+         z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
+@@ -1011,20 +1012,112 @@ class CalibrationFrameCollectionTest(unittest.TestCase):
+                     "--pelvis-calib-sec",
+                 ):
+                     _collect_calibration_frames(
+                         client,
+                         duration_s,
+                         argument_name="--pelvis-calib-sec",
+                     )
+                 self.assertEqual(client.calls, 0)
+ 
+ 
++class ChingMuMainInterruptTest(unittest.TestCase):
++    class InterruptingSdkClient:
++        instances = []
++
++        def __init__(self, *args, **kwargs):
++            del args, kwargs
++            self.body_id = 6
++            self.body_pose_id = 6
++            self.dropped_frame_count = 0
++            self.closed = False
++            self.__class__.instances.append(self)
++
++        def start(self):
++            return None
++
++        def next_frame(self, *, timeout_s=0.1):
++            del timeout_s
++            raise KeyboardInterrupt
++
++        def close(self):
++            self.closed = True
++
++    def setUp(self):
++        self.InterruptingSdkClient.instances.clear()
++
++    def run_main_with_interrupting_sdk(self, arguments):
++        from deploy.mocap_bridge import chingmu_sdk_client
++
++        with mock.patch.object(
++            chingmu_sdk_client,
++            "ChingMuSdkClient",
++            self.InterruptingSdkClient,
++        ):
++            result = main(arguments)
++
++        self.assertEqual(len(self.InterruptingSdkClient.instances), 1)
++        self.assertTrue(self.InterruptingSdkClient.instances[0].closed)
++        return result
++
++    def test_table_calibration_interrupt_returns_130_and_closes_client(self):
++        with tempfile.TemporaryDirectory() as directory:
++            output_path = Path(directory) / "table.json"
++
++            result = self.run_main_with_interrupting_sdk(
++                ["--save-table-calib", str(output_path)]
++            )
++
++            self.assertEqual(result, 130)
++            self.assertFalse(output_path.exists())
++
++    def test_pelvis_calibration_interrupt_returns_130_and_closes_client(self):
++        with tempfile.TemporaryDirectory() as directory:
++            table_path = Path(directory) / "table.json"
++            output_path = Path(directory) / "pelvis.json"
++            save_table_frame(table_path, identity_table(), BridgeConfig())
++
++            result = self.run_main_with_interrupting_sdk(
++                [
++                    "--table-calib",
++                    str(table_path),
++                    "--save-pelvis-orientation-calib",
++                    str(output_path),
++                ]
++            )
++
++            self.assertEqual(result, 130)
++            self.assertFalse(output_path.exists())
++
++    def test_runtime_interrupt_returns_zero_and_closes_client(self):
++        with tempfile.TemporaryDirectory() as directory:
++            table_path = Path(directory) / "table.json"
++            pelvis_path = Path(directory) / "pelvis.json"
++            config = BridgeConfig()
++            save_table_frame(table_path, identity_table(), config)
++            save_pelvis_orientation_calibration(
++                pelvis_path,
++                valid_orientation_calibration(),
++                config,
++            )
++
++            result = self.run_main_with_interrupting_sdk(
++                [
++                    "--table-calib",
++                    str(table_path),
++                    "--pelvis-orientation-calib",
++                    str(pelvis_path),
++                ]
++            )
++
++            self.assertEqual(result, 0)
++
++
+ class ChingMuSdkPoseTimestampTest(unittest.TestCase):
+     def test_sdk_rejects_nonfinite_body_pose_poll_rate(self):
+         for body_pose_poll_hz in (
+             float("nan"),
+             float("inf"),
+             float("-inf"),
+         ):
+             with self.subTest(body_pose_poll_hz=body_pose_poll_hz):
+                 with mock.patch.object(
+                     ChingMuSdkClient,

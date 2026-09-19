@@ -1,0 +1,17 @@
+defaults:
+  - robot: g1_hitter_racket
+  - obs: hitter
+  - sim: mujoco
+  - env: hitter
+  - agent: hitter
+  - mimic: hitter
+  - _self_
+
+device: cpu
+
+sim:
+  config:
+    table_tennis:
+      enabled: true
+      physics_mode: mujoco
+      continuous_ball_launcher: true

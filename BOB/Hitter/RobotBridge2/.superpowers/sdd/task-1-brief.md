@@ -1,0 +1,384 @@
+### Task 1: 实现旁路 strike target 日志内容
+
+**Files:**
+- Create: `deploy/tests/test_hitter_strike_target_logging.py`
+- Modify: `deploy/envs/hitter.py:610-681`
+
+**Interfaces:**
+- Consumes: `PlannerResultSnapshot`，字段为 `track_epoch`、`source_generation` 和 `command`。
+- Consumes: `command.strike_plan.v_ball_in`、`command.strike_plan.v_ball_out`、`command.v_racket_target_w`。
+- Produces: `HitterEnv._format_hitter_velocity_log_vector(value: np.ndarray) -> str`。
+- Produces: `HitterEnv._log_hitter_strike_target(active_result: PlannerResultSnapshot | None) -> None`。
+- Produces: 单行 `HITTER strike target:` INFO，或失败时的 `Failed to log HITTER strike target:` WARNING。
+
+- [ ] **Step 1: 创建测试夹具和“完整日志内容”失败测试**
+
+创建 `deploy/tests/test_hitter_strike_target_logging.py`：
+
+```python
+from __future__ import annotations
+
+import unittest
+from contextlib import contextmanager
+from types import SimpleNamespace
+
+import numpy as np
+from loguru import logger
+
+from envs.hitter import HitterEnv
+from utils.hitter_realtime import (
+    CommandPhase,
+    HitterCommandLifecycle,
+    PlannerResultSnapshot,
+)
+
+
+@contextmanager
+def captured_log_messages():
+    messages = []
+    sink_id = logger.add(
+        lambda message: messages.append(message.record["message"]),
+        level="INFO",
+    )
+    try:
+        yield messages
+    finally:
+        logger.remove(sink_id)
+
+
+def fake_command(
+    *,
+    marker: float = 1.0,
+    strike_type: str = "backhand",
+    ball_in=None,
+    ball_out=None,
+    racket_velocity=None,
+):
+    if ball_in is None:
+        ball_in = [-marker, -marker, -marker]
+    if ball_out is None:
+        ball_out = [marker, marker, marker]
+    if racket_velocity is None:
+        racket_velocity = [marker, marker, marker]
+    return SimpleNamespace(
+        strike_type=strike_type,
+        p_base_target_xy=np.array([-0.4, 0.0], dtype=np.float64),
+        v_racket_target_w=np.asarray(racket_velocity, dtype=np.float64),
+        time_to_strike=0.90,
+        strike_plan=SimpleNamespace(
+            p_racket_target=np.array([0.0, 0.1, 1.0], dtype=np.float64),
+            v_ball_in=np.asarray(ball_in, dtype=np.float64),
+            v_ball_out=np.asarray(ball_out, dtype=np.float64),
+        ),
+    )
+
+
+def planner_result(
+    *,
+    epoch: int = 7,
+    generation: int = 11,
+    deadline: float = 10.90,
+    command=None,
+):
+    if command is None:
+        command = fake_command()
+    return PlannerResultSnapshot(
+        track_epoch=epoch,
+        source_generation=generation,
+        source_frame=generation,
+        strike_deadline_monotonic_s=deadline,
+        completed_monotonic_s=10.01,
+        command=command,
+        error=None,
+    )
+
+
+def configured_lifecycle() -> HitterCommandLifecycle:
+    return HitterCommandLifecycle(
+        waiting_tts=0.92,
+        arm_tts=0.90,
+        minimum_arm_tts=0.80,
+        maximum_policy_tts=0.92,
+        swing_duration_sampler=lambda: 1.85,
+    )
+
+
+def minimal_env() -> HitterEnv:
+    env = HitterEnv.__new__(HitterEnv)
+    env.motion_cfg = {
+        "ball_planner": {
+            "target_base_height_w": 0.78,
+        }
+    }
+    env.hitter_command_lifecycle = configured_lifecycle()
+    env._hitter_last_logged_phase = CommandPhase.ARMED
+    env._hitter_last_result_key = None
+    env._hitter_minimum_track_epoch = 0
+    env._hitter_minimum_generation = 0
+    env._hitter_observed_track_epoch = None
+    return env
+
+
+class StrikeTargetPayloadTests(unittest.TestCase):
+    def test_logs_all_world_velocity_vectors_and_norms(self):
+        env = minimal_env()
+        ball_in = np.array([-3.0, 0.4, -1.2], dtype=np.float64)
+        ball_out = np.array([4.2708, -0.5, 1.8], dtype=np.float64)
+        racket_velocity = np.array([1.4, -0.1, 0.7], dtype=np.float64)
+        result = planner_result(
+            epoch=27,
+            generation=8103,
+            command=fake_command(
+                ball_in=ball_in,
+                ball_out=ball_out,
+                racket_velocity=racket_velocity,
+            ),
+        )
+
+        with captured_log_messages() as messages:
+            env._log_hitter_strike_target(result)
+
+        target_messages = [
+            message
+            for message in messages
+            if message.startswith("HITTER strike target:")
+        ]
+        self.assertEqual(len(target_messages), 1)
+        message = target_messages[0]
+        self.assertIn("epoch=27 generation=8103 type=backhand", message)
+        self.assertIn(
+            "v_ball_in_w_mps=[-3.0000,0.4000,-1.2000]",
+            message,
+        )
+        self.assertIn(
+            f"speed_ball_in_mps={np.linalg.norm(ball_in):.4f}",
+            message,
+        )
+        self.assertIn(
+            "v_ball_out_w_mps=[4.2708,-0.5000,1.8000]",
+            message,
+        )
+        self.assertIn(
+            f"speed_ball_out_mps={np.linalg.norm(ball_out):.4f}",
+            message,
+        )
+        self.assertIn(
+            "v_racket_target_w_mps=[1.4000,-0.1000,0.7000]",
+            message,
+        )
+        self.assertIn(
+            f"speed_racket_mps={np.linalg.norm(racket_velocity):.4f}",
+            message,
+        )
+```
+
+- [ ] **Step 2: 运行测试并确认 RED**
+
+Run:
+
+```bash
+cd /home/loco1/BOB/Hitter/RobotBridge2
+PYTHONPATH=deploy conda run --no-capture-output -n rb \
+  python -m unittest discover \
+  -s deploy/tests \
+  -p 'test_hitter_strike_target_logging.py' \
+  -v
+```
+
+Expected:
+
+```text
+ERROR: test_logs_all_world_velocity_vectors_and_norms
+AttributeError: 'HitterEnv' object has no attribute '_log_hitter_strike_target'
+```
+
+- [ ] **Step 3: 增加“非法出球速度只 warning”失败测试**
+
+在同一个 `StrikeTargetPayloadTests` 中增加：
+
+```python
+    def test_invalid_ball_out_only_warns_and_does_not_change_main_validation(self):
+        env = minimal_env()
+        command = fake_command(ball_out=[np.nan, 0.0, 0.0])
+
+        decision = env._consume_hitter_planner_result(
+            planner_result(command=command),
+            now=10.0,
+        )
+        self.assertEqual(decision, "armed")
+        self.assertIs(
+            env.hitter_command_lifecycle.active_result.command,
+            command,
+        )
+
+        with captured_log_messages() as messages:
+            env._log_hitter_strike_target(
+                planner_result(command=command)
+            )
+
+        self.assertFalse(
+            any(
+                message.startswith("HITTER strike target:")
+                for message in messages
+            )
+        )
+        warnings = [
+            message
+            for message in messages
+            if message.startswith(
+                "Failed to log HITTER strike target:"
+            )
+        ]
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("strike_plan.v_ball_out", warnings[0])
+
+    def test_missing_active_result_only_warns(self):
+        env = minimal_env()
+
+        with captured_log_messages() as messages:
+            env._log_hitter_strike_target(None)
+
+        warnings = [
+            message
+            for message in messages
+            if message.startswith(
+                "Failed to log HITTER strike target:"
+            )
+        ]
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("missing a command", warnings[0])
+```
+
+- [ ] **Step 4: 再次运行并确认三个测试因缺失日志方法而失败**
+
+Run:
+
+```bash
+PYTHONPATH=deploy conda run --no-capture-output -n rb \
+  python -m unittest discover \
+  -s deploy/tests \
+  -p 'test_hitter_strike_target_logging.py' \
+  -v
+```
+
+Expected:
+
+```text
+FAILED (errors=3)
+```
+
+三个错误都必须指向缺失的 `_log_hitter_strike_target`，而不是 import、
+Conda 或夹具错误。
+
+- [ ] **Step 5: 实现最小旁路日志方法**
+
+在 `deploy/envs/hitter.py` 的
+`_validated_hitter_command_fields()` 后、`_copy_hitter_command()` 前新增：
+
+```python
+    @staticmethod
+    def _format_hitter_velocity_log_vector(value: np.ndarray) -> str:
+        return "[" + ",".join(
+            f"{float(component):.4f}" for component in value
+        ) + "]"
+
+    def _log_hitter_strike_target(
+        self,
+        active_result: PlannerResultSnapshot | None,
+    ) -> None:
+        try:
+            if active_result is None or active_result.command is None:
+                raise ValueError("active planner result is missing a command")
+            command = active_result.command
+            fields = self._validated_hitter_command_fields(command)
+            ball_in_velocity = fields["ball_in_velocity"].copy()
+            ball_out_velocity = self._validated_vector(
+                command.strike_plan.v_ball_out,
+                name="strike_plan.v_ball_out",
+                size=3,
+            )
+            racket_velocity = fields["racket_velocity"].copy()
+            logger.info(
+                "HITTER strike target: epoch={} generation={} type={} "
+                "v_ball_in_w_mps={} speed_ball_in_mps={:.4f} "
+                "v_ball_out_w_mps={} speed_ball_out_mps={:.4f} "
+                "v_racket_target_w_mps={} speed_racket_mps={:.4f}",
+                int(active_result.track_epoch),
+                int(active_result.source_generation),
+                fields["strike_type"],
+                self._format_hitter_velocity_log_vector(
+                    ball_in_velocity
+                ),
+                float(np.linalg.norm(ball_in_velocity)),
+                self._format_hitter_velocity_log_vector(
+                    ball_out_velocity
+                ),
+                float(np.linalg.norm(ball_out_velocity)),
+                self._format_hitter_velocity_log_vector(
+                    racket_velocity
+                ),
+                float(np.linalg.norm(racket_velocity)),
+            )
+        except Exception as exc:
+            try:
+                logger.warning(
+                    "Failed to log HITTER strike target: {}",
+                    exc,
+                )
+            except Exception:
+                pass
+```
+
+不要把 `ball_out_velocity` 加入
+`_validated_hitter_command_fields()` 的返回值或主验收路径。
+
+- [ ] **Step 6: 运行 targeted test 并确认 GREEN**
+
+Run:
+
+```bash
+PYTHONPATH=deploy conda run --no-capture-output -n rb \
+  python -m unittest discover \
+  -s deploy/tests \
+  -p 'test_hitter_strike_target_logging.py' \
+  -v
+```
+
+Expected:
+
+```text
+Ran 3 tests
+OK
+```
+
+- [ ] **Step 7: 检查 Task 1 diff 并提交**
+
+Run:
+
+```bash
+git diff --check -- \
+  deploy/envs/hitter.py \
+  deploy/tests/test_hitter_strike_target_logging.py
+git diff -- \
+  deploy/envs/hitter.py \
+  deploy/tests/test_hitter_strike_target_logging.py
+git add -- deploy/tests/test_hitter_strike_target_logging.py
+git add -p -- deploy/envs/hitter.py
+git diff --cached -- \
+  deploy/envs/hitter.py \
+  deploy/tests/test_hitter_strike_target_logging.py
+git diff --cached --name-only
+git diff --cached --check
+git commit -m "feat: add HITTER strike target log payload"
+```
+
+Expected:
+
+- `git add -p` 只接受 Task 1 新增的两个日志方法所在 hunk；
+- 必须拒绝 observation 105→104 维的用户已有 hunk；
+- 暂存区只包含新测试文件和 Task 1 日志方法；
+- commit 成功；
+- commit 后用户已有的 104 维 observation diff 仍保持未暂存状态。
+
+---
+

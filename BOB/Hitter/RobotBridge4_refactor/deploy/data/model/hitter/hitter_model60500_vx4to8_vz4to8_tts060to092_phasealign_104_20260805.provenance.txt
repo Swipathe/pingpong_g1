@@ -1,0 +1,58 @@
+Artifact
+========
+Filename: hitter_model60500_vx4to8_vz4to8_tts060to092_phasealign_104_20260805.onnx
+Exported: 2026-08-05
+ONNX SHA256: 896ebd411da7f066ed0b612f689f12abfa7f41d7f6e37b328094053256931ac4
+ONNX size: 891384 bytes
+ONNX opset: 18
+Contract: float32 obs [1,104] -> float32 actions [1,29]
+
+Source checkpoint
+=================
+Run: /share/project/manipu_backup/sijie/tmp/root-20260623-124001-extracted/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-07-30_17-54-13_hitter_tts060to092_phasealign_resume7800_g604a538_8xa100_env50000_20260730_175105
+Checkpoint: model_60500.pt
+Checkpoint iteration: 60500
+Checkpoint SHA256: 14add6ab649ef00d19686492c311bd204f4b742a15fce055836cd8bc1f19f27b
+params/agent.yaml SHA256: 31f432d259638a03cb0368f5379024868892609899e601651a2f8110400cfe99
+params/env.yaml SHA256: f29e3120eb2694d69435b14aee63cf4a657c5df0cae3554c2a2aaeb7a45ba831
+source_snapshot/flat_env_cfg.py SHA256: 08d7bf02cee9165dce898dd14ef381583095700fd26846d1395dc2045d155aae
+
+Successful official export invocation
+=====================================
+ROOT=/share/project/manipu_backup/sijie/tmp/root-20260623-124001-extracted/Hitter/MOSAIC-main
+VENV=/share/project/manipu_backup/sijie/tmp/root-20260623-124001-extracted/.venvs/isaaclab-mosaic
+RUN_NAME=2026-07-30_17-54-13_hitter_tts060to092_phasealign_resume7800_g604a538_8xa100_env50000_20260730_175105
+cd "$ROOT"
+unset RANK WORLD_SIZE LOCAL_RANK MASTER_ADDR MASTER_PORT HITTER_MOTION_DATASET_LOAD_CAP
+export PYTHONPATH="$ROOT/source/whole_body_tracking:$ROOT/source/rsl_rl${PYTHONPATH:+:$PYTHONPATH}"
+export XDG_DATA_HOME=/tmp/hitter_isaac_shared/data
+export HITTER_REGULARIZATION_SCALE=1
+export HITTER_BASE_TARGET_REWARD_WEIGHT=5
+export HITTER_RACKET_POS_REWARD_WEIGHT=80
+export HITTER_RACKET_VEL_REWARD_WEIGHT=30
+export HITTER_RACKET_ORI_REWARD_WEIGHT=30
+CUDA_VISIBLE_DEVICES=0 "$VENV/bin/python" scripts/rsl_rl/play.py \
+  --task=Hitter-Striking-PlannerDomain-Flat-G1-v0 \
+  --motion=data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean \
+  --num_envs=1 \
+  --load_run="$RUN_NAME" \
+  --checkpoint=model_60500.pt \
+  --headless --device=cuda:0
+
+The play process was interrupted with SIGINT only after exported/policy.onnx
+existed and all expected metadata keys were present.
+
+Validation
+==========
+onnx.checker: PASS
+Metadata: 11 expected keys present; observation names and 29 joint/action fields present
+CPU inference on loco1 with ONNX Runtime 1.19.2: zeros and ramp inputs finite, [1,29]
+Independent PyTorch actor+normalizer vs ONNX CPU: 98/98 samples allclose
+rtol=1e-5, atol=2e-5; worst observed absolute difference 2.29e-5
+
+Provenance boundary
+===================
+The MOSAIC-main directory was not a Git repository. The run stores params and a
+matching flat_env_cfg.py snapshot, but not a byte-for-byte snapshot of the full
+source tree. The ONNX metadata run_path is "none"; use the paths and hashes in
+this file for provenance.

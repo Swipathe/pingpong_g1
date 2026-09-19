@@ -1,0 +1,1130 @@
+RUN_NAME=hitter_mix_aligned_backhand_strike43_m4400_to_std010_keepnoise_freezenorm_lr1e4_flatmesh_swanlab_2xa100_env50000_20260611_185541
+SESSION=hitter_mix_aligned_backhand_strike43_m4400_to_std010_keepnoise_freezenorm_lr1e4_flatmesh_swanlab_2xa100_env50000_20260611_185541_train
+LOG=/root/Hitter/MOSAIC-main/logs/tmux/hitter_mix_aligned_backhand_strike43_m4400_to_std010_keepnoise_freezenorm_lr1e4_flatmesh_swanlab_2xa100_env50000_20260611_185541.log
+CKPT=/root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-11_13-50-29_hitter_mix_aligned_backhand_strike43_m2200_to_std012_keepnoise_freezenorm_lr1e4_swanlab_2xa100_env50000_20260611_135014/model_4400.pt
+MOTION=data/hitter_motions/hitter_mix_oldiphone_newwechat_20260609_backhand_strike43_aligned
+W0611 18:55:43.297000 1500566 torch/distributed/run.py:793] 
+W0611 18:55:43.297000 1500566 torch/distributed/run.py:793] *****************************************
+W0611 18:55:43.297000 1500566 torch/distributed/run.py:793] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0611 18:55:43.297000 1500566 torch/distributed/run.py:793] *****************************************
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/isaaclab.python.headless.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+[INFO][AppLauncher]: Using device: cuda:1
+[INFO][AppLauncher]: Loading experience file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/isaaclab.python.headless.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260611_185543.log
+2026-06-11 10:55:43 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+Loading user config located at: '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260611_185543.log
+2026-06-11 10:55:43 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-06-11 10:55:43 [101ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes' or '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes/config'
+2026-06-11 10:55:43 [109ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes' or '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes/config'
+2026-06-11 10:55:44 [387ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-06-11 10:55:44 [380ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-06-11 10:55:44 [630ms] [Warning] [omni.platforminfo.plugin] failed to open the default display.  Can't verify X Server version.
+2026-06-11 10:55:44 [655ms] [Warning] [omni.platforminfo.plugin] failed to open the default display.  Can't verify X Server version.
+2026-06-11 10:55:44 [858ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-06-11 10:55:44 [881ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-06-11 10:55:44 [1,021ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-06-11 10:55:44 [1,119ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            |        |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 166874
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            |        |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 166817
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-11 10:55:53 [9,783ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 1
+2026-06-11 10:55:53 [9,791ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-06-11 10:55:53 [9,785ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-11 10:55:53 [9,785ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Cuda failure ../../../source/plugins/carb.cudainterop/p2pBandwidthLatencyTest/p2pBandwidthLatencyTest.cu:681: 'peer access is already enabled'
+2026-06-11 10:55:53 [9,793ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-11 10:55:53 [9,793ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Cuda failure ../../../source/plugins/carb.cudainterop/p2pBandwidthLatencyTest/p2pBandwidthLatencyTest.cu:681: 'peer access is already enabled'
+2026-06-11 10:55:53 [9,832ms] [Warning] [omni.kvdb.plugin] Disabling key-value database because another kit process is locking it
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[CLI] Simplified resume from CLI: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-11_13-50-29_hitter_mix_aligned_backhand_strike43_m2200_to_std012_keepnoise_freezenorm_lr1e4_swanlab_2xa100_env50000_20260611_135014/model_4400.pt
+[CLI]   - load_run: 2026-06-11_13-50-29_hitter_mix_aligned_backhand_strike43_m2200_to_std012_keepnoise_freezenorm_lr1e4_swanlab_2xa100_env50000_20260611_135014
+[CLI]   - checkpoint: model_4400.pt
+[INFO] Distributed seeding: base_seed=42, rank=0, env_seed=42 (stride=1000)
+[INFO] Logging experiment in directory: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1
+Setting seed: 42
+[CLI] Simplified resume from CLI: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-11_13-50-29_hitter_mix_aligned_backhand_strike43_m2200_to_std012_keepnoise_freezenorm_lr1e4_swanlab_2xa100_env50000_20260611_135014/model_4400.pt
+[CLI]   - load_run: 2026-06-11_13-50-29_hitter_mix_aligned_backhand_strike43_m2200_to_std012_keepnoise_freezenorm_lr1e4_swanlab_2xa100_env50000_20260611_135014
+[CLI]   - checkpoint: model_4400.pt
+[INFO] Distributed seeding: base_seed=42, rank=1, env_seed=1042 (stride=1000)
+[INFO] Logging experiment in directory: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1
+Setting seed: 1042
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 42
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02[INFO]: Base environment:
+	Environment step-size : 0.02
+
+	Environment device    : cuda:1
+	Environment seed      : 1042
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+[INFO] Generating terrains randomly took : 0.003255 seconds
+[INFO] Generating terrains randomly took : 0.003757 seconds
+[INFO]: Time taken for scene creation : 45.477759 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 50000
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for scene creation : 49.192210 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 50000
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 185.830357 seconds
+2026-06-11 10:59:51 [248,269ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 10:59:51 [248,269ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 10:59:51 [248,272ms] [Error] [gpu.foundation.plugin] DriverShaderCacheManager::init() called without a shutdown()!
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            |        |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 114152
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-11 10:59:53 [249,926ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 1
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1268.75  14.47 
+     1  17.39 1276.23 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   2.92  24.74 
+     1  25.31   3.05 
+
+   CPU     0      1 
+     0   3.23   9.88 
+     1   9.32   3.28 
+2026-06-11 10:59:53 [250,100ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 14.5 GB/s.
+2026-06-11 10:59:53 [250,106ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 25.3 us.
+2026-06-11 10:59:53 [250,106ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-11 10:59:53 [250,108ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-11 10:59:53 [250,108ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1278.12  14.53 
+     1  15.99 1290.79 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   2.08  82.95 
+     1  24.51   2.34 
+
+   CPU     0      1 
+     0   2.85  10.40 
+     1   8.54   3.04 
+2026-06-11 10:59:53 [250,255ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 14.5 GB/s.
+2026-06-11 10:59:53 [250,255ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 83.0 us.
+2026-06-11 10:59:53 [250,255ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-11 10:59:54 [250,826ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 10:59:54 [250,826ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 10:59:54 [250,849ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 10:59:54 [250,849ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 10:59:54 [250,869ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 10:59:54 [250,869ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 10:59:54 [250,883ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 10:59:54 [250,883ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 10:59:54 [250,885ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 10:59:54 [250,885ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 10:59:54 [250,886ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 10:59:54 [250,886ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 10:59:55 [251,519ms] [Warning] [omni.graph.visualization.nodes._impl.extension] No Viewport Window to add omni.graph.visualization.nodes-2.1.1 scene to
+2026-06-11 10:59:55 [251,734ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPreviewSurface.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,735ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdUVTexture.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,735ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,735ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float2.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,735ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float3.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,735ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float4.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,736ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_int.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,736ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_string.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,736ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_normal.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,736ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_point.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,736ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_vector.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,736ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_matrix.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 10:59:55 [251,737ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdTransform2d.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+[MultiMotionLoader] Motion group distribution:
+  - backhand: 5 motions
+  - forehand: 7 motions
+[MultiMotionCommand] Registered motion groups: ['backhand', 'forehand']
+[MultiMotionCommand]   - Group 'backhand': 5 motions
+[MultiMotionCommand]   - Group 'forehand': 7 motions
+[MultiMotionCommand] Assigning 50000 environments with ratios: backhand=25000/50000, forehand=25000/50000
+[INFO] Command Manager:  <CommandManager> contains 1 active terms.
++----------------------------------------+
+|          Active Command Terms          |
++-------+--------+-----------------------+
+| Index | Name   |          Type         |
++-------+--------+-----------------------+
+|   0   | motion | HitterStrikingCommand |
++-------+--------+-----------------------+
+
+[INFO] Event Manager:  <EventManager> contains 2 active terms.
++---------------------------------------+
+| Active Event Terms in Mode: 'startup' |
++---------+-----------------------------+
+|  Index  | Name                        |
++---------+-----------------------------+
+|    0    | physics_material            |
+|    1    | add_joint_default_pos       |
+|    2    | base_com                    |
++---------+-----------------------------+
++----------------------------------------------+
+|    Active Event Terms in Mode: 'interval'    |
++-------+------------+-------------------------+
+| Index | Name       | Interval time range (s) |
++-------+------------+-------------------------+
+|   0   | push_robot |        (1.0, 3.0)       |
++-------+------------+-------------------------+
+
+[INFO] Recorder Manager:  <RecorderManager> contains 0 active terms.
++---------------------+
+| Active Recorder Terms |
++-----------+---------+
+|   Index   | Name    |
++-----------+---------+
++-----------+---------+
+
+[INFO] Action Manager:  <ActionManager> contains 1 active terms.
++------------------------------------+
+|  Active Action Terms (shape: 29)   |
++--------+-------------+-------------+
+| Index  | Name        |   Dimension |
++--------+-------------+-------------+
+|   0    | joint_pos   |          29 |
++--------+-------------+-------------+
+
+[INFO] Observation Manager: <ObservationManager> contains 2 groups.
++---------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (104,)) |
++-----------+---------------------------------+-----------+
+|   Index   | Name                            |   Shape   |
++-----------+---------------------------------+-----------+
+|     0     | base_ang_vel                    |    (3,)   |
+|     1     | projected_gravity               |    (3,)   |
+|     2     | base_forward_xy                 |    (2,)   |
+|     3     | base_target_xy                  |    (2,)   |
+|     4     | racket_target_pos               |    (3,)   |
+|     5     | racket_target_vel               |    (3,)   |
+|     6     | time_to_strike                  |    (1,)   |
+|     7     | joint_pos                       |   (29,)   |
+|     8     | joint_vel                       |   (29,)   |
+|     9     | actions                         |   (29,)   |
++-----------+---------------------------------+-----------+
++------------------------------------------------------------+
+| Active Observation Terms in Group: 'critic' (shape: (301,)) |
++----------+------------------------------------+------------+
+|  Index   | Name                               |   Shape    |
++----------+------------------------------------+------------+
+|    0     | base_ang_vel                       |    (3,)    |
+|    1     | projected_gravity                  |    (3,)    |
+|    2     | base_forward_xy                    |    (2,)    |
+|    3     | motion_anchor_pos_b                |    (3,)    |
+|    4     | motion_anchor_ori_b                |    (6,)    |
+|    5     | base_target_xy                     |    (2,)    |
+|    6     | racket_target_pos                  |    (3,)    |
+|    7     | racket_target_vel                  |    (3,)    |
+|    8     | time_to_strike                     |    (1,)    |
+|    9     | joint_pos                          |   (29,)    |
+|    10    | joint_vel                          |   (29,)    |
+|    11    | actions                            |   (29,)    |
+|    12    | base_lin_vel                       |    (3,)    |
+|    13    | body_pose                          |   (126,)   |
+|    14    | time_left                          |    (1,)    |
+|    15    | reference_joint_state              |   (58,)    |
++----------+------------------------------------+------------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 3 active terms.
++-------------------------------+
+|    Active Termination Terms   |
++-------+------------+----------+
+| Index | Name       | Time Out |
++-------+------------+----------+
+|   0   | time_out   |   True   |
+|   1   | anchor_pos |  False   |
+|   2   | anchor_ori |  False   |
++-------+------------+----------+
+
+[INFO]: Time taken for simulation start : 198.179691 seconds
+2026-06-11 11:00:00 [256,926ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 11:00:00 [256,926ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 11:00:00 [256,930ms] [Error] [gpu.foundation.plugin] DriverShaderCacheManager::init() called without a shutdown()!
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            |        |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 113387
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-11 11:00:01 [258,373ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1268.55  15.53 
+     1  13.75 1276.00 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   2.76  24.82 
+     1  24.75   3.11 
+
+   CPU     0      1 
+     0   3.57  11.02 
+     1  10.95   3.57 
+2026-06-11 11:00:02 [258,541ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 13.8 GB/s.
+2026-06-11 11:00:02 [258,541ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 24.8 us.
+2026-06-11 11:00:02 [258,541ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-11 11:00:02 [258,542ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-11 11:00:02 [258,542ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1288.59  14.98 
+     1  13.63 1291.72 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   2.57  24.60 
+     1  24.60   2.42 
+
+   CPU     0      1 
+     0   3.56  11.05 
+     1  10.91   3.44 
+2026-06-11 11:00:02 [258,715ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 13.6 GB/s.
+2026-06-11 11:00:02 [258,715ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 24.6 us.
+2026-06-11 11:00:02 [258,715ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-11 11:00:02 [259,278ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 11:00:02 [259,278ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 11:00:03 [259,409ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 11:00:03 [259,409ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 11:00:03 [259,437ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 11:00:03 [259,437ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 11:00:03 [259,451ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 11:00:03 [259,451ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 11:00:03 [259,452ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 11:00:03 [259,452ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 11:00:03 [259,454ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-11 11:00:03 [259,454ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-11 11:00:03 [260,143ms] [Warning] [omni.graph.visualization.nodes._impl.extension] No Viewport Window to add omni.graph.visualization.nodes-2.1.1 scene to
+2026-06-11 11:00:03 [260,340ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPreviewSurface.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,340ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdUVTexture.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,341ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,341ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float2.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,341ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float3.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,341ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float4.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,341ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_int.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,341ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_string.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,342ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_normal.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,342ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_point.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,342ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_vector.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,342ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_matrix.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-11 11:00:03 [260,342ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdTransform2d.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+[MultiMotionLoader] Motion group distribution:
+  - backhand: 5 motions
+  - forehand: 7 motions
+[MultiMotionCommand] Registered motion groups: ['backhand', 'forehand']
+[MultiMotionCommand]   - Group 'backhand': 5 motions
+[MultiMotionCommand]   - Group 'forehand': 7 motions
+[MultiMotionCommand] Assigning 50000 environments with ratios: backhand=25000/50000, forehand=25000/50000
+[INFO] Reward Manager:  <RewardManager> contains 22 active terms.
++------------------------------------------------+
+|              Active Reward Terms               |
++-------+-----------------------------+----------+
+| Index | Name                        |   Weight |
++-------+-----------------------------+----------+
+|   0   | motion_global_anchor_pos    |      0.5 |
+|   1   | motion_global_anchor_ori    |      0.5 |
+|   2   | motion_body_pos             |      1.0 |
+|   3   | motion_body_ori             |      1.0 |
+|   4   | motion_body_lin_vel         |      1.5 |
+|   5   | motion_body_ang_vel         |      1.5 |
+|   6   | motion_anchor_lin_vel       |      1.0 |
+|   7   | base_pos                    |      5.0 |
+|   8   | racket_pos                  |     80.0 |
+|   9   | racket_vel                  |     30.0 |
+|   10  | racket_ori                  |     30.0 |
+|   11  | torso_forward_lean_l2       |     -2.0 |
+|   12  | base_ang_vel_xy_l2          |     -0.4 |
+|   13  | undesired_contacts          |    -0.05 |
+|   14  | hitter_foot_slip_l2         |     -2.0 |
+|   15  | hitter_hit_unstable_support |     -6.0 |
+|   16  | hitter_foot_edge_drag       |     -1.0 |
+|   17  | hip_yaw_default             |      2.0 |
+|   18  | action_rate_l2              |     -0.1 |
+|   19  | joint_limit                 |    -10.0 |
+|   20  | joint_acc                   | -2.5e-07 |
+|   21  | joint_torque                |   -1e-05 |
++-------+-----------------------------+----------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 0 active terms.
++----------------------+
+| Active Curriculum Terms |
++-----------+----------+
+|   Index   | Name     |
++-----------+----------+
++-----------+----------+
+
+[INFO] Command Manager:  <CommandManager> contains 1 active terms.
++----------------------------------------+
+|          Active Command Terms          |
++-------+--------+-----------------------+
+| Index | Name   |          Type         |
++-------+--------+-----------------------+
+|   0   | motion | HitterStrikingCommand |
++-------+--------+-----------------------+
+
+[INFO] Event Manager:  <EventManager> contains 2 active terms.
++---------------------------------------+
+| Active Event Terms in Mode: 'startup' |
++---------+-----------------------------+
+|  Index  | Name                        |
++---------+-----------------------------+
+|    0    | physics_material            |
+|    1    | add_joint_default_pos       |
+|    2    | base_com                    |
++---------+-----------------------------+
++----------------------------------------------+
+|    Active Event Terms in Mode: 'interval'    |
++-------+------------+-------------------------+
+| Index | Name       | Interval time range (s) |
++-------+------------+-------------------------+
+|   0   | push_robot |        (1.0, 3.0)       |
++-------+------------+-------------------------+
+
+[INFO] Recorder Manager:  <RecorderManager> contains 0 active terms.
++---------------------+
+| Active Recorder Terms |
++-----------+---------+
+|   Index   | Name    |
++-----------+---------+
++-----------+---------+
+
+[INFO] Action Manager:  <ActionManager> contains 1 active terms.
++------------------------------------+
+|  Active Action Terms (shape: 29)   |
++--------+-------------+-------------+
+| Index  | Name        |   Dimension |
++--------+-------------+-------------+
+|   0    | joint_pos   |          29 |
++--------+-------------+-------------+
+
+[INFO] Observation Manager: <ObservationManager> contains 2 groups.
++---------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (104,)) |
++-----------+---------------------------------+-----------+
+|   Index   | Name                            |   Shape   |
++-----------+---------------------------------+-----------+
+|     0     | base_ang_vel                    |    (3,)   |
+|     1     | projected_gravity               |    (3,)   |
+|     2     | base_forward_xy                 |    (2,)   |
+|     3     | base_target_xy                  |    (2,)   |
+|     4     | racket_target_pos               |    (3,)   |
+|     5     | racket_target_vel               |    (3,)   |
+|     6     | time_to_strike                  |    (1,)   |
+|     7     | joint_pos                       |   (29,)   |
+|     8     | joint_vel                       |   (29,)   |
+|     9     | actions                         |   (29,)   |
++-----------+---------------------------------+-----------+
++------------------------------------------------------------+
+| Active Observation Terms in Group: 'critic' (shape: (301,)) |
++----------+------------------------------------+------------+
+|  Index   | Name                               |   Shape    |
++----------+------------------------------------+------------+
+|    0     | base_ang_vel                       |    (3,)    |
+|    1     | projected_gravity                  |    (3,)    |
+|    2     | base_forward_xy                    |    (2,)    |
+|    3     | motion_anchor_pos_b                |    (3,)    |
+|    4     | motion_anchor_ori_b                |    (6,)    |
+|    5     | base_target_xy                     |    (2,)    |
+|    6     | racket_target_pos                  |    (3,)    |
+|    7     | racket_target_vel                  |    (3,)    |
+|    8     | time_to_strike                     |    (1,)    |
+|    9     | joint_pos                          |   (29,)    |
+|    10    | joint_vel                          |   (29,)    |
+|    11    | actions                            |   (29,)    |
+|    12    | base_lin_vel                       |    (3,)    |
+|    13    | body_pose                          |   (126,)   |
+|    14    | time_left                          |    (1,)    |
+|    15    | reference_joint_state              |   (58,)    |
++----------+------------------------------------+------------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 3 active terms.
++-------------------------------+
+|    Active Termination Terms   |
++-------+------------+----------+
+| Index | Name       | Time Out |
++-------+------------+----------+
+|   0   | time_out   |   True   |
+|   1   | anchor_pos |  False   |
+|   2   | anchor_ori |  False   |
++-------+------------+----------+
+
+[INFO]: Completed setting up the environment...
+Actor MLP: Sequential(
+  (0): Linear(in_features=104, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=29, bias=True)
+)
+Critic MLP: Sequential(
+  (0): Linear(in_features=301, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+[INFO]: Loading model checkpoint from: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-11_13-50-29_hitter_mix_aligned_backhand_strike43_m2200_to_std012_keepnoise_freezenorm_lr1e4_swanlab_2xa100_env50000_20260611_135014/model_4400.pt
+[INFO]: Optimizer load disabled; optimizer will be initialized from scratch.
+[Runner] reset_noise_std_on_resume = False
+[Runner] freeze_normalizer_on_resume = True
+[Runner] Froze obs_normalizer (count=100000000)
+[Runner] Froze privileged_obs_normalizer (count=100000000)
+Synchronizing parameters for rank 1...
+[INFO] Reward Manager:  <RewardManager> contains 22 active terms.
++------------------------------------------------+
+|              Active Reward Terms               |
++-------+-----------------------------+----------+
+| Index | Name                        |   Weight |
++-------+-----------------------------+----------+
+|   0   | motion_global_anchor_pos    |      0.5 |
+|   1   | motion_global_anchor_ori    |      0.5 |
+|   2   | motion_body_pos             |      1.0 |
+|   3   | motion_body_ori             |      1.0 |
+|   4   | motion_body_lin_vel         |      1.5 |
+|   5   | motion_body_ang_vel         |      1.5 |
+|   6   | motion_anchor_lin_vel       |      1.0 |
+|   7   | base_pos                    |      5.0 |
+|   8   | racket_pos                  |     80.0 |
+|   9   | racket_vel                  |     30.0 |
+|   10  | racket_ori                  |     30.0 |
+|   11  | torso_forward_lean_l2       |     -2.0 |
+|   12  | base_ang_vel_xy_l2          |     -0.4 |
+|   13  | undesired_contacts          |    -0.05 |
+|   14  | hitter_foot_slip_l2         |     -2.0 |
+|   15  | hitter_hit_unstable_support |     -6.0 |
+|   16  | hitter_foot_edge_drag       |     -1.0 |
+|   17  | hip_yaw_default             |      2.0 |
+|   18  | action_rate_l2              |     -0.1 |
+|   19  | joint_limit                 |    -10.0 |
+|   20  | joint_acc                   | -2.5e-07 |
+|   21  | joint_torque                |   -1e-05 |
++-------+-----------------------------+----------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 0 active terms.
++----------------------+
+| Active Curriculum Terms |
++-----------+----------+
+|   Index   | Name     |
++-----------+----------+
++-----------+----------+
+
+[INFO]: Completed setting up the environment...
+Actor MLP: Sequential(
+  (0): Linear(in_features=104, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=29, bias=True)
+)
+Critic MLP: Sequential(
+  (0): Linear(in_features=301, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+[INFO]: Loading model checkpoint from: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-11_13-50-29_hitter_mix_aligned_backhand_strike43_m2200_to_std012_keepnoise_freezenorm_lr1e4_swanlab_2xa100_env50000_20260611_135014/model_4400.pt
+[INFO]: Optimizer load disabled; optimizer will be initialized from scratch.
+[Runner] reset_noise_std_on_resume = False
+[Runner] freeze_normalizer_on_resume = True
+[Runner] Froze obs_normalizer (count=100000000)
+[Runner] Froze privileged_obs_normalizer (count=100000000)
+[2026-06-11 19:00:19,287][urllib3.connectionpool][WARNING] - Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(104, 'Connection reset by peer')': /api/login/api_key
+[2026-06-11 19:00:20,317][urllib3.connectionpool][WARNING] - Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(104, 'Connection reset by peer')': /api/login/api_key
+[2026-06-11 19:00:22,348][urllib3.connectionpool][WARNING] - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(104, 'Connection reset by peer')': /api/login/api_key
+[2026-06-11 19:00:26,380][urllib3.connectionpool][WARNING] - Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(104, 'Connection reset by peer')': /api/login/api_key
+[2026-06-11 19:00:34,418][urllib3.connectionpool][WARNING] - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(104, 'Connection reset by peer')': /api/login/api_key
+[SwanLab] init failed; continuing with local TensorBoard logs only: HTTPSConnectionPool(host='api.swanlab.cn', port=443): Max retries exceeded with url: /api/login/api_key (Caused by ProtocolError('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer')))
+Synchronizing parameters for rank 0...
+################################################################################
+                    [1m Learning iteration 4400/10000 [0m                     
+
+                       Computation: 195753 steps/s (collection: 11.061s, learning 1.199s)
+             Mean action noise std: 0.28
+          Mean value_function loss: 7.0592
+               Mean surrogate loss: 0.0152
+                 Mean entropy loss: 2.2951
+               Mean approx_kl loss: 0.0444
+           Mean clip_fraction loss: 0.3516
+              Mean ratio_mean loss: 0.9997
+          Mean advantage_mean loss: 0.0000
+           Mean advantage_std loss: 1.0000
+      Mean explained_variance loss: 0.7159
+                       Mean reward: 3.53
+               Mean episode length: 24.00
+Episode_Reward/motion_global_anchor_pos: 0.0113
+Episode_Reward/motion_global_anchor_ori: 0.0118
+    Episode_Reward/motion_body_pos: 0.0213
+    Episode_Reward/motion_body_ori: 0.0202
+Episode_Reward/motion_body_lin_vel: 0.0270
+Episode_Reward/motion_body_ang_vel: 0.0274
+Episode_Reward/motion_anchor_lin_vel: 0.0188
+           Episode_Reward/base_pos: 0.0814
+         Episode_Reward/racket_pos: 0.0000
+         Episode_Reward/racket_vel: 0.0000
+         Episode_Reward/racket_ori: 0.0000
+Episode_Reward/torso_forward_lean_l2: -0.0010
+ Episode_Reward/base_ang_vel_xy_l2: -0.0074
+ Episode_Reward/undesired_contacts: -0.0013
+Episode_Reward/hitter_foot_slip_l2: -0.0073
+Episode_Reward/hitter_hit_unstable_support: 0.0000
+Episode_Reward/hitter_foot_edge_drag: -0.0023
+    Episode_Reward/hip_yaw_default: 0.0478
+     Episode_Reward/action_rate_l2: -0.0243
+        Episode_Reward/joint_limit: -0.0019
+          Episode_Reward/joint_acc: -0.0027
+       Episode_Reward/joint_torque: -0.0009
+   Metrics/motion/error_anchor_pos: 0.1001
+   Metrics/motion/error_anchor_rot: 0.0863
+Metrics/motion/error_anchor_lin_vel: 0.4864
+Metrics/motion/error_anchor_ang_vel: 0.9942
+     Metrics/motion/error_body_pos: 0.1147
+     Metrics/motion/error_body_rot: 0.1595
+ Metrics/motion/error_body_lin_vel: 0.5306
+ Metrics/motion/error_body_ang_vel: 1.5000
+    Metrics/motion/error_joint_pos: 0.7525
+    Metrics/motion/error_joint_vel: 8.4882
+   Metrics/motion/sampling_entropy: 0.0000
+ Metrics/motion/sampling_top1_prob: 0.0000
+  Metrics/motion/sampling_top1_bin: 0.0000
+Metrics/motion/motion_sampling_prob_mean: 0.0799
+Metrics/motion/motion_sampling_prob_std: 0.0000
+Metrics/motion/motion_sampling_prob_min: 0.0799
+Metrics/motion/motion_sampling_prob_max: 0.0799
+Metrics/motion/motion_sampling_prob_entropy: 0.9583
+Metrics/motion/hitter_strike_racket_pos_error: 0.0000
+Metrics/motion/hitter_strike_racket_vel_error: 0.0000
+Metrics/motion/hitter_strike_racket_ori_error: 0.0000
+      Episode_Termination/time_out: 99.5000
+    Episode_Termination/anchor_pos: 0.7500
+    Episode_Termination/anchor_ori: 0.0000
+--------------------------------------------------------------------------------
+                   Total timesteps: 2400000
+                    Iteration time: 12.26s
+                      Time elapsed: 00:00:12
+                               ETA: 19:04:17
+
+Could not find git repository in /root/Hitter/MOSAIC-main/source/rsl_rl/rsl_rl/__init__.py. Skipping.
+Could not find git repository in /root/Hitter/MOSAIC-main/scripts/rsl_rl/train.py. Skipping.
+################################################################################
+                    [1m Learning iteration 4401/10000 [0m                     
+
+                       Computation: 268206 steps/s (collection: 8.356s, learning 0.592s)
+             Mean action noise std: 0.28
+          Mean value_function loss: 6.5514
+               Mean surrogate loss: 0.0015
+                 Mean entropy loss: 2.4336
+               Mean approx_kl loss: 0.0092
+           Mean clip_fraction loss: 0.1009
+              Mean ratio_mean loss: 0.9998
+          Mean advantage_mean loss: -0.0000
+           Mean advantage_std loss: 1.0000
+      Mean explained_variance loss: 0.8904
+                       Mean reward: 2.44
+               Mean episode length: 47.64
+Episode_Reward/motion_global_anchor_pos: 0.0237
+Episode_Reward/motion_global_anchor_ori: 0.0274
+    Episode_Reward/motion_body_pos: 0.0534
+    Episode_Reward/motion_body_ori: 0.0448
+Episode_Reward/motion_body_lin_vel: 0.0564
+Episode_Reward/motion_body_ang_vel: 0.0583
+Episode_Reward/motion_anchor_lin_vel: 0.0449
+           Episode_Reward/base_pos: 0.2051
+         Episode_Reward/racket_pos: 0.0110
+         Episode_Reward/racket_vel: 0.0137
+         Episode_Reward/racket_ori: 0.0237
+Episode_Reward/torso_forward_lean_l2: -0.0225
+ Episode_Reward/base_ang_vel_xy_l2: -0.1906
+ Episode_Reward/undesired_contacts: -0.0039
+Episode_Reward/hitter_foot_slip_l2: -0.0357
+Episode_Reward/hitter_hit_unstable_support: -0.0245
+Episode_Reward/hitter_foot_edge_drag: -0.0159
+    Episode_Reward/hip_yaw_default: 0.1226
+     Episode_Reward/action_rate_l2: -0.2756
+        Episode_Reward/joint_limit: -0.0305
+          Episode_Reward/joint_acc: -0.0209
+       Episode_Reward/joint_torque: -0.0082
+   Metrics/motion/error_anchor_pos: 0.4230
+   Metrics/motion/error_anchor_rot: 0.5135
+Metrics/motion/error_anchor_lin_vel: 1.1169
+Metrics/motion/error_anchor_ang_vel: 4.4768
+     Metrics/motion/error_body_pos: 0.2975
+     Metrics/motion/error_body_rot: 0.5796
+ Metrics/motion/error_body_lin_vel: 1.4606
+ Metrics/motion/error_body_ang_vel: 5.3221
+    Metrics/motion/error_joint_pos: 1.9070
+    Metrics/motion/error_joint_vel: 21.4439
+   Metrics/motion/sampling_entropy: 0.0000
+ Metrics/motion/sampling_top1_prob: 0.0000
+  Metrics/motion/sampling_top1_bin: 0.0000
+Metrics/motion/motion_sampling_prob_mean: 0.0833
+Metrics/motion/motion_sampling_prob_std: 0.0000
+Metrics/motion/motion_sampling_prob_min: 0.0833
+Metrics/motion/motion_sampling_prob_max: 0.0833
+Metrics/motion/motion_sampling_prob_entropy: 1.0000
+Metrics/motion/hitter_strike_racket_pos_error: 0.1201
+Metrics/motion/hitter_strike_racket_vel_error: 0.7214
+Metrics/motion/hitter_strike_racket_ori_error: 0.0773
+      Episode_Termination/time_out: 97.9167
+    Episode_Termination/anchor_pos: 96.7917
+    Episode_Termination/anchor_ori: 1.4167
+--------------------------------------------------------------------------------
+                   Total timesteps: 4800000
+                    Iteration time: 8.95s
+                      Time elapsed: 00:00:21
+                               ETA: 16:29:33
+
+################################################################################
+                    [1m Learning iteration 4402/10000 [0m                     
+
+                       Computation: 277553 steps/s (collection: 8.050s, learning 0.597s)
+             Mean action noise std: 0.29
+          Mean value_function loss: 2.0640
+               Mean surrogate loss: -0.0002
+                 Mean entropy loss: 2.6409
+               Mean approx_kl loss: 0.0059
+           Mean clip_fraction loss: 0.0545
+              Mean ratio_mean loss: 0.9998
+          Mean advantage_mean loss: -0.0000
+           Mean advantage_std loss: 1.0000
+      Mean explained_variance loss: 0.9204
+                       Mean reward: 9.43
+               Mean episode length: 69.53
+Episode_Reward/motion_global_anchor_pos: 0.0365
+Episode_Reward/motion_global_anchor_ori: 0.0454
+    Episode_Reward/motion_body_pos: 0.0920
+    Episode_Reward/motion_body_ori: 0.0698
+Episode_Reward/motion_body_lin_vel: 0.1026
+Episode_Reward/motion_body_ang_vel: 0.0963
+Episode_Reward/motion_anchor_lin_vel: 0.0840
+           Episode_Reward/base_pos: 0.2941
+         Episode_Reward/racket_pos: 0.0699
+         Episode_Reward/racket_vel: 0.0979
+         Episode_Reward/racket_ori: 0.1512
+Episode_Reward/torso_forward_lean_l2: -0.0295
+ Episode_Reward/base_ang_vel_xy_l2: -0.2312
+ Episode_Reward/undesired_contacts: -0.0064
+Episode_Reward/hitter_foot_slip_l2: -0.0499
+Episode_Reward/hitter_hit_unstable_support: -0.0656
+Episode_Reward/hitter_foot_edge_drag: -0.0194
+    Episode_Reward/hip_yaw_default: 0.2109
+     Episode_Reward/action_rate_l2: -0.2961
+        Episode_Reward/joint_limit: -0.0340
+          Episode_Reward/joint_acc: -0.0207
+       Episode_Reward/joint_torque: -0.0092
+   Metrics/motion/error_anchor_pos: 0.4700
+   Metrics/motion/error_anchor_rot: 0.6258
+Metrics/motion/error_anchor_lin_vel: 1.0393
+Metrics/motion/error_anchor_ang_vel: 4.1915
+     Metrics/motion/error_body_pos: 0.2845
+     Metrics/motion/error_body_rot: 0.5546
+ Metrics/motion/error_body_lin_vel: 1.3782
+ Metrics/motion/error_body_ang_vel: 4.9046
+    Metrics/motion/error_joint_pos: 1.8693
+    Metrics/motion/error_joint_vel: 19.4635
+   Metrics/motion/sampling_entropy: 0.0000
+ Metrics/motion/sampling_top1_prob: 0.0000
+  Metrics/motion/sampling_top1_bin: 0.0000
+Metrics/motion/motion_sampling_prob_mean: 0.0833
+Metrics/motion/motion_sampling_prob_std: 0.0000
+Metrics/motion/motion_sampling_prob_min: 0.0833
+Metrics/motion/motion_sampling_prob_max: 0.0833
+Metrics/motion/motion_sampling_prob_entropy: 1.0000
+Metrics/motion/hitter_strike_racket_pos_error: 0.2517
+Metrics/motion/hitter_strike_racket_vel_error: 1.8968
+Metrics/motion/hitter_strike_racket_ori_error: 0.1410
+      Episode_Termination/time_out: 96.2917
+    Episode_Termination/anchor_pos: 86.0000
+    Episode_Termination/anchor_ori: 3.5417
+--------------------------------------------------------------------------------
+                   Total timesteps: 7200000
+                    Iteration time: 8.65s
+                      Time elapsed: 00:00:29
+                               ETA: 15:28:30
+
+################################################################################
+                    [1m Learning iteration 4403/10000 [0m                     
+
+                       Computation: 273648 steps/s (collection: 8.178s, learning 0.593s)
+             Mean action noise std: 0.29
+          Mean value_function loss: 1.9610
+               Mean surrogate loss: 0.0005
+                 Mean entropy loss: 2.8309
+               Mean approx_kl loss: 0.0059
+           Mean clip_fraction loss: 0.0572
+              Mean ratio_mean loss: 0.9999
+          Mean advantage_mean loss: 0.0000
+           Mean advantage_std loss: 1.0000
+      Mean explained_variance loss: 0.8835
+                       Mean reward: 15.49
+               Mean episode length: 89.70
+Episode_Reward/motion_global_anchor_pos: 0.0540
+Episode_Reward/motion_global_anchor_ori: 0.0653
+    Episode_Reward/motion_body_pos: 0.1341
+    Episode_Reward/motion_body_ori: 0.1026
+Episode_Reward/motion_body_lin_vel: 0.1661
+Episode_Reward/motion_body_ang_vel: 0.1464
+Episode_Reward/motion_anchor_lin_vel: 0.1296
+           Episode_Reward/base_pos: 0.3185
+         Episode_Reward/racket_pos: 0.0976
+         Episode_Reward/racket_vel: 0.1275
+         Episode_Reward/racket_ori: 0.1616
+Episode_Reward/torso_forward_lean_l2: -0.0175
+ Episode_Reward/base_ang_vel_xy_l2: -0.1227
+ Episode_Reward/undesired_contacts: -0.0082
+Episode_Reward/hitter_foot_slip_l2: -0.0466
+Episode_Reward/hitter_hit_unstable_support: -0.0250
+Episode_Reward/hitter_foot_edge_drag: -0.0153
+    Episode_Reward/hip_yaw_default: 0.2962
+     Episode_Reward/action_rate_l2: -0.2194
+        Episode_Reward/joint_limit: -0.0241
+          Episode_Reward/joint_acc: -0.0146
+       Episode_Reward/joint_torque: -0.0070
+   Metrics/motion/error_anchor_pos: 0.3274
+   Metrics/motion/error_anchor_rot: 0.3533
+Metrics/motion/error_anchor_lin_vel: 0.6855
+Metrics/motion/error_anchor_ang_vel: 2.6558
+     Metrics/motion/error_body_pos: 0.1945
+     Metrics/motion/error_body_rot: 0.4184
+ Metrics/motion/error_body_lin_vel: 0.8741
+ Metrics/motion/error_body_ang_vel: 3.2717
+    Metrics/motion/error_joint_pos: 1.4425
+    Metrics/motion/error_joint_vel: 12.8128
+   Metrics/motion/sampling_entropy: 0.0000
+ Metrics/motion/sampling_top1_prob: 0.0000
+  Metrics/motion/sampling_top1_bin: 0.0000
+Metrics/motion/motion_sampling_prob_mean: 0.0833
+Metrics/motion/motion_sampling_prob_std: 0.0000
+Metrics/motion/motion_sampling_prob_min: 0.0833
+Metrics/motion/motion_sampling_prob_max: 0.0833
+Metrics/motion/motion_sampling_prob_entropy: 1.0000
+Metrics/motion/hitter_strike_racket_pos_error: 0.1383
+Metrics/motion/hitter_strike_racket_vel_error: 1.1013
+Metrics/motion/hitter_strike_racket_ori_error: 0.0669
+      Episode_Termination/time_out: 90.1250
+    Episode_Termination/anchor_pos: 32.9167
+    Episode_Termination/anchor_ori: 1.0417
+--------------------------------------------------------------------------------
+                   Total timesteps: 9600000
+                    Iteration time: 8.77s
+                      Time elapsed: 00:00:38
+                               ETA: 15:00:47
+
+################################################################################
+                    [1m Learning iteration 4404/10000 [0m                     
+
+                       Computation: 271611 steps/s (collection: 8.242s, learning 0.594s)
+             Mean action noise std: 0.29
+          Mean value_function loss: 1.9213
+               Mean surrogate loss: 0.0011
+                 Mean entropy loss: 3.0012
+               Mean approx_kl loss: 0.0093
+           Mean clip_fraction loss: 0.1172
+              Mean ratio_mean loss: 0.9999
+          Mean advantage_mean loss: 0.0000
+           Mean advantage_std loss: 1.0000
+      Mean explained_variance loss: 0.8937
+                       Mean reward: 18.82
+               Mean episode length: 108.89
+Episode_Reward/motion_global_anchor_pos: 0.0704
+Episode_Reward/motion_global_anchor_ori: 0.0849
+    Episode_Reward/motion_body_pos: 0.1722
+    Episode_Reward/motion_body_ori: 0.1298
+Episode_Reward/motion_body_lin_vel: 0.2167
+Episode_Reward/motion_body_ang_vel: 0.1894
+Episode_Reward/motion_anchor_lin_vel: 0.1662
+           Episode_Reward/base_pos: 0.4105
+         Episode_Reward/racket_pos: 0.1046
+         Episode_Reward/racket_vel: 0.1322
+         Episode_Reward/racket_ori: 0.1644
+Episode_Reward/torso_forward_lean_l2: -0.0175
+ Episode_Reward/base_ang_vel_xy_l2: -0.1281
+ Episode_Reward/undesired_contacts: -0.0102
+Episode_Reward/hitter_foot_slip_l2: -0.0524
+Episode_Reward/hitter_hit_unstable_support: -0.0213
+Episode_Reward/hitter_foot_edge_drag: -0.0159
+    Episode_Reward/hip_yaw_default: 0.3777
+     Episode_Reward/action_rate_l2: -0.2360
+        Episode_Reward/joint_limit: -0.0244
+          Episode_Reward/joint_acc: -0.0152
+       Episode_Reward/joint_torque: -0.0076
+   Metrics/motion/error_anchor_pos: 0.3325
+   Metrics/motion/error_anchor_rot: 0.3401
+Metrics/motion/error_anchor_lin_vel: 0.8355
+Metrics/motion/error_anchor_ang_vel: 2.6260
+     Metrics/motion/error_body_pos: 0.1963
+     Metrics/motion/error_body_rot: 0.4072
+ Metrics/motion/error_body_lin_vel: 1.0214
+ Metrics/motion/error_body_ang_vel: 3.3360
+    Metrics/motion/error_joint_pos: 1.4655
+    Metrics/motion/error_joint_vel: 14.1226
+   Metrics/motion/sampling_entropy: 0.0000
+ Metrics/motion/sampling_top1_prob: 0.0000
+  Metrics/motion/sampling_top1_bin: 0.0000
+Metrics/motion/motion_sampling_prob_mean: 0.0833
+Metrics/motion/motion_sampling_prob_std: 0.0000
+Metrics/motion/motion_sampling_prob_min: 0.0833
+Metrics/motion/motion_sampling_prob_max: 0.0833
+Metrics/motion/motion_sampling_prob_entropy: 1.0000
+Metrics/motion/hitter_strike_racket_pos_error: 0.1285
+Metrics/motion/hitter_strike_racket_vel_error: 1.0574
+Metrics/motion/hitter_strike_racket_ori_error: 0.0626
+      Episode_Termination/time_out: 86.6250
+    Episode_Termination/anchor_pos: 29.2500
+    Episode_Termination/anchor_ori: 1.0833
+--------------------------------------------------------------------------------
+                   Total timesteps: 12000000
+                    Iteration time: 8.84s
+                      Time elapsed: 00:00:47
+                               ETA: 14:45:19
+
+################################################################################
+                    [1m Learning iteration 4405/10000 [0m                     
+
+                       Computation: 257611 steps/s (collection: 8.724s, learning 0.593s)
+             Mean action noise std: 0.29
+          Mean value_function loss: 2.5990
+               Mean surrogate loss: 0.0004
+                 Mean entropy loss: 3.1656
+               Mean approx_kl loss: 0.0093
+           Mean clip_fraction loss: 0.1184
+              Mean ratio_mean loss: 0.9999
+          Mean advantage_mean loss: 0.0000
+           Mean advantage_std loss: 1.0000
+      Mean explained_variance loss: 0.8896
+                       Mean reward: 23.96
+               Mean episode length: 132.54
+Episode_Reward/motion_global_anchor_pos: 0.0852
+Episode_Reward/motion_global_anchor_ori: 0.1055
+    Episode_Reward/motion_body_pos: 0.2125
+    Episode_Reward/motion_body_ori: 0.1602
+Episode_Reward/motion_body_lin_vel: 0.2681
+Episode_Reward/motion_body_ang_vel: 0.2329
+Episode_Reward/motion_anchor_lin_vel: 0.2057
+           Episode_Reward/base_pos: 0.5822
+         Episode_Reward/racket_pos: 0.1396
+         Episode_Reward/racket_vel: 0.1726
+         Episode_Reward/racket_ori: 0.2133
+Episode_Reward/torso_forward_lean_l2: -0.0201
+ Episode_Reward/base_ang_vel_xy_l2: -0.1466
+ Episode_Reward/undesired_contacts: -0.0124
+Episode_Reward/hitter_foot_slip_l2: -0.0603
+Episode_Reward/hitter_hit_unstable_support: -0.0285
+Episode_Reward/hitter_foot_edge_drag: -0.0176
+    Episode_Reward/hip_yaw_default: 0.4645
+     Episode_Reward/action_rate_l2: -0.2602
+        Episode_Reward/joint_limit: -0.0248
+          Episode_Reward/joint_acc: -0.0162
+       Episode_Reward/joint_torque: -0.0083
+   Metrics/motion/error_anchor_pos: 0.3573
+   Metrics/motion/error_anchor_rot: 0.3612
+Metrics/motion/error_anchor_lin_vel: 0.6943
+Metrics/motion/error_anchor_ang_vel: 2.8067
+     Metrics/motion/error_body_pos: 0.2049
+     Metrics/motion/error_body_rot: 0.4599
+ Metrics/motion/error_body_lin_vel: 1.0291
+ Metrics/motion/error_body_ang_vel: 4.0466
+    Metrics/motion/error_joint_pos: 1.5729
+    Metrics/motion/error_joint_vel: 15.2353
+   Metrics/motion/sampling_entropy: 0.0000
+ Metrics/motion/sampling_top1_prob: 0.0000
+  Metrics/motion/sampling_top1_bin: 0.0000
+Metrics/motion/motion_sampling_prob_mean: 0.0833
+Metrics/motion/motion_sampling_prob_std: 0.0000
+Metrics/motion/motion_sampling_prob_min: 0.0833
+Metrics/motion/motion_sampling_prob_max: 0.0833
+Metrics/motion/motion_sampling_prob_entropy: 1.0000
+Metrics/motion/hitter_strike_racket_pos_error: 0.1362
+Metrics/motion/hitter_strike_racket_vel_error: 1.1064
+Metrics/motion/hitter_strike_racket_ori_error: 0.0710
+      Episode_Termination/time_out: 88.4583
+    Episode_Termination/anchor_pos: 30.9167
+    Episode_Termination/anchor_ori: 1.1667
+--------------------------------------------------------------------------------
+                   Total timesteps: 14400000
+                    Iteration time: 9.32s
+                      Time elapsed: 00:00:56
+                               ETA: 14:42:25
+
+W0611 19:01:33.241000 1500566 torch/distributed/elastic/agent/server/api.py:704] Received Signals.SIGINT death signal, shutting down workers
+W0611 19:01:33.242000 1500566 torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1500632 closing signal SIGINT
+W0611 19:01:33.243000 1500566 torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1500633 closing signal SIGINT
+W0611 19:01:38.250000 1500566 torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1500632 closing signal SIGTERM
+W0611 19:01:38.251000 1500566 torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1500633 closing signal SIGTERM
+Traceback (most recent call last):
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/agent/server/api.py", line 696, in run
+    result = self._invoke_run(role)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/agent/server/api.py", line 855, in _invoke_run
+    time.sleep(monitor_interval)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 84, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 1500566 got signal: 2
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/.venvs/isaaclab-mosaic/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/run.py", line 919, in main
+    run(args)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/run.py", line 910, in run
+    elastic_launch(
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 260, in launch_agent
+    result = agent.run()
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/metrics/api.py", line 137, in wrapper
+    result = f(*args, **kwargs)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/agent/server/api.py", line 705, in run
+    self._shutdown(e.sigval)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/agent/server/local_elastic_agent.py", line 365, in _shutdown
+    self._pcontext.close(death_sig)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 572, in close
+    self._close(death_sig=death_sig, timeout=timeout)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 909, in _close
+    handler.proc.wait(time_to_wait)
+  File "/usr/lib/python3.10/subprocess.py", line 1209, in wait
+    return self._wait(timeout=timeout)
+  File "/usr/lib/python3.10/subprocess.py", line 1953, in _wait
+    time.sleep(delay)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 84, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 1500566 got signal: 2

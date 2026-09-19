@@ -1,0 +1,1616 @@
+# Review package: 812b09d00a13c680a916f47fce6b8d73d381cbcd..3d8014b70aa1c94b6f0ba59d583ec598d526fe2a
+
+## Commits
+3d8014b feat: align ChingMu v2 ball identity semantics
+
+## Files changed
+ deploy/mocap_bridge/chingmu_table_lcm_bridge.py    | 253 ++++++++++--
+ deploy/mocap_bridge/monitor_vicon_lcm.py           | 230 ++++++-----
+ .../tests/test_chingmu_ball_track_v2.py            | 427 +++++++++++++++++++++
+ .../tests/test_chingmu_ball_tracker_roi.py         |  83 ++--
+ deploy/mocap_bridge/tests/test_mocap_v2_monitor.py |  80 ++++
+ 5 files changed, 900 insertions(+), 173 deletions(-)
+
+## Diff
+diff --git a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+index 676a98b..ce28f32 100644
+--- a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
++++ b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+@@ -2,45 +2,48 @@
+ from __future__ import annotations
+ 
+ import argparse
+ import itertools
+ import json
+ import os
+ import sys
+ import tempfile
+ import time
+ from dataclasses import dataclass
++from enum import Enum
+ from pathlib import Path
+ from typing import Iterable, Optional, Sequence
+ 
+ import numpy as np
+ from scipy.spatial.transform import Rotation
+ 
+ 
+ ROOT = Path(__file__).resolve().parents[2]
+ for import_path in (ROOT, ROOT / "deploy"):
+     if str(import_path) not in sys.path:
+         sys.path.insert(0, str(import_path))
+ 
+ from unitree_sdk2.lcm_types.transformation_t import transformation_t
+ 
+ 
+ @dataclass(frozen=True)
+ class BridgeConfig:
+     base_subject: str = "G1Pelvis"
+-    channel: str = "vicon_state_data"
++    channel: str = "vicon_state_data_v2"
+     lcm_url: str = "udpm://239.255.76.67:7667?ttl=255"
+     table_length_m: float = 2.730738
+     table_width_m: float = 1.512451
+     table_height_m: float = 0.760000
+-    source_rate_hz: float = 360.0
++    source_rate_hz: float = 300.0
+     corner_exclusion_radius_mm: float = 50.0
++    ball_track_association_radius_m: float = 0.35
++    ball_track_end_timeout_s: float = 0.25
+ 
+ 
+ @dataclass(frozen=True)
+ class TableFrame:
+     center_raw_mm: np.ndarray
+     x_axis_raw: np.ndarray
+     y_axis_raw: np.ndarray
+     z_axis_raw: np.ndarray
+     corners_raw_mm: np.ndarray
+     rectangle_score: float
+@@ -191,22 +194,22 @@ def load_table_frame(path, config: BridgeConfig) -> TableFrame:
+         y_axis_raw=np.asarray(payload["y_axis_raw"], dtype=np.float64),
+         z_axis_raw=np.asarray(payload["z_axis_raw"], dtype=np.float64),
+         corners_raw_mm=np.asarray(payload["corners_raw_m"], dtype=np.float64) * 1000.0,
+         rectangle_score=float(payload["rectangle_score"]),
+     )
+ 
+ 
+ def build_arg_parser() -> argparse.ArgumentParser:
+     parser = argparse.ArgumentParser(
+         description=(
+-            "Adapt one ChingMu MCAvatar stream to RobotBridge2's existing "
+-            "vicon_state_data contract"
++            "Adapt one ChingMu MCAvatar stream to RobotBridge's strict "
++            "vicon_state_data_v2 contract"
+         )
+     )
+     parser.add_argument(
+         "--sdk-library",
+         type=Path,
+         default=ROOT / "chingmu_sdk" / "ChingmuDLL" / "libCMVrpn.so",
+     )
+     parser.add_argument("--host", default="192.168.2.100")
+     parser.add_argument("--base-subject", default="G1Pelvis")
+     parser.add_argument(
+@@ -255,30 +258,40 @@ def build_arg_parser() -> argparse.ArgumentParser:
+     )
+     parser.add_argument("--save-table-calib", type=Path)
+     parser.add_argument("--calib-sec", type=float, default=2.0)
+     parser.add_argument(
+         "--pelvis-calib-sec",
+         type=float,
+         default=2.0,
+         help="Pelvis orientation aligned-pose collection duration.",
+     )
+     parser.add_argument("--duration", type=float, default=0.0)
+-    parser.add_argument("--print-hz", type=float, default=10.0)
++    parser.add_argument("--print-hz", type=float, default=1.0)
+     parser.add_argument("--table-length", type=float, default=2.730738)
+     parser.add_argument("--table-width", type=float, default=1.512451)
+     parser.add_argument("--table-height", type=float, default=0.760000)
+-    parser.add_argument("--source-rate-hz", type=float, default=360.0)
++    parser.add_argument("--source-rate-hz", type=float, default=300.0)
+     parser.add_argument("--corner-exclusion-radius-mm", type=float, default=50.0)
+     parser.add_argument(
+         "--lcm-url", default="udpm://239.255.76.67:7667?ttl=255"
+     )
+-    parser.add_argument("--channel", default="vicon_state_data")
++    parser.add_argument("--channel", default="vicon_state_data_v2")
++    parser.add_argument(
++        "--ball-track-association-radius-m",
++        type=float,
++        default=0.35,
++    )
++    parser.add_argument(
++        "--ball-track-end-timeout-s",
++        type=float,
++        default=0.25,
++    )
+     parser.set_defaults(publish=False)
+     parser.add_argument("--publish", dest="publish", action="store_true")
+     parser.add_argument("--no-publish", dest="publish", action="store_false")
+     return parser
+ 
+ 
+ def _validate_calibration_path_roles(args) -> None:
+     calibration_roles = (
+         ("--table-calib", args.table_calib),
+         ("--save-table-calib", args.save_table_calib),
+@@ -342,20 +355,32 @@ def _operation_mode(args) -> str:
+ 
+ 
+ def _validate_numeric_arguments(args, operation_mode: str) -> None:
+     for argument_name, value in (
+         ("--source-rate-hz", args.source_rate_hz),
+         ("--body-pose-poll-hz", args.body_pose_poll_hz),
+     ):
+         if not np.isfinite(value) or value <= 0.0:
+             raise ValueError(f"{argument_name} must be finite and positive")
+ 
++    if args.channel != "vicon_state_data_v2":
++        raise ValueError("--channel must be exactly vicon_state_data_v2")
++    for argument_name, value in (
++        (
++            "--ball-track-association-radius-m",
++            args.ball_track_association_radius_m,
++        ),
++        ("--ball-track-end-timeout-s", args.ball_track_end_timeout_s),
++    ):
++        if not np.isfinite(value) or value <= 0.0:
++            raise ValueError(f"{argument_name} must be finite and positive")
++
+     if args.table_calib is None:
+         if not np.isfinite(args.calib_sec) or args.calib_sec <= 0.0:
+             raise ValueError("--calib-sec must be finite and positive")
+ 
+     if operation_mode == "pelvis_calibration":
+         if (
+             not np.isfinite(args.pelvis_calib_sec)
+             or args.pelvis_calib_sec <= 0.0
+         ):
+             raise ValueError(
+@@ -827,115 +852,247 @@ def calibrate_pelvis_orientation_from_frames(
+         ),
+         sample_count=sample_count,
+         source_duration_s=source_duration_s,
+         position_rms_m=position_rms_m,
+         angular_rms_deg=angular_rms_deg,
+     )
+     _validate_pelvis_orientation_calibration(calibration)
+     return calibration
+ 
+ 
++class BallTrackPhase(str, Enum):
++    INACTIVE = "inactive"
++    ACTIVE = "active"
++    MISSING_GRACE = "missing_grace"
++
++
+ @dataclass(frozen=True)
+ class BallTrackUpdate:
++    phase: BallTrackPhase
++    track_id: int
+     position_world: Optional[np.ndarray]
+-    ended: bool
++    publish_valid: bool
++    publish_end: bool
+ 
+ 
+ class BallTracker:
+     def __init__(self):
++        self.last_allocated_track_id = 0
+         self.reset()
+ 
+     def reset(self) -> None:
++        self.phase = BallTrackPhase.INACTIVE
++        self.track_id = 0
+         self.position_world = None
+         self.velocity_world = None
+         self.frame_number = None
++        self.source_time_s = None
++
++    def _current_update(self) -> BallTrackUpdate:
++        position = (
++            None
++            if self.position_world is None
++            else self.position_world.copy()
++        )
++        return BallTrackUpdate(
++            phase=self.phase,
++            track_id=self.track_id,
++            position_world=position,
++            publish_valid=False,
++            publish_end=False,
++        )
++
++    def _source_delta_seconds(
++        self,
++        frame_number: int,
++        source_time_s: float,
++        source_rate_hz: float,
++    ) -> float:
++        if (
++            np.isfinite(source_time_s)
++            and self.source_time_s is not None
++            and source_time_s > self.source_time_s
++        ):
++            return float(source_time_s - self.source_time_s)
++        if self.frame_number is None:
++            return 0.0
++        frame_delta = int(frame_number) - int(self.frame_number)
++        return (
++            float(frame_delta) / float(source_rate_hz)
++            if frame_delta > 0
++            else 0.0
++        )
++
++    def _normalized_source_time(
++        self,
++        frame_number: int,
++        source_time_s: float,
++        source_rate_hz: float,
++        delta_time_s: float,
++    ) -> float:
++        if self.phase is BallTrackPhase.INACTIVE:
++            if np.isfinite(source_time_s):
++                return float(source_time_s)
++            return float(frame_number) / float(source_rate_hz)
++        return float(self.source_time_s) + delta_time_s
+ 
+     def update(
+         self,
+         unlabeled_markers_mm,
+         *,
+         frame_number: int,
++        source_time_s: float,
+         table: TableFrame,
+         config: BridgeConfig,
++        allocation_time_us: Optional[int] = None,
+     ) -> BallTrackUpdate:
+         candidates = []
+         maximum_ball_x_m = (
+             config.table_length_m - BALL_TRACKING_FAR_EDGE_MARGIN_M
+         )
+         for raw_marker in np.asarray(unlabeled_markers_mm, dtype=np.float64).reshape(-1, 3):
+             corner_distance = float(
+                 np.min(np.linalg.norm(table.corners_raw_mm - raw_marker, axis=1))
+             )
+             if corner_distance <= config.corner_exclusion_radius_mm:
+                 continue
+             world = raw_to_table_world(raw_marker, table, config)
+             if not np.isfinite(world).all():
+                 continue
+             if world[0] > maximum_ball_x_m:
+                 continue
+             if abs(float(world[1])) > 0.5 * config.table_width_m:
+                 continue
+             if world[2] <= config.table_height_m:
+                 continue
+-            candidates.append(world)
+-
+-        active = self.position_world is not None and self.frame_number is not None
+-        if not candidates:
+-            if active:
+-                self.reset()
+-                return BallTrackUpdate(position_world=None, ended=True)
+-            return BallTrackUpdate(position_world=None, ended=False)
+-
+-        candidates_array = np.asarray(candidates, dtype=np.float64)
+-        if not active:
+-            admitted = candidates_array[candidates_array[:, 0] > 0.0]
+-            if len(admitted) == 0:
+-                return BallTrackUpdate(position_world=None, ended=False)
+-            selected = admitted[0]
++            candidates.append((world.copy(), raw_marker.copy()))
++
++        selected = None
++        if self.phase is BallTrackPhase.INACTIVE:
++            admitted = [
++                candidate
++                for candidate in candidates
++                if candidate[0][0] > 0.0
++            ]
++            if not admitted:
++                return self._current_update()
++            selected = min(
++                admitted,
++                key=lambda candidate: tuple(candidate[0]) + tuple(candidate[1]),
++            )
++            if self.last_allocated_track_id >= 2**63 - 1:
++                return self._current_update()
++            if allocation_time_us is None:
++                allocation_time_us = int(time.time() * 1.0e6)
++            allocation_time_us = int(allocation_time_us)
++            if allocation_time_us > 2**63 - 1:
++                return self._current_update()
++            next_id = max(1, self.last_allocated_track_id + 1)
++            self.track_id = max(next_id, allocation_time_us)
++            self.last_allocated_track_id = self.track_id
+         else:
+-            frame_delta = max(int(frame_number) - int(self.frame_number), 1)
+-            delta_time = frame_delta / config.source_rate_hz
++            delta_time = self._source_delta_seconds(
++                frame_number,
++                source_time_s,
++                config.source_rate_hz,
++            )
+             predicted = self.position_world
+             if self.velocity_world is not None:
+                 predicted = predicted + delta_time * self.velocity_world
+-            selected = candidates_array[
+-                int(np.argmin(np.linalg.norm(candidates_array - predicted, axis=1)))
+-            ]
+-            if selected[0] <= 0.0:
+-                self.reset()
+-                return BallTrackUpdate(position_world=None, ended=True)
+-            self.velocity_world = (selected - self.position_world) / delta_time
+-        self.position_world = selected.copy()
+-        self.frame_number = int(frame_number)
+-        return BallTrackUpdate(
+-            position_world=selected.copy(),
+-            ended=False,
++            if candidates:
++                selected = min(
++                    candidates,
++                    key=lambda candidate: (
++                        float(np.linalg.norm(candidate[0] - predicted)),
++                        *tuple(candidate[0]),
++                        *tuple(candidate[1]),
++                    ),
++                )
++                if (
++                    float(np.linalg.norm(selected[0] - predicted))
++                    > config.ball_track_association_radius_m
++                ):
++                    selected = None
++
++        if selected is not None:
++            selected_world = selected[0]
++            delta_time = self._source_delta_seconds(
++                frame_number,
++                source_time_s,
++                config.source_rate_hz,
++            )
++            normalized_source_time = self._normalized_source_time(
++                frame_number,
++                source_time_s,
++                config.source_rate_hz,
++                delta_time,
++            )
++            if (
++                self.phase is not BallTrackPhase.INACTIVE
++                and delta_time > 0.0
++            ):
++                self.velocity_world = (
++                    selected_world - self.position_world
++                ) / delta_time
++            self.position_world = selected_world.copy()
++            self.frame_number = int(frame_number)
++            self.source_time_s = normalized_source_time
++            self.phase = BallTrackPhase.ACTIVE
++            return BallTrackUpdate(
++                phase=self.phase,
++                track_id=self.track_id,
++                position_world=self.position_world.copy(),
++                publish_valid=True,
++                publish_end=False,
++            )
++
++        missing_s = max(
++            0.0,
++            self._source_delta_seconds(
++                frame_number,
++                source_time_s,
++                config.source_rate_hz,
++            ),
++        )
++        if missing_s < config.ball_track_end_timeout_s:
++            self.phase = BallTrackPhase.MISSING_GRACE
++            return self._current_update()
++        ended = BallTrackUpdate(
++            phase=BallTrackPhase.INACTIVE,
++            track_id=self.track_id,
++            position_world=self.position_world.copy(),
++            publish_valid=False,
++            publish_end=True,
+         )
++        self.reset()
++        return ended
+ 
+ 
+ def make_message(
+     name,
+     position_world,
+     quaternion_xyzw,
+     *,
++    track_id: int,
+     frame_number: int,
+     source_time_s: float,
+     valid: bool,
+     publish_time_us: Optional[int] = None,
+ ):
+     message = transformation_t()
+     message.name = str(name)
+     message.vicon_frame_number = int(frame_number)
+     message.vicon_time_s = float(source_time_s)
+     message.publish_time_us = int(
+         time.time() * 1.0e6 if publish_time_us is None else publish_time_us
+     )
++    message.track_id = int(track_id)
+     message.valid = int(bool(valid))
+     message.occluded = int(not bool(valid))
+     message.pos_vicon = np.asarray(position_world, dtype=np.float64).reshape(3).tolist()
+     message.quat_vicon = np.asarray(quaternion_xyzw, dtype=np.float64).reshape(4).tolist()
+     return message
+ 
+ 
+ class ChingMuTableLcmBridge:
+     def __init__(
+         self,
+@@ -946,103 +1103,115 @@ class ChingMuTableLcmBridge:
+     ):
+         self.config = config
+         self.table_frame = table_frame
+         self.pelvis_orientation_calibration = (
+             pelvis_orientation_calibration
+         )
+         self._base_pose_was_valid = False
+         self.ball_tracker = BallTracker()
+ 
+     def process_frame(self, frame, *, publish_time_us: Optional[int] = None):
++        publish_time_us = int(
++            time.time() * 1.0e6
++            if publish_time_us is None
++            else publish_time_us
++        )
+         messages = []
+         body_pose = body_pose_to_table_world(
+             frame.body_position_mm,
+             frame.body_quaternion_xyzw,
+             self.table_frame,
+             self.config,
+         )
+         if body_pose is not None:
+             base_world, rigid_rotation_world = body_pose
+             pelvis_rotation_world = (
+                 rigid_rotation_world
+                 @ self.pelvis_orientation_calibration.rotation_rigid_from_pelvis
+             )
+             messages.append(
+                 make_message(
+                     self.config.base_subject,
+                     base_world,
+                     quaternion_xyzw_from_rotation(
+                         pelvis_rotation_world
+                     ),
++                    track_id=0,
+                     frame_number=frame.frame_number,
+                     source_time_s=frame.source_time_s,
+                     valid=True,
+                     publish_time_us=publish_time_us,
+                 )
+             )
+             self._base_pose_was_valid = True
+         elif self._base_pose_was_valid:
+             # The consumer ignores the pose when valid=0. Keep the transition
+             # payload finite and schema-correct without fabricating a marker
+             # centroid fallback.
+             messages.append(
+                 make_message(
+                     self.config.base_subject,
+                     [0.0, 0.0, 0.0],
+                     [0.0, 0.0, 0.0, 1.0],
++                    track_id=0,
+                     frame_number=frame.frame_number,
+                     source_time_s=frame.source_time_s,
+                     valid=False,
+                     publish_time_us=publish_time_us,
+                 )
+             )
+             self._base_pose_was_valid = False
+ 
+         ball_update = self.ball_tracker.update(
+             frame.unlabeled_markers_mm,
+             frame_number=frame.frame_number,
++            source_time_s=frame.source_time_s,
+             table=self.table_frame,
+             config=self.config,
++            allocation_time_us=publish_time_us,
+         )
+-        if ball_update.position_world is not None:
++        if ball_update.publish_valid:
+             messages.append(
+                 make_message(
+                     "ball",
+                     ball_update.position_world,
+                     [0.0, 0.0, 0.0, 1.0],
++                    track_id=ball_update.track_id,
+                     frame_number=frame.frame_number,
+                     source_time_s=frame.source_time_s,
+                     valid=True,
+                     publish_time_us=publish_time_us,
+                 )
+             )
+-        elif ball_update.ended:
++        elif ball_update.publish_end:
+             messages.append(
+                 make_message(
+                     "ball",
+-                    [0.0, 0.0, 0.0],
++                    ball_update.position_world,
+                     [0.0, 0.0, 0.0, 1.0],
++                    track_id=ball_update.track_id,
+                     frame_number=frame.frame_number,
+                     source_time_s=frame.source_time_s,
+                     valid=False,
+                     publish_time_us=publish_time_us,
+                 )
+             )
+         messages.append(
+             make_message(
+                 "table",
+                 [
+                     0.5 * self.config.table_length_m,
+                     0.0,
+                     self.config.table_height_m,
+                 ],
+                 [0.0, 0.0, 0.0, 1.0],
++                track_id=0,
+                 frame_number=frame.frame_number,
+                 source_time_s=frame.source_time_s,
+                 valid=True,
+                 publish_time_us=publish_time_us,
+             )
+         )
+         return messages
+ 
+ 
+ def emit_messages(lc_client, messages, config: BridgeConfig, enabled: bool) -> int:
+@@ -1075,20 +1244,24 @@ def _collect_calibration_frames(
+ def _config_from_args(args) -> BridgeConfig:
+     return BridgeConfig(
+         base_subject=args.base_subject,
+         channel=args.channel,
+         lcm_url=args.lcm_url,
+         table_length_m=args.table_length,
+         table_width_m=args.table_width,
+         table_height_m=args.table_height,
+         source_rate_hz=args.source_rate_hz,
+         corner_exclusion_radius_mm=args.corner_exclusion_radius_mm,
++        ball_track_association_radius_m=(
++            args.ball_track_association_radius_m
++        ),
++        ball_track_end_timeout_s=args.ball_track_end_timeout_s,
+     )
+ 
+ 
+ def _load_runtime_pelvis_orientation(
+     args,
+     config: BridgeConfig,
+ ) -> PelvisOrientationCalibration:
+     if args.pelvis_orientation_calib is None:
+         raise ValueError(
+             "--pelvis-orientation-calib is required for normal runtime"
+diff --git a/deploy/mocap_bridge/monitor_vicon_lcm.py b/deploy/mocap_bridge/monitor_vicon_lcm.py
+index 67ea15c..88891ca 100755
+--- a/deploy/mocap_bridge/monitor_vicon_lcm.py
++++ b/deploy/mocap_bridge/monitor_vicon_lcm.py
+@@ -1,32 +1,47 @@
+ #!/usr/bin/env python3
+ from __future__ import annotations
+ 
+ import argparse
+ import csv
+ import select
+ import sys
+ import time
+ from pathlib import Path
++from typing import Optional
+ 
+ import lcm
+ import numpy as np
+ 
+ BRIDGE_DIR = Path(__file__).resolve().parents[2]
+ for path in (BRIDGE_DIR, BRIDGE_DIR / "deploy"):
+     path_str = str(path)
+     if path_str not in sys.path:
+         sys.path.insert(0, path_str)
+ 
+ from unitree_sdk2.lcm_types.transformation_t import transformation_t
+ 
+ 
++CSV_FIELDS = [
++    "track_id",
++    "valid",
++    "occluded",
++    "source_frame",
++    "source_time_s",
++    "publish_time_us",
++    "x",
++    "y",
++    "z",
++    "received_monotonic_s",
++]
++
++
+ def msg_int_field(msg, name: str, default: int = 0) -> int:
+     try:
+         return int(getattr(msg, name))
+     except (AttributeError, TypeError, ValueError):
+         return default
+ 
+ 
+ def msg_status(msg) -> tuple[int, int]:
+     return (
+         msg_int_field(msg, "valid", 1),
+@@ -35,153 +50,168 @@ def msg_status(msg) -> tuple[int, int]:
+ 
+ 
+ def msg_float_field(msg, name: str):
+     try:
+         value = float(getattr(msg, name))
+     except (AttributeError, TypeError, ValueError):
+         return None
+     return value if np.isfinite(value) else None
+ 
+ 
+-def main() -> int:
++def build_arg_parser() -> argparse.ArgumentParser:
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--lcm-url", default="udpm://239.255.76.67:7667?ttl=255")
+-    parser.add_argument("--channel", default="vicon_state_data")
++    parser.add_argument("--channel", default="vicon_state_data_v2")
+     parser.add_argument("--duration", type=float, default=0.0)
+-    parser.add_argument("--csv", type=Path, default=None, help="Write selected ball LCM samples to CSV.")
+     parser.add_argument("--base-name", default="G1Pelvis")
++    parser.add_argument(
++        "--csv",
++        type=Path,
++        default=None,
++        help="Write strict v2 ball samples to CSV.",
++    )
+     parser.add_argument("--ball-name", default="ball")
+-    parser.add_argument("--quiet", action="store_true", help="Suppress per-message console output.")
+-    args = parser.parse_args()
++    parser.add_argument("--print-hz", type=float, default=1.0)
++    parser.add_argument(
++        "--quiet",
++        action="store_true",
++        help="Suppress periodic summaries; contract transitions still print.",
++    )
++    return parser
++
++
++def message_contract_error(message) -> Optional[str]:
++    try:
++        position = np.asarray(message.pos_vicon, dtype=np.float64).reshape(3)
++        quaternion = np.asarray(message.quat_vicon, dtype=np.float64).reshape(4)
++    except (AttributeError, TypeError, ValueError):
++        return "pose_not_finite"
++    if not np.isfinite(position).all() or not np.isfinite(quaternion).all():
++        return "pose_not_finite"
++
++    name = str(getattr(message, "name", ""))
++    try:
++        track_id = int(message.track_id)
++    except (AttributeError, TypeError, ValueError):
++        return "track_id_not_integer"
++    if name == "ball" and track_id <= 0:
++        return "ball_track_id_not_positive"
++    if name != "ball" and track_id != 0:
++        return "non_ball_track_id_not_zero"
++    return None
++
++
++def message_csv_row(
++    message,
++    received_monotonic_s: float,
++) -> dict[str, object]:
++    position = np.asarray(message.pos_vicon, dtype=np.float64).reshape(3)
++    return {
++        "track_id": int(message.track_id),
++        "valid": int(message.valid),
++        "occluded": int(message.occluded),
++        "source_frame": int(message.vicon_frame_number),
++        "source_time_s": float(message.vicon_time_s),
++        "publish_time_us": int(message.publish_time_us),
++        "x": float(position[0]),
++        "y": float(position[1]),
++        "z": float(position[2]),
++        "received_monotonic_s": float(received_monotonic_s),
++    }
++
++
++def main(argv=None) -> int:
++    parser = build_arg_parser()
++    args = parser.parse_args(argv)
++    if args.channel != "vicon_state_data_v2":
++        parser.error("--channel must be exactly vicon_state_data_v2")
++    if not np.isfinite(args.duration) or args.duration < 0.0:
++        parser.error("--duration must be finite and nonnegative")
++    if not np.isfinite(args.print_hz) or args.print_hz != 1.0:
++        parser.error("--print-hz must be exactly 1.0")
+ 
+     lc = lcm.LCM(args.lcm_url)
+-    start = time.time()
++    start = time.monotonic()
++    next_summary_s = start + 1.0
+     count = 0
+     csv_count = 0
+-    latest_base = None
++    contract_error_count = 0
++    last_contract_error = None
++    last_by_name = {}
+     csv_handle = None
+     csv_writer = None
+-    csv_fields = [
+-        "host_time_s",
+-        "elapsed_s",
+-        "row_index",
+-        "frame_number",
+-        "vicon_frame_number",
+-        "vicon_time_s",
+-        "publish_time_us",
+-        "channel",
+-        "name",
+-        "ball_valid",
+-        "ball_occluded",
+-        "ball_x_m",
+-        "ball_y_m",
+-        "ball_z_m",
+-        "ball_qx",
+-        "ball_qy",
+-        "ball_qz",
+-        "ball_qw",
+-        "base_valid",
+-        "base_x_m",
+-        "base_y_m",
+-        "base_z_m",
+-        "base_qx",
+-        "base_qy",
+-        "base_qz",
+-        "base_qw",
+-    ]
+     if args.csv is not None:
+         args.csv.parent.mkdir(parents=True, exist_ok=True)
+         csv_handle = args.csv.open("w", newline="")
+-        csv_writer = csv.DictWriter(csv_handle, fieldnames=csv_fields)
++        csv_writer = csv.DictWriter(csv_handle, fieldnames=CSV_FIELDS)
+         csv_writer.writeheader()
+ 
+     def handler(channel, data):
+-        nonlocal count, csv_count, latest_base
++        nonlocal count, csv_count, contract_error_count
++        nonlocal last_contract_error
+         msg = transformation_t.decode(data)
+-        pos = np.asarray(msg.pos_vicon, dtype=np.float64)
+-        quat = np.asarray(msg.quat_vicon, dtype=np.float64)
+-        now = time.time()
+-        elapsed = now - start
++        received_monotonic_s = time.monotonic()
+         count += 1
+         name = str(msg.name)
+-        valid, occluded = msg_status(msg)
+-        if name == args.base_name:
+-            latest_base = (pos.copy(), quat.copy(), valid, occluded)
++        last_by_name[name] = msg
++
++        contract_error = message_contract_error(msg)
++        if contract_error is not None:
++            contract_error_count += 1
++        if contract_error != last_contract_error:
++            if contract_error is None:
++                print("contract_error=none", flush=True)
++            else:
++                print(
++                    f"contract_error={contract_error} name={name}",
++                    flush=True,
++                )
++            last_contract_error = contract_error
+ 
+         if csv_writer is not None and name == args.ball_name:
+-            base_pos = None
+-            base_quat = None
+-            base_valid = 0
+-            if latest_base is not None:
+-                base_pos, base_quat, base_valid, _base_occluded = latest_base
+-            vicon_frame_number = msg_int_field(msg, "vicon_frame_number", 0)
+-            vicon_time_s = msg_float_field(msg, "vicon_time_s")
+-            if vicon_time_s is not None and vicon_time_s <= 0.0:
+-                vicon_time_s = None
+-            publish_time_us = msg_int_field(msg, "publish_time_us", 0)
+-            frame_number = vicon_frame_number if vicon_frame_number > 0 else csv_count
+-            row = {
+-                "host_time_s": f"{now:.9f}",
+-                "elapsed_s": f"{elapsed:.9f}",
+-                "row_index": csv_count,
+-                "frame_number": frame_number,
+-                "vicon_frame_number": "" if vicon_frame_number <= 0 else vicon_frame_number,
+-                "vicon_time_s": "" if vicon_time_s is None else f"{vicon_time_s:.9f}",
+-                "publish_time_us": "" if publish_time_us <= 0 else publish_time_us,
+-                "channel": channel,
+-                "name": name,
+-                "ball_valid": valid,
+-                "ball_occluded": occluded,
+-                "ball_x_m": f"{pos[0]:.9f}",
+-                "ball_y_m": f"{pos[1]:.9f}",
+-                "ball_z_m": f"{pos[2]:.9f}",
+-                "ball_qx": f"{quat[0]:.9f}",
+-                "ball_qy": f"{quat[1]:.9f}",
+-                "ball_qz": f"{quat[2]:.9f}",
+-                "ball_qw": f"{quat[3]:.9f}",
+-                "base_valid": base_valid,
+-                "base_x_m": "" if base_pos is None else f"{base_pos[0]:.9f}",
+-                "base_y_m": "" if base_pos is None else f"{base_pos[1]:.9f}",
+-                "base_z_m": "" if base_pos is None else f"{base_pos[2]:.9f}",
+-                "base_qx": "" if base_quat is None else f"{base_quat[0]:.9f}",
+-                "base_qy": "" if base_quat is None else f"{base_quat[1]:.9f}",
+-                "base_qz": "" if base_quat is None else f"{base_quat[2]:.9f}",
+-                "base_qw": "" if base_quat is None else f"{base_quat[3]:.9f}",
+-            }
+-            csv_writer.writerow(row)
++            csv_writer.writerow(
++                message_csv_row(msg, received_monotonic_s)
++            )
+             csv_count += 1
+             if csv_handle is not None and csv_count % 300 == 0:
+                 csv_handle.flush()
+ 
+-        if not args.quiet:
+-            frame_text = msg_int_field(msg, "vicon_frame_number", 0)
+-            vicon_time_s = msg_float_field(msg, "vicon_time_s")
+-            print(
+-                f"{elapsed:8.3f}s channel={channel} name={name} "
+-                f"valid={valid} occluded={occluded} "
+-                f"frame={frame_text} "
+-                f"vicon_time={0.0 if vicon_time_s is None else vicon_time_s:.6f} "
+-                f"pos=[{pos[0]: .4f}, {pos[1]: .4f}, {pos[2]: .4f}] "
+-                f"quat=[{quat[0]: .4f}, {quat[1]: .4f}, {quat[2]: .4f}, {quat[3]: .4f}]",
+-                flush=True,
+-            )
+-
+     lc.subscribe(args.channel, handler)
+     print(f"Listening on {args.lcm_url} channel={args.channel}", flush=True)
+     try:
+         while True:
+-            if args.duration > 0.0 and time.time() - start >= args.duration:
++            now = time.monotonic()
++            if args.duration > 0.0 and now - start >= args.duration:
+                 break
+-            timeout = 0.1
++            timeout = min(0.1, max(0.0, next_summary_s - now))
+             rfds, _, _ = select.select([lc.fileno()], [], [], timeout)
+             if rfds:
+                 lc.handle()
++            now = time.monotonic()
++            if now >= next_summary_s:
++                while next_summary_s <= now:
++                    next_summary_s += 1.0
++                if not args.quiet:
++                    subjects = ",".join(
++                        f"{name}:id={msg_int_field(msg, 'track_id', 0)}"
++                        f"/valid={msg_int_field(msg, 'valid', 0)}"
++                        for name, msg in sorted(last_by_name.items())
++                    )
++                    print(
++                        f"received={count} contract_errors="
++                        f"{contract_error_count} last=[{subjects}]",
++                        flush=True,
++                    )
+     finally:
+         if csv_handle is not None:
+             csv_handle.close()
+ 
+-    print(f"received={count} recorded_ball_rows={csv_count}", flush=True)
++    print(
++        f"received={count} contract_errors={contract_error_count} "
++        f"recorded_ball_rows={csv_count}",
++        flush=True,
++    )
+     return 0 if count > 0 else 1
+ 
+ 
+ if __name__ == "__main__":
+     raise SystemExit(main())
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_ball_track_v2.py b/deploy/mocap_bridge/tests/test_chingmu_ball_track_v2.py
+new file mode 100644
+index 0000000..88e9c52
+--- /dev/null
++++ b/deploy/mocap_bridge/tests/test_chingmu_ball_track_v2.py
+@@ -0,0 +1,427 @@
++import json
++import subprocess
++from types import SimpleNamespace
++
++import numpy as np
++import pytest
++
++from deploy.mocap_bridge import chingmu_table_lcm_bridge as bridge_module
++from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
++    BallTracker,
++    BridgeConfig,
++    ChingMuTableLcmBridge,
++    PelvisOrientationCalibration,
++    TableFrame,
++    _operation_mode,
++    _validate_numeric_arguments,
++    build_arg_parser,
++)
++
++
++INT64_MAX = 2**63 - 1
++
++
++@pytest.fixture
++def identity_table():
++    return TableFrame(
++        center_raw_mm=np.zeros(3, dtype=np.float64),
++        x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
++        y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
++        z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
++        corners_raw_mm=np.zeros((4, 3), dtype=np.float64),
++        rectangle_score=0.0,
++    )
++
++
++def raw(position_world, config=None):
++    config = BridgeConfig() if config is None else config
++    position_world = np.asarray(position_world, dtype=np.float64).reshape(3)
++    return (
++        position_world
++        - np.array(
++            [0.5 * config.table_length_m, 0.0, config.table_height_m],
++            dtype=np.float64,
++        )
++    ) * 1000.0
++
++
++def fixture_row(update):
++    return {
++        "phase": update.phase.value,
++        "track_id": update.track_id,
++        "publish_valid": update.publish_valid,
++        "publish_end": update.publish_end,
++        "position_world": [
++            round(float(component), 6) for component in update.position_world
++        ],
++    }
++
++
++def python_contract_fixture():
++    table = TableFrame(
++        center_raw_mm=np.zeros(3, dtype=np.float64),
++        x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
++        y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
++        z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
++        corners_raw_mm=np.zeros((4, 3), dtype=np.float64),
++        rectangle_score=0.0,
++    )
++    config = BridgeConfig()
++    tracker = BallTracker()
++    cases = [
++        ([raw([0.8, -0.1, 1.0], config)], 100, 1.00, 1_000_000),
++        ([raw([0.5, -0.1, 1.0], config)], 101, 1.01, 1_000_001),
++        ([], 102, 1.02, 1_000_002),
++        ([raw([-0.02, -0.1, 1.0], config)], 103, 1.03, 1_000_003),
++        ([], 128, 1.28, 1_000_004),
++        ([raw([0.9, 0.2, 1.1], config)], 129, 1.29, 1_000_100),
++    ]
++    return [
++        fixture_row(
++            tracker.update(
++                markers,
++                frame_number=frame,
++                source_time_s=source_time,
++                table=table,
++                config=config,
++                allocation_time_us=allocation_time,
++            )
++        )
++        for markers, frame, source_time, allocation_time in cases
++    ]
++
++
++def test_short_miss_and_return_keep_the_same_id(identity_table):
++    tracker = BallTracker()
++    first = tracker.update(
++        [raw([0.8, -0.1, 1.0])],
++        frame_number=100,
++        source_time_s=1.0,
++        table=identity_table,
++        config=BridgeConfig(),
++        allocation_time_us=1_000_000,
++    )
++    approach = tracker.update(
++        [raw([0.5, -0.1, 1.0])],
++        frame_number=101,
++        source_time_s=1.01,
++        table=identity_table,
++        config=BridgeConfig(),
++        allocation_time_us=1_000_001,
++    )
++    miss = tracker.update(
++        [],
++        frame_number=102,
++        source_time_s=1.02,
++        table=identity_table,
++        config=BridgeConfig(),
++    )
++    returned = tracker.update(
++        [raw([-0.02, -0.1, 1.0])],
++        frame_number=103,
++        source_time_s=1.03,
++        table=identity_table,
++        config=BridgeConfig(),
++    )
++    assert first.track_id == approach.track_id == returned.track_id == 1_000_000
++    assert miss.phase is bridge_module.BallTrackPhase.MISSING_GRACE
++    assert not miss.publish_end
++    assert returned.publish_valid
++
++
++def test_cpp_and_python_contract_fixtures_match():
++    cpp = json.loads(
++        subprocess.check_output(
++            [
++                "deploy/mocap_bridge/.build-v2/test_vicon_ball_track_v2",
++                "--emit-track-fixture",
++            ],
++            text=True,
++        )
++    )
++    assert python_contract_fixture() == cpp
++
++
++def test_candidate_selection_is_independent_of_marker_order(identity_table):
++    config = BridgeConfig()
++    inactive_candidates = [raw([0.8, 0.1, 1.0]), raw([0.4, 0.2, 1.0])]
++    inactive_results = []
++    for candidates in (inactive_candidates, list(reversed(inactive_candidates))):
++        inactive_results.append(
++            BallTracker().update(
++                candidates,
++                frame_number=100,
++                source_time_s=1.0,
++                table=identity_table,
++                config=config,
++                allocation_time_us=1_350_000,
++            )
++        )
++    np.testing.assert_allclose(inactive_results[0].position_world, [0.4, 0.2, 1.0])
++    np.testing.assert_allclose(
++        inactive_results[0].position_world, inactive_results[1].position_world
++    )
++
++    tied_candidates = [raw([1.25, 0.0, 1.0]), raw([0.75, 0.0, 1.0])]
++    active_results = []
++    for candidates in (tied_candidates, list(reversed(tied_candidates))):
++        tracker = BallTracker()
++        tracker.update(
++            [raw([1.0, 0.0, 1.0])],
++            frame_number=100,
++            source_time_s=1.0,
++            table=identity_table,
++            config=config,
++            allocation_time_us=1_360_000,
++        )
++        active_results.append(
++            tracker.update(
++                candidates,
++                frame_number=101,
++                source_time_s=1.01,
++                table=identity_table,
++                config=config,
++            )
++        )
++    np.testing.assert_allclose(active_results[0].position_world, [0.75, 0.0, 1.0])
++    np.testing.assert_allclose(
++        active_results[0].position_world, active_results[1].position_world
++    )
++
++
++def test_association_gate_is_strict_and_timeout_emits_end_once(identity_table):
++    config = BridgeConfig()
++    tracker = BallTracker()
++    started = tracker.update(
++        [raw([0.8, 0.0, 1.0])],
++        frame_number=100,
++        source_time_s=1.0,
++        table=identity_table,
++        config=config,
++        allocation_time_us=1_300_000,
++    )
++    exactly = tracker.update(
++        [raw([1.15, 0.0, 1.0])],
++        frame_number=101,
++        source_time_s=1.01,
++        table=identity_table,
++        config=config,
++    )
++    outside_tracker = BallTracker()
++    outside_started = outside_tracker.update(
++        [raw([0.8, 0.0, 1.0])],
++        frame_number=100,
++        source_time_s=1.0,
++        table=identity_table,
++        config=config,
++        allocation_time_us=1_300_100,
++    )
++    outside = outside_tracker.update(
++        [raw([1.150001, 0.0, 1.0])],
++        frame_number=101,
++        source_time_s=1.01,
++        table=identity_table,
++        config=config,
++    )
++    ended = outside_tracker.update(
++        [],
++        frame_number=125,
++        source_time_s=1.25,
++        table=identity_table,
++        config=config,
++    )
++    repeated = outside_tracker.update(
++        [],
++        frame_number=126,
++        source_time_s=1.26,
++        table=identity_table,
++        config=config,
++    )
++    assert exactly.publish_valid and exactly.track_id == started.track_id
++    assert outside.phase is bridge_module.BallTrackPhase.MISSING_GRACE
++    assert ended.publish_end and ended.track_id == outside_started.track_id
++    np.testing.assert_allclose(ended.position_world, outside_started.position_world)
++    assert repeated.phase is bridge_module.BallTrackPhase.INACTIVE
++    assert repeated.track_id == 0
++    assert not repeated.publish_end
++
++
++def test_source_time_fallback_uses_configured_frame_rate(identity_table):
++    config = BridgeConfig(source_rate_hz=100.0)
++    tracker = BallTracker()
++    tracker.update(
++        [raw([0.8, 0.0, 1.0], config)],
++        frame_number=100,
++        source_time_s=1.0,
++        table=identity_table,
++        config=config,
++        allocation_time_us=1_400_000,
++    )
++    non_increasing = tracker.update(
++        [raw([1.1, 0.0, 1.0], config)],
++        frame_number=103,
++        source_time_s=1.0,
++        table=identity_table,
++        config=config,
++    )
++    assert non_increasing.publish_valid
++    np.testing.assert_allclose(tracker.velocity_world, [10.0, 0.0, 0.0])
++    ended = tracker.update(
++        [],
++        frame_number=128,
++        source_time_s=float("nan"),
++        table=identity_table,
++        config=config,
++    )
++    assert ended.publish_end
++
++
++def test_allocator_is_positive_monotonic_and_fails_closed(identity_table):
++    config = BridgeConfig()
++    tracker = BallTracker()
++    first = tracker.update(
++        [raw([0.8, 0.0, 1.0])],
++        frame_number=100,
++        source_time_s=1.0,
++        table=identity_table,
++        config=config,
++        allocation_time_us=0,
++    )
++    tracker.update(
++        [],
++        frame_number=125,
++        source_time_s=1.25,
++        table=identity_table,
++        config=config,
++    )
++    second = tracker.update(
++        [raw([0.9, 0.0, 1.0])],
++        frame_number=126,
++        source_time_s=1.26,
++        table=identity_table,
++        config=config,
++        allocation_time_us=-100,
++    )
++    assert first.track_id == 1
++    assert second.track_id == 2
++
++    exhausted = BallTracker()
++    exhausted.last_allocated_track_id = INT64_MAX
++    failed = exhausted.update(
++        [raw([0.8, 0.0, 1.0])],
++        frame_number=100,
++        source_time_s=1.0,
++        table=identity_table,
++        config=config,
++        allocation_time_us=1,
++    )
++    failed_again = exhausted.update(
++        [raw([0.9, 0.0, 1.0])],
++        frame_number=101,
++        source_time_s=1.01,
++        table=identity_table,
++        config=config,
++        allocation_time_us=INT64_MAX,
++    )
++    assert failed.phase is bridge_module.BallTrackPhase.INACTIVE
++    assert failed.track_id == 0
++    assert not failed.publish_valid and not failed.publish_end
++    assert failed_again.track_id == 0
++    assert exhausted.last_allocated_track_id == INT64_MAX
++
++
++def test_v2_defaults_and_track_arguments_are_strict():
++    config = BridgeConfig()
++    args = build_arg_parser().parse_args(
++        ["--pelvis-orientation-calib", "pelvis.json"]
++    )
++    assert config.channel == "vicon_state_data_v2"
++    assert config.source_rate_hz == 300.0
++    assert config.ball_track_association_radius_m == 0.35
++    assert config.ball_track_end_timeout_s == 0.25
++    assert args.channel == "vicon_state_data_v2"
++    assert args.print_hz == 1.0
++    assert args.source_rate_hz == 300.0
++
++    wrong_channel = build_arg_parser().parse_args(
++        [
++            "--pelvis-orientation-calib",
++            "pelvis.json",
++            "--channel",
++            "vicon_state_data",
++        ]
++    )
++    with pytest.raises(ValueError, match="--channel"):
++        _validate_numeric_arguments(wrong_channel, _operation_mode(wrong_channel))
++
++    for option, value in (
++        ("--ball-track-association-radius-m", "nan"),
++        ("--ball-track-end-timeout-s", "0"),
++        ("--source-rate-hz", "inf"),
++    ):
++        invalid = build_arg_parser().parse_args(
++            [
++                "--pelvis-orientation-calib",
++                "pelvis.json",
++                option,
++                value,
++            ]
++        )
++        with pytest.raises(ValueError, match=option):
++            _validate_numeric_arguments(invalid, _operation_mode(invalid))
++
++
++def test_messages_assign_ids_and_ball_end_keeps_last_finite_position(identity_table):
++    direct = bridge_module.make_message(
++        "ball",
++        [0.8, 0.0, 1.0],
++        [0.0, 0.0, 0.0, 1.0],
++        track_id=77,
++        frame_number=100,
++        source_time_s=1.0,
++        valid=True,
++        publish_time_us=123,
++    )
++    assert direct.track_id == 77
++
++    calibration = PelvisOrientationCalibration(
++        rotation_rigid_from_pelvis=np.eye(3),
++        sample_count=30,
++        source_duration_s=1.0,
++        position_rms_m=0.0,
++        angular_rms_deg=0.0,
++    )
++    bridge = ChingMuTableLcmBridge(
++        config=BridgeConfig(),
++        table_frame=identity_table,
++        pelvis_orientation_calibration=calibration,
++    )
++    valid_messages = bridge.process_frame(
++        SimpleNamespace(
++            body_position_mm=None,
++            body_quaternion_xyzw=None,
++            unlabeled_markers_mm=[raw([0.8, 0.0, 1.0])],
++            frame_number=100,
++            source_time_s=1.0,
++        ),
++        publish_time_us=1_000_000,
++    )
++    end_messages = bridge.process_frame(
++        SimpleNamespace(
++            body_position_mm=None,
++            body_quaternion_xyzw=None,
++            unlabeled_markers_mm=[],
++            frame_number=125,
++            source_time_s=1.25,
++        ),
++        publish_time_us=1_000_001,
++    )
++    valid_by_name = {message.name: message for message in valid_messages}
++    end_by_name = {message.name: message for message in end_messages}
++    assert valid_by_name["table"].track_id == 0
++    assert valid_by_name["ball"].track_id == 1_000_000
++    assert end_by_name["ball"].track_id == 1_000_000
++    assert end_by_name["ball"].valid == 0
++    np.testing.assert_allclose(
++        end_by_name["ball"].pos_vicon, valid_by_name["ball"].pos_vicon
++    )
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py b/deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py
+index dc21d60..b124e9d 100644
+--- a/deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py
++++ b/deploy/mocap_bridge/tests/test_chingmu_ball_tracker_roi.py
+@@ -32,128 +32,145 @@ class ChingMuBallTrackerRoiTest(unittest.TestCase):
+                 (position[2] - config.table_height_m) * 1000.0,
+             ],
+             dtype=np.float64,
+         )
+ 
+     def update_new_track(self, position_world, *, config=None):
+         config = self.config if config is None else config
+         return BallTracker().update(
+             [self.raw_from_world(position_world, config=config)],
+             frame_number=1,
++            source_time_s=1.0 / config.source_rate_hz,
+             table=self.table,
+             config=config,
++            allocation_time_us=1,
+         )
+ 
+     def test_far_edge_margin_is_40_cm(self):
+         self.assertEqual(BALL_TRACKING_FAR_EDGE_MARGIN_M, 0.40)
+ 
+     def test_far_edge_cutoff_is_inclusive_for_runtime_table_length(self):
+         config = BridgeConfig(table_length_m=3.25)
+         cutoff_x = config.table_length_m - 0.40
+         epsilon_m = 1.0e-9
+         accepted = self.update_new_track(
+             [cutoff_x, 0.0, 0.90],
+             config=config,
+         )
+         rejected = self.update_new_track(
+             [cutoff_x + epsilon_m, 0.0, 0.90],
+             config=config,
+         )
+ 
+-        self.assertIsNotNone(accepted.position_world)
+-        self.assertFalse(accepted.ended)
+-        self.assertIsNone(rejected.position_world)
+-        self.assertFalse(rejected.ended)
++        self.assertTrue(accepted.publish_valid)
++        self.assertFalse(accepted.publish_end)
++        self.assertFalse(rejected.publish_valid)
++        self.assertFalse(rejected.publish_end)
+ 
+     def test_new_track_admission_requires_positive_x(self):
+         at_near_edge = self.update_new_track([0.0, 0.0, 0.90])
+         before_near_edge = self.update_new_track([-0.001, 0.0, 0.90])
+         inside_near_edge = self.update_new_track([0.001, 0.0, 0.90])
+ 
+-        self.assertIsNone(at_near_edge.position_world)
+-        self.assertFalse(at_near_edge.ended)
+-        self.assertIsNone(before_near_edge.position_world)
+-        self.assertFalse(before_near_edge.ended)
+-        self.assertIsNotNone(inside_near_edge.position_world)
+-        self.assertFalse(inside_near_edge.ended)
++        self.assertFalse(at_near_edge.publish_valid)
++        self.assertFalse(at_near_edge.publish_end)
++        self.assertFalse(before_near_edge.publish_valid)
++        self.assertFalse(before_near_edge.publish_end)
++        self.assertTrue(inside_near_edge.publish_valid)
++        self.assertFalse(inside_near_edge.publish_end)
+ 
+     def test_table_width_cutoff_is_inclusive_on_both_sides(self):
+         half_width_m = 0.5 * self.config.table_width_m
+         epsilon_m = 1.0e-9
+ 
+         for y_m in (-half_width_m, half_width_m):
+             with self.subTest(y_m=y_m, expected="accepted"):
+                 update = self.update_new_track([0.50, y_m, 0.90])
+-                self.assertIsNotNone(update.position_world)
+-                self.assertFalse(update.ended)
++                self.assertTrue(update.publish_valid)
++                self.assertFalse(update.publish_end)
+ 
+         for y_m in (-half_width_m - epsilon_m, half_width_m + epsilon_m):
+             with self.subTest(y_m=y_m, expected="rejected"):
+                 update = self.update_new_track([0.50, y_m, 0.90])
+-                self.assertIsNone(update.position_world)
+-                self.assertFalse(update.ended)
++                self.assertFalse(update.publish_valid)
++                self.assertFalse(update.publish_end)
+ 
+     def test_ball_must_be_strictly_above_table_height(self):
+         at_table_height = self.update_new_track(
+             [0.50, 0.0, self.config.table_height_m]
+         )
+         above_table_height = self.update_new_track(
+             [0.50, 0.0, self.config.table_height_m + 1.0e-9]
+         )
+ 
+-        self.assertIsNone(at_table_height.position_world)
+-        self.assertFalse(at_table_height.ended)
+-        self.assertIsNotNone(above_table_height.position_world)
+-        self.assertFalse(above_table_height.ended)
++        self.assertFalse(at_table_height.publish_valid)
++        self.assertFalse(at_table_height.publish_end)
++        self.assertTrue(above_table_height.publish_valid)
++        self.assertFalse(above_table_height.publish_end)
+ 
+-    def test_active_track_ends_once_when_only_candidate_is_beyond_far_edge(self):
++    def test_active_track_far_edge_evidence_stays_invalid_then_ends_once(self):
+         cutoff_x = self.config.table_length_m - 0.40
+         tracker = BallTracker()
+         accepted = tracker.update(
+             [self.raw_from_world([cutoff_x - 0.10, 0.0, 0.90])],
+             frame_number=1,
++            source_time_s=0.0,
+             table=self.table,
+             config=self.config,
++            allocation_time_us=1,
+         )
+-        ended = tracker.update(
++        missing = tracker.update(
+             [self.raw_from_world([cutoff_x + 1.0e-9, 0.0, 0.90])],
+             frame_number=2,
++            source_time_s=0.01,
++            table=self.table,
++            config=self.config,
++        )
++        ended = tracker.update(
++            [],
++            frame_number=26,
++            source_time_s=0.25,
+             table=self.table,
+             config=self.config,
+         )
+         next_empty = tracker.update(
+             [],
+-            frame_number=3,
++            frame_number=27,
++            source_time_s=0.26,
+             table=self.table,
+             config=self.config,
+         )
+ 
+-        self.assertIsNotNone(accepted.position_world)
+-        self.assertFalse(accepted.ended)
+-        self.assertIsNone(ended.position_world)
+-        self.assertTrue(ended.ended)
+-        self.assertIsNone(next_empty.position_world)
+-        self.assertFalse(next_empty.ended)
++        self.assertTrue(accepted.publish_valid)
++        self.assertFalse(accepted.publish_end)
++        self.assertFalse(missing.publish_valid)
++        self.assertFalse(missing.publish_end)
++        self.assertTrue(ended.publish_end)
++        self.assertFalse(next_empty.publish_end)
+ 
+-    def test_active_track_near_edge_evidence_never_publishes_valid_ball(self):
++    def test_active_track_can_cross_near_edge_without_relaxing_association(self):
+         tracker = BallTracker()
+         admitted = tracker.update(
+             [self.raw_from_world([0.001, 0.0, 0.90])],
+             frame_number=1,
++            source_time_s=0.0,
+             table=self.table,
+             config=self.config,
++            allocation_time_us=1,
+         )
+-        ended = tracker.update(
++        crossed = tracker.update(
+             [self.raw_from_world([-0.001, 0.0, 0.90])],
+             frame_number=2,
++            source_time_s=0.01,
+             table=self.table,
+             config=self.config,
+         )
+ 
+-        self.assertIsNotNone(admitted.position_world)
+-        self.assertFalse(admitted.ended)
+-        self.assertIsNone(ended.position_world)
+-        self.assertTrue(ended.ended)
++        self.assertTrue(admitted.publish_valid)
++        self.assertFalse(admitted.publish_end)
++        self.assertTrue(crossed.publish_valid)
++        self.assertEqual(crossed.track_id, admitted.track_id)
++        self.assertFalse(crossed.publish_end)
+ 
+ 
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/deploy/mocap_bridge/tests/test_mocap_v2_monitor.py b/deploy/mocap_bridge/tests/test_mocap_v2_monitor.py
+new file mode 100644
+index 0000000..24154c3
+--- /dev/null
++++ b/deploy/mocap_bridge/tests/test_mocap_v2_monitor.py
+@@ -0,0 +1,80 @@
++import math
++
++import pytest
++
++from deploy.mocap_bridge import monitor_vicon_lcm as monitor
++from unitree_sdk2.lcm_types.transformation_t import transformation_t
++
++
++def ball_message(*, track_id=1):
++    return message("ball", track_id)
++
++
++def message(name, track_id):
++    result = transformation_t()
++    result.name = name
++    result.track_id = track_id
++    result.valid = 1
++    result.occluded = 0
++    result.vicon_frame_number = 123
++    result.vicon_time_s = 4.5
++    result.publish_time_us = 6_000_000
++    result.pos_vicon = [0.8, -0.1, 1.0]
++    result.quat_vicon = [0.0, 0.0, 0.0, 1.0]
++    return result
++
++
++def test_monitor_defaults_to_v2_and_exports_track_id():
++    args = monitor.build_arg_parser().parse_args([])
++    assert args.channel == "vicon_state_data_v2"
++    assert args.print_hz == 1.0
++    row = monitor.message_csv_row(
++        ball_message(track_id=77), received_monotonic_s=3.0
++    )
++    assert row["track_id"] == 77
++    assert list(row) == [
++        "track_id",
++        "valid",
++        "occluded",
++        "source_frame",
++        "source_time_s",
++        "publish_time_us",
++        "x",
++        "y",
++        "z",
++        "received_monotonic_s",
++    ]
++    assert row == {
++        "track_id": 77,
++        "valid": 1,
++        "occluded": 0,
++        "source_frame": 123,
++        "source_time_s": 4.5,
++        "publish_time_us": 6_000_000,
++        "x": 0.8,
++        "y": -0.1,
++        "z": 1.0,
++        "received_monotonic_s": 3.0,
++    }
++
++
++@pytest.mark.parametrize(
++    "name,track_id", [("ball", 0), ("table", 7), ("G2Pelvis", 7)]
++)
++def test_monitor_rejects_invalid_subject_id_contract(name, track_id):
++    assert monitor.message_contract_error(message(name, track_id)) is not None
++
++
++@pytest.mark.parametrize("field", ["pos_vicon", "quat_vicon"])
++def test_monitor_rejects_non_finite_pose(field):
++    malformed = ball_message()
++    values = list(getattr(malformed, field))
++    values[0] = math.nan
++    setattr(malformed, field, values)
++    assert monitor.message_contract_error(malformed) == "pose_not_finite"
++
++
++def test_monitor_accepts_valid_ball_and_non_ball_ids():
++    assert monitor.message_contract_error(ball_message(track_id=9)) is None
++    assert monitor.message_contract_error(message("table", 0)) is None
++    assert monitor.message_contract_error(message("G2Pelvis", 0)) is None

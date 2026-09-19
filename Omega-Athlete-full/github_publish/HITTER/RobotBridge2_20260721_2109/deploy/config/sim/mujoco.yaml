@@ -1,0 +1,50 @@
+_target_: simulator.mujoco.Mujoco
+_recursive_: False
+config:
+  marker: True
+  random_init_heading: False
+  control: ${robot.control}
+  asset: ${robot.asset}
+  table_tennis:
+    enabled: false
+    physics_mode: mujoco # analytic_kinematic, mujoco
+    continuous_ball_launcher: true
+    randomize_ball_on_reset: true
+    ball_random_seed: 0
+    ball_body_name: hitter_ball
+    ball_joint_name: hitter_ball_freejoint
+    ball_geom_name: hitter_ball_geom
+    table_top_geom_name: hitter_table_top
+    racket_face_geom_name: right_racket_face_collision
+    table_center_xy_w: [1.37, 0.0]
+    table_height: 0.76
+    table_length: 2.74
+    table_width: 1.525
+    ball_radius: 0.02
+    gravity: [0.0, 0.0, -9.81]
+    vertical_restitution: 0.897474
+    horizontal_restitution: 0.764604
+    drag_coefficient: 0.098847
+    ball_initial_pos: [1.0, 0.0, 1.05]
+    ball_initial_lin_vel: [-3.0, 0.0, 0.3]
+    ball_initial_ang_vel: [0.0, 0.0, 0.0]
+    ball_initial_pos_range:
+      - [1.55, 1.65]
+      - [-0.30, 0.30]
+      - [1.2, 1.25]
+    ball_initial_lin_vel_range:
+      - [-2.5, -2.4]
+      - [-0.35, 0.35]
+      - [-0.10, 0.35]
+    ball_initial_ang_vel_range:
+      - [-15.0, 15.0]
+      - [-15.0, 15.0]
+      - [-25.0, 25.0]
+    launcher_min_z: 0.25
+    launcher_max_age_s: 4.0
+    launcher_x_bounds: [-1.0, 3.5]
+    launcher_y_bounds: [-1.5, 1.5]
+    launcher_reset_on_hit: false
+    landing_target_w: [2.05, 0.0, 0.78]
+    use_analytic_table_bounce: false
+    use_analytic_racket_hit: false

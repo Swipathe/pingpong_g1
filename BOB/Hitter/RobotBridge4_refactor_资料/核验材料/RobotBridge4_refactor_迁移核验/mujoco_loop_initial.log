@@ -1,0 +1,66 @@
+Traceback (most recent call last):
+  File "/home/yhl/Desktop/RobotBridge4_部署启动核验/sim_loop.py", line 31, in <module>
+    import envs.hitter as hitter_module
+  File "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/envs/__init__.py", line 1, in <module>
+    from .mosaic import MosaicEnv
+  File "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/envs/mosaic.py", line 7, in <module>
+    from envs.base_env import BaseEnv
+  File "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/envs/base_env.py", line 9, in <module>
+    from utils.motion_lib.motion_lib_robot import MotionLibRobot
+  File "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/utils/motion_lib/motion_lib_robot.py", line 1, in <module>
+    from utils.motion_lib.motion_lib_base import MotionLibBase
+  File "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/utils/motion_lib/motion_lib_base.py", line 10, in <module>
+    from utils.motion_lib.skeleton import SkeletonTree
+  File "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/utils/motion_lib/skeleton.py", line 16, in <module>
+    from .rotations import(
+  File "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/utils/motion_lib/rotations.py", line 522, in <module>
+    def axis_angle_to_quaternion(axis_angle: torch.Tensor) -> torch.Tensor:
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/_script.py", line 1437, in script
+    ret = _script_impl(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/_script.py", line 1208, in _script_impl
+    fn = torch._C._jit_script_compile(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/_script.py", line 1504, in _get_overloads
+    compiled_fns = [
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/_script.py", line 1505, in <listcomp>
+    _compile_function_with_overload(overload_fn, qual_name, obj)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/_script.py", line 1473, in _compile_function_with_overload
+    impl_ast = get_jit_def(impl_fn, impl_fn.__name__)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 374, in get_jit_def
+    return build_def(
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 439, in build_def
+    return Def(Ident(r, def_name), decl, build_stmts(ctx, body))
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 188, in build_stmts
+    stmts = [build_stmt(ctx, s) for s in stmts]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 188, in <listcomp>
+    stmts = [build_stmt(ctx, s) for s in stmts]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 408, in __call__
+    return method(ctx, node)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 805, in build_If
+    build_stmts(ctx, stmt.body),
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 188, in build_stmts
+    stmts = [build_stmt(ctx, s) for s in stmts]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 188, in <listcomp>
+    stmts = [build_stmt(ctx, s) for s in stmts]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 408, in __call__
+    return method(ctx, node)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 805, in build_If
+    build_stmts(ctx, stmt.body),
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 188, in build_stmts
+    stmts = [build_stmt(ctx, s) for s in stmts]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 188, in <listcomp>
+    stmts = [build_stmt(ctx, s) for s in stmts]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 408, in __call__
+    return method(ctx, node)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 804, in build_If
+    build_expr(ctx, stmt.test),
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 408, in __call__
+    return method(ctx, node)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 1032, in build_Compare
+    operands = [build_expr(ctx, e) for e in [expr.left] + list(expr.comparators)]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 1032, in <listcomp>
+    operands = [build_expr(ctx, e) for e in [expr.left] + list(expr.comparators)]
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 408, in __call__
+    return method(ctx, node)
+  File "/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/torch/jit/frontend.py", line 1188, in build_Constant
+    return ExprBuilder.build_NameConstant(ctx, expr)
+AttributeError: type object 'ExprBuilder' has no attribute 'value'

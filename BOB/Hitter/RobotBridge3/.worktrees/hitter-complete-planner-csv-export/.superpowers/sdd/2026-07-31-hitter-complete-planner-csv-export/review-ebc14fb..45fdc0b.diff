@@ -1,0 +1,570 @@
+# Review package: ebc14fb7959f8314ea7122713702f3f5401d3076..45fdc0ba90df4abf2ebf0b94c09e12fc63b04357
+
+## Commits
+45fdc0b feat: reconstruct completed HITTER planner calls
+
+## Files changed
+ deploy/diagnostics/export_hitter_task_csv.py | 245 ++++++++++++++++++++++
+ deploy/tests/test_hitter_task_csv_export.py  | 302 +++++++++++++++++++++++++++
+ 2 files changed, 547 insertions(+)
+
+## Diff
+diff --git a/deploy/diagnostics/export_hitter_task_csv.py b/deploy/diagnostics/export_hitter_task_csv.py
+new file mode 100644
+index 0000000..1cc281e
+--- /dev/null
++++ b/deploy/diagnostics/export_hitter_task_csv.py
+@@ -0,0 +1,245 @@
++from __future__ import annotations
++
++from dataclasses import dataclass
++import json
++from pathlib import Path
++from typing import Any, Dict, FrozenSet, Mapping, Optional, Sequence, Tuple
++
++
++@dataclass(frozen=True, order=True)
++class PlannerExportKey:
++    attempt_id: int
++    schema_version: int
++    track_epoch: int
++    generation: int
++
++
++@dataclass(frozen=True)
++class CompletedPlannerCall:
++    key: PlannerExportKey
++    submitted_monotonic_s: float
++    started_monotonic_s: float
++    completed_monotonic_s: float
++    source_frame: int
++    result: Mapping[str, Any]
++    pending_replaced_key: Optional[PlannerExportKey]
++    latest_replaced_key: Optional[PlannerExportKey]
++
++
++@dataclass(frozen=True)
++class PlannerEventScan:
++    submitted_keys: FrozenSet[PlannerExportKey]
++    pending_replaced_keys: FrozenSet[PlannerExportKey]
++    completed_calls: Tuple[CompletedPlannerCall, ...]
++
++
++def _planner_key(
++    attempt_id: int,
++    value: Any,
++    *,
++    field: str,
++) -> PlannerExportKey:
++    if not isinstance(value, Mapping):
++        raise ValueError("{} must be a mapping".format(field))
++    try:
++        return PlannerExportKey(
++            attempt_id=int(attempt_id),
++            schema_version=int(value["schema_version"]),
++            track_epoch=int(value["track_epoch"]),
++            generation=int(value["generation"]),
++        )
++    except (KeyError, TypeError, ValueError) as exc:
++        raise ValueError("invalid {}: {!r}".format(field, value)) from exc
++
++
++def _remember_unique(
++    records: Dict[PlannerExportKey, Any],
++    key: PlannerExportKey,
++    value: Any,
++    *,
++    label: str,
++) -> None:
++    previous = records.get(key)
++    if previous is not None and previous != value:
++        raise ValueError("conflicting duplicate {} for {!r}".format(label, key))
++    records[key] = value
++
++
++def _replacement_attempt_id(
++    payload: Mapping[str, Any],
++    fallback_attempt_id: int,
++) -> int:
++    value = payload.get("replaced_attempt_id")
++    return fallback_attempt_id if value is None else int(value)
++
++
++def scan_planner_events(
++    events_path: Path,
++    attempt_ids: Sequence[int],
++) -> PlannerEventScan:
++    selected_attempt_ids = frozenset(int(value) for value in attempt_ids)
++    submissions: Dict[PlannerExportKey, Tuple[float, Mapping[str, Any]]] = {}
++    starts: Dict[PlannerExportKey, Tuple[float, Mapping[str, Any]]] = {}
++    completions: Dict[PlannerExportKey, Tuple[float, Mapping[str, Any]]] = {}
++    pending_replacements: Dict[PlannerExportKey, PlannerExportKey] = {}
++    latest_replacements: Dict[PlannerExportKey, PlannerExportKey] = {}
++    pending_replaced_keys = set()
++
++    with Path(events_path).open("r", encoding="utf-8") as stream:
++        for line in stream:
++            event = json.loads(line)
++            if not isinstance(event, Mapping):
++                raise ValueError("planner event must be a mapping")
++            attempt_value = event.get("attempt_id")
++            if attempt_value is None:
++                continue
++            attempt_id = int(attempt_value)
++            if attempt_id not in selected_attempt_ids:
++                continue
++            kind = event.get("kind")
++            if kind not in ("planner_submit", "planner_trace"):
++                continue
++            payload = event.get("payload")
++            if not isinstance(payload, Mapping):
++                raise ValueError("planner event payload must be a mapping")
++            key = _planner_key(
++                attempt_id,
++                payload.get("snapshot_key"),
++                field="snapshot_key",
++            )
++            monotonic_s = float(event["monotonic_s"])
++            event_content = (monotonic_s, dict(payload))
++
++            if kind == "planner_submit":
++                _remember_unique(
++                    submissions,
++                    key,
++                    event_content,
++                    label="planner submit",
++                )
++                continue
++
++            trace_kind = payload.get("trace_kind")
++            if trace_kind == "start":
++                _remember_unique(
++                    starts,
++                    key,
++                    event_content,
++                    label="planner start",
++                )
++                continue
++            if trace_kind == "pending_replaced":
++                replaced_attempt_id = _replacement_attempt_id(
++                    payload,
++                    attempt_id,
++                )
++                replaced_key = _planner_key(
++                    replaced_attempt_id,
++                    payload.get("replaced_snapshot_key"),
++                    field="replaced_snapshot_key",
++                )
++                previous = pending_replacements.get(key)
++                if previous is not None and previous != replaced_key:
++                    raise ValueError(
++                        "conflicting pending replacement for {!r}".format(key)
++                    )
++                pending_replacements[key] = replaced_key
++                if replaced_attempt_id in selected_attempt_ids:
++                    pending_replaced_keys.add(replaced_key)
++                continue
++            if trace_kind == "latest_result_replaced":
++                replaced_result = payload.get("replaced_result")
++                if not isinstance(replaced_result, Mapping):
++                    raise ValueError("replaced_result must be a mapping")
++                replaced_attempt_id = _replacement_attempt_id(
++                    payload,
++                    attempt_id,
++                )
++                replaced_key = _planner_key(
++                    replaced_attempt_id,
++                    replaced_result.get("snapshot_key"),
++                    field="replaced_result.snapshot_key",
++                )
++                previous = latest_replacements.get(key)
++                if previous is not None and previous != replaced_key:
++                    raise ValueError(
++                        "conflicting latest replacement for {!r}".format(key)
++                    )
++                latest_replacements[key] = replaced_key
++                continue
++            if trace_kind != "complete":
++                continue
++
++            result = payload.get("result")
++            if not isinstance(result, Mapping):
++                raise ValueError(
++                    "planner complete result must be a mapping for {!r}".format(
++                        key
++                    )
++                )
++            result_key = _planner_key(
++                attempt_id,
++                result.get("snapshot_key"),
++                field="result.snapshot_key",
++            )
++            if result_key != key:
++                raise ValueError(
++                    "planner complete result key mismatch for {!r}".format(key)
++                )
++            _remember_unique(
++                completions,
++                key,
++                event_content,
++                label="planner complete",
++            )
++
++    completed_calls = []
++    for key in submissions.keys() & starts.keys() & completions.keys():
++        submitted_monotonic_s = submissions[key][0]
++        started_monotonic_s = starts[key][0]
++        completion_payload = completions[key][1]
++        result = dict(completion_payload["result"])
++        completed_calls.append(
++            CompletedPlannerCall(
++                key=key,
++                submitted_monotonic_s=submitted_monotonic_s,
++                started_monotonic_s=started_monotonic_s,
++                completed_monotonic_s=float(
++                    result["completed_monotonic_s"]
++                ),
++                source_frame=int(result["source_frame"]),
++                result=result,
++                pending_replaced_key=pending_replacements.get(key),
++                latest_replaced_key=latest_replacements.get(key),
++            )
++        )
++    completed_calls.sort(
++        key=lambda call: (
++            call.completed_monotonic_s,
++            call.key,
++        )
++    )
++    submitted_keys = frozenset(submissions)
++    frozen_pending_replaced_keys = frozenset(pending_replaced_keys)
++    completed_keys = {call.key for call in completed_calls}
++    overlapping_keys = completed_keys & frozen_pending_replaced_keys
++    if overlapping_keys:
++        raise ValueError(
++            "completed and pending-replaced keys overlap: {!r}".format(
++                sorted(overlapping_keys)
++            )
++        )
++    classified_keys = completed_keys | frozen_pending_replaced_keys
++    if classified_keys != submitted_keys:
++        missing = sorted(submitted_keys - classified_keys)
++        unexpected = sorted(classified_keys - submitted_keys)
++        raise ValueError(
++            "submitted keys are neither completed nor pending-replaced: "
++            "missing={!r}, unexpected={!r}".format(missing, unexpected)
++        )
++
++    return PlannerEventScan(
++        submitted_keys=submitted_keys,
++        pending_replaced_keys=frozen_pending_replaced_keys,
++        completed_calls=tuple(completed_calls),
++    )
+diff --git a/deploy/tests/test_hitter_task_csv_export.py b/deploy/tests/test_hitter_task_csv_export.py
+new file mode 100644
+index 0000000..02edd66
+--- /dev/null
++++ b/deploy/tests/test_hitter_task_csv_export.py
+@@ -0,0 +1,302 @@
++from __future__ import annotations
++
++import copy
++import json
++from pathlib import Path
++import tempfile
++import unittest
++
++from diagnostics.export_hitter_task_csv import scan_planner_events
++
++
++def snapshot_key(
++    *,
++    generation: int,
++    schema_version: int = 1,
++    track_epoch: int = 1,
++):
++    return {
++        "schema_version": schema_version,
++        "track_epoch": track_epoch,
++        "generation": generation,
++    }
++
++
++def planner_submit_event(
++    *,
++    attempt_id: int,
++    generation: int,
++    t: float,
++):
++    return {
++        "schema_version": 1,
++        "kind": "planner_submit",
++        "monotonic_s": t,
++        "attempt_id": attempt_id,
++        "payload": {
++            "snapshot_key": snapshot_key(generation=generation),
++        },
++    }
++
++
++def planner_trace_event(
++    *,
++    attempt_id: int,
++    generation: int,
++    trace_kind: str,
++    t: float,
++    **payload,
++):
++    return {
++        "schema_version": 1,
++        "kind": "planner_trace",
++        "monotonic_s": t,
++        "attempt_id": attempt_id,
++        "payload": {
++            "trace_kind": trace_kind,
++            "snapshot_key": snapshot_key(generation=generation),
++            **payload,
++        },
++    }
++
++
++def pending_replaced_event(
++    *,
++    attempt_id: int,
++    generation: int,
++    replaced_generation: int,
++    t: float,
++):
++    return planner_trace_event(
++        attempt_id=attempt_id,
++        generation=generation,
++        trace_kind="pending_replaced",
++        t=t,
++        replaced_snapshot_key=snapshot_key(
++            generation=replaced_generation,
++        ),
++    )
++
++
++def planner_start_event(
++    *,
++    attempt_id: int,
++    generation: int,
++    t: float,
++):
++    return planner_trace_event(
++        attempt_id=attempt_id,
++        generation=generation,
++        trace_kind="start",
++        t=t,
++    )
++
++
++def planner_complete_event(
++    *,
++    attempt_id: int,
++    generation: int,
++    source_frame: int,
++    completed_t: float,
++    error_type,
++    error_text,
++):
++    key = snapshot_key(generation=generation)
++    return planner_trace_event(
++        attempt_id=attempt_id,
++        generation=generation,
++        trace_kind="complete",
++        t=completed_t,
++        result={
++            "snapshot_key": key,
++            "source_frame": source_frame,
++            "strike_deadline_monotonic_s": completed_t + 0.5,
++            "completed_monotonic_s": completed_t,
++            "command_fields": None,
++            "error_type": error_type,
++            "error_text": error_text,
++            "reason_code": "PLANNER_EXCEPTION",
++        },
++    )
++
++
++def write_json_lines(path: Path, rows) -> None:
++    with path.open("w", encoding="utf-8") as stream:
++        for row in rows:
++            stream.write(json.dumps(row, separators=(",", ":")))
++            stream.write("\n")
++
++
++class PlannerEventScanTests(unittest.TestCase):
++    def test_scan_keeps_only_calls_that_started_and_completed(self):
++        with tempfile.TemporaryDirectory() as directory:
++            events_path = Path(directory) / "events.jsonl"
++            events = [
++                planner_submit_event(
++                    attempt_id=1,
++                    generation=10,
++                    t=1.0,
++                ),
++                planner_submit_event(
++                    attempt_id=1,
++                    generation=11,
++                    t=1.01,
++                ),
++                pending_replaced_event(
++                    attempt_id=1,
++                    generation=11,
++                    replaced_generation=10,
++                    t=1.011,
++                ),
++                planner_start_event(
++                    attempt_id=1,
++                    generation=11,
++                    t=1.02,
++                ),
++                planner_complete_event(
++                    attempt_id=1,
++                    generation=11,
++                    source_frame=1011,
++                    completed_t=1.03,
++                    error_type="ValueError",
++                    error_text="example rejection",
++                ),
++            ]
++            write_json_lines(events_path, events)
++
++            scan = scan_planner_events(events_path, [1])
++
++            self.assertEqual(
++                [call.key.generation for call in scan.completed_calls],
++                [11],
++            )
++            self.assertEqual(
++                {key.generation for key in scan.pending_replaced_keys},
++                {10},
++            )
++            self.assertEqual(
++                {key.generation for key in scan.submitted_keys},
++                {10, 11},
++            )
++
++    def test_scan_rejects_unclassified_submitted_key(self):
++        with tempfile.TemporaryDirectory() as directory:
++            events_path = Path(directory) / "events.jsonl"
++            write_json_lines(
++                events_path,
++                [
++                    planner_submit_event(
++                        attempt_id=1,
++                        generation=20,
++                        t=2.0,
++                    ),
++                ],
++            )
++
++            with self.assertRaisesRegex(
++                ValueError,
++                "submitted keys are neither completed nor pending-replaced",
++            ):
++                scan_planner_events(events_path, [1])
++
++    def test_scan_rejects_conflicting_duplicate_planner_events(self):
++        base_events = [
++            planner_submit_event(
++                attempt_id=1,
++                generation=30,
++                t=3.0,
++            ),
++            planner_start_event(
++                attempt_id=1,
++                generation=30,
++                t=3.01,
++            ),
++            planner_complete_event(
++                attempt_id=1,
++                generation=30,
++                source_frame=1030,
++                completed_t=3.02,
++                error_type=None,
++                error_text=None,
++            ),
++        ]
++        conflicts = (
++            ("planner submit", 0, "input_seq", 999),
++            ("planner start", 1, "snapshot_ready", False),
++            ("planner complete", 2, "incoming_confirmed", True),
++        )
++
++        for label, event_index, field, value in conflicts:
++            with self.subTest(label=label):
++                with tempfile.TemporaryDirectory() as directory:
++                    events_path = Path(directory) / "events.jsonl"
++                    events = copy.deepcopy(base_events)
++                    duplicate = copy.deepcopy(events[event_index])
++                    duplicate["payload"][field] = value
++                    events.insert(event_index + 1, duplicate)
++                    write_json_lines(events_path, events)
++
++                    with self.assertRaisesRegex(
++                        ValueError,
++                        "conflicting duplicate {}".format(label),
++                    ):
++                        scan_planner_events(events_path, [1])
++
++    def test_scan_rejects_key_classified_as_completed_and_pending_replaced(self):
++        with tempfile.TemporaryDirectory() as directory:
++            events_path = Path(directory) / "events.jsonl"
++            events = [
++                planner_submit_event(
++                    attempt_id=1,
++                    generation=40,
++                    t=4.0,
++                ),
++                planner_start_event(
++                    attempt_id=1,
++                    generation=40,
++                    t=4.01,
++                ),
++                planner_complete_event(
++                    attempt_id=1,
++                    generation=40,
++                    source_frame=1040,
++                    completed_t=4.02,
++                    error_type=None,
++                    error_text=None,
++                ),
++                planner_submit_event(
++                    attempt_id=1,
++                    generation=41,
++                    t=4.03,
++                ),
++                pending_replaced_event(
++                    attempt_id=1,
++                    generation=41,
++                    replaced_generation=40,
++                    t=4.031,
++                ),
++                planner_start_event(
++                    attempt_id=1,
++                    generation=41,
++                    t=4.04,
++                ),
++                planner_complete_event(
++                    attempt_id=1,
++                    generation=41,
++                    source_frame=1041,
++                    completed_t=4.05,
++                    error_type=None,
++                    error_text=None,
++                ),
++            ]
++            write_json_lines(events_path, events)
++
++            with self.assertRaisesRegex(
++                ValueError,
++                "completed and pending-replaced keys overlap",
++            ):
++                scan_planner_events(events_path, [1])
++
++
++if __name__ == "__main__":
++    unittest.main()

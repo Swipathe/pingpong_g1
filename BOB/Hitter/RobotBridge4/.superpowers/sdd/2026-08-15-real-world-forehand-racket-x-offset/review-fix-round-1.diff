@@ -1,0 +1,142 @@
+--- .superpowers/sdd/2026-08-15-real-world-forehand-racket-x-offset/review-working-tree-task-1.diff	2026-08-15 18:45:34.075088092 +0800
++++ .superpowers/sdd/2026-08-15-real-world-forehand-racket-x-offset/review-working-tree-task-1-fix1-current.diff	2026-08-15 18:54:54.113829556 +0800
+@@ -1,14 +1,11 @@
+-# Review package: working tree task 1 against HEAD 9872a9ccbf64e6ad92892f9d596669ce1114cb3b
+-
+-## Commits
+-No implementation commit by plan Step 7; changes remain in the dirty working tree.
++# Review package: working tree task 1 after fix round 1 against HEAD 9872a9ccbf64e6ad92892f9d596669ce1114cb3b
+ 
+ ## Files changed
+  deploy/config/mimic/hitter.yaml                    |  23 ++-
+- deploy/envs/hitter.py                              | 172 +++++++++++++++++++--
+- .../test_hitter_runtime_single_shot_integration.py |  65 ++++++++
++ deploy/envs/hitter.py                              | 198 ++++++++++++++++++++-
++ .../test_hitter_runtime_single_shot_integration.py |  65 +++++++
+  deploy/tests/test_hitter_strike_target_logging.py  |  33 ++++
+- 4 files changed, 276 insertions(+), 17 deletions(-)
++ 4 files changed, 302 insertions(+), 17 deletions(-)
+ 
+ ## Diff
+ diff --git a/deploy/config/mimic/hitter.yaml b/deploy/config/mimic/hitter.yaml
+@@ -93,10 +90,10 @@
+ +    forehand_nominal_racket_y_b: -0.5
+ +    backhand_nominal_racket_y_b: 0.22
+ diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+-index 266a2f9..ad0e440 100644
++index 266a2f9..2e5e00f 100644
+ --- a/deploy/envs/hitter.py
+ +++ b/deploy/envs/hitter.py
+-@@ -71,20 +71,28 @@ class HitterEnv(BaseEnv):
++@@ -71,20 +71,25 @@ class HitterEnv(BaseEnv):
+              is_real_world=bool(getattr(self.simulator, "is_real", False)),
+          )
+          self.hitter_runtime_settings = resolve_hitter_runtime_settings(
+@@ -108,11 +105,8 @@
+          self.playback_speed = float(self.motion_cfg.get("playback_speed", 1.0))
+          self.action_beta = float(self.policy_cfg.get("action_beta", 1.0))
+ +        self.forehand_policy_vx_offset_mps = (
+-+            self._validated_forehand_policy_vx_offset(
+-+                self.policy_cfg.get(
+-+                    "real_world_forehand_racket_velocity_x_offset_mps",
+-+                    0.0,
+-+                )
+++            self._forehand_policy_vx_offset_from_policy_cfg(
+++                self.policy_cfg
+ +            )
+ +        )
+          self.real_world_first_frame_transition_s = float(
+@@ -125,7 +119,7 @@
+  
+          self.policy_model_meta: Optional[HitterModelMeta] = None
+          self.policy_action_scales: Optional[np.ndarray] = None
+-@@ -599,27 +607,24 @@ class HitterEnv(BaseEnv):
++@@ -599,27 +604,24 @@ class HitterEnv(BaseEnv):
+                      ),
+                  )
+                  return
+@@ -157,7 +151,7 @@
+                  self.simulator,
+                  "hitter_snapshot_planning_eligible",
+                  None,
+-@@ -870,20 +875,58 @@ class HitterEnv(BaseEnv):
++@@ -870,20 +872,87 @@ class HitterEnv(BaseEnv):
+      def _validated_vector(value, *, name: str, size: int) -> np.ndarray:
+          array = np.asarray(value, dtype=np.float32)
+          if array.shape != (size,):
+@@ -184,8 +178,24 @@
+ +                "policy.real_world_forehand_racket_velocity_x_offset_mps "
+ +                "must be finite and non-negative."
+ +            )
+++        if result > float(np.finfo(np.float32).max):
+++            raise ValueError(
+++                "policy.real_world_forehand_racket_velocity_x_offset_mps "
+++                "must be representable as float32."
+++            )
+ +        return result
+ +
+++    @classmethod
+++    def _forehand_policy_vx_offset_from_policy_cfg(cls, policy_cfg) -> float:
+++        if not isinstance(policy_cfg, dict):
+++            raise TypeError("policy configuration must be a mapping.")
+++        return cls._validated_forehand_policy_vx_offset(
+++            policy_cfg.get(
+++                "real_world_forehand_racket_velocity_x_offset_mps",
+++                0.0,
+++            )
+++        )
+++
+ +    def _policy_racket_target_velocity_w(
+ +        self,
+ +        racket_velocity_w,
+@@ -202,8 +212,21 @@
+ +            bool(getattr(self.simulator, "is_real", False))
+ +            and strike_type == "forehand"
+ +        ):
+-+            offset = float(getattr(self, "forehand_policy_vx_offset_mps", 0.0))
+-+            velocity[0] += np.float32(offset)
+++            offset = self._validated_forehand_policy_vx_offset(
+++                getattr(self, "forehand_policy_vx_offset_mps", 0.0)
+++            )
+++            policy_velocity_x = float(
+++                np.float64(velocity[0]) + np.float64(offset)
+++            )
+++            if (
+++                not np.isfinite(policy_velocity_x)
+++                or abs(policy_velocity_x) > float(np.finfo(np.float32).max)
+++            ):
+++                raise ValueError(
+++                    "v_racket_target_w[0] plus policy offset must be "
+++                    "finite and representable as float32."
+++                )
+++            velocity[0] = np.float32(policy_velocity_x)
+ +        return velocity, offset
+ +
+      @staticmethod
+@@ -216,7 +239,7 @@
+      ) -> np.ndarray:
+          array = np.asarray(value, dtype=np.float64)
+          if array.shape != (size,):
+-@@ -933,34 +976,100 @@ class HitterEnv(BaseEnv):
++@@ -933,34 +1002,100 @@ class HitterEnv(BaseEnv):
+          racket_velocity = self._validated_vector(
+              command.v_racket_target_w,
+              name="v_racket_target_w",
+@@ -317,7 +340,7 @@
+  
+      def _log_hitter_strike_target(
+          self,
+-@@ -971,43 +1080,70 @@ class HitterEnv(BaseEnv):
++@@ -971,43 +1106,70 @@ class HitterEnv(BaseEnv):
+                  raise ValueError("active planner result is missing a command")
+              command = active_result.command
+              fields = self._validated_hitter_command_fields(command)
+@@ -389,7 +412,7 @@
+              except Exception:
+                  pass
+  
+-@@ -1560,30 +1696,48 @@ class HitterEnv(BaseEnv):
++@@ -1560,30 +1722,48 @@ class HitterEnv(BaseEnv):
+  
+          obs_base_ang_vel = np.asarray(self.base_ang_vel, dtype=np.float32).reshape(-1)[:3]
+          obs_projected_gravity = np.asarray(self.projected_gravity, dtype=np.float32).reshape(-1)[:3]

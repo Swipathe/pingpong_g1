@@ -1,0 +1,17 @@
+diff --git a/source/whole_body_tracking/whole_body_tracking/robots/g1.py b/source/whole_body_tracking/whole_body_tracking/robots/g1.py
+--- a/source/whole_body_tracking/whole_body_tracking/robots/g1.py
++++ b/source/whole_body_tracking/whole_body_tracking/robots/g1.py
+@@ -84,8 +84,12 @@ _G1_SPAWN_CFG = (
+     else _make_urdf_spawn_cfg(f"{ASSET_DIR}/unitree_description/urdf/g1/main.urdf")
+ )
+ 
++_G1_HITTER_RACKET_USD_PATH = os.environ.get(
++    "HITTER_G1_HITTER_RACKET_USD_PATH",
++    f"{ASSET_DIR}/unitree_description/usd/g1_hitter_racket/main.usda",
++)
+ _G1_HITTER_RACKET_SPAWN_CFG = _make_usd_spawn_cfg(
+-    usd_path=f"{ASSET_DIR}/unitree_description/usd/g1_hitter_racket/main.usda",
++    usd_path=_G1_HITTER_RACKET_USD_PATH,
+ )
+ 
+ G1_CYLINDER_CFG = ArticulationCfg(

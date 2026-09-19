@@ -1,0 +1,30 @@
+{
+  "root": "/home/yhl/Desktop/RobotBridge4_refactor",
+  "requested_steps": 1100,
+  "completed_steps": 0,
+  "agent": "agents.hitter_agent.HitterAgent",
+  "env": "envs.hitter.HitterEnv",
+  "simulator": "simulator.mujoco.Mujoco",
+  "model_inputs": [
+    {
+      "name": "obs",
+      "shape": [
+        1,
+        104
+      ]
+    }
+  ],
+  "model_outputs": [
+    {
+      "name": "actions",
+      "shape": [
+        1,
+        29
+      ]
+    }
+  ],
+  "loop_passed": false,
+  "loop_exception": "Traceback (most recent call last):\n  File \"/tmp/rb4-startup-check/sim_loop.py\", line 42, in <module>\n    assert {key: list(value.shape) for key, value in obs.items()} == {'actor_obs': [1, 104]}\nAssertionError\n",
+  "close_exception": "Traceback (most recent call last):\n  File \"/tmp/rb4-startup-check/sim_loop.py\", line 68, in <module>\n    result['close_result'] = agent.env.close()\n  File \"/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py\", line 1882, in close\n    raise first_error\n  File \"/home/yhl/Desktop/RobotBridge4_refactor/deploy/envs/hitter.py\", line 1865, in close\n    simulator_closed = close_simulator() is not False\n  File \"/home/yhl/Desktop/RobotBridge4_refactor/deploy/simulator/base_sim.py\", line 167, in close\n    self.lc.unsubscribe(self.joint_state_subscriber)\nAttributeError: 'Mujoco' object has no attribute 'joint_state_subscriber'. Did you mean: 'teleop_state_subscriber'?\n",
+  "wall_time_s": 1.305676546999166
+}

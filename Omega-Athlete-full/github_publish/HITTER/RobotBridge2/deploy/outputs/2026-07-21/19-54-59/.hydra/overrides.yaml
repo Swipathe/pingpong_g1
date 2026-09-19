@@ -1,0 +1,10 @@
+- sim=mujoco
+- mimic.policy.checkpoint=../../HITTER-main/checkpoints/hitter_m20400/exported/policy.onnx
+- robot.control.playback_slowdown=4
+- mimic.motion.ball_planner.prediction_horizon_s=4.0
+- +sim.config.table_tennis.enabled=true
+- +sim.config.table_tennis.randomize_ball_on_reset=true
+- +sim.config.table_tennis.ball_trajectory_selection=sequence
+- +sim.config.table_tennis.ball_trajectory_candidates=[{name:center_slow,pos:[1.8,0.0,1.1],lin_vel:[-1.6,0.0,0.0]},{name:left_slow,pos:[1.8,0.25,1.1],lin_vel:[-1.6,-0.05,0.0]},{name:right_slow,pos:[1.8,-0.25,1.1],lin_vel:[-1.6,0.05,0.0]}]
+- +sim.config.table_tennis.use_analytic_table_bounce=true
+- +sim.config.table_tennis.use_analytic_racket_hit=true

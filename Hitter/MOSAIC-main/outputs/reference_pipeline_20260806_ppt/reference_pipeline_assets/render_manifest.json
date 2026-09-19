@@ -1,0 +1,176 @@
+{
+  "renderer": "PyBullet TinyRenderer (CPU), static measured poses",
+  "human_model": "SMPL-X neutral, GVHMR supermotion parameters, camera-space prediction",
+  "human_crop_xyxy": [
+    0,
+    320,
+    1080,
+    1920
+  ],
+  "robot_urdf": "/home/yhl/Desktop/Hitter/MOSAIC-main/source/whole_body_tracking/whole_body_tracking/assets/unitree_description/urdf/g1_hitter_racket/main.urdf",
+  "robot_urdf_sha256": "622431ec7997de100929e5e24fc1918247436d2ae3d1eca6b297ba770e99e640",
+  "examples": [
+    {
+      "selection": {
+        "id": "F7",
+        "stroke": "forehand",
+        "phase_relative_to_robot_speed_peak": "Before peak",
+        "video": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_captures/20260806_mqy_capture/manual_clips_review/forehand/forehand_manual_010_forehand_0.000_1.880_50fps.mp4",
+        "video_frame_zero_based": 34,
+        "video_time_seconds": 0.68,
+        "original_recording": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_captures/20260806_mqy_capture/forehand.mp4",
+        "original_time_seconds_approx": 0.68,
+        "gvhmr_result": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_captures/20260806_mqy_capture/gvhmr_results/forehand/forehand_manual_010_forehand_0.000_1.880_50fps/hmr4d_results.pt",
+        "gvhmr_frame_zero_based": 34,
+        "npz_pre_align": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_motions/20260806_mqy_g1_npz_raw_pre_align/forehand/forehand_manual_010_forehand_0.000_1.880_50fps__unitree_g1.npz",
+        "npz_pre_align_frame_nearest_video_frame": 34.0,
+        "npz_aligned": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_motions/20260806_mqy_g1_npz_raw_peak43_aligned/forehand/forehand_manual_010_forehand_0.000_1.880_50fps__unitree_g1.npz",
+        "npz_alignment_shift_frames": -3,
+        "candidate_target_pre_align_frame": 34,
+        "unannotated_image": "/home/yhl/Desktop/Hitter/MOSAIC-main/outputs/reference_pipeline_20260806_ppt/frames/F7_forehand_manual_010_forehand_0.000_1.880_50fps_frame034.png",
+        "contact_sheet_crop_xywh": [
+          0,
+          320,
+          1080,
+          1600
+        ],
+        "note": "Human source frame is exact. NPZ time mapping may be fractional after resampling. Robot speed peak is not a measured ball contact event."
+      },
+      "human_render": {
+        "intrinsics": [
+          [
+            2202.9072265625,
+            0.0,
+            540.0
+          ],
+          [
+            0.0,
+            2202.9072265625,
+            960.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "mesh_vertex_count": 10475,
+        "mesh_face_count": 20908,
+        "rendered_mesh_pixels": 266538,
+        "smplx_frame": 34,
+        "mesh_sha256": "80c2d21627544bb7d702c88d33f6b895e70daec8da73e94b686c25c987d7b92a"
+      },
+      "robot_render": {
+        "pre_align_frame": 34,
+        "aligned_frame": 31,
+        "joint_count": 29,
+        "max_fk_error_m": 1.1920928955078125e-07,
+        "racket_fk_error_m": 1.1920928955078125e-07,
+        "display_camera_eye": [
+          4.1,
+          -0.1,
+          1.17
+        ],
+        "display_camera_target": [
+          0,
+          0,
+          0.72
+        ],
+        "display_yaw_removed_rad": 1.446902512355982,
+        "display_ground_translation_m": -0.06455084113084486,
+        "robot_pixel_bbox": [
+          223,
+          269,
+          962,
+          1409
+        ]
+      },
+      "source_hashes": {
+        "gvhmr_result": "b40ec3a7eef7c66942820c192abcc0808959a62bbdbc51aa6fada54e330441a9",
+        "npz_pre_align": "0c86e9281449a2ec3f71ecceb89684fcabd20fb393305ae77f0aac8023811fa9",
+        "unannotated_image": "74d33b1ea08c7169e2214c3d65d4a266e23ec5e342e359b44900f15d2bd86656"
+      }
+    },
+    {
+      "selection": {
+        "id": "B7",
+        "stroke": "backhand",
+        "phase_relative_to_robot_speed_peak": "Before peak",
+        "video": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_captures/20260806_mqy_capture/manual_clips_review/backhand/backhand_manual_011_backhand_0.000_1.880_50fps.mp4",
+        "video_frame_zero_based": 35,
+        "video_time_seconds": 0.7,
+        "original_recording": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_captures/20260806_mqy_capture/backhand.mp4",
+        "original_time_seconds_approx": 0.7,
+        "gvhmr_result": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_captures/20260806_mqy_capture/gvhmr_results/backhand/backhand_manual_011_backhand_0.000_1.880_50fps/hmr4d_results.pt",
+        "gvhmr_frame_zero_based": 35,
+        "npz_pre_align": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_motions/20260806_mqy_g1_npz_raw_pre_align/backhand/backhand_manual_011_backhand_0.000_1.880_50fps__unitree_g1.npz",
+        "npz_pre_align_frame_nearest_video_frame": 35.0,
+        "npz_aligned": "/home/yhl/Desktop/Hitter/MOSAIC-main/data/hitter_motions/20260806_mqy_g1_npz_raw_peak43_aligned/backhand/backhand_manual_011_backhand_0.000_1.880_50fps__unitree_g1.npz",
+        "npz_alignment_shift_frames": -4,
+        "candidate_target_pre_align_frame": 35,
+        "unannotated_image": "/home/yhl/Desktop/Hitter/MOSAIC-main/outputs/reference_pipeline_20260806_ppt/frames/B7_backhand_manual_011_backhand_0.000_1.880_50fps_frame035.png",
+        "contact_sheet_crop_xywh": [
+          0,
+          320,
+          1080,
+          1600
+        ],
+        "note": "Human source frame is exact. NPZ time mapping may be fractional after resampling. Robot speed peak is not a measured ball contact event."
+      },
+      "human_render": {
+        "intrinsics": [
+          [
+            2202.9072265625,
+            0.0,
+            540.0
+          ],
+          [
+            0.0,
+            2202.9072265625,
+            960.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "mesh_vertex_count": 10475,
+        "mesh_face_count": 20908,
+        "rendered_mesh_pixels": 261703,
+        "smplx_frame": 35,
+        "mesh_sha256": "89fa33ef51843e6d702943c0383e2fbb0613cd96f2f06efd15bf440301b16397"
+      },
+      "robot_render": {
+        "pre_align_frame": 35,
+        "aligned_frame": 31,
+        "joint_count": 29,
+        "max_fk_error_m": 1.1920928955078125e-07,
+        "racket_fk_error_m": 0.0,
+        "display_camera_eye": [
+          4.1,
+          -0.1,
+          1.17
+        ],
+        "display_camera_target": [
+          0,
+          0,
+          0.72
+        ],
+        "display_yaw_removed_rad": 1.5841796407946684,
+        "display_ground_translation_m": -0.055562518944559505,
+        "robot_pixel_bbox": [
+          304,
+          260,
+          1017,
+          1405
+        ]
+      },
+      "source_hashes": {
+        "gvhmr_result": "d3922e8118003753fb54b70849f7f35245333faa568d4eeca454b40ff2fa1124",
+        "npz_pre_align": "42f457f892e2c89bbd986854b0188414273eb19bb6b5eb5df93b290d31d04ad7",
+        "unannotated_image": "6e844094f68a7f0cb62b08f94c6a834351c35b739d35e336224b28c90b918924"
+      }
+    }
+  ]
+}

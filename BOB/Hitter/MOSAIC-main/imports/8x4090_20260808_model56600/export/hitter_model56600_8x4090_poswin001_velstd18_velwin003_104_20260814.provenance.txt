@@ -1,0 +1,53 @@
+Artifact
+========
+Filename: hitter_model56600_8x4090_poswin001_velstd18_velwin003_104_20260814.onnx
+Exported: 2026-08-14T08:55:28+08:00 on locomotion
+ONNX SHA256: 49c4c403ab42e84e71e67fe324ac722c125217484d6aeeb2b47cab934fc351cc
+ONNX size: 891384 bytes
+ONNX opset: 18
+Contract: float32 obs [1,104] -> float32 actions [1,29]
+
+Source checkpoint
+=================
+Original: /home/loco1/Downloads/model_56600.pt
+Exporter copy: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/8x4090_20260814_model56600_export/model_56600.pt
+Checkpoint iteration: 56600
+Checkpoint SHA256: 4925539287da2e914f47b5be62f2c5dd29def8377e88205e04c6fdec8409574e
+Actor: 104 -> 512 -> 256 -> 128 -> 29 with ELU
+Critic input: 301
+Normalizer: checkpoint policy normalizer [1,104]
+
+Compatibility basis
+===================
+The user identified this as the latest trained model. Its checkpoint keys, actor and critic shapes, and policy/critic normalizer tensors match the deployed model17500 training chain. The model17500 source, configuration, motion, and metadata snapshot was therefore reused for export.
+
+Export
+======
+MOSAIC root: /home/loco1/BOB/Hitter/MOSAIC-main
+Run directory: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/8x4090_20260814_model56600_export
+Source snapshot: /home/loco1/BOB/Hitter/MOSAIC-main/imports/8x4090_20260808_model17500
+Task: Hitter-Striking-PlannerDomain-Flat-G1-v0
+Motion: motion/20260806_mqy_g1_npz_raw_peak43_aligned
+Python: /home/loco1/miniconda3/envs/isaaclab/bin/python
+PyTorch: 2.5.1+cu121
+ONNX: 1.16.1
+ONNX Runtime validation: 1.19.2
+play.py SHA256: f86484c04f1a86dc0171391b300331c7dc63f5bd6d3a45d36ace9d9c6ddd453e
+exporter.py SHA256: 4e05cd5af77bb5f5dad2015cfbf72f3106df390f0166c546b389e6e2fee55513
+params/agent.yaml SHA256: 0faf11a3af8c6b6d9e1b205cf03610fcf7024a566e615e72d1171d8f1dd51674
+params/env.yaml SHA256: 89599ed41e9ffc1da2d021bc451d8d1a583c57baa43d5c39f494164d02fab1e5
+Options: --num_envs=1 --skip_critic --headless --device=cuda:0 --video --video_length=1
+
+Validation
+==========
+Exporter exit code: 0
+onnx.checker: PASS
+Input/output: obs [1,104] -> actions [1,29]
+Metadata: 11 keys; exactly matches deployed model17500 metadata
+ONNX Runtime CPU zero observation: finite actions [1,29]
+Source/import/deployment ONNX SHA256 equality: PASS
+
+Evidence boundary
+=================
+No project test suite, MuJoCo behavior test, or physical-robot behavior test was run, per user request. These checks establish checkpoint loading, export success, ONNX structure, deployment metadata, and finite inference only.
+

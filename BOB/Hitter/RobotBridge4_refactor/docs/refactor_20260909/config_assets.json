@@ -1,0 +1,40 @@
+{
+  "mujoco": {
+    "agent_target": "agents.hitter_agent.HitterAgent",
+    "env_target": "envs.hitter.HitterEnv",
+    "sim_target": "simulator.mujoco.Mujoco",
+    "num_action": 29,
+    "resolved": true
+  },
+  "real_world": {
+    "agent_target": "agents.hitter_agent.HitterAgent",
+    "env_target": "envs.hitter.HitterEnv",
+    "sim_target": "simulator.real_world.RealWorld",
+    "num_action": 29,
+    "resolved": true
+  },
+  "mujoco_asset": {
+    "path": "data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml",
+    "nq": 43,
+    "nv": 41,
+    "nu": 29,
+    "steps": 10,
+    "finite_qpos": true
+  },
+  "onnx": {
+    "path": "./data/model/hitter/hitter_model20500_20260818_104.onnx",
+    "inputs": {
+      "obs": [
+        1,
+        104
+      ]
+    },
+    "outputs": [
+      [
+        1,
+        29
+      ]
+    ],
+    "finite_outputs": true
+  }
+}

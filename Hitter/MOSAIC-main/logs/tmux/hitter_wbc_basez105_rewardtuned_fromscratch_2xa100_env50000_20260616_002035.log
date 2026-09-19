@@ -1,0 +1,124 @@
+command=/root/.venvs/isaaclab-mosaic/bin/torchrun --standalone --nnodes=1 --nproc_per_node=2 scripts/rsl_rl/train.py --task=Hitter-Striking-PlannerDomain-Flat-G1-v0 --motion=data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean --num_envs=50000 --max_iterations=10000 --run_name=hitter_wbc_basez105_rewardtuned_fromscratch_2xa100_env50000_20260616_002035 --logger=swanlab --log_project_name=hitter_striking_g1 --save_interval=100 --headless
+W0616 00:20:37.414000 1747605 torch/distributed/run.py:793] 
+W0616 00:20:37.414000 1747605 torch/distributed/run.py:793] *****************************************
+W0616 00:20:37.414000 1747605 torch/distributed/run.py:793] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0616 00:20:37.414000 1747605 torch/distributed/run.py:793] *****************************************
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/isaaclab.python.headless.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+[INFO][AppLauncher]: Using device: cuda:1
+[INFO][AppLauncher]: Loading experience file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/isaaclab.python.headless.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260616_002037.log
+2026-06-15 16:20:37 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+Loading user config located at: '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260616_002037.log
+2026-06-15 16:20:37 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-06-15 16:20:37 [211ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes' or '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes/config'
+2026-06-15 16:20:38 [327ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes' or '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes/config'
+2026-06-15 16:20:38 [547ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-06-15 16:20:38 [594ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-06-15 16:20:38 [1,040ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-06-15 16:20:38 [1,079ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-06-15 16:20:38 [1,210ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-06-15 16:20:38 [1,270ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            |        |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101004 (1.21.1.4)
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 168377
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-15 16:20:47 [10,121ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-06-15 16:20:47 [10,124ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-15 16:20:47 [10,124ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Cuda failure ../../../source/plugins/carb.cudainterop/p2pBandwidthLatencyTest/p2pBandwidthLatencyTest.cu:681: 'peer access is already enabled'
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            |        |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101004 (1.21.1.4)
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 168363
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-15 16:20:48 [10,307ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 1
+2026-06-15 16:20:48 [10,310ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-15 16:20:48 [10,310ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Cuda failure ../../../source/plugins/carb.cudainterop/p2pBandwidthLatencyTest/p2pBandwidthLatencyTest.cu:681: 'peer access is already enabled'
+2026-06-15 16:20:48 [10,348ms] [Warning] [omni.kvdb.plugin] Disabling key-value database because another kit process is locking it
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[INFO] Distributed seeding: base_seed=42, rank=0, env_seed=42 (stride=1000)
+[INFO] Logging experiment in directory: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1
+Setting seed: 42
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 42
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+[INFO] Distributed seeding: base_seed=42, rank=1, env_seed=1042 (stride=1000)
+[INFO] Logging experiment in directory: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1
+Setting seed: 1042
+[INFO]: Base environment:
+	Environment device    : cuda:1
+	Environment seed      : 1042
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+[INFO]: Time taken for scene creation : 52.844977 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 50000
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for scene creation : 53.960266 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 50000
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...

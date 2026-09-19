@@ -1,0 +1,12 @@
+- env.commands.motion.motion_dataset_shard_across_gpus=False
+- env.commands.motion.strike_metric_window_s=0.01
+- env.commands.motion.time_to_strike_range=[0.84,0.88]
+- env.rewards.racket_pos.weight=120.0
+- env.rewards.racket_pos.params.std=0.09
+- env.rewards.racket_pos.params.window_s=0.01
+- agent.reset_noise_std_on_resume=True
+- agent.freeze_normalizer_on_resume=True
+- agent.policy.init_noise_std=0.20
+- agent.algorithm.learning_rate=5.0e-5
+- agent.algorithm.schedule=fixed
+- agent.algorithm.entropy_coef=0.001

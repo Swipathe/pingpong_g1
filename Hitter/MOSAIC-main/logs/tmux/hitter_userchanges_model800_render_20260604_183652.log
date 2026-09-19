@@ -1,0 +1,757 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/isaaclab.python.headless.rendering.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260604_183652.log
+2026-06-04 10:36:52 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-06-04 10:36:52 [21ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes' or '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes/config'
+2026-06-04 10:36:53 [361ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-06-04 10:36:53 [385ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:53 [385ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:53 [492ms] [Warning] [omni.platforminfo.plugin] failed to open the default display.  Can't verify X Server version.
+2026-06-04 10:36:53 [917ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:53 [917ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:53 [917ms] [Error] [carb.glinterop.plugin] GLInteropContext::init: carb::windowing is not available
+2026-06-04 10:36:53 [917ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-06-04 10:36:53 [917ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-06-04 10:36:53 [917ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+2026-06-04 10:36:54 [1,509ms] [Warning] [gpu.foundation.plugin] Skipping NVIDIA GPU due CUDA being in bad state: NVIDIA A100-SXM4-40GB
+2026-06-04 10:36:54 [1,509ms] [Warning] [gpu.foundation.plugin] Please restart your system if CUDA is known to work in your system.
+2026-06-04 10:36:54 [1,509ms] [Warning] [gpu.foundation.plugin] Skipping NVIDIA GPU due CUDA being in bad state: NVIDIA A100-SXM4-40GB
+2026-06-04 10:36:54 [1,509ms] [Warning] [gpu.foundation.plugin] Please restart your system if CUDA is known to work in your system.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            |        |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 151815
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-04 10:36:55 [2,311ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-06-04 10:36:55 [2,312ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-04 10:36:55 [2,312ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0 
+     0 1282.45 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0 
+     0   2.44 
+
+   CPU     0 
+     0   3.42 
+2026-06-04 10:36:56 [3,336ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:56 [3,336ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:56 [3,436ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:56 [3,436ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:56 [3,469ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:56 [3,469ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:56 [3,488ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:56 [3,488ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:56 [3,490ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:56 [3,490ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:56 [3,491ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-04 10:36:56 [3,491ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-04 10:36:56 [4,013ms] [Warning] [omni.log] Source: omni.hydra was already registered.
+2026-06-04 10:36:56 [4,043ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-06-04 10:36:59 [6,993ms] [Warning] [omni.replicator.core.scripts.extension] No material configuration file, adding configuration to material settings directly.
+2026-06-04 10:37:02 [9,701ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/ambientOcclusion/enabled'
+2026-06-04 10:37:02 [9,701ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/directLighting/sampledLighting/enabled'
+2026-06-04 10:37:02 [9,701ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/indirectDiffuse/enabled'
+2026-06-04 10:37:02 [9,701ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/raytracing/cached/enabled'
+2026-06-04 10:37:02 [9,701ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/reflections/enabled'
+2026-06-04 10:37:02 [9,702ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/sceneDb/ambientLightIntensity'
+2026-06-04 10:37:02 [9,702ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/translucency/enabled'
+2026-06-04 10:37:02 [9,702ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/viewTile/limit'
+2026-06-04 10:37:02 [9,882ms] [Warning] [rtx.neuraylib.plugin] [IRAY:RENDER]   1.1   IRAY   rend warn : CUDA device 0 (NVIDIA A100-SXM4-40GB): ECC is enabled, this will reduce rendering performance (it is strongly recommended to disable ECC with iray)
+2026-06-04 10:37:02 [9,889ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 6998088704
+2026-06-04 10:37:02 [9,889ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid false, within: false
+2026-06-04 10:37:02 [9,889ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : decrement: 167690, decrement size: 6928108032
+2026-06-04 10:37:02 [9,889ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : New limit 10281689 (slope: 417, intercept: 5405696)
+2026-06-04 10:37:02 [9,889ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 4290779520
+2026-06-04 10:37:02 [9,889ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid true, within: true
+2026-06-04 10:37:42 [49,999ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/directLighting/sampledLighting/samplesPerPixel'
+2026-06-04 10:37:42 [49,999ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/pathtracing/maxSamplesPerLaunch'
+2026-06-04 10:37:42 [50,000ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
+2026-06-04 10:37:42 [50,081ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/post/dlss/execMode'
+2026-06-04 10:37:46 [53,419ms] [Warning] [rtx.postprocessing.plugin] DLSS-RR is not supported in the current build due to some known bugs with this GPU: NVIDIA A100-SXM4-40GB.Note that RTX Real-Time raytracing mode will not be able to denoise the output correctly.
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[INFO] Loading experiment from directory: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1
+[INFO]: Loading model checkpoint from: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-04_16-23-58_hitter_userchanges_oldbaai_2xa100_env50000_20260604_162345/model_800.pt
+[INFO]: Using motion directory or file from CLI: data/hitter_motions/iphone_manual_hitter_g1_npz_strike43_clean
+[INFO]: Forcing motion playback to start from frame 10.
+[INFO]: Raised motion_dataset_load_cap to 2 so every motion group is available during playback.
+[INFO]: Zeroed motion randomization ranges for evaluation.
+[INFO]: Disabled observation corruption/noise for evaluation.
+[INFO]: Disabled event terms for evaluation.
+[INFO]: Disabling timeout termination for playback run.
+2026-06-04 10:37:49 [56,781ms] [Warning] [isaaclab.envs.manager_based_env] Seed not set for the environment. The environment creation may not be deterministic.
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : None
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+2026-06-04 10:37:50 [57,934ms] [Warning] [isaaclab.terrains.terrain_importer] Visual material specified for ground plane but no diffuse color found. Using default color: (0.0, 0.0, 0.0)
+[INFO]: Time taken for scene creation : 1.406783 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 1
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+2026-06-04 10:37:54 [61,840ms] [Warning] [omni.hydra.scene_delegate.plugin] Calling getBypassRenderSkelMeshProcessing for prim /World/envs/env_0/Robot/left_ankle_pitch_link/visuals.proto_mesh_id0 that has not been populated
+[INFO]: Time taken for simulation start : 2.934773 seconds
+[2026-06-04 18:37:54,963][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.mainwindow-1.0.3
+[2026-06-04 18:37:54,964][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.mainwindow at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.mainwindow-1.0.3+d02c707b
+[2026-06-04 18:37:54,964][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.mainwindow-1.0.3+d02c707b imported as omni.kit.mainwindow with AutoNode config {}
+[2026-06-04 18:37:54,964][ogn_registration][INFO] - Registering Python Node Types from omni.kit.mainwindow at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.mainwindow-1.0.3+d02c707b in omni.kit.mainwindow
+[2026-06-04 18:37:54,964][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:54,965][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.mainwindow
+[2026-06-04 18:37:54,965][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:54,965][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.mainwindow - No nodes in this module, do not remember it
+[2026-06-04 18:37:54,965][ogn_registration][INFO] - Destroying registration record for omni.kit.mainwindow
+[2026-06-04 18:37:54,965][ogn_registration][INFO] - OGN register omni.kit.mainwindow-1.0.3 took 1451613.000000
+[2026-06-04 18:37:54,967][ogn_registration][INFO] - Looking for Python nodes to register in omni.uiaudio-1.0.0
+[2026-06-04 18:37:54,967][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.uiaudio at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.uiaudio-1.0.0+d02c707b.lx64.r.cp310
+[2026-06-04 18:37:54,967][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.uiaudio-1.0.0+d02c707b.lx64.r.cp310 imported as omni.kit.uiaudio with AutoNode config {}
+[2026-06-04 18:37:54,968][ogn_registration][INFO] - Registering Python Node Types from omni.kit.uiaudio at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.uiaudio-1.0.0+d02c707b.lx64.r.cp310 in omni.uiaudio
+[2026-06-04 18:37:54,968][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:54,968][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.uiaudio
+[2026-06-04 18:37:54,968][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:54,968][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.uiaudio - No nodes in this module, do not remember it
+[2026-06-04 18:37:54,968][ogn_registration][INFO] - Destroying registration record for omni.uiaudio
+[2026-06-04 18:37:54,968][ogn_registration][INFO] - OGN register omni.uiaudio-1.0.0 took 1287843.000000
+[2026-06-04 18:37:54,969][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.uiapp-0.0.0
+[2026-06-04 18:37:54,969][ogn_registration][INFO] - OGN register omni.kit.uiapp-0.0.0 took 71716.000000
+[2026-06-04 18:37:54,989][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.asset_converter-2.8.9
+[2026-06-04 18:37:54,989][ogn_registration][INFO] -  -> Registered nodes from module asset_converter_native_bindings at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.asset_converter-2.8.9+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:54,989][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.asset_converter-2.8.9+106.5.0.lx64.r.cp310 imported as asset_converter_native_bindings with AutoNode config {}
+[2026-06-04 18:37:54,990][ogn_registration][INFO] - Registering Python Node Types from asset_converter_native_bindings at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.asset_converter-2.8.9+106.5.0.lx64.r.cp310 in omni.kit.asset_converter
+[2026-06-04 18:37:54,990][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:54,990][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.asset_converter
+[2026-06-04 18:37:54,990][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:54,990][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module asset_converter_native_bindings - No nodes in this module, do not remember it
+[2026-06-04 18:37:54,990][ogn_registration][INFO] - Destroying registration record for omni.kit.asset_converter
+[2026-06-04 18:37:54,990][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.asset_converter at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.asset_converter-2.8.9+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:54,990][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.asset_converter-2.8.9+106.5.0.lx64.r.cp310 imported as omni.kit.asset_converter with AutoNode config {}
+[2026-06-04 18:37:54,991][ogn_registration][INFO] - Registering Python Node Types from omni.kit.asset_converter at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.asset_converter-2.8.9+106.5.0.lx64.r.cp310 in omni.kit.asset_converter
+[2026-06-04 18:37:54,991][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:54,991][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.asset_converter
+[2026-06-04 18:37:54,991][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:54,991][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.asset_converter - No nodes in this module, do not remember it
+[2026-06-04 18:37:54,991][ogn_registration][INFO] - Destroying registration record for omni.kit.asset_converter
+[2026-06-04 18:37:54,991][ogn_registration][INFO] - OGN register omni.kit.asset_converter-2.8.9 took 2085827.000000
+[2026-06-04 18:37:54,993][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.window.file_importer-1.1.14
+[2026-06-04 18:37:54,993][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.window.file_importer at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.file_importer-1.1.14+d02c707b
+[2026-06-04 18:37:54,993][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.file_importer-1.1.14+d02c707b imported as omni.kit.window.file_importer with AutoNode config {}
+[2026-06-04 18:37:54,993][ogn_registration][INFO] - Registering Python Node Types from omni.kit.window.file_importer at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.file_importer-1.1.14+d02c707b in omni.kit.window.file_importer
+[2026-06-04 18:37:54,993][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:54,994][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.window.file_importer
+[2026-06-04 18:37:54,994][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:54,994][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.window.file_importer - No nodes in this module, do not remember it
+[2026-06-04 18:37:54,994][ogn_registration][INFO] - Destroying registration record for omni.kit.window.file_importer
+[2026-06-04 18:37:54,994][ogn_registration][INFO] - OGN register omni.kit.window.file_importer-1.1.14 took 1205667.000000
+[2026-06-04 18:37:54,995][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.window.drop_support-1.0.4
+[2026-06-04 18:37:54,995][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.window.drop_support at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.drop_support-1.0.4+d02c707b
+[2026-06-04 18:37:54,995][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.drop_support-1.0.4+d02c707b imported as omni.kit.window.drop_support with AutoNode config {}
+[2026-06-04 18:37:54,995][ogn_registration][INFO] - Registering Python Node Types from omni.kit.window.drop_support at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.drop_support-1.0.4+d02c707b in omni.kit.window.drop_support
+[2026-06-04 18:37:54,995][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:54,996][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.window.drop_support
+[2026-06-04 18:37:54,996][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:54,996][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.window.drop_support - No nodes in this module, do not remember it
+[2026-06-04 18:37:54,996][ogn_registration][INFO] - Destroying registration record for omni.kit.window.drop_support
+[2026-06-04 18:37:54,996][ogn_registration][INFO] - OGN register omni.kit.window.drop_support-1.0.4 took 1071272.000000
+[2026-06-04 18:37:54,997][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.manipulator.viewport-107.0.1
+[2026-06-04 18:37:54,997][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.manipulator.viewport at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.manipulator.viewport-107.0.1+d02c707b
+[2026-06-04 18:37:54,997][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.manipulator.viewport-107.0.1+d02c707b imported as omni.kit.manipulator.viewport with AutoNode config {}
+[2026-06-04 18:37:54,998][ogn_registration][INFO] - Registering Python Node Types from omni.kit.manipulator.viewport at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.manipulator.viewport-107.0.1+d02c707b in omni.kit.manipulator.viewport
+[2026-06-04 18:37:54,998][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:54,998][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.manipulator.viewport
+[2026-06-04 18:37:54,998][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:54,998][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.manipulator.viewport - No nodes in this module, do not remember it
+[2026-06-04 18:37:54,998][ogn_registration][INFO] - Destroying registration record for omni.kit.manipulator.viewport
+[2026-06-04 18:37:54,998][ogn_registration][INFO] - OGN register omni.kit.manipulator.viewport-107.0.1 took 904346.000000
+[2026-06-04 18:37:55,008][ogn_registration][INFO] - Looking for Python nodes to register in omni.graph.visualization.nodes-2.1.1
+[2026-06-04 18:37:55,008][ogn_registration][INFO] -  -> Registered nodes from module omni.graph.visualization.nodes at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1
+[2026-06-04 18:37:55,008][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1 imported as omni.graph.visualization.nodes with AutoNode config {}
+[2026-06-04 18:37:55,008][ogn_registration][INFO] - Registering Python Node Types from omni.graph.visualization.nodes at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1 in omni.graph.visualization.nodes
+[2026-06-04 18:37:55,008][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,009][ogn_registration][INFO] - Finding OmniGraph extension content manager for omni.graph.visualization.nodes-2.1.1 in module omni.graph.visualization.nodes at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1
+[2026-06-04 18:37:55,009][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/ogn/omni.graph.visualization.nodes is not a directory
+[2026-06-04 18:37:55,010][ogn_registration][INFO] - Creating OmniGraph extension management class
+[2026-06-04 18:37:55,010][ogn_registration][INFO] - Created base content manager for module omni.graph.visualization.nodes (/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/__init__.py - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes) in extension omni.graph.visualization.nodes-2.1.1 at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1 using cache /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/cache/ogn_generated/1.79.1/omni.graph.visualization.nodes-2.1.1/omni.graph.visualization.nodes/ogn
+[2026-06-04 18:37:55,010][ogn_registration][INFO] - Creating 1.18 extension manager for omni.graph.visualization.nodes-2.1.1 in <module 'omni.graph.visualization.nodes' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/__init__.py'> at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1
+[2026-06-04 18:37:55,010][ogn_registration][INFO] - Using cache directory /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/cache/ogn_generated/1.79.1/omni.graph.visualization.nodes-2.1.1/omni.graph.visualization.nodes/ogn
+[2026-06-04 18:37:55,010][ogn_registration][INFO] - Scanning for V1.18 node in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn
+[2026-06-04 18:37:55,010][ogn_registration][INFO] - Scanning omni.graph.visualization.nodes-2.1.1 for nodes in OGN path /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn
+[2026-06-04 18:37:55,011][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn, exclude=['__pycache__'])
+[2026-06-04 18:37:55,011][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn, ['nodes', 'tests'], ['OgnDrawScreenSpaceTextDatabase.py', 'OgnDrawLineDatabase.py', '__ogn_files_prebuilt', 'OgnDrawLabelDatabase.py']
+[2026-06-04 18:37:55,012][ogn_registration][INFO] - ....Adding scanned directory /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes
+[2026-06-04 18:37:55,012][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes, [], ['OgnDrawLabel.ogn', 'OgnDrawLine.py', 'OgnDrawLine.ogn', 'OgnDrawScreenSpaceText.ogn', 'OgnDrawScreenSpaceText.py', 'OgnDrawLabel.py']
+[2026-06-04 18:37:55,012][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests, ['usd'], ['TestOgnDrawLabel.py', 'TestOgnDrawLine.py', '__init__.py', 'TestOgnDrawScreenSpaceText.py']
+[2026-06-04 18:37:55,013][ogn_registration][INFO] - ....Adding scanned directory /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd
+[2026-06-04 18:37:55,013][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd, [], ['OgnDrawLineTemplate.usda', 'OgnDrawScreenSpaceTextTemplate.usda', 'OgnDrawLabelTemplate.usda']
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...extracted db versions VersionProperties.GENERATOR = (1, 27, 1), VersionProperties.TARGET = (2, 103, 1) from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawScreenSpaceTextDatabase.py (True)
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.PYTHON_DB - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawScreenSpaceTextDatabase.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.PYTHON_DB - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLineDatabase.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.PYTHON_DB - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLabelDatabase.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.PYTHON - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.PYTHON - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.PYTHON - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.TEST - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLabel.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.TEST - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLine.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.PYTHON - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/__init__.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.TEST - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawScreenSpaceText.py
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.USD - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd/OgnDrawLineTemplate.usda
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.USD - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd/OgnDrawScreenSpaceTextTemplate.usda
+[2026-06-04 18:37:55,015][ogn_registration][INFO] - ...found file of type FileType.USD - /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd/OgnDrawLabelTemplate.usda
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - ...constructing node type definition for OgnDrawLabel at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.ogn
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - Creating node type definition for OgnDrawLabel at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.ogn
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - ...constructing node type definition for OgnDrawLine at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.ogn
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - Creating node type definition for OgnDrawLine at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.ogn
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - ...constructing node type definition for OgnDrawScreenSpaceText at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.ogn
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - Creating node type definition for OgnDrawScreenSpaceText at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.ogn
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - Adding 4 files at version VersionProperties.GENERATOR = (1, 27, 1), VersionProperties.TARGET = (2, 103, 1)
+[2026-06-04 18:37:55,016][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLabelDatabase.py, FileType.PYTHON_DB)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add user file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.py, FileType.PYTHON)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLabel.py, FileType.TEST)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd/OgnDrawLabelTemplate.usda, FileType.USD)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - Adding 4 files at version VersionProperties.GENERATOR = (1, 27, 1), VersionProperties.TARGET = (2, 103, 1)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLineDatabase.py, FileType.PYTHON_DB)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add user file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.py, FileType.PYTHON)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLine.py, FileType.TEST)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd/OgnDrawLineTemplate.usda, FileType.USD)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - Adding 4 files at version VersionProperties.GENERATOR = (1, 27, 1), VersionProperties.TARGET = (2, 103, 1)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawScreenSpaceTextDatabase.py, FileType.PYTHON_DB)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add user file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.py, FileType.PYTHON)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawScreenSpaceText.py, FileType.TEST)
+[2026-06-04 18:37:55,017][ogn_registration][INFO] - add generated file(/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/usd/OgnDrawScreenSpaceTextTemplate.usda, FileType.USD)
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - Cache path /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/cache/ogn_generated/1.79.1/omni.graph.visualization.nodes-2.1.1/omni.graph.visualization.nodes/ogn is not a directory
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - omni.graph.visualization.nodes: Time to scan the extension for node types = 0.009257
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - Ensuring node types in extension omni.graph.visualization.nodes are up to date
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - omni.graph.visualization.nodes: Time to update the out-of-date generated code = 0.000176
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - Attempting OGN 1.18 Python imports for omni.graph.visualization.nodes-2.1.1
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - Importing omni.graph.visualization.nodes.ogn and omni.graph.visualization.nodes.ogn.tests with tests
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - --- Finding module omni.graph.visualization.nodes.ogn in <module 'omni.graph.visualization.nodes' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/__init__.py'> with submodule name ogn
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - --X module was not already imported
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - ... Trying to import omni.graph.visualization.nodes.ogn directly
+[2026-06-04 18:37:55,018][ogn_registration][INFO] - --> Found the module at <module 'omni.graph.visualization.nodes.ogn' (<_frozen_importlib_external._NamespaceLoader object at 0x7f2f96562170>)>
+[2026-06-04 18:37:55,019][ogn_registration][INFO] - -> Found .ogn module, looking for ogn.tests too
+[2026-06-04 18:37:55,019][ogn_registration][INFO] - --- Finding module omni.graph.visualization.nodes.ogn.tests in <module 'omni.graph.visualization.nodes.ogn' (<_frozen_importlib_external._NamespaceLoader object at 0x7f2f96562170>)> with submodule name ogn.tests
+[2026-06-04 18:37:55,019][ogn_registration][INFO] - --X module was not already imported
+[2026-06-04 18:37:55,019][ogn_registration][INFO] - ... Trying to import omni.graph.visualization.nodes.ogn.tests directly
+[2026-06-04 18:37:55,019][ogn_registration][INFO] - --> Found the module at <module 'omni.graph.visualization.nodes.ogn.tests' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/__init__.py'>
+[2026-06-04 18:37:55,020][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.OgnDrawLabelDatabase from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLabelDatabase.py
+[2026-06-04 18:37:55,021][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.OgnDrawLabelDatabase' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLabelDatabase.py'>
+[2026-06-04 18:37:55,022][ogn_registration][INFO] - ...Import DB omni.graph.visualization.nodes.ogn.OgnDrawLabelDatabase into ['OgnDrawLabelDatabase', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', '_og', 'numpy', 'og', 'ogn', 'sys', 'traceback'] from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLabelDatabase.py
+[2026-06-04 18:37:55,022][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.nodes.OgnDrawLabel from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.py
+[2026-06-04 18:37:55,022][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLabel' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.py'>
+[2026-06-04 18:37:55,022][ogn_registration][INFO] - ...Import Node omni.graph.visualization.nodes.ogn.nodes.OgnDrawLabel into <module 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLabel' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.py'> from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLabel.py
+[2026-06-04 18:37:55,022][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLabel from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLabel.py
+[2026-06-04 18:37:55,022][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLabel' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLabel.py'>
+[2026-06-04 18:37:55,023][ogn_registration][INFO] - ...Imported test omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLabel into <module 'omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLabel' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLabel.py'> from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLabel.py
+[2026-06-04 18:37:55,023][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.OgnDrawLineDatabase from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLineDatabase.py
+[2026-06-04 18:37:55,023][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.OgnDrawLineDatabase' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLineDatabase.py'>
+[2026-06-04 18:37:55,023][ogn_registration][INFO] - ...Import DB omni.graph.visualization.nodes.ogn.OgnDrawLineDatabase into ['OgnDrawLineDatabase', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', '_og', 'numpy', 'og', 'ogn', 'sys', 'traceback'] from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawLineDatabase.py
+[2026-06-04 18:37:55,023][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.nodes.OgnDrawLine from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.py
+[2026-06-04 18:37:55,023][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLine' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.py'>
+[2026-06-04 18:37:55,024][ogn_registration][INFO] - ...Import Node omni.graph.visualization.nodes.ogn.nodes.OgnDrawLine into <module 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLine' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.py'> from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawLine.py
+[2026-06-04 18:37:55,024][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLine from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLine.py
+[2026-06-04 18:37:55,024][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLine' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLine.py'>
+[2026-06-04 18:37:55,024][ogn_registration][INFO] - ...Imported test omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLine into <module 'omni.graph.visualization.nodes.ogn.tests.TestOgnDrawLine' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLine.py'> from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawLine.py
+[2026-06-04 18:37:55,024][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.OgnDrawScreenSpaceTextDatabase from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawScreenSpaceTextDatabase.py
+[2026-06-04 18:37:55,024][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.OgnDrawScreenSpaceTextDatabase' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawScreenSpaceTextDatabase.py'>
+[2026-06-04 18:37:55,024][ogn_registration][INFO] - ...Import DB omni.graph.visualization.nodes.ogn.OgnDrawScreenSpaceTextDatabase into ['OgnDrawScreenSpaceTextDatabase', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', '_og', 'numpy', 'og', 'ogn', 'sys', 'traceback'] from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/OgnDrawScreenSpaceTextDatabase.py
+[2026-06-04 18:37:55,025][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.nodes.OgnDrawScreenSpaceText from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.py
+[2026-06-04 18:37:55,025][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawScreenSpaceText' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.py'>
+[2026-06-04 18:37:55,025][ogn_registration][INFO] - ...Import Node omni.graph.visualization.nodes.ogn.nodes.OgnDrawScreenSpaceText into <module 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawScreenSpaceText' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.py'> from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/nodes/OgnDrawScreenSpaceText.py
+[2026-06-04 18:37:55,025][ogn_registration][INFO] - Importing module omni.graph.visualization.nodes.ogn.tests.TestOgnDrawScreenSpaceText from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawScreenSpaceText.py
+[2026-06-04 18:37:55,025][ogn_registration][INFO] - ... created the module as <module 'omni.graph.visualization.nodes.ogn.tests.TestOgnDrawScreenSpaceText' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawScreenSpaceText.py'>
+[2026-06-04 18:37:55,025][ogn_registration][INFO] - ...Imported test omni.graph.visualization.nodes.ogn.tests.TestOgnDrawScreenSpaceText into <module 'omni.graph.visualization.nodes.ogn.tests.TestOgnDrawScreenSpaceText' from '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawScreenSpaceText.py'> from /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.graph.visualization.nodes-2.1.1/omni/graph/visualization/nodes/ogn/tests/TestOgnDrawScreenSpaceText.py
+[2026-06-04 18:37:55,025][ogn_registration][INFO] - omni.graph.visualization.nodes: Time to import the generated objects = 0.007701
+[2026-06-04 18:37:55,026][ogn_registration][INFO] - Registering the nodes in omni.graph.visualization.nodes
+[2026-06-04 18:37:55,026][ogn_registration][INFO] - -- node implementations {'OgnDrawLabelDatabase': <class 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLabel.OgnDrawLabel'>, 'OgnDrawLineDatabase': <class 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLine.OgnDrawLine'>, 'OgnDrawScreenSpaceTextDatabase': <class 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawScreenSpaceText.OgnDrawScreenSpaceText'>}
+[2026-06-04 18:37:55,026][ogn_registration][INFO] - Found the database class <class 'omni.graph.visualization.nodes.ogn.OgnDrawLabelDatabase.OgnDrawLabelDatabase'> with node module <class 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLabel.OgnDrawLabel'>
+[2026-06-04 18:37:55,026][ogn_registration][INFO] - Registered okay, adding the deregister function <function OgnDrawLabelDatabase.deregister at 0x7f2f80b38ca0>
+[2026-06-04 18:37:55,026][ogn_registration][INFO] - ...Registered through database OgnDrawLabelDatabase
+[2026-06-04 18:37:55,026][ogn_registration][INFO] - Found the database class <class 'omni.graph.visualization.nodes.ogn.OgnDrawLineDatabase.OgnDrawLineDatabase'> with node module <class 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawLine.OgnDrawLine'>
+[2026-06-04 18:37:55,026][ogn_registration][INFO] - Registered okay, adding the deregister function <function OgnDrawLineDatabase.deregister at 0x7f2f80b3a320>
+[2026-06-04 18:37:55,027][ogn_registration][INFO] - ...Registered through database OgnDrawLineDatabase
+[2026-06-04 18:37:55,027][ogn_registration][INFO] - Found the database class <class 'omni.graph.visualization.nodes.ogn.OgnDrawScreenSpaceTextDatabase.OgnDrawScreenSpaceTextDatabase'> with node module <class 'omni.graph.visualization.nodes.ogn.nodes.OgnDrawScreenSpaceText.OgnDrawScreenSpaceText'>
+[2026-06-04 18:37:55,027][ogn_registration][INFO] - Registered okay, adding the deregister function <function OgnDrawScreenSpaceTextDatabase.deregister at 0x7f2f80b3bc70>
+[2026-06-04 18:37:55,027][ogn_registration][INFO] - ...Registered through database OgnDrawScreenSpaceTextDatabase
+[2026-06-04 18:37:55,027][ogn_registration][INFO] - omni.graph.visualization.nodes: Time to register the generated objects = 0.001410
+[2026-06-04 18:37:55,027][ogn_registration][INFO] - OGN register omni.graph.visualization.nodes-2.1.1 took 18987812.000000
+[2026-06-04 18:37:55,028][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.window.content_browser_registry-0.0.6
+[2026-06-04 18:37:55,028][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.window.content_browser_registry at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.content_browser_registry-0.0.6+d02c707b
+[2026-06-04 18:37:55,028][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.content_browser_registry-0.0.6+d02c707b imported as omni.kit.window.content_browser_registry with AutoNode config {}
+[2026-06-04 18:37:55,028][ogn_registration][INFO] - Registering Python Node Types from omni.kit.window.content_browser_registry at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.content_browser_registry-0.0.6+d02c707b in omni.kit.window.content_browser_registry
+[2026-06-04 18:37:55,028][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,029][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.window.content_browser_registry
+[2026-06-04 18:37:55,029][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,029][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.window.content_browser_registry - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,029][ogn_registration][INFO] - Destroying registration record for omni.kit.window.content_browser_registry
+[2026-06-04 18:37:55,029][ogn_registration][INFO] - OGN register omni.kit.window.content_browser_registry-0.0.6 took 1152536.000000
+[2026-06-04 18:37:55,033][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.window.file-1.3.57
+[2026-06-04 18:37:55,034][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.window.file at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.file-1.3.57+d02c707b
+[2026-06-04 18:37:55,034][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.file-1.3.57+d02c707b imported as omni.kit.window.file with AutoNode config {}
+[2026-06-04 18:37:55,034][ogn_registration][INFO] - Registering Python Node Types from omni.kit.window.file at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.file-1.3.57+d02c707b in omni.kit.window.file
+[2026-06-04 18:37:55,034][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,034][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.window.file
+[2026-06-04 18:37:55,035][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,035][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.window.file - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,035][ogn_registration][INFO] - Destroying registration record for omni.kit.window.file
+[2026-06-04 18:37:55,035][ogn_registration][INFO] - OGN register omni.kit.window.file-1.3.57 took 1338680.000000
+[2026-06-04 18:37:55,036][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.widget.highlight_label-1.0.3
+[2026-06-04 18:37:55,036][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.widget.highlight_label at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.highlight_label-1.0.3+d02c707b
+[2026-06-04 18:37:55,036][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.highlight_label-1.0.3+d02c707b imported as omni.kit.widget.highlight_label with AutoNode config {}
+[2026-06-04 18:37:55,036][ogn_registration][INFO] - Registering Python Node Types from omni.kit.widget.highlight_label at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.highlight_label-1.0.3+d02c707b in omni.kit.widget.highlight_label
+[2026-06-04 18:37:55,036][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,036][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.widget.highlight_label
+[2026-06-04 18:37:55,036][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,037][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.widget.highlight_label - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,037][ogn_registration][INFO] - Destroying registration record for omni.kit.widget.highlight_label
+[2026-06-04 18:37:55,037][ogn_registration][INFO] - OGN register omni.kit.widget.highlight_label-1.0.3 took 927349.000000
+[2026-06-04 18:37:55,039][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.property.adapter.core-1.0.2
+[2026-06-04 18:37:55,039][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.property.adapter.core at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.core-1.0.2+d02c707b
+[2026-06-04 18:37:55,039][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.core-1.0.2+d02c707b imported as omni.kit.property.adapter.core with AutoNode config {}
+[2026-06-04 18:37:55,039][ogn_registration][INFO] - Registering Python Node Types from omni.kit.property.adapter.core at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.core-1.0.2+d02c707b in omni.kit.property.adapter.core
+[2026-06-04 18:37:55,039][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,040][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.property.adapter.core
+[2026-06-04 18:37:55,040][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,040][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.property.adapter.core - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,040][ogn_registration][INFO] - Destroying registration record for omni.kit.property.adapter.core
+[2026-06-04 18:37:55,040][ogn_registration][INFO] - OGN register omni.kit.property.adapter.core-1.0.2 took 1045623.000000
+[2026-06-04 18:37:55,041][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.widget.zoombar-1.0.5
+[2026-06-04 18:37:55,041][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.widget.zoombar at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.zoombar-1.0.5
+[2026-06-04 18:37:55,041][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.zoombar-1.0.5 imported as omni.kit.widget.zoombar with AutoNode config {}
+[2026-06-04 18:37:55,041][ogn_registration][INFO] - Registering Python Node Types from omni.kit.widget.zoombar at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.zoombar-1.0.5 in omni.kit.widget.zoombar
+[2026-06-04 18:37:55,041][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,042][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.widget.zoombar
+[2026-06-04 18:37:55,042][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,042][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.widget.zoombar - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,042][ogn_registration][INFO] - Destroying registration record for omni.kit.widget.zoombar
+[2026-06-04 18:37:55,042][ogn_registration][INFO] - OGN register omni.kit.widget.zoombar-1.0.5 took 893405.000000
+[2026-06-04 18:37:55,076][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.window.content_browser-2.10.3
+[2026-06-04 18:37:55,076][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.window.content_browser at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.content_browser-2.10.3+d02c707b
+[2026-06-04 18:37:55,076][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.content_browser-2.10.3+d02c707b imported as omni.kit.window.content_browser with AutoNode config {}
+[2026-06-04 18:37:55,076][ogn_registration][INFO] - Registering Python Node Types from omni.kit.window.content_browser at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.content_browser-2.10.3+d02c707b in omni.kit.window.content_browser
+[2026-06-04 18:37:55,076][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,077][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.window.content_browser
+[2026-06-04 18:37:55,077][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,077][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.window.content_browser - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,077][ogn_registration][INFO] - Destroying registration record for omni.kit.window.content_browser
+[2026-06-04 18:37:55,077][ogn_registration][INFO] - OGN register omni.kit.window.content_browser-2.10.3 took 1486029.000000
+[2026-06-04 18:37:55,091][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.window.property-1.11.5
+[2026-06-04 18:37:55,092][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.window.property at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.property-1.11.5+d02c707b
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.property-1.11.5+d02c707b imported as omni.kit.window.property with AutoNode config {}
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - Registering Python Node Types from omni.kit.window.property at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.property-1.11.5+d02c707b in omni.kit.window.property
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.window.property
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.window.property - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - Destroying registration record for omni.kit.window.property
+[2026-06-04 18:37:55,092][ogn_registration][INFO] - OGN register omni.kit.window.property-1.11.5 took 1002151.000000
+[2026-06-04 18:37:55,094][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.property.adapter.usd-1.0.2
+[2026-06-04 18:37:55,094][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.property.adapter.usd at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.usd-1.0.2+d02c707b
+[2026-06-04 18:37:55,094][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.usd-1.0.2+d02c707b imported as omni.kit.property.adapter.usd with AutoNode config {}
+[2026-06-04 18:37:55,094][ogn_registration][INFO] - Registering Python Node Types from omni.kit.property.adapter.usd at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.usd-1.0.2+d02c707b in omni.kit.property.adapter.usd
+[2026-06-04 18:37:55,094][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,095][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.property.adapter.usd
+[2026-06-04 18:37:55,095][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,095][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.property.adapter.usd - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,095][ogn_registration][INFO] - Destroying registration record for omni.kit.property.adapter.usd
+[2026-06-04 18:37:55,095][ogn_registration][INFO] - OGN register omni.kit.property.adapter.usd-1.0.2 took 1095087.000000
+[2026-06-04 18:37:55,096][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.property.adapter.fabric-1.0.3
+[2026-06-04 18:37:55,097][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.property.adapter.fabric at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.fabric-1.0.3+d02c707b
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.fabric-1.0.3+d02c707b imported as omni.kit.property.adapter.fabric with AutoNode config {}
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - Registering Python Node Types from omni.kit.property.adapter.fabric at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.adapter.fabric-1.0.3+d02c707b in omni.kit.property.adapter.fabric
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.property.adapter.fabric
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.property.adapter.fabric - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - Destroying registration record for omni.kit.property.adapter.fabric
+[2026-06-04 18:37:55,097][ogn_registration][INFO] - OGN register omni.kit.property.adapter.fabric-1.0.3 took 1050783.000000
+[2026-06-04 18:37:55,102][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.browser.core-2.3.11
+[2026-06-04 18:37:55,102][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.browser.core at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.browser.core-2.3.11
+[2026-06-04 18:37:55,102][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.browser.core-2.3.11 imported as omni.kit.browser.core with AutoNode config {}
+[2026-06-04 18:37:55,102][ogn_registration][INFO] - Registering Python Node Types from omni.kit.browser.core at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.browser.core-2.3.11 in omni.kit.browser.core
+[2026-06-04 18:37:55,102][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,103][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.browser.core
+[2026-06-04 18:37:55,103][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,103][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.browser.core - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,103][ogn_registration][INFO] - Destroying registration record for omni.kit.browser.core
+[2026-06-04 18:37:55,103][ogn_registration][INFO] - OGN register omni.kit.browser.core-2.3.11 took 1238139.000000
+[2026-06-04 18:37:55,104][ogn_registration][INFO] - Looking for Python nodes to register in omni.ui_query-1.1.7
+[2026-06-04 18:37:55,104][ogn_registration][INFO] -  -> Registered nodes from module omni.ui_query at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.ui_query-1.1.7+d02c707b
+[2026-06-04 18:37:55,104][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.ui_query-1.1.7+d02c707b imported as omni.ui_query with AutoNode config {}
+[2026-06-04 18:37:55,104][ogn_registration][INFO] - Registering Python Node Types from omni.ui_query at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.ui_query-1.1.7+d02c707b in omni.ui_query
+[2026-06-04 18:37:55,104][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,104][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.ui_query
+[2026-06-04 18:37:55,105][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,105][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.ui_query - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,105][ogn_registration][INFO] - Destroying registration record for omni.ui_query
+[2026-06-04 18:37:55,105][ogn_registration][INFO] - OGN register omni.ui_query-1.1.7 took 892663.000000
+[2026-06-04 18:37:55,116][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.property.usd-4.2.16
+[2026-06-04 18:37:55,117][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.property.usd at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.usd-4.2.16+d02c707b
+[2026-06-04 18:37:55,117][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.usd-4.2.16+d02c707b imported as omni.kit.property.usd with AutoNode config {}
+[2026-06-04 18:37:55,117][ogn_registration][INFO] - Registering Python Node Types from omni.kit.property.usd at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.property.usd-4.2.16+d02c707b in omni.kit.property.usd
+[2026-06-04 18:37:55,117][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,118][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.property.usd
+[2026-06-04 18:37:55,118][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,118][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.property.usd - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,118][ogn_registration][INFO] - Destroying registration record for omni.kit.property.usd
+[2026-06-04 18:37:55,118][ogn_registration][INFO] - OGN register omni.kit.property.usd-4.2.16 took 1591239.000000
+[2026-06-04 18:37:55,124][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.browser.folder.core-1.10.1
+[2026-06-04 18:37:55,124][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.browser.folder.core at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.browser.folder.core-1.10.1
+[2026-06-04 18:37:55,124][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.browser.folder.core-1.10.1 imported as omni.kit.browser.folder.core with AutoNode config {}
+[2026-06-04 18:37:55,124][ogn_registration][INFO] - Registering Python Node Types from omni.kit.browser.folder.core at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.browser.folder.core-1.10.1 in omni.kit.browser.folder.core
+[2026-06-04 18:37:55,124][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,125][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.browser.folder.core
+[2026-06-04 18:37:55,125][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,125][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.browser.folder.core - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,125][ogn_registration][INFO] - Destroying registration record for omni.kit.browser.folder.core
+[2026-06-04 18:37:55,125][ogn_registration][INFO] - OGN register omni.kit.browser.folder.core-1.10.1 took 1236456.000000
+[2026-06-04 18:37:55,139][ogn_registration][INFO] - Looking for Python nodes to register in isaacsim.examples.browser-0.1.8
+[2026-06-04 18:37:55,140][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.examples.browser at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.examples.browser
+[2026-06-04 18:37:55,140][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.examples.browser imported as isaacsim.examples.browser with AutoNode config {}
+[2026-06-04 18:37:55,140][ogn_registration][INFO] - Registering Python Node Types from isaacsim.examples.browser at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.examples.browser in isaacsim.examples.browser
+[2026-06-04 18:37:55,140][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,141][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in isaacsim.examples.browser
+[2026-06-04 18:37:55,141][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,141][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.examples.browser - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,141][ogn_registration][INFO] - Destroying registration record for isaacsim.examples.browser
+[2026-06-04 18:37:55,141][ogn_registration][INFO] - OGN register isaacsim.examples.browser-0.1.8 took 1496900.000000
+[2026-06-04 18:37:55,143][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.ui_test-1.3.3
+[2026-06-04 18:37:55,143][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.ui_test at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.ui_test-1.3.3+d02c707b
+[2026-06-04 18:37:55,143][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.ui_test-1.3.3+d02c707b imported as omni.kit.ui_test with AutoNode config {}
+[2026-06-04 18:37:55,143][ogn_registration][INFO] - Registering Python Node Types from omni.kit.ui_test at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.ui_test-1.3.3+d02c707b in omni.kit.ui_test
+[2026-06-04 18:37:55,143][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,143][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.ui_test
+[2026-06-04 18:37:55,143][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,144][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.ui_test - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,144][ogn_registration][INFO] - Destroying registration record for omni.kit.ui_test
+[2026-06-04 18:37:55,144][ogn_registration][INFO] - OGN register omni.kit.ui_test-1.3.3 took 983335.000000
+[2026-06-04 18:37:55,144][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.widget.prompt-1.0.7
+[2026-06-04 18:37:55,145][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.widget.prompt at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.prompt-1.0.7+d02c707b
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.prompt-1.0.7+d02c707b imported as omni.kit.widget.prompt with AutoNode config {}
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - Registering Python Node Types from omni.kit.widget.prompt at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.widget.prompt-1.0.7+d02c707b in omni.kit.widget.prompt
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.widget.prompt
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.widget.prompt - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - Destroying registration record for omni.kit.widget.prompt
+[2026-06-04 18:37:55,145][ogn_registration][INFO] - OGN register omni.kit.widget.prompt-1.0.7 took 902011.000000
+[2026-06-04 18:37:55,163][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.window.extensions-1.4.25
+[2026-06-04 18:37:55,163][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.window.extensions at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.extensions-1.4.25+d02c707b
+[2026-06-04 18:37:55,163][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.extensions-1.4.25+d02c707b imported as omni.kit.window.extensions with AutoNode config {}
+[2026-06-04 18:37:55,163][ogn_registration][INFO] - Registering Python Node Types from omni.kit.window.extensions at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.window.extensions-1.4.25+d02c707b in omni.kit.window.extensions
+[2026-06-04 18:37:55,164][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,164][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.window.extensions
+[2026-06-04 18:37:55,164][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,164][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.window.extensions - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,164][ogn_registration][INFO] - Destroying registration record for omni.kit.window.extensions
+[2026-06-04 18:37:55,164][ogn_registration][INFO] - OGN register omni.kit.window.extensions-1.4.25 took 1251194.000000
+[2026-06-04 18:37:55,167][ogn_registration][INFO] - Looking for Python nodes to register in isaacsim.gui.components-1.0.9
+[2026-06-04 18:37:55,168][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.gui.components at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components
+[2026-06-04 18:37:55,168][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components imported as isaacsim.gui.components with AutoNode config {}
+[2026-06-04 18:37:55,168][ogn_registration][INFO] - Registering Python Node Types from isaacsim.gui.components at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components in isaacsim.gui.components
+[2026-06-04 18:37:55,168][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,169][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.gui.components-1.0.9 in module isaacsim.gui.components at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components
+[2026-06-04 18:37:55,169][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/ogn/isaacsim.gui.components is not a directory
+[2026-06-04 18:37:55,169][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components/ogn is not a directory
+[2026-06-04 18:37:55,169][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components, exclude=['__pycache__'])
+[2026-06-04 18:37:55,170][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components, ['element_wrappers', 'tests'], ['widgets.py', 'callbacks.py', 'print_to_screen.py', 'ui_utils.py', '__init__.py', 'dpad.py', 'style.py', 'menu.py']
+[2026-06-04 18:37:55,170][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components/element_wrappers, [], ['__init__.py', 'ui_widget_wrappers.py', 'base_ui_element_wrappers.py']
+[2026-06-04 18:37:55,170][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components/tests, [], ['test_screen_printer.py', 'test_ui.py', '__init__.py', 'test_ui_widget_wrappers.py']
+[2026-06-04 18:37:55,170][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,170][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,170][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.gui.components - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,170][ogn_registration][INFO] - Destroying registration record for isaacsim.gui.components
+[2026-06-04 18:37:55,171][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.gui.components.tests at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components
+[2026-06-04 18:37:55,171][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components imported as isaacsim.gui.components.tests with AutoNode config {}
+[2026-06-04 18:37:55,171][ogn_registration][INFO] - Registering Python Node Types from isaacsim.gui.components.tests at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components in isaacsim.gui.components
+[2026-06-04 18:37:55,171][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.gui.components-1.0.9 in module isaacsim.gui.components.tests at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/ogn/isaacsim.gui.components.tests is not a directory
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components/tests/ogn is not a directory
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components/tests, exclude=['__pycache__'])
+[2026-06-04 18:37:55,172][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaacsim/exts/isaacsim.gui.components/isaacsim/gui/components/tests, [], ['test_screen_printer.py', 'test_ui.py', '__init__.py', 'test_ui_widget_wrappers.py']
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.gui.components.tests - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - Destroying registration record for isaacsim.gui.components
+[2026-06-04 18:37:55,172][ogn_registration][INFO] - OGN register isaacsim.gui.components-1.0.9 took 4955992.000000
+[2026-06-04 18:37:55,198][ogn_registration][INFO] - Looking for Python nodes to register in omni.kit.tool.asset_importer-2.12.6
+[2026-06-04 18:37:55,198][ogn_registration][INFO] -  -> Registered nodes from module omni.kit.tool.asset_importer at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.tool.asset_importer-2.12.6+106.5.0
+[2026-06-04 18:37:55,198][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.tool.asset_importer-2.12.6+106.5.0 imported as omni.kit.tool.asset_importer with AutoNode config {}
+[2026-06-04 18:37:55,198][ogn_registration][INFO] - Registering Python Node Types from omni.kit.tool.asset_importer at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/omni.kit.tool.asset_importer-2.12.6+106.5.0 in omni.kit.tool.asset_importer
+[2026-06-04 18:37:55,198][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,200][ogn_registration][INFO] - No dependency on omni.graph, therefore no nodes to register in omni.kit.tool.asset_importer
+[2026-06-04 18:37:55,200][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,200][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module omni.kit.tool.asset_importer - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,200][ogn_registration][INFO] - Destroying registration record for omni.kit.tool.asset_importer
+[2026-06-04 18:37:55,200][ogn_registration][INFO] - OGN register omni.kit.tool.asset_importer-2.12.6 took 1980308.000000
+[2026-06-04 18:37:55,236][ogn_registration][INFO] - Looking for Python nodes to register in isaacsim.asset.importer.urdf-2.3.14
+[2026-06-04 18:37:55,236][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.asset.importer.urdf at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,236][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 imported as isaacsim.asset.importer.urdf with AutoNode config {}
+[2026-06-04 18:37:55,236][ogn_registration][INFO] - Registering Python Node Types from isaacsim.asset.importer.urdf at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 in isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,236][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,238][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.asset.importer.urdf-2.3.14 in module isaacsim.asset.importer.urdf at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,238][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/ogn/isaacsim.asset.importer.urdf is not a directory
+[2026-06-04 18:37:55,238][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/ogn is not a directory
+[2026-06-04 18:37:55,238][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf, exclude=['__pycache__'])
+[2026-06-04 18:37:55,239][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf, ['tests', 'scripts'], ['_urdf.cpython-310-x86_64-linux-gnu.so', '__init__.py']
+[2026-06-04 18:37:55,239][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/tests, [], ['__init__.py', 'test_urdf.py']
+[2026-06-04 18:37:55,240][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts, ['samples', 'ui'], ['__init__.py', 'extension.py', 'commands.py']
+[2026-06-04 18:37:55,240][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples, [], ['import_carter.py', 'import_kaya.py', 'import_franka.py', 'common.py', 'import_ur10.py']
+[2026-06-04 18:37:55,240][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/ui, [], ['ui_utils.py', 'UrdfJointWidgetWithID.py', 'UrdfLinkWidget.py', '__init__.py', 'UrdfOptionWidget.py', 'style.py', 'menu.py', 'resetable_widget.py']
+[2026-06-04 18:37:55,240][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,240][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,240][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.asset.importer.urdf - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,240][ogn_registration][INFO] - Destroying registration record for isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,240][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.asset.importer.urdf.tests at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,240][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 imported as isaacsim.asset.importer.urdf.tests with AutoNode config {}
+[2026-06-04 18:37:55,240][ogn_registration][INFO] - Registering Python Node Types from isaacsim.asset.importer.urdf.tests at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 in isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,240][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.asset.importer.urdf-2.3.14 in module isaacsim.asset.importer.urdf.tests at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/ogn/isaacsim.asset.importer.urdf.tests is not a directory
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/tests/ogn is not a directory
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/tests, exclude=['__pycache__'])
+[2026-06-04 18:37:55,242][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/tests, [], ['__init__.py', 'test_urdf.py']
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.asset.importer.urdf.tests - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - Destroying registration record for isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,242][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.asset.importer.urdf.scripts.ui at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 imported as isaacsim.asset.importer.urdf.scripts.ui with AutoNode config {}
+[2026-06-04 18:37:55,242][ogn_registration][INFO] - Registering Python Node Types from isaacsim.asset.importer.urdf.scripts.ui at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 in isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,243][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.asset.importer.urdf-2.3.14 in module isaacsim.asset.importer.urdf.scripts.ui at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/ogn/isaacsim.asset.importer.urdf.scripts.ui is not a directory
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/ui/ogn is not a directory
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/ui, exclude=['__pycache__'])
+[2026-06-04 18:37:55,244][ogn_registration][INFO] -    ... walked /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/ui, [], ['ui_utils.py', 'UrdfJointWidgetWithID.py', 'UrdfLinkWidget.py', '__init__.py', 'UrdfOptionWidget.py', 'style.py', 'menu.py', 'resetable_widget.py']
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.asset.importer.urdf.scripts.ui - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,244][ogn_registration][INFO] - Destroying registration record for isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,244][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.asset.importer.urdf.scripts.samples.import_carter at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,245][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 imported as isaacsim.asset.importer.urdf.scripts.samples.import_carter with AutoNode config {}
+[2026-06-04 18:37:55,245][ogn_registration][INFO] - Registering Python Node Types from isaacsim.asset.importer.urdf.scripts.samples.import_carter at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 in isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,245][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.asset.importer.urdf-2.3.14 in module isaacsim.asset.importer.urdf.scripts.samples.import_carter at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/ogn/isaacsim.asset.importer.urdf.scripts.samples.import_carter is not a directory
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_carter/ogn is not a directory
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_carter, exclude=['__pycache__'])
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.asset.importer.urdf.scripts.samples.import_carter - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - Destroying registration record for isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,246][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.asset.importer.urdf.scripts.samples.import_franka at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 imported as isaacsim.asset.importer.urdf.scripts.samples.import_franka with AutoNode config {}
+[2026-06-04 18:37:55,246][ogn_registration][INFO] - Registering Python Node Types from isaacsim.asset.importer.urdf.scripts.samples.import_franka at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 in isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,247][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.asset.importer.urdf-2.3.14 in module isaacsim.asset.importer.urdf.scripts.samples.import_franka at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/ogn/isaacsim.asset.importer.urdf.scripts.samples.import_franka is not a directory
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_franka/ogn is not a directory
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_franka, exclude=['__pycache__'])
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.asset.importer.urdf.scripts.samples.import_franka - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - Destroying registration record for isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,248][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.asset.importer.urdf.scripts.samples.import_kaya at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 imported as isaacsim.asset.importer.urdf.scripts.samples.import_kaya with AutoNode config {}
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - Registering Python Node Types from isaacsim.asset.importer.urdf.scripts.samples.import_kaya at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 in isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,248][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.asset.importer.urdf-2.3.14 in module isaacsim.asset.importer.urdf.scripts.samples.import_kaya at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/ogn/isaacsim.asset.importer.urdf.scripts.samples.import_kaya is not a directory
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_kaya/ogn is not a directory
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_kaya, exclude=['__pycache__'])
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.asset.importer.urdf.scripts.samples.import_kaya - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - Destroying registration record for isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,250][ogn_registration][INFO] -  -> Registered nodes from module isaacsim.asset.importer.urdf.scripts.samples.import_ur10 at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - Registering nodes in /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 imported as isaacsim.asset.importer.urdf.scripts.samples.import_ur10 with AutoNode config {}
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - Registering Python Node Types from isaacsim.asset.importer.urdf.scripts.samples.import_ur10 at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310 in isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,250][ogn_registration][INFO] - ========================================================================================================================
+[2026-06-04 18:37:55,251][ogn_registration][INFO] - Finding OmniGraph extension content manager for isaacsim.asset.importer.urdf-2.3.14 in module isaacsim.asset.importer.urdf.scripts.samples.import_ur10 at /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - -> New generated folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/ogn/isaacsim.asset.importer.urdf.scripts.samples.import_ur10 is not a directory
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - -> Old ogn/ folder /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_ur10/ogn is not a directory
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - _walk_with_excludes(start=/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/exts/3/isaacsim.asset.importer.urdf-2.3.14+106.5.0.lx64.r.cp310/isaacsim/asset/importer/urdf/scripts/samples/import_ur10, exclude=['__pycache__'])
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - -> Extension contents not recognized as containing OmniGraph Python information
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - ...None found, no registration to do
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - ...Skipping: No OmniGraph presence in the module isaacsim.asset.importer.urdf.scripts.samples.import_ur10 - No nodes in this module, do not remember it
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - Destroying registration record for isaacsim.asset.importer.urdf
+[2026-06-04 18:37:55,252][ogn_registration][INFO] - OGN register isaacsim.asset.importer.urdf-2.3.14 took 16278492.000000
+[MultiMotionLoader] Motion group distribution:
+  - backhand: 1 motions
+  - forehand: 1 motions
+[MultiMotionCommand] Registered motion groups: ['backhand', 'forehand']
+[MultiMotionCommand]   - Group 'backhand': 1 motions
+[MultiMotionCommand]   - Group 'forehand': 1 motions
+[MultiMotionCommand] Assigning 1 environments with ratios: forehand=1/1
+[INFO] Command Manager:  <CommandManager> contains 1 active terms.
++----------------------------------------+
+|          Active Command Terms          |
++-------+--------+-----------------------+
+| Index | Name   |          Type         |
++-------+--------+-----------------------+
+|   0   | motion | HitterStrikingCommand |
++-------+--------+-----------------------+
+
+[INFO] Event Manager:  <EventManager> contains 0 active terms.
+
+[INFO] Recorder Manager:  <RecorderManager> contains 0 active terms.
++---------------------+
+| Active Recorder Terms |
++-----------+---------+
+|   Index   | Name    |
++-----------+---------+
++-----------+---------+
+
+[INFO] Action Manager:  <ActionManager> contains 1 active terms.
++------------------------------------+
+|  Active Action Terms (shape: 29)   |
++--------+-------------+-------------+
+| Index  | Name        |   Dimension |
++--------+-------------+-------------+
+|   0    | joint_pos   |          29 |
++--------+-------------+-------------+
+
+[INFO] Observation Manager: <ObservationManager> contains 2 groups.
++---------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (104,)) |
++-----------+---------------------------------+-----------+
+|   Index   | Name                            |   Shape   |
++-----------+---------------------------------+-----------+
+|     0     | base_ang_vel                    |    (3,)   |
+|     1     | projected_gravity               |    (3,)   |
+|     2     | base_forward_xy                 |    (2,)   |
+|     3     | base_target_xy                  |    (2,)   |
+|     4     | racket_target_pos               |    (3,)   |
+|     5     | racket_target_vel               |    (3,)   |
+|     6     | time_to_strike                  |    (1,)   |
+|     7     | joint_pos                       |   (29,)   |
+|     8     | joint_vel                       |   (29,)   |
+|     9     | actions                         |   (29,)   |
++-----------+---------------------------------+-----------+
++------------------------------------------------------------+
+| Active Observation Terms in Group: 'critic' (shape: (301,)) |
++----------+------------------------------------+------------+
+|  Index   | Name                               |   Shape    |
++----------+------------------------------------+------------+
+|    0     | base_ang_vel                       |    (3,)    |
+|    1     | projected_gravity                  |    (3,)    |
+|    2     | base_forward_xy                    |    (2,)    |
+|    3     | motion_anchor_pos_b                |    (3,)    |
+|    4     | motion_anchor_ori_b                |    (6,)    |
+|    5     | base_target_xy                     |    (2,)    |
+|    6     | racket_target_pos                  |    (3,)    |
+|    7     | racket_target_vel                  |    (3,)    |
+|    8     | time_to_strike                     |    (1,)    |
+|    9     | joint_pos                          |   (29,)    |
+|    10    | joint_vel                          |   (29,)    |
+|    11    | actions                            |   (29,)    |
+|    12    | base_lin_vel                       |    (3,)    |
+|    13    | body_pose                          |   (126,)   |
+|    14    | time_left                          |    (1,)    |
+|    15    | reference_joint_state              |   (58,)    |
++----------+------------------------------------+------------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 2 active terms.
++-------------------------------+
+|    Active Termination Terms   |
++-------+------------+----------+
+| Index | Name       | Time Out |
++-------+------------+----------+
+|   0   | anchor_pos |  False   |
+|   1   | anchor_ori |  False   |
++-------+------------+----------+
+
+[INFO] Reward Manager:  <RewardManager> contains 19 active terms.
++---------------------------------------------+
+|             Active Reward Terms             |
++-------+--------------------------+----------+
+| Index | Name                     |   Weight |
++-------+--------------------------+----------+
+|   0   | motion_global_anchor_pos |      0.5 |
+|   1   | motion_global_anchor_ori |      0.5 |
+|   2   | motion_body_pos          |      1.0 |
+|   3   | motion_body_ori          |      1.0 |
+|   4   | motion_body_lin_vel      |      1.5 |
+|   5   | motion_body_ang_vel      |      1.5 |
+|   6   | motion_anchor_lin_vel    |      1.0 |
+|   7   | base_pos                 |      5.0 |
+|   8   | racket_pos               |     80.0 |
+|   9   | racket_vel               |     30.0 |
+|   10  | racket_ori               |     30.0 |
+|   11  | undesired_contacts       |    -0.05 |
+|   12  | hitter_foot_slip_l2      |     -2.0 |
+|   13  | hitter_foot_edge_drag    |     -1.0 |
+|   14  | hip_yaw_default          |      2.0 |
+|   15  | action_rate_l2           |     -0.1 |
+|   16  | joint_limit              |    -10.0 |
+|   17  | joint_acc                | -2.5e-07 |
+|   18  | joint_torque             |   -1e-05 |
++-------+--------------------------+----------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 0 active terms.
++----------------------+
+| Active Curriculum Terms |
++-----------+----------+
+|   Index   | Name     |
++-----------+----------+
++-----------+----------+
+
+[INFO]: Completed setting up the environment...
+[INFO] Recording videos during training.
+        video_folder: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-04_16-23-58_hitter_userchanges_oldbaai_2xa100_env50000_20260604_162345/videos/play
+        step_trigger: lambda step: step == 0
+        video_length: 500
+        disable_logger: True
+Actor MLP: Sequential(
+  (0): Linear(in_features=104, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=29, bias=True)
+)
+Critic MLP: Sequential(
+  (0): Linear(in_features=301, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+[Runner] reset_noise_std_on_resume = True
+[Runner] init_noise_std from config = 1.0, noise_std_type = scalar
+[Runner] Reset noise std to 1.0 (reset_noise_std_on_resume=True)
+[Runner] freeze_normalizer_on_resume = False
+2026-06-04 10:38:04 [72,114ms] [Warning] [omni.syntheticdata.plugin] OgnSdPostRenderVarToHost : rendervar copy from texture directly to host buffer is counter-performant. Please use copy from texture to device buffer first.
+2026-06-04 10:38:53 [120,580ms] [Warning] [omni.usd] Unexpected reference count of 2 for UsdStage 'anon:0x55a53048a320:World0.usd' while being closed in UsdContext (this may indicate it is still resident in memory).

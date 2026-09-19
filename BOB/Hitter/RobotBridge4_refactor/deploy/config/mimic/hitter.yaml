@@ -1,0 +1,75 @@
+policy:
+  checkpoint: ./data/model/hitter/hitter_model20500_20260818_104.onnx
+  action_beta: 1.0
+  real_world_racket_velocity_magnitude_increment_mps: 0.0
+  # Real-world policy compensation: reduce planner racket-speed magnitude
+  # by 1 m/s while preserving its direction.
+  real_world_racket_velocity_magnitude_offset_mps: 0
+  real_world_forehand_racket_velocity_x_offset_mps: 0.0
+  real_world_backhand_racket_velocity_x_offset_mps: 0.0
+  real_world_backhand_racket_velocity_y_decrement_mps: 0.0
+  real_world_first_frame_transition_s: 5.0
+  hitter_seed: 0
+  save_video: false
+
+motion:
+  playback_speed: 1.0
+  reset_ball_on_command: true
+  mujoco_serve_times_s: [0.0, 20.0]
+  vicon_consumer:
+    channel: vicon_state_data_v2
+    base_subject: G2Pelvis
+    stream_timeout_s: 0.40
+    ball_timeout_s: 0.40
+    new_serve_no_ball_s: 0.20
+    event_queue_capacity: 64
+  waiting_time_to_strike_s: 0.92
+  waiting_base_target_xy_w: [-0.4, 0.0]  # MuJoCo only
+
+  ball_planner:
+    table_center_xy_w: [1.365369, 0.0]
+    table_height: 0.760000
+    table_length: 2.730738
+    table_width: 1.512451
+    ball_radius: 0.02
+    virtual_hit_plane_x: 0.0
+    forehand_desired_landing_point_w: [2.05, 0.3775, 0.78]
+    backhand_desired_landing_point_w: [2.05, -0.3775, 0.78]
+    post_hit_flight_time: 0.48
+    racket_restitution: 0.85
+    minimum_racket_normal_speed_mps: 1.0
+    prediction_horizon_s: 2.0
+    prediction_dt: 0.005
+    planner_update_rate_hz: 100.0
+    completed_result_queue_capacity: 64
+    minimum_stable_incoming_speed_x_mps: 0.20
+    stable_incoming_confirmation_snapshots: 3
+    require_future_hit_plane_crossing: true
+    state_estimator_window_size: 31
+    state_estimator_sample_rate_hz: 360.0
+    state_estimator_bounce_height_tolerance: 0.03
+    state_estimator_bounce_velocity_threshold: 0.10
+    state_estimator_bounce_min_separation_s: 0.20
+    vertical_restitution: 0.897474
+    horizontal_restitution: 0.764604
+    drag_coefficient: 0.098847
+    target_base_height_w: 0.78
+    racket_x_offset_b: 0.40
+    arm_time_to_strike_s: 0.92
+    minimum_arm_time_to_strike_s: 0.30
+    maximum_policy_time_to_strike_s: 0.92
+    armed_cancel_consecutive_failures: 3
+    commit_time_to_strike_s: 0.30
+    maximum_racket_target_override_delta_m: 0.05
+    maximum_racket_velocity_override_delta_mps: 0.75
+    maximum_strike_deadline_override_delta_s: 0.05
+    racket_target_z_range_b_m: [0.0, 0.7]
+    maximum_prediction_horizon_s: 5.0
+    racket_velocity_component_ranges_mps:
+      x: [0.0, 6.0]
+      y: [-0.5, 0.5]
+      z: [0.0, 6.0]
+    swing_duration_range: [1.75, 1.95]
+    force_strike_type: null
+    forehand_nominal_racket_y_b: -0.5
+    backhand_nominal_racket_y_b: 0.22

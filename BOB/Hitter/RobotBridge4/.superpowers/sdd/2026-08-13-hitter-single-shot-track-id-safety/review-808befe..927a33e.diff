@@ -1,0 +1,116 @@
+# Review package: 808befefed29cfdbc0c0a9238ad3bf43675c85d7..927a33e9684e4ff3fe64b8bf588e59cdd94be0c3
+
+## Commits
+927a33e fix: compare HITTER planner failure details
+
+## Files changed
+ deploy/diagnostics/hitter_task_pipeline.py | 12 ++++++++-
+ deploy/tests/test_hitter_task_pipeline.py  | 41 ++++++++++++++++++++++++++++++
+ 2 files changed, 52 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_pipeline.py b/deploy/diagnostics/hitter_task_pipeline.py
+index 646935c..a55962d 100644
+--- a/deploy/diagnostics/hitter_task_pipeline.py
++++ b/deploy/diagnostics/hitter_task_pipeline.py
+@@ -1616,23 +1616,33 @@ class ShadowTaskPipeline:
+             return False
+         frozen_has_diagnostic_error = (
+             frozen.error_type is not None
+             or frozen.error_text is not None
+         )
+         if result.failure_reason is not None:
+             if (
+                 result.command is not None
+                 or frozen.command_fields is not None
+                 or frozen.failure_reason is not result.failure_reason
++                or result.error_text is None
++                or frozen.error_type is None
++                or frozen.error_text is None
+             ):
+                 return False
+-            return True
++            if frozen.error_type == "PlannerRejected":
++                production_detail = result.error_text
++            else:
++                error_prefix = "{}: ".format(frozen.error_type)
++                if not result.error_text.startswith(error_prefix):
++                    return False
++                production_detail = result.error_text[len(error_prefix):]
++            return production_detail[:2048] == frozen.error_text
+         if frozen.failure_reason is not None or frozen_has_diagnostic_error:
+             return False
+         if result.command is None:
+             return frozen.command_fields is None
+         if frozen.command_fields is None:
+             return False
+         try:
+             production_fields = freeze_planner_command_fields(
+                 result.command
+             )
+diff --git a/deploy/tests/test_hitter_task_pipeline.py b/deploy/tests/test_hitter_task_pipeline.py
+index 5db0ed5..638e99d 100644
+--- a/deploy/tests/test_hitter_task_pipeline.py
++++ b/deploy/tests/test_hitter_task_pipeline.py
+@@ -1890,20 +1890,61 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+             completed_monotonic_s="0.01",
+             command_fields=fields,
+             error_type=None,
+             error_text=None,
+         )
+ 
+         self.assertFalse(
+             ShadowTaskPipeline._result_bundle_matches(result, frozen)
+         )
+ 
++    def test_failure_bundle_rejects_mutated_reason_type_or_detail(self) -> None:
++        result = PlannerResultSnapshot(
++            track_id=1,
++            source_generation=1,
++            source_frame=1,
++            strike_deadline_monotonic_s=float("nan"),
++            completed_monotonic_s=0.01,
++            command=None,
++            failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++            error_text="ValueError: expected",
++        )
++        frozen = FrozenPlannerResult(
++            snapshot_key=SnapshotKey(1, 1),
++            source_frame=1,
++            strike_deadline_monotonic_s=float("nan"),
++            completed_monotonic_s=0.01,
++            command_fields=None,
++            error_type="ValueError",
++            error_text="expected",
++            failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++        )
++        mutations = {
++            "reason": {
++                "failure_reason": PlannerFailureReason.TRACK_ENDED,
++            },
++            "type": {"error_type": "LookupError"},
++            "detail": {"error_text": "different"},
++        }
++
++        self.assertTrue(
++            ShadowTaskPipeline._result_bundle_matches(result, frozen)
++        )
++        for label, changes in mutations.items():
++            with self.subTest(label=label):
++                self.assertFalse(
++                    ShadowTaskPipeline._result_bundle_matches(
++                        result,
++                        replace(frozen, **changes),
++                    )
++                )
++
+     def test_planner_replacement_is_also_scoped_to_replaced_attempt(self) -> None:
+         pipeline, _worker, _adapter, _raw, events = self._pipeline()
+         old_snapshot = _snapshot(1, received_s=0.0, track_id=1)
+         pipeline.ingest_adapter_output(
+             _output(1, received_s=0.0, track_id=1)
+         )
+         pipeline.ingest_adapter_output(
+             _output(
+                 2,
+                 received_s=0.01,

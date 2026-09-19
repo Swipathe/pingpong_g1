@@ -1,0 +1,96 @@
+{
+  "source_log": "deploy/mocap_bridge/calibrations/table_calibration_20260624_154050.log",
+  "nexus_host": "192.168.10.1:801",
+  "base_subject": "G1Pelvis",
+  "base_markers": [
+    "G1pelvis1",
+    "G1pelvis2",
+    "G1pelvis3",
+    "G1pelvis4",
+    "G1pelvis5"
+  ],
+  "unlabeled_marker_count_for_table": 4,
+  "table": {
+    "length_m": 2.74,
+    "width_m": 1.525,
+    "height_m_estimate": 0.76,
+    "robot_side_edge_x_m": 0.0,
+    "far_edge_x_m": 2.74,
+    "center_raw_m": [
+      0.0657,
+      3.3022,
+      0.7492
+    ],
+    "x_axis_raw": [
+      -0.01370008425577726,
+      0.9999061494417286,
+      -0.0
+    ],
+    "y_axis_raw": [
+      -0.9999061494417286,
+      -0.01370008425577726,
+      0.0
+    ],
+    "z_axis_raw": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "rectangle_score": 0.1062,
+    "corners_table_world_m": [
+      [
+        0.0054,
+        -0.7542,
+        0.7734
+      ],
+      [
+        2.7366,
+        0.7553,
+        0.7527
+      ],
+      [
+        0.0052,
+        0.7552,
+        0.7601
+      ],
+      [
+        2.7328,
+        -0.7563,
+        0.7538
+      ]
+    ],
+    "raw_unlabeled_clusters_mm": [
+      [
+        838.5,
+        1948.0,
+        762.6
+      ],
+      [
+        -708.3,
+        4658.3,
+        741.9
+      ],
+      [
+        -670.8,
+        1927.2,
+        749.3
+      ],
+      [
+        803.2,
+        4675.2,
+        743.0
+      ]
+    ]
+  },
+  "base_initial_raw_table_world_m": [
+    -1.6174,
+    -0.0808,
+    0.819
+  ],
+  "expected_base_x_m": -0.4,
+  "notes": [
+    "This table frame assumes the table and Vicon world origin do not move after calibration.",
+    "After removing table-corner markers, the only unlabeled marker should be the ball.",
+    "G1Pelvis is the subject name; G1pelvis1-5 are marker names."
+  ]
+}

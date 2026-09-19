@@ -1,0 +1,190 @@
+--- .superpowers/sdd/2026-08-15-real-world-forehand-racket-x-offset/review-working-tree-task-1-fix1-current.diff	2026-08-15 18:54:54.113829556 +0800
++++ .superpowers/sdd/2026-08-15-real-world-forehand-racket-x-offset/review-working-tree-task-1-fix2-current.diff	2026-08-15 18:57:20.911087208 +0800
+@@ -1,13 +1,14 @@
+-# Review package: working tree task 1 after fix round 1 against HEAD 9872a9ccbf64e6ad92892f9d596669ce1114cb3b
++# Review package: working tree task 1 after fix round 2 against HEAD 9872a9ccbf64e6ad92892f9d596669ce1114cb3b
+ 
+ ## Files changed
+  deploy/config/mimic/hitter.yaml                    |  23 ++-
+- deploy/envs/hitter.py                              | 198 ++++++++++++++++++++-
++ deploy/envs/hitter.py                              | 199 ++++++++++++++++++++-
+  .../test_hitter_runtime_single_shot_integration.py |  65 +++++++
+  deploy/tests/test_hitter_strike_target_logging.py  |  33 ++++
+- 4 files changed, 302 insertions(+), 17 deletions(-)
++ 4 files changed, 303 insertions(+), 17 deletions(-)
++ deploy/tests/test_hitter_forehand_policy_vx_offset.py | untracked new test file (included below)
+ 
+-## Diff
++## Tracked diff
+ diff --git a/deploy/config/mimic/hitter.yaml b/deploy/config/mimic/hitter.yaml
+ index fa9241b..b700ea1 100644
+ --- a/deploy/config/mimic/hitter.yaml
+@@ -90,10 +91,23 @@
+ +    forehand_nominal_racket_y_b: -0.5
+ +    backhand_nominal_racket_y_b: 0.22
+ diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+-index 266a2f9..2e5e00f 100644
++index 266a2f9..6342867 100644
+ --- a/deploy/envs/hitter.py
+ +++ b/deploy/envs/hitter.py
+-@@ -71,20 +71,25 @@ class HitterEnv(BaseEnv):
++@@ -1,11 +1,12 @@
++ from __future__ import annotations
+++from collections.abc import Mapping
++ from typing import Dict, List, Optional, Union
++ import threading
++ 
++ import numpy as np
++ from loguru import logger
++ from omegaconf import DictConfig, OmegaConf
++ from scipy.spatial.transform import Rotation as sRot
++ 
++ from envs.base_env import BaseEnv
++ 
++@@ -71,20 +72,25 @@ class HitterEnv(BaseEnv):
+              is_real_world=bool(getattr(self.simulator, "is_real", False)),
+          )
+          self.hitter_runtime_settings = resolve_hitter_runtime_settings(
+@@ -119,7 +133,7 @@
+  
+          self.policy_model_meta: Optional[HitterModelMeta] = None
+          self.policy_action_scales: Optional[np.ndarray] = None
+-@@ -599,27 +604,24 @@ class HitterEnv(BaseEnv):
++@@ -599,27 +605,24 @@ class HitterEnv(BaseEnv):
+                      ),
+                  )
+                  return
+@@ -151,7 +165,7 @@
+                  self.simulator,
+                  "hitter_snapshot_planning_eligible",
+                  None,
+-@@ -870,20 +872,87 @@ class HitterEnv(BaseEnv):
++@@ -870,20 +873,87 @@ class HitterEnv(BaseEnv):
+      def _validated_vector(value, *, name: str, size: int) -> np.ndarray:
+          array = np.asarray(value, dtype=np.float32)
+          if array.shape != (size,):
+@@ -187,7 +201,7 @@
+ +
+ +    @classmethod
+ +    def _forehand_policy_vx_offset_from_policy_cfg(cls, policy_cfg) -> float:
+-+        if not isinstance(policy_cfg, dict):
+++        if not isinstance(policy_cfg, Mapping):
+ +            raise TypeError("policy configuration must be a mapping.")
+ +        return cls._validated_forehand_policy_vx_offset(
+ +            policy_cfg.get(
+@@ -239,7 +253,7 @@
+      ) -> np.ndarray:
+          array = np.asarray(value, dtype=np.float64)
+          if array.shape != (size,):
+-@@ -933,34 +1002,100 @@ class HitterEnv(BaseEnv):
++@@ -933,34 +1003,100 @@ class HitterEnv(BaseEnv):
+          racket_velocity = self._validated_vector(
+              command.v_racket_target_w,
+              name="v_racket_target_w",
+@@ -340,7 +354,7 @@
+  
+      def _log_hitter_strike_target(
+          self,
+-@@ -971,43 +1106,70 @@ class HitterEnv(BaseEnv):
++@@ -971,43 +1107,70 @@ class HitterEnv(BaseEnv):
+                  raise ValueError("active planner result is missing a command")
+              command = active_result.command
+              fields = self._validated_hitter_command_fields(command)
+@@ -412,7 +426,7 @@
+              except Exception:
+                  pass
+  
+-@@ -1560,30 +1722,48 @@ class HitterEnv(BaseEnv):
++@@ -1560,30 +1723,48 @@ class HitterEnv(BaseEnv):
+  
+          obs_base_ang_vel = np.asarray(self.base_ang_vel, dtype=np.float32).reshape(-1)[:3]
+          obs_projected_gravity = np.asarray(self.projected_gravity, dtype=np.float32).reshape(-1)[:3]
+@@ -610,3 +624,88 @@
+          self.assertEqual(decision.kind, "cancelled")
+          self.assertEqual(
+              decision.cancel_reason.value,
++
++## Untracked test diff
++diff --git a/deploy/tests/test_hitter_forehand_policy_vx_offset.py b/deploy/tests/test_hitter_forehand_policy_vx_offset.py
++new file mode 100644
++index 0000000..f9c9eba
++--- /dev/null
+++++ b/deploy/tests/test_hitter_forehand_policy_vx_offset.py
++@@ -0,0 +1,77 @@
+++from __future__ import annotations
+++
+++from pathlib import Path
+++from types import SimpleNamespace
+++
+++import numpy as np
+++import pytest
+++from omegaconf import OmegaConf
+++
+++from envs.hitter import HitterEnv
+++
+++
+++DEPLOY_DIR = Path(__file__).resolve().parents[1]
+++
+++
+++def test_forehand_policy_vx_offset_reads_deployment_key_and_defaults_to_zero():
+++    mimic_config = OmegaConf.to_container(
+++        OmegaConf.load(DEPLOY_DIR / "config/mimic/hitter.yaml"),
+++        resolve=True,
+++    )
+++
+++    assert (
+++        HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
+++            mimic_config["policy"]
+++        )
+++        == 0.25
+++    )
+++    assert HitterEnv._forehand_policy_vx_offset_from_policy_cfg({}) == 0.0
+++
+++
+++def test_forehand_policy_vx_offset_accepts_dictconfig_policy_node():
+++    mimic_config = OmegaConf.load(DEPLOY_DIR / "config/mimic/hitter.yaml")
+++
+++    assert (
+++        HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
+++            mimic_config.policy
+++        )
+++        == 0.25
+++    )
+++    assert HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
+++        OmegaConf.create({})
+++    ) == 0.0
+++
+++
+++@pytest.mark.parametrize(
+++    "value",
+++    [
+++        True,
+++        "0.25",
+++        float("nan"),
+++        float("inf"),
+++        -0.01,
+++        float(np.finfo(np.float32).max) * 2.0,
+++        1.0e100,
+++    ],
+++)
+++def test_forehand_policy_vx_offset_rejects_invalid_or_unrepresentable_values(
+++    value,
+++):
+++    with pytest.raises((TypeError, ValueError)):
+++        HitterEnv._forehand_policy_vx_offset_from_policy_cfg(
+++            {
+++                "real_world_forehand_racket_velocity_x_offset_mps": value,
+++            }
+++        )
+++
+++
+++def test_real_forehand_policy_velocity_rejects_float32_addition_overflow():
+++    env = HitterEnv.__new__(HitterEnv)
+++    env.simulator = SimpleNamespace(is_real=True)
+++    env.forehand_policy_vx_offset_mps = float(np.finfo(np.float32).max)
+++
+++    with pytest.raises(ValueError, match="float32"):
+++        env._policy_racket_target_velocity_w(
+++            [np.finfo(np.float32).max, 0.1, 0.2],
+++            strike_type="forehand",
+++        )

@@ -1,0 +1,279 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "HITTER 拍面法向误差训练趋势",
+    "description": "对 2026-08-07 启动、在 iteration 64156 中断的双卡训练进行拍面法向指标诊断。",
+    "generatedAt": "2026-08-16T00:00:00+08:00",
+    "sources": [
+      {
+        "id": "tb-event",
+        "label": "本次训练 TensorBoard event 文件",
+        "path": "MOSAIC-main-sijie-20260806/logs/rsl_rl/hitter_striking_g1/2026-08-07_12-30-11_hitter_mqy_resume5400_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_2x5090_env32000_20260807_122824/events.out.tfevents.1786077074.ws.557653.0",
+        "query": {
+          "engine": "TensorBoard TFRecord",
+          "language": "python",
+          "description": "顺序解析完整 TFRecord，抽取 Metrics/motion/hitter_strike_racket_ori_error 及相关标量；按 iteration 汇总。",
+          "filters": [
+            "训练 iteration 5400 至 64156",
+            "拍面趋势按连续 5,000 iteration 分箱，首箱从 5400 开始，尾箱止于 64156",
+            "异常窗口使用 40580 至 40649；前后各取 500 iteration 对照"
+          ],
+          "metric_definitions": [
+            "原始法向误差 e = 1 - dot(指定击球面法向, 目标球拍速度单位方向)，越低越好",
+            "等效角度 theta = acos(1 - mean(e)) × 180/pi；这是由聚合余弦误差反算的等效角度，不是逐样本角度的算术平均",
+            "TensorBoard 标量为每个训练 iteration 的 episode-info 均值"
+          ]
+        }
+      },
+      {
+        "id": "metric-code",
+        "label": "拍面法向指标实现",
+        "path": "MOSAIC-main-sijie-20260806/source/whole_body_tracking/whole_body_tracking/tasks/hitter/mdp/commands.py"
+      },
+      {
+        "id": "training-config",
+        "label": "PlannerDomain 训练配置",
+        "path": "MOSAIC-main-sijie-20260806/source/whole_body_tracking/whole_body_tracking/tasks/hitter/config/g1/flat_env_cfg.py"
+      },
+      {
+        "id": "launch-log",
+        "label": "本次训练完整终端日志",
+        "path": "MOSAIC-main-sijie-20260806/launch_logs/hitter_mqy_resume5400_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_2x5090_env32000_20260807_122824.log"
+      }
+    ],
+    "charts": [
+      {
+        "id": "orientation-trend",
+        "title": "拍面法向等效角度趋势",
+        "subtitle": "每个点为连续约 5,000 iteration 的原始误差均值反算角度；越低越好",
+        "showDescription": true,
+        "intent": "trend",
+        "question": "拍面法向误差在本次训练中如何变化？",
+        "rationale": "训练 iteration 是有序连续轴，折线能直接展示前期快速下降与后期平台化。",
+        "comparisonContext": {
+          "baseline": "首 1,000 iteration（5400–6399）",
+          "grain": "约 5,000 iteration 分箱",
+          "unit": "度（由分箱平均余弦误差反算）"
+        },
+        "type": "line",
+        "dataset": "trend_5k",
+        "sourceId": "tb-event",
+        "xField": "iteration_end",
+        "xAxisTitle": "训练 iteration（分箱结束）",
+        "yAxisTitle": "拍面法向等效角度（度，越低越好）",
+        "series": [
+          {
+            "field": "angle_deg",
+            "label": "等效角度",
+            "color": "blue",
+            "role": "actual"
+          }
+        ],
+        "valueFormat": "number",
+        "unit": "°",
+        "layout": "full",
+        "maxRows": 20,
+        "labels": {
+          "values": "endpoints"
+        },
+        "palette": {
+          "kind": "sequential",
+          "name": "blue"
+        },
+        "surface": {
+          "surface": "card",
+          "showControls": false,
+          "viewMode": "visualization"
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "phase-summary",
+        "title": "关键阶段汇总",
+        "subtitle": "原始误差与等效角度使用相同窗口；首尾比较以各 1,000 iteration 为准",
+        "showDescription": true,
+        "dataset": "phase_summary",
+        "defaultSort": {
+          "field": "order",
+          "direction": "asc"
+        },
+        "density": "spacious",
+        "sourceId": "tb-event",
+        "layout": "full",
+        "columns": [
+          {"field": "phase", "label": "阶段", "type": "text"},
+          {"field": "iterations", "label": "Iteration 范围", "type": "text"},
+          {"field": "n", "label": "样本数", "format": "number"},
+          {"field": "error_mean", "label": "平均原始误差", "format": "number"},
+          {"field": "angle_deg", "label": "等效角度（°）", "format": "number"}
+        ]
+      },
+      {
+        "id": "spike-summary",
+        "title": "Iteration 40620 附近短时异常",
+        "subtitle": "异常段与相邻窗口的多指标同步变化；数值均为窗口均值",
+        "showDescription": true,
+        "dataset": "spike_summary",
+        "defaultSort": {
+          "field": "order",
+          "direction": "asc"
+        },
+        "density": "spacious",
+        "sourceId": "tb-event",
+        "layout": "full",
+        "columns": [
+          {"field": "window", "label": "窗口", "type": "text"},
+          {"field": "iterations", "label": "Iteration 范围", "type": "text"},
+          {"field": "ori_error", "label": "法向误差", "format": "number"},
+          {"field": "angle_deg", "label": "等效角度（°）", "format": "number"},
+          {"field": "pos_error_m", "label": "拍位误差（m）", "format": "number"},
+          {"field": "vel_error", "label": "拍速误差", "format": "number"},
+          {"field": "mean_reward", "label": "平均回报", "format": "number"}
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# HITTER 拍面法向误差训练趋势",
+        "layout": "full"
+      },
+      {
+        "id": "technical-summary",
+        "type": "markdown",
+        "body": "## 技术摘要\n\n**拍面法向控制明显变好，但在后半程已经进入缓慢平台期。** 首 1,000 iteration 的平均原始误差为 0.04316，对应等效角度 16.89°；最后 1,000 iteration 降至 0.02845、13.70°。原始误差下降 34.1%，等效角度减少 3.20°（18.9%）。最后 5,000 iteration 相比此前 5,000 仅再改善约 1.0%（0.07°），说明仍有轻微进步，但边际收益已经很小。",
+        "layout": "full",
+        "sourceId": "tb-event"
+      },
+      {
+        "id": "finding-heading",
+        "type": "markdown",
+        "body": "## 前期快速收敛，约 30k 后转为缓慢下降\n\n下图展示完整训练范围内的阶段均值。前约 10k iteration 贡献了大部分改善；30k 以后曲线主要在 13.7°–14.2°附近波动并缓慢下移。",
+        "layout": "full",
+        "sourceId": "tb-event"
+      },
+      {
+        "id": "trend-chart-block",
+        "type": "chart",
+        "chartId": "orientation-trend",
+        "layout": "full"
+      },
+      {
+        "id": "trend-interpretation",
+        "type": "markdown",
+        "body": "**如何解读：** 5,400–9,999 的阶段均值约为 15.75°，10,000–14,999 已降至 14.66°；60,000–64,156 为 13.68°。因此长期方向是改善而非退化，但后期继续训练带来的角度收益已经降到每 10k iteration 约 0.1°量级。",
+        "layout": "full",
+        "sourceId": "tb-event"
+      },
+      {
+        "id": "phase-table-block",
+        "type": "table",
+        "tableId": "phase-summary",
+        "layout": "full"
+      },
+      {
+        "id": "anomaly-heading",
+        "type": "markdown",
+        "body": "## 40620 附近的尖峰是短时全局波动，不是持续失稳\n\n全局单点最大误差出现在 iteration 40623（0.07398，约 22.18°）。在 40580–40649 的 70-iteration 窗口内，拍面法向、拍位和拍速误差同步升高，平均回报同步下降；之后 500 iteration 内恢复到尖峰前水平。这个模式更符合一次短时策略/采样波动，现有日志不能证明具体因果。",
+        "layout": "full",
+        "sourceId": "tb-event"
+      },
+      {
+        "id": "spike-table-block",
+        "type": "table",
+        "tableId": "spike-summary",
+        "layout": "full"
+      },
+      {
+        "id": "scope-definition",
+        "type": "markdown",
+        "body": "## 指标口径与数据范围\n\n指标定义为 `e = 1 − n·v̂`：`n` 是当前击球类型指定的物理拍面法向，`v̂` 是目标球拍速度方向。配置使用 `right_racket_link` 的局部 −Y 作为正手面法向，反手取相反方向，并且不取绝对值，因此打错拍面也会被惩罚。指标仅在击球时刻 ±0.01 秒窗口累计。分析覆盖 TensorBoard 中连续的 58,757 个 iteration（5400–64156），无缺步、无重复；事件文件含 3,760,449 条完整 TFRecord，文件尾未截断。",
+        "layout": "full"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "body": "## 计算方法\n\n顺序解析 TensorBoard TFRecord，抽取目标 tag 及拍位、拍速、回报、KL 等关联标量。长期趋势使用约 5,000-iteration 非重叠窗口；首尾变化使用各 1,000 iteration，降低单点和短时采样噪声。为便于理解，将窗口平均原始误差反算为 `acos(1−mean(e))` 的等效角度。",
+        "layout": "full",
+        "sourceId": "tb-event"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## 限制与稳健性\n\n等效角度不是逐环境真实角度的算术平均，因为 TensorBoard 先聚合了 `1−cos(θ)`；它适合比较趋势，不应当当作精确的逐球角度均值。当前日志也没有将正手、反手或目标速度方向拆分，因此无法判断剩余约 13.7°主要集中在哪一类击球。单点 5400 的 3.38°属于恢复启动瞬间异常低值，首尾结论使用 1,000-step 窗口，不受该点主导。",
+        "layout": "full"
+      },
+      {
+        "id": "next-steps",
+        "type": "markdown",
+        "body": "## 建议的下一步\n\n- 续训时继续监控 1,000-iteration 均值；若连续 5k–10k iteration 仍停在约 13.7°，单纯延长训练的收益可能有限。\n- 下一次日志增加正手/反手分组，以及逐环境真实角度 `acos(dot)` 的均值与分位数。\n- 若目标是进一步压低拍面误差，优先检查奖励权重、击球窗口和目标速度分布，而不是只看单点最低值。",
+        "layout": "full"
+      },
+      {
+        "id": "further-questions",
+        "type": "markdown",
+        "body": "## 尚待回答的问题\n\n剩余误差是否由正手或反手单侧主导？是否集中在较大横向/竖向目标速度？这些问题需要按击球类型和目标速度分桶的原始 episode 数据，当前 TensorBoard 聚合标量无法回答。",
+        "layout": "full"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-16T00:00:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "trend_5k": [
+        {"iteration_start": 5400, "iteration_end": 9999, "n": 4600, "error_mean": 0.03755741, "angle_deg": 15.7527, "phase": "early"},
+        {"iteration_start": 10000, "iteration_end": 14999, "n": 5000, "error_mean": 0.03255891, "angle_deg": 14.6608, "phase": "early"},
+        {"iteration_start": 15000, "iteration_end": 19999, "n": 5000, "error_mean": 0.03174169, "angle_deg": 14.4747, "phase": "mid"},
+        {"iteration_start": 20000, "iteration_end": 24999, "n": 5000, "error_mean": 0.03137275, "angle_deg": 14.3898, "phase": "mid"},
+        {"iteration_start": 25000, "iteration_end": 29999, "n": 5000, "error_mean": 0.03083634, "angle_deg": 14.2656, "phase": "mid"},
+        {"iteration_start": 30000, "iteration_end": 34999, "n": 5000, "error_mean": 0.03039131, "angle_deg": 14.1618, "phase": "mid"},
+        {"iteration_start": 35000, "iteration_end": 39999, "n": 5000, "error_mean": 0.03008734, "angle_deg": 14.0904, "phase": "late"},
+        {"iteration_start": 40000, "iteration_end": 44999, "n": 5000, "error_mean": 0.02958953, "angle_deg": 13.9728, "phase": "late"},
+        {"iteration_start": 45000, "iteration_end": 49999, "n": 5000, "error_mean": 0.02913552, "angle_deg": 13.8647, "phase": "late"},
+        {"iteration_start": 50000, "iteration_end": 54999, "n": 5000, "error_mean": 0.02921398, "angle_deg": 13.8834, "phase": "late"},
+        {"iteration_start": 55000, "iteration_end": 59999, "n": 5000, "error_mean": 0.02877573, "angle_deg": 13.7784, "phase": "late"},
+        {"iteration_start": 60000, "iteration_end": 64156, "n": 4157, "error_mean": 0.02838107, "angle_deg": 13.6831, "phase": "late"}
+      ],
+      "phase_summary": [
+        {"order": 1, "phase": "起始窗口", "iterations": "5400–6399", "n": 1000, "error_mean": 0.04316018, "angle_deg": 16.8948},
+        {"order": 2, "phase": "早期阶段", "iterations": "10000–14999", "n": 5000, "error_mean": 0.03255891, "angle_deg": 14.6608},
+        {"order": 3, "phase": "中期阶段", "iterations": "30000–34999", "n": 5000, "error_mean": 0.03039131, "angle_deg": 14.1618},
+        {"order": 4, "phase": "末期阶段", "iterations": "60000–64156", "n": 4157, "error_mean": 0.02838107, "angle_deg": 13.6831},
+        {"order": 5, "phase": "最后窗口", "iterations": "63157–64156", "n": 1000, "error_mean": 0.02844994, "angle_deg": 13.6998}
+      ],
+      "spike_summary": [
+        {"order": 1, "window": "尖峰前", "iterations": "39600–40099", "n": 500, "ori_error": 0.029431, "angle_deg": 13.9351, "pos_error_m": 0.057624, "vel_error": 0.426381, "mean_reward": 102.8715},
+        {"order": 2, "window": "尖峰段", "iterations": "40580–40649", "n": 70, "ori_error": 0.044363, "angle_deg": 17.1304, "pos_error_m": 0.084156, "vel_error": 0.472465, "mean_reward": 99.8838},
+        {"order": 3, "window": "尖峰后", "iterations": "40700–41199", "n": 500, "ori_error": 0.028928, "angle_deg": 13.8150, "pos_error_m": 0.056586, "vel_error": 0.429737, "mean_reward": 102.2683}
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "tb-event",
+      "label": "本次训练 TensorBoard event 文件",
+      "path": "MOSAIC-main-sijie-20260806/logs/rsl_rl/hitter_striking_g1/2026-08-07_12-30-11_hitter_mqy_resume5400_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_2x5090_env32000_20260807_122824/events.out.tfevents.1786077074.ws.557653.0"
+    },
+    {
+      "id": "metric-code",
+      "label": "拍面法向指标实现",
+      "path": "MOSAIC-main-sijie-20260806/source/whole_body_tracking/whole_body_tracking/tasks/hitter/mdp/commands.py"
+    },
+    {
+      "id": "training-config",
+      "label": "PlannerDomain 训练配置",
+      "path": "MOSAIC-main-sijie-20260806/source/whole_body_tracking/whole_body_tracking/tasks/hitter/config/g1/flat_env_cfg.py"
+    },
+    {
+      "id": "launch-log",
+      "label": "本次训练完整终端日志",
+      "path": "MOSAIC-main-sijie-20260806/launch_logs/hitter_mqy_resume5400_vx0to4_vyneg14to14_vz0to4_tts030to092_posstd012_velstd2_velwin004_2x5090_env32000_20260807_122824.log"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+policy:
+  checkpoint: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body.onnx
+  without_state_estimator: true
+  action_beta: 1.0
+  max_timestep: -1
+  use_estimator: false
+  eval_mode: false
+  history_length: 1
+  hitter_mode: true
+  hitter_seed: 0
+  save_video: false
+  video_dir: ./videos_offline/hitter_v21
+  video_width: 640
+  video_height: 480
+  video_fps: 50
+
+motion:
+  playback_speed: 1.0
+  command_source: ball_planner
+  use_ball_planner: true
+  planner_only: true
+  wait_for_ball_without_crash: true
+  reset_ball_on_command: true
+
+  ball_planner:
+    table_center_xy_w: [1.37, 0.0]
+    table_height: 0.76
+    table_length: 2.74
+    table_width: 1.525
+    ball_radius: 0.02
+    virtual_hit_plane_x: 0.0
+    desired_landing_point_w: [2.05, 0.0, 0.78]
+    post_hit_flight_time: 0.48
+    racket_restitution: 0.85
+    prediction_horizon_s: 2.0
+    prediction_dt: 0.005
+    require_future_hit_plane_crossing: true
+    state_estimator_window_size: 31
+    state_estimator_min_samples: 31
+    state_estimator_sample_rate_hz: 300.0
+    state_estimator_bounce_height_tolerance: 0.03
+    state_estimator_bounce_velocity_threshold: 0.10
+    state_estimator_bounce_min_separation_s: 0.20
+    state_estimator_max_sample_gap_s: 0.25
+    state_estimator_stale_timeout_s: 0.20
+    state_estimator_min_raw_speed_mps: 0.30
+    state_estimator_max_raw_speed_mps: 15.0
+    vertical_restitution: 0.897474
+    horizontal_restitution: 0.764604
+    drag_coefficient: 0.098847
+    target_base_height_w: 0.793
+    racket_x_offset_b: 0.40
+    swing_duration_range: [1.75, 1.95]
+    arm_on_time_to_strike: true
+    arm_time_to_strike_range: [0.55, 0.95]
+    filter_real_ball_to_wbc_command: true
+    real_ball_time_to_strike_range: [0.55, 0.95]
+    real_ball_min_speed: 1.2
+    real_ball_min_incoming_x_speed: 0.5
+    real_ball_expected_incoming_x_sign: -1.0
+    real_ball_forehand_racket_y_range: [-0.75, 0.05]
+    real_ball_backhand_racket_y_range: [-0.05, 0.75]
+    real_ball_racket_z_range_w: [0.60, 1.40]
+    real_ball_base_y_range: [-0.85, 0.85]
+    update_command_while_armed: false
+    update_command_min_time_to_strike: 0.10
+    filter_random_ball_to_wbc_command: true
+    random_ball_max_resample_attempts: 128
+    random_ball_time_to_strike_range: [0.80, 0.92]
+    random_ball_forehand_racket_y_range: [-0.70, 0.0]
+    random_ball_backhand_racket_y_range: [0.0, 0.70]
+    random_ball_racket_z_range_w: [0.80, 1.00]
+    force_strike_type: null
+    forehand_nominal_racket_y_b: -0.5
+    backhand_nominal_racket_y_b: 0.22
+    clip_racket_velocity_to_training_range: true
+    racket_velocity_clip_ranges:
+      forehand:
+        x: [2.6, 3.4]
+        y: [-0.4, 1.6]
+        z: [-0.3, 2.7]
+      backhand:
+        x: [2.6, 3.4]
+        y: [-1.6, 0.4]
+        z: [-0.3, 2.7]

@@ -1,0 +1,49 @@
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   source/whole_body_tracking/whole_body_tracking/utils/exporter.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	PROJECT_NOTES_ZH.md
+	easy_to_know_pipeline.md
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/source/whole_body_tracking/whole_body_tracking/utils/exporter.py b/source/whole_body_tracking/whole_body_tracking/utils/exporter.py
+index 0a79756..b19ca32 100644
+--- a/source/whole_body_tracking/whole_body_tracking/utils/exporter.py
++++ b/source/whole_body_tracking/whole_body_tracking/utils/exporter.py
+@@ -214,6 +214,11 @@ def list_to_csv_str(arr, *, decimals: int = 3, delimiter: str = ",") -> str:
+ 
+ def attach_onnx_metadata(env: ManagerBasedRLEnv, run_path: str, path: str, filename="policy.onnx") -> None:
+     onnx_path = os.path.join(path, filename)
++    robot_data = env.scene["robot"].data
++
++    default_joint_pos = getattr(robot_data, "default_joint_pos_nominal", None)
++    if default_joint_pos is None:
++        default_joint_pos = robot_data.default_joint_pos[0]
+ 
+     observation_names = env.observation_manager.active_terms["policy"]
+     observation_history_lengths: list[int] = []
+@@ -228,10 +233,10 @@ def attach_onnx_metadata(env: ManagerBasedRLEnv, run_path: str, path: str, filen
+ 
+     metadata = {
+         "run_path": run_path,
+-        "joint_names": env.scene["robot"].data.joint_names,
+-        "joint_stiffness": env.scene["robot"].data.joint_stiffness[0].cpu().tolist(),
+-        "joint_damping": env.scene["robot"].data.joint_damping[0].cpu().tolist(),
+-        "default_joint_pos": env.scene["robot"].data.default_joint_pos_nominal.cpu().tolist(),
++        "joint_names": robot_data.joint_names,
++        "joint_stiffness": robot_data.joint_stiffness[0].cpu().tolist(),
++        "joint_damping": robot_data.joint_damping[0].cpu().tolist(),
++        "default_joint_pos": default_joint_pos.cpu().tolist(),
+         "command_names": env.command_manager.active_terms,
+         "observation_names": observation_names,
+         "observation_history_lengths": observation_history_lengths,

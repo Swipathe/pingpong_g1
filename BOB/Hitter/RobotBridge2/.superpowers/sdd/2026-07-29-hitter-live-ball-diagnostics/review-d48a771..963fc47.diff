@@ -1,0 +1,732 @@
+# Review package: d48a771e2fd358b912dc783707f90db20362114c..HEAD
+
+## Commits
+963fc47 feat: add pelvis-independent ball diagnostics
+
+## Files changed
+ deploy/diagnostics/hitter_task_models.py   |  27 ++++
+ deploy/diagnostics/hitter_task_pipeline.py | 203 +++++++++++++++++++++++++++
+ deploy/tests/test_hitter_task_pipeline.py  | 211 ++++++++++++++++++++++++++++-
+ 3 files changed, 440 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_models.py b/deploy/diagnostics/hitter_task_models.py
+index 6dac7cd..e9e03df 100644
+--- a/deploy/diagnostics/hitter_task_models.py
++++ b/deploy/diagnostics/hitter_task_models.py
+@@ -332,20 +332,47 @@ class LifecycleSnapshot:
+             "schema_version": SCHEMA_VERSION,
+             "phase": self.phase,
+             "last_decision": self.last_decision,
+             "active_key": _optional_key_json(self.active_key),
+             "cached_key": _optional_key_json(self.cached_key),
+             "lifecycle_now_s": self.lifecycle_now_s,
+             "obs_now_s": self.obs_now_s,
+         })
+ 
+ 
++@dataclass(frozen=True)
++class BallDiagnosticState:
++    status: str
++    estimator_sample_count: Optional[int]
++    estimator_window_size: Optional[int]
++    speed_mps: Optional[float]
++    velocity_world_mps: Optional[Tuple[float, float, float]]
++    incoming_count: Optional[int]
++    incoming_required_count: Optional[int]
++    incoming_status: str
++    blocker: Optional[str]
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return _json_dict({
++            "schema_version": SCHEMA_VERSION,
++            "status": self.status,
++            "estimator_sample_count": self.estimator_sample_count,
++            "estimator_window_size": self.estimator_window_size,
++            "speed_mps": self.speed_mps,
++            "velocity_world_mps": self.velocity_world_mps,
++            "incoming_count": self.incoming_count,
++            "incoming_required_count": self.incoming_required_count,
++            "incoming_status": self.incoming_status,
++            "blocker": self.blocker,
++        })
++
++
+ @dataclass(frozen=True)
+ class AttemptSummary:
+     attempt_id: int
+     status: str
+     stage: str
+     primary_blocker: Optional[str]
+     ball_speed_mps: Optional[float]
+     predicted_strike_time_s: Optional[float]
+     planner_tts_s: Optional[float]
+     arm_tts_s: Optional[float]
+diff --git a/deploy/diagnostics/hitter_task_pipeline.py b/deploy/diagnostics/hitter_task_pipeline.py
+index bd39a13..c6be48c 100644
+--- a/deploy/diagnostics/hitter_task_pipeline.py
++++ b/deploy/diagnostics/hitter_task_pipeline.py
+@@ -4,20 +4,21 @@ from collections import OrderedDict
+ from dataclasses import dataclass
+ import math
+ import threading
+ from typing import Any, Callable, Mapping, Optional, Tuple
+ 
+ import numpy as np
+ 
+ from diagnostics.hitter_task_attempts import AttemptTracker
+ from diagnostics.hitter_task_models import (
+     AttemptBinding,
++    BallDiagnosticState,
+     EventDraft,
+     JsonValue,
+     NormalizedMocapSample,
+     SnapshotKey,
+ )
+ from utils.hitter_realtime import (
+     BallEstimateSnapshot,
+     CommandPhase,
+     FrozenPlannerResult,
+     IncomingTrackConfirmation,
+@@ -573,20 +574,205 @@ class TaskTickResult:
+     lifecycle_decision: str
+     active_binding: Optional[AttemptBinding]
+     cached_binding: Optional[AttemptBinding]
+     command_result: Optional[FrozenPlannerResult]
+     command_fields_used: Optional[Mapping[str, JsonValue]]
+     task_observation: Optional[TaskObservationResult]
+     task_pass: bool
+     errors: Tuple[str, ...]
+ 
+ 
++class BallDiagnosticTracker:
++    """Track ball-only estimator and incoming state without production gates."""
++
++    def __init__(
++        self,
++        *,
++        estimator_window_size: Optional[int],
++        minimum_speed_x_mps: float,
++        required_consecutive_snapshots: int,
++    ) -> None:
++        self.estimator_window_size = (
++            None
++            if estimator_window_size is None
++            else int(estimator_window_size)
++        )
++        if (
++            self.estimator_window_size is not None
++            and self.estimator_window_size < 1
++        ):
++            raise ValueError("estimator_window_size must be positive")
++        self.minimum_speed_x_mps = float(minimum_speed_x_mps)
++        if (
++            not np.isfinite(self.minimum_speed_x_mps)
++            or self.minimum_speed_x_mps <= 0.0
++        ):
++            raise ValueError(
++                "minimum_speed_x_mps must be finite and positive"
++            )
++        self.required_consecutive_snapshots = int(
++            required_consecutive_snapshots
++        )
++        if self.required_consecutive_snapshots < 1:
++            raise ValueError(
++                "required_consecutive_snapshots must be positive"
++            )
++        self._lock = threading.RLock()
++        self._last_key: Optional[SnapshotKey] = None
++        self._track_epoch: Optional[int] = None
++        self._incoming_count = 0
++        self._state = self._unavailable_state(
++            status="NOT_SEEN",
++            incoming_status="NOT_EVALUATED",
++            blocker="BALL_NOT_SEEN",
++        )
++
++    def _unavailable_state(
++        self,
++        *,
++        status: str,
++        incoming_status: str,
++        blocker: str,
++    ) -> BallDiagnosticState:
++        return BallDiagnosticState(
++            status=status,
++            estimator_sample_count=None,
++            estimator_window_size=self.estimator_window_size,
++            speed_mps=None,
++            velocity_world_mps=None,
++            incoming_count=None,
++            incoming_required_count=(
++                self.required_consecutive_snapshots
++            ),
++            incoming_status=incoming_status,
++            blocker=blocker,
++        )
++
++    def reset(self, *, blocker: str) -> BallDiagnosticState:
++        with self._lock:
++            self._last_key = None
++            self._track_epoch = None
++            self._incoming_count = 0
++            self._state = self._unavailable_state(
++                status="TRACK_ENDED",
++                incoming_status="TRACK_ENDED",
++                blocker=str(blocker),
++            )
++            return self._state
++
++    def observe(
++        self,
++        snapshot: BallEstimateSnapshot,
++        *,
++        estimator_sample_count: Optional[int],
++    ) -> BallDiagnosticState:
++        key = SnapshotKey(
++            int(snapshot.track_epoch),
++            int(snapshot.generation),
++        )
++        with self._lock:
++            if key == self._last_key:
++                return self._state
++            self._last_key = key
++            if self._track_epoch != key.track_epoch:
++                self._track_epoch = key.track_epoch
++                self._incoming_count = 0
++
++            if not bool(snapshot.visible):
++                self._track_epoch = None
++                self._incoming_count = 0
++                self._state = self._unavailable_state(
++                    status="TRACK_ENDED",
++                    incoming_status="TRACK_ENDED",
++                    blocker="BALL_NOT_VISIBLE",
++                )
++                return self._state
++
++            sample_count = (
++                None
++                if estimator_sample_count is None
++                else int(estimator_sample_count)
++            )
++            if not bool(snapshot.ready):
++                self._state = BallDiagnosticState(
++                    status="ESTIMATING",
++                    estimator_sample_count=sample_count,
++                    estimator_window_size=self.estimator_window_size,
++                    speed_mps=None,
++                    velocity_world_mps=None,
++                    incoming_count=None,
++                    incoming_required_count=(
++                        self.required_consecutive_snapshots
++                    ),
++                    incoming_status="NOT_EVALUATED",
++                    blocker="ESTIMATOR_WARMING",
++                )
++                return self._state
++
++            velocity = np.asarray(
++                snapshot.velocity_w,
++                dtype=np.float64,
++            ).reshape(-1)
++            if velocity.shape != (3,) or not np.isfinite(velocity).all():
++                self._incoming_count = 0
++                self._state = BallDiagnosticState(
++                    status="INVALID",
++                    estimator_sample_count=sample_count,
++                    estimator_window_size=self.estimator_window_size,
++                    speed_mps=None,
++                    velocity_world_mps=None,
++                    incoming_count=None,
++                    incoming_required_count=(
++                        self.required_consecutive_snapshots
++                    ),
++                    incoming_status="NOT_EVALUATED",
++                    blocker="ESTIMATE_NONFINITE",
++                )
++                return self._state
++
++            velocity_tuple = tuple(float(value) for value in velocity)
++            incoming = bool(
++                velocity_tuple[0] <= -self.minimum_speed_x_mps
++            )
++            if incoming:
++                self._incoming_count = min(
++                    self._incoming_count + 1,
++                    self.required_consecutive_snapshots,
++                )
++            else:
++                self._incoming_count = 0
++            self._state = BallDiagnosticState(
++                status="READY",
++                estimator_sample_count=sample_count,
++                estimator_window_size=self.estimator_window_size,
++                speed_mps=float(np.linalg.norm(velocity)),
++                velocity_world_mps=velocity_tuple,
++                incoming_count=int(self._incoming_count),
++                incoming_required_count=(
++                    self.required_consecutive_snapshots
++                ),
++                incoming_status=(
++                    "INCOMING" if incoming else "NOT_INCOMING"
++                ),
++                blocker=(
++                    None
++                    if incoming
++                    else "INCOMING_SPEED_REJECTED"
++                ),
++            )
++            return self._state
++
++    def snapshot(self) -> BallDiagnosticState:
++        with self._lock:
++            return self._state
++
++
+ class ShadowTaskPipeline:
+     """Production-equivalent estimator-to-task-observation shadow path."""
+ 
+     def __init__(
+         self,
+         *,
+         adapter: MocapFrameAdapter,
+         settings: HitterRuntimeSettings,
+         event_sink,
+         raw_sink,
+@@ -615,20 +801,29 @@ class ShadowTaskPipeline:
+             np.random.default_rng(settings.hitter_seed)
+             if rng is None
+             else rng
+         )
+         self.incoming = IncomingTrackConfirmation(
+             minimum_speed_x_mps=settings.minimum_incoming_speed_x_mps,
+             required_consecutive_snapshots=(
+                 settings.incoming_confirmation_snapshots
+             ),
+         )
++        estimator = getattr(adapter, "ball_state_estimator", None)
++        estimator_window_size = getattr(estimator, "window_size", None)
++        self.ball_diagnostics = BallDiagnosticTracker(
++            estimator_window_size=estimator_window_size,
++            minimum_speed_x_mps=settings.minimum_incoming_speed_x_mps,
++            required_consecutive_snapshots=(
++                settings.incoming_confirmation_snapshots
++            ),
++        )
+         self.lifecycle = build_hitter_command_lifecycle(
+             settings,
+             rng=self.rng,
+         )
+         self.attempt_tracker = (
+             AttemptTracker()
+             if attempt_tracker is None
+             else attempt_tracker
+         )
+         self._state_lock = threading.RLock()
+@@ -929,20 +1124,24 @@ class ShadowTaskPipeline:
+                 return
+             received = float(snapshot.received_monotonic_s)
+             last = self._last_submit_received_s
+             if (
+                 last is not None
+                 and received - last
+                 < self.settings.planner_update_interval_s - 1.0e-12
+             ):
+                 return
+             self._last_submit_received_s = received
++            self.ball_diagnostics.observe(
++                snapshot,
++                estimator_sample_count=output.estimator_sample_count,
++            )
+             submission = (
+                 snapshot,
+                 received,
+                 sample.wall_time_us,
+                 binding,
+                 sample.input_seq,
+                 self.lifecycle.phase.value,
+             )
+ 
+         (
+@@ -1476,20 +1675,23 @@ class ShadowTaskPipeline:
+                 elif self.lifecycle.phase == CommandPhase.TRACKING:
+                     advance_decision = "tracking"
+                 else:
+                     advance_decision = "waiting"
+             if (
+                 previous_phase == CommandPhase.ARMED
+                 and previous_active is not None
+                 and self.lifecycle.phase != CommandPhase.ARMED
+             ):
+                 new_epoch = self.adapter.reset_estimator_after_strike()
++                self.ball_diagnostics.reset(
++                    blocker="STRIKE_DEADLINE_RESET"
++                )
+                 transitions = (
+                     self.attempt_tracker.observe_production_reset(
+                         previous_track_epoch=int(new_epoch) - 1,
+                         new_track_epoch=int(new_epoch),
+                         reason="STRIKE_DEADLINE_RESET",
+                         monotonic_s=lifecycle_now,
+                     )
+                 )
+                 for transition in transitions:
+                     self._publish_transition(
+@@ -1726,17 +1928,18 @@ class ShadowTaskPipeline:
+                 task_pass=task_pass,
+                 errors=errors,
+             )
+ 
+     def close(self, timeout_s: Optional[float] = 5.0) -> bool:
+         return bool(self.worker.close(timeout_s=timeout_s))
+ 
+ 
+ __all__ = [
+     "AdapterOutput",
++    "BallDiagnosticTracker",
+     "LatestPelvisPose",
+     "MocapFrameAdapter",
+     "ProductionReset",
+     "ShadowTaskPipeline",
+     "TaskTickResult",
+     "planner_reason_code",
+ ]
+diff --git a/deploy/tests/test_hitter_task_pipeline.py b/deploy/tests/test_hitter_task_pipeline.py
+index 290e2b7..77b2b62 100644
+--- a/deploy/tests/test_hitter_task_pipeline.py
++++ b/deploy/tests/test_hitter_task_pipeline.py
+@@ -135,39 +135,44 @@ def _sample(
+ 
+ def _output(
+     generation: int,
+     *,
+     received_s: float,
+     visible: bool = True,
+     ready: bool = True,
+     base_valid: bool = True,
+     velocity=(-1.0, 0.0, 0.0),
+     epoch: int = 0,
++    estimator_sample_count=None,
+ ) -> AdapterOutput:
+     snapshot = _snapshot(
+         generation,
+         received_s=received_s,
+         visible=visible,
+         ready=ready,
+         base_valid=base_valid,
+         velocity=velocity,
+         epoch=epoch,
+     )
+     return AdapterOutput(
+         sample=_sample(
+             generation,
+             received_s=received_s,
+             visible=visible,
+         ),
+         snapshot=snapshot,
+         warnings=(),
+-        estimator_sample_count=generation,
++        estimator_sample_count=(
++            generation
++            if estimator_sample_count is None
++            else estimator_sample_count
++        ),
+         bounce_detected=False,
+         reset_transition=None,
+     )
+ 
+ 
+ def _settings(*, required: int = 2) -> HitterRuntimeSettings:
+     return HitterRuntimeSettings(
+         estimator_sample_rate_hz=360.0,
+         planner_update_rate_hz=100.0,
+         planner_update_interval_s=0.01,
+@@ -257,20 +262,25 @@ class _LockOrderProbeWorker(_FakeWorker):
+     def wait_callbacks(self) -> bool:
+         for thread in self._callback_threads:
+             thread.join(1.0)
+         return all(not thread.is_alive() for thread in self._callback_threads)
+ 
+ 
+ class _FakeAdapter:
+     def __init__(self) -> None:
+         self.track_epoch = 0
+         self.reset_calls = 0
++        self.ball_state_estimator = type(
++            "_FakeBallStateEstimator",
++            (),
++            {"window_size": 31},
++        )()
+         self.pose = LatestPelvisPose(
+             position_w=np.array([1.0, 2.0, 0.8], dtype=np.float32),
+             quaternion_xyzw=np.array(
+                 [0.0, 0.0, np.sqrt(0.5), np.sqrt(0.5)],
+                 dtype=np.float32,
+             ),
+             valid=True,
+             occluded=False,
+             source_frame=10,
+             source_time_s=1.0,
+@@ -571,20 +581,28 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         )
+ 
+     @staticmethod
+     def _attempt_stage_drafts(events):
+         return [
+             draft
+             for draft in events.drafts
+             if draft.kind == "attempt_transition"
+         ]
+ 
++    def _ball_diagnostics(self, pipeline):
++        tracker = getattr(pipeline, "ball_diagnostics", None)
++        self.assertIsNotNone(
++            tracker,
++            "pipeline must expose independent ball diagnostics",
++        )
++        return tracker
++
+     def test_ingest_binds_raw_before_event_driven_received_time_throttle(self) -> None:
+         pipeline, worker, _adapter_value, raw, _events = self._pipeline()
+         for generation, received in ((1, 5.0), (2, 5.005), (3, 5.01)):
+             pipeline.ingest_adapter_output(
+                 _output(generation, received_s=received)
+             )
+ 
+         self.assertEqual(
+             [snapshot.generation for snapshot in worker.submissions],
+             [1, 3],
+@@ -604,20 +622,199 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+ 
+         pipeline.ingest_adapter_output(_output(1, received_s=1.0))
+ 
+         self.assertTrue(worker.wait_callbacks())
+         self.assertFalse(worker.lock_inversion_detected)
+         self.assertEqual(
+             [snapshot.generation for snapshot in worker.submissions],
+             [1],
+         )
+ 
++    def test_ball_diagnostics_reaches_estimator_window_without_pelvis(self) -> None:
++        pipeline, _worker, _adapter, _raw, _events = self._pipeline(
++            required=3
++        )
++
++        diagnostics = self._ball_diagnostics(pipeline)
++        initial = diagnostics.snapshot()
++        self.assertEqual(initial.status, "NOT_SEEN")
++        self.assertIsNone(initial.estimator_sample_count)
++        self.assertEqual(initial.estimator_window_size, 31)
++        self.assertIsNone(initial.incoming_count)
++        self.assertEqual(initial.incoming_required_count, 3)
++        self.assertEqual(initial.incoming_status, "NOT_EVALUATED")
++
++        for generation in range(1, 32):
++            pipeline.ingest_adapter_output(
++                _output(
++                    generation,
++                    received_s=float(generation) * 0.02,
++                    ready=generation == 31,
++                    base_valid=False,
++                    velocity=(-1.0, 0.0, 0.0),
++                )
++            )
++            state = diagnostics.snapshot()
++            self.assertEqual(state.estimator_sample_count, generation)
++            self.assertEqual(state.estimator_window_size, 31)
++            if generation < 31:
++                self.assertEqual(state.status, "ESTIMATING")
++                self.assertIsNone(state.speed_mps)
++                self.assertIsNone(state.velocity_world_mps)
++                self.assertIsNone(state.incoming_count)
++                self.assertEqual(
++                    state.incoming_status,
++                    "NOT_EVALUATED",
++                )
++
++        ready = diagnostics.snapshot()
++        self.assertEqual(ready.status, "READY")
++        self.assertEqual(ready.speed_mps, 1.0)
++        self.assertEqual(
++            ready.velocity_world_mps,
++            (-1.0, 0.0, 0.0),
++        )
++        self.assertEqual(ready.incoming_count, 1)
++        self.assertEqual(ready.incoming_status, "INCOMING")
++        self.assertIsNone(ready.blocker)
++
++    def test_ball_diagnostics_deduplicates_ready_snapshots_without_touching_production(self) -> None:
++        pipeline, _worker, _adapter, _raw, _events = self._pipeline(
++            required=3
++        )
++        samples = (
++            _output(
++                1,
++                received_s=0.02,
++                base_valid=False,
++                velocity=(-0.2, 0.0, 0.0),
++            ),
++            _output(
++                1,
++                received_s=0.04,
++                base_valid=False,
++                velocity=(-0.2, 0.0, 0.0),
++            ),
++            _output(
++                2,
++                received_s=0.06,
++                base_valid=False,
++                velocity=(-0.2, 0.0, 0.0),
++            ),
++            _output(
++                3,
++                received_s=0.08,
++                base_valid=False,
++                velocity=(-0.2, 0.0, 0.0),
++            ),
++        )
++
++        observed_counts = []
++        for output in samples:
++            pipeline.ingest_adapter_output(output)
++            observed_counts.append(
++                self._ball_diagnostics(
++                    pipeline
++                ).snapshot().incoming_count
++            )
++
++        self.assertEqual(observed_counts, [1, 1, 2, 3])
++        diagnostic = self._ball_diagnostics(pipeline).snapshot()
++        self.assertEqual(diagnostic.incoming_status, "INCOMING")
++        self.assertEqual(diagnostic.incoming_required_count, 3)
++        production = pipeline.incoming.snapshot()
++        self.assertIsNone(production.track_epoch)
++        self.assertEqual(production.consecutive_count, 0)
++        self.assertFalse(production.confirmed)
++
++    def test_ball_diagnostics_nonincoming_sample_resets_consecutive_count(self) -> None:
++        pipeline, _worker, _adapter, _raw, _events = self._pipeline(
++            required=3
++        )
++        pipeline.ingest_adapter_output(
++            _output(
++                1,
++                received_s=0.02,
++                base_valid=False,
++                velocity=(-1.0, 0.0, 0.0),
++            )
++        )
++        self.assertEqual(
++            self._ball_diagnostics(
++                pipeline
++            ).snapshot().incoming_count,
++            1,
++        )
++
++        pipeline.ingest_adapter_output(
++            _output(
++                2,
++                received_s=0.04,
++                base_valid=False,
++                velocity=(0.1, 0.0, 0.0),
++            )
++        )
++
++        state = self._ball_diagnostics(pipeline).snapshot()
++        self.assertEqual(state.status, "READY")
++        self.assertEqual(state.incoming_count, 0)
++        self.assertEqual(state.incoming_status, "NOT_INCOMING")
++        self.assertEqual(state.blocker, "INCOMING_SPEED_REJECTED")
++
++    def test_ball_diagnostics_track_end_is_explicit_and_next_epoch_restarts_count(self) -> None:
++        pipeline, _worker, _adapter, _raw, _events = self._pipeline(
++            required=3
++        )
++        pipeline.ingest_adapter_output(
++            _output(
++                1,
++                received_s=0.02,
++                base_valid=False,
++                velocity=(-1.0, 0.0, 0.0),
++            )
++        )
++        pipeline.ingest_adapter_output(
++            _output(
++                2,
++                received_s=0.04,
++                visible=False,
++                ready=False,
++                base_valid=False,
++                epoch=1,
++                estimator_sample_count=0,
++            )
++        )
++
++        ended = self._ball_diagnostics(pipeline).snapshot()
++        self.assertEqual(ended.status, "TRACK_ENDED")
++        self.assertIsNone(ended.estimator_sample_count)
++        self.assertEqual(ended.estimator_window_size, 31)
++        self.assertIsNone(ended.speed_mps)
++        self.assertIsNone(ended.velocity_world_mps)
++        self.assertIsNone(ended.incoming_count)
++        self.assertEqual(ended.incoming_status, "TRACK_ENDED")
++        self.assertEqual(ended.blocker, "BALL_NOT_VISIBLE")
++
++        pipeline.ingest_adapter_output(
++            _output(
++                3,
++                received_s=0.06,
++                base_valid=False,
++                velocity=(-1.0, 0.0, 0.0),
++                epoch=1,
++                estimator_sample_count=1,
++            )
++        )
++        restarted = self._ball_diagnostics(pipeline).snapshot()
++        self.assertEqual(restarted.incoming_count, 1)
++        self.assertEqual(restarted.incoming_status, "INCOMING")
++
+     def test_throttled_and_pending_invisible_samples_do_not_reset_early(self) -> None:
+         pipeline, worker, _adapter_value, _raw, _events = self._pipeline(
+             required=2
+         )
+         with self.assertRaisesRegex(ValueError, "stably incoming"):
+             pipeline.plan_snapshot(_snapshot(1))
+         self.assertEqual(pipeline.incoming.snapshot().consecutive_count, 1)
+         pipeline.ingest_adapter_output(_output(1, received_s=1.0))
+         pipeline.ingest_adapter_output(
+             _output(2, received_s=1.005, visible=False)
+@@ -1169,20 +1366,32 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         )
+ 
+         recovery = pipeline.tick(
+             lifecycle_now_s=0.851,
+             obs_now_s=0.852,
+             wall_time_us=101,
+         )
+         self.assertEqual(recovery.phase, "recovery")
+         self.assertFalse(recovery.task_pass)
+         self.assertEqual(adapter.reset_calls, 1)
++        reset_diagnostics = self._ball_diagnostics(pipeline).snapshot()
++        self.assertEqual(reset_diagnostics.status, "TRACK_ENDED")
++        self.assertIsNone(reset_diagnostics.estimator_sample_count)
++        self.assertIsNone(reset_diagnostics.incoming_count)
++        self.assertEqual(
++            reset_diagnostics.incoming_status,
++            "TRACK_ENDED",
++        )
++        self.assertEqual(
++            reset_diagnostics.blocker,
++            "STRIKE_DEADLINE_RESET",
++        )
+         self.assertTrue(
+             any(draft.kind == "lifecycle_tick" for draft in events.drafts)
+         )
+ 
+     def test_bundle_identity_mismatch_never_arms_or_passes(self) -> None:
+         pipeline, worker, _adapter_value, _raw, _events = self._pipeline(
+             required=1
+         )
+         pipeline.ingest_adapter_output(_output(1, received_s=0.0))
+         worker.bundle = (

@@ -1,0 +1,81 @@
+_target_: simulator.mujoco.Mujoco
+_recursive_: False
+config:
+  marker: True
+  random_init_heading: False
+  control: ${robot.control}
+  asset: ${robot.asset}
+  table_tennis:
+    enabled: True
+    ball_body_name: hitter_ball
+    ball_joint_name: hitter_ball_freejoint
+    ball_geom_name: hitter_ball_geom
+    racket_face_geom_name: right_racket_face_collision
+    use_analytic_table_bounce: True
+    use_analytic_racket_hit: True
+    table_center_xy_w: [1.37, 0.0]
+    table_height: 0.76
+    table_length: 2.74
+    table_width: 1.525
+    ball_radius: 0.02
+    vertical_restitution: 0.8
+    horizontal_restitution: 1.0
+    analytic_racket_hit_target_radius: 0.08
+    analytic_racket_hit_racket_radius: 0.20
+    analytic_racket_hit_require_racket_near: True
+    analytic_racket_hit_min_incoming_speed_x: 0.05
+    analytic_racket_hit_snap_to_target: True
+    analytic_racket_hit_separation: 0.03
+    randomize_ball_on_reset: True
+    ball_trajectory_selection: random
+    ball_random_seed: 0
+    ball_trajectory_candidates:
+      - name: forehand_y065_high_086
+        pos: [2.05, -0.65, 1.089]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: forehand_y050_high_086
+        pos: [2.05, -0.50, 1.089]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: forehand_y035_high_086
+        pos: [2.05, -0.35, 1.089]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: forehand_y020_high_086
+        pos: [2.05, -0.20, 1.089]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: forehand_y010_high_086
+        pos: [2.05, -0.10, 1.089]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: center_low_086
+        pos: [2.05, 0.00, 0.96]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: backhand_y010_low_086
+        pos: [2.05, 0.10, 0.96]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: backhand_y020_low_086
+        pos: [2.05, 0.20, 0.96]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: backhand_y035_low_086
+        pos: [2.05, 0.35, 0.96]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: backhand_y050_low_086
+        pos: [2.05, 0.50, 0.96]
+        lin_vel: [-2.3837, 0.00, -0.50]
+      - name: backhand_y065_low_086
+        pos: [2.05, 0.65, 0.96]
+        lin_vel: [-2.3837, 0.00, -0.50]
+    ball_initial_pos: [2.10, -0.20, 0.96]
+    ball_initial_pos_range:
+      - [1.95, 2.15]
+      - [-0.65, 0.65]
+      - [0.94, 1.00]
+    ball_initial_quat_wxyz: [1.0, 0.0, 0.0, 0.0]
+    ball_initial_lin_vel: [-2.20, 0.0, -0.25]
+    ball_initial_lin_vel_range:
+      - [-2.45, -2.20]
+      - [-0.15, 0.15]
+      - [-0.35, -0.15]
+    ball_initial_ang_vel: [0.0, 0.0, 0.0]
+    ball_initial_ang_vel_range:
+      - [0.0, 0.0]
+      - [0.0, 0.0]
+      - [0.0, 0.0]

@@ -1,0 +1,19 @@
+defaults:
+  - robot: g1_hitter_racket
+  - obs: level
+  - sim: real_world
+  - agent: loco_hitter
+  - env: loco_hitter
+  - mimic: hitter
+  - locomotion: level
+  - teleop: teleop
+  - _self_
+
+device: cpu
+
+robot:
+  control:
+    use_teleop: true
+    viewer: true
+    real_time: true
+    terminate_on_r2: false

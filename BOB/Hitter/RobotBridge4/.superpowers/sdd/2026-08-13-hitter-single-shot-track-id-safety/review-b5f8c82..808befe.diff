@@ -1,0 +1,892 @@
+# Review package: b5f8c8247fb3354194699804c4a04ee5f01eae52..808befefed29cfdbc0c0a9238ad3bf43675c85d7
+
+## Commits
+808befe fix: make HITTER planner delivery reentrant
+
+## Files changed
+ deploy/diagnostics/hitter_task_pipeline.py         |  16 +--
+ deploy/diagnostics/hitter_task_replay.py           |  42 ++++++--
+ deploy/envs/hitter.py                              |   6 +-
+ deploy/tests/test_hitter_completed_result_queue.py | 113 ++++++++++++++++++++-
+ deploy/tests/test_hitter_runtime_factory.py        |   1 -
+ deploy/tests/test_hitter_strike_target_logging.py  |   1 -
+ .../test_hitter_task_diagnostics_integration.py    |   5 +-
+ deploy/tests/test_hitter_task_pipeline.py          |  14 ++-
+ deploy/utils/hitter_realtime.py                    |  64 ++++++------
+ 9 files changed, 199 insertions(+), 63 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_pipeline.py b/deploy/diagnostics/hitter_task_pipeline.py
+index cbafbf8..646935c 100644
+--- a/deploy/diagnostics/hitter_task_pipeline.py
++++ b/deploy/diagnostics/hitter_task_pipeline.py
+@@ -1607,39 +1607,33 @@ class ShadowTaskPipeline:
+         if not cls._diagnostic_values_match(
+             result.strike_deadline_monotonic_s,
+             frozen.strike_deadline_monotonic_s,
+         ):
+             return False
+         if not cls._diagnostic_values_match(
+             result.completed_monotonic_s,
+             frozen.completed_monotonic_s,
+         ):
+             return False
+-        frozen_has_error = (
++        frozen_has_diagnostic_error = (
+             frozen.error_type is not None
+             or frozen.error_text is not None
+         )
+-        if (frozen.error_type is None) != (frozen.error_text is None):
+-            return False
+-        if result.error is not None:
++        if result.failure_reason is not None:
+             if (
+                 result.command is not None
+                 or frozen.command_fields is not None
+-                or not frozen_has_error
++                or frozen.failure_reason is not result.failure_reason
+             ):
+                 return False
+-            error_prefix = "{}: ".format(frozen.error_type)
+-            if not result.error.startswith(error_prefix):
+-                return False
+-            production_error_text = result.error[len(error_prefix):]
+-            return production_error_text[:2048] == frozen.error_text
+-        if frozen_has_error:
++            return True
++        if frozen.failure_reason is not None or frozen_has_diagnostic_error:
+             return False
+         if result.command is None:
+             return frozen.command_fields is None
+         if frozen.command_fields is None:
+             return False
+         try:
+             production_fields = freeze_planner_command_fields(
+                 result.command
+             )
+         except Exception:
+diff --git a/deploy/diagnostics/hitter_task_replay.py b/deploy/diagnostics/hitter_task_replay.py
+index 10f2d0d..1121b50 100644
+--- a/deploy/diagnostics/hitter_task_replay.py
++++ b/deploy/diagnostics/hitter_task_replay.py
+@@ -44,20 +44,21 @@ from diagnostics.hitter_task_pipeline import (
+ )
+ from utils.hitter_realtime import (
+     BallEstimateSnapshot,
+     FrozenPlannerResult,
+     PlannerResultSnapshot,
+ )
+ from utils.hitter_runtime_factory import (
+     HitterRuntimeSettings,
+     build_hitter_system_planner,
+ )
++from utils.hitter_runtime_types import PlannerFailureReason
+ 
+ 
+ BASELINE_VARIANT = None
+ ONE_FRAME_VARIANT = None
+ 
+ _TERMINAL_CODES = frozenset(
+     (
+         "TASK_OBS_PASS",
+         "LATE_SKIP",
+         "TRACK_ENDED_BEFORE_READY",
+@@ -407,52 +408,72 @@ def _frozen_result_to_json(
+     return {
+         "snapshot_key": value.snapshot_key.to_json_dict(),
+         "source_frame": value.source_frame,
+         "strike_deadline_monotonic_s": (
+             value.strike_deadline_monotonic_s
+         ),
+         "completed_monotonic_s": value.completed_monotonic_s,
+         "command_fields": value.command_fields,
+         "error_type": value.error_type,
+         "error_text": value.error_text,
++        "failure_reason": (
++            None
++            if value.failure_reason is None
++            else value.failure_reason.value
++        ),
+     }
+ 
+ 
+ def _frozen_result_from_json(
+     value: Mapping[str, Any],
+ ) -> FrozenPlannerResult:
+     key = _snapshot_key_from_json(value["snapshot_key"])
+     if key is None:
+         raise ValueError("planner result requires a snapshot key")
+     command_fields = value.get("command_fields")
+     if command_fields is not None and not isinstance(command_fields, Mapping):
+         raise TypeError("command_fields must be a mapping or null")
++    raw_failure_reason = value.get("failure_reason")
++    failure_reason = (
++        PlannerFailureReason.INTERNAL_ERROR
++        if raw_failure_reason is None
++        and (
++            value.get("error_type") is not None
++            or value.get("error_text") is not None
++        )
++        else (
++            None
++            if raw_failure_reason is None
++            else PlannerFailureReason(raw_failure_reason)
++        )
++    )
+     return FrozenPlannerResult(
+         snapshot_key=key,
+         source_frame=int(value["source_frame"]),
+         strike_deadline_monotonic_s=_json_number(
+             value["strike_deadline_monotonic_s"]
+         ),
+         completed_monotonic_s=_json_number(
+             value["completed_monotonic_s"]
+         ),
+         command_fields=command_fields,
+         error_type=(
+             None
+             if value.get("error_type") is None
+             else str(value["error_type"])
+         ),
+         error_text=(
+             None
+             if value.get("error_text") is None
+             else str(value["error_text"])
+         ),
++        failure_reason=failure_reason,
+     )
+ 
+ 
+ def _planner_call_to_json(value: PlannerCallRecord) -> Mapping[str, Any]:
+     return {
+         "snapshot_key": value.snapshot_key.to_json_dict(),
+         "submitted_monotonic_s": value.submitted_monotonic_s,
+         "started_monotonic_s": value.started_monotonic_s,
+         "completed_monotonic_s": value.completed_monotonic_s,
+         "duration_s": value.duration_s,
+@@ -2378,52 +2399,57 @@ def _replay_attempt(
+                 raise RuntimeError("planner completion identity mismatch")
+             snapshot = job.snapshot
+             key = _snapshot_key(snapshot)
+             command = job.command
+             strike_deadline_s = float("nan")
+             if command is not None and job.error_type is None:
+                 strike_deadline_s = (
+                     float(snapshot.received_monotonic_s)
+                     + float(getattr(command, "time_to_strike"))
+                 )
++            failure_reason = (
++                None
++                if job.error_type is None
++                else PlannerFailureReason.INTERNAL_ERROR
++            )
++            planner_error_text = (
++                None
++                if job.error_type is None
++                else "{}: {}".format(job.error_type, job.error_text)
++            )
+             frozen = FrozenPlannerResult(
+                 snapshot_key=key,
+                 source_frame=int(snapshot.source_frame),
+                 strike_deadline_monotonic_s=strike_deadline_s,
+                 completed_monotonic_s=event.at_s,
+                 command_fields=job.command_fields,
+                 error_type=job.error_type,
+                 error_text=job.error_text,
++                failure_reason=failure_reason,
+             )
+             previous_result = worker.bundle[1]
+             latest_replaced_key = (
+                 None
+                 if previous_result is None
+                 else previous_result.snapshot_key
+             )
+             if previous_result is not None:
+                 overwritten_latest += 1
+             result = PlannerResultSnapshot(
+                 track_id=int(snapshot.track_id),
+                 source_generation=int(snapshot.generation),
+                 source_frame=int(snapshot.source_frame),
+                 strike_deadline_monotonic_s=strike_deadline_s,
+                 completed_monotonic_s=event.at_s,
+                 command=command,
+-                error=(
+-                    None
+-                    if job.error_type is None
+-                    else "{}: {}".format(
+-                        job.error_type,
+-                        job.error_text,
+-                    )
+-                ),
++                failure_reason=failure_reason,
++                error_text=planner_error_text,
+             )
+             worker.bundle = (result, frozen)
+             planner_calls.append(
+                 PlannerCallRecord(
+                     snapshot_key=key,
+                     submitted_monotonic_s=job.submitted_s,
+                     started_monotonic_s=float(job.started_s),
+                     completed_monotonic_s=event.at_s,
+                     duration_s=float(job.duration_s),
+                     pending_replaced_key=job.pending_replaced_key,
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index 95a145c..a2e4983 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -858,31 +858,33 @@ class HitterEnv(BaseEnv):
+                 command=command,
+             )
+         except PlannerRejected as exc:
+             return PlannerResultSnapshot(
+                 track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=float("nan"),
+                 completed_monotonic_s=now,
+                 command=None,
+-                error=exc.reason.value,
++                failure_reason=exc.reason,
++                error_text=exc.detail,
+             )
+         except Exception as exc:
+             return PlannerResultSnapshot(
+                 track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=float("nan"),
+                 completed_monotonic_s=now,
+                 command=None,
+-                error=f"{type(exc).__name__}: {exc}",
++                failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++                error_text=f"{type(exc).__name__}: {exc}",
+             )
+ 
+     def _hitter_result_is_before_reset(self, result: PlannerResultSnapshot) -> bool:
+         track_id = int(result.track_id)
+         generation = int(result.source_generation)
+         return track_id < self._hitter_minimum_track_id or (
+             track_id == self._hitter_minimum_track_id
+             and generation < self._hitter_minimum_generation
+         )
+ 
+diff --git a/deploy/tests/test_hitter_completed_result_queue.py b/deploy/tests/test_hitter_completed_result_queue.py
+index 035a2a8..b5c1161 100644
+--- a/deploy/tests/test_hitter_completed_result_queue.py
++++ b/deploy/tests/test_hitter_completed_result_queue.py
+@@ -1,12 +1,13 @@
+ from __future__ import annotations
+ 
++import inspect
+ import threading
+ import time
+ 
+ import numpy as np
+ import pytest
+ 
+ import utils.hitter_realtime as hitter_realtime
+ from utils.hitter_planner import HitterWbcCommand, StrikePlan
+ from utils.hitter_realtime import (
+     BallEstimateSnapshot,
+@@ -263,20 +264,130 @@ def test_frozen_queue_result_is_detached_from_mutable_command_arrays():
+         frozen = batch.frozen_results[0]
+ 
+         command_holder["command"].p_base_target_xy[0] = 99.0
+         assert frozen.command_fields["p_base_target_xy"] == (-0.4, 0.2)
+         with pytest.raises(TypeError):
+             frozen.command_fields["new"] = "value"
+     finally:
+         assert worker.close(timeout_s=1.0)
+ 
+ 
++def test_trace_listener_can_close_worker_without_delivery_lock_deadlock():
++    start_delivery_attempted = threading.Event()
++    close_results: list[bool] = []
++    delivered_sequences: list[int] = []
++
++    class CoordinatedWorker(LatestOnlyPlannerWorker):
++        def _notify_traces(self, traces):
++            if (
++                threading.current_thread() is self._thread
++                and any(trace.kind == "start" for trace in traces)
++            ):
++                start_delivery_attempted.set()
++            return super()._notify_traces(traces)
++
++    worker = None
++
++    def listener(trace):
++        delivered_sequences.append(trace.trace_seq)
++        if trace.kind == "submit":
++            assert start_delivery_attempted.wait(timeout=1.0)
++            close_results.append(worker.close(timeout_s=0.2))
++
++    worker = CoordinatedWorker(plan_ok, trace_listener=listener)
++    try:
++        worker.submit(snapshot())
++        assert close_results == [True]
++        assert delivered_sequences == list(
++            range(1, len(delivered_sequences) + 1)
++        )
++        assert worker.close(timeout_s=0.2)
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_trace_listener_reentrant_submit_preserves_exact_sequence():
++    delivered_sequences: list[int] = []
++    submitted_generations: list[int] = []
++    worker = None
++
++    def listener(trace):
++        delivered_sequences.append(trace.trace_seq)
++        if trace.kind == "submit":
++            submitted_generations.append(trace.snapshot.generation)
++            if trace.snapshot.generation == 1:
++                worker.submit(snapshot(generation=2))
++
++    worker = LatestOnlyPlannerWorker(plan_ok, trace_listener=listener)
++    try:
++        worker.submit(snapshot(generation=1))
++        wait_until(
++            lambda: worker.stats.completed + worker.stats.failed >= 1
++        )
++        assert worker.close(timeout_s=1.0)
++        assert submitted_generations == [1, 2]
++        assert delivered_sequences == list(
++            range(1, len(delivered_sequences) + 1)
++        )
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_planner_result_error_is_derived_from_typed_reason():
++    common = {
++        "track_id": 7,
++        "source_generation": 1,
++        "source_frame": 1,
++        "strike_deadline_monotonic_s": float("nan"),
++        "completed_monotonic_s": time.monotonic(),
++        "command": None,
++        "error_text": "diagnostic detail",
++    }
++
++    track_ended = PlannerResultSnapshot(
++        **common,
++        failure_reason=PlannerFailureReason.TRACK_ENDED,
++    )
++    internal = PlannerResultSnapshot(
++        **common,
++        failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++    )
++    success = PlannerResultSnapshot(
++        **{
++            **common,
++            "strike_deadline_monotonic_s": time.monotonic() + 1.0,
++            "command": plan_ok(snapshot()),
++            "error_text": None,
++        }
++    )
++
++    assert track_ended.error == PlannerFailureReason.TRACK_ENDED.value
++    assert internal.error == PlannerFailureReason.INTERNAL_ERROR.value
++    assert success.error is None
++
++
++def test_planner_result_constructor_has_no_legacy_error_input():
++    assert "error" not in inspect.signature(PlannerResultSnapshot).parameters
++    with pytest.raises(TypeError, match="unexpected keyword argument 'error'"):
++        PlannerResultSnapshot(
++            track_id=7,
++            source_generation=1,
++            source_frame=1,
++            strike_deadline_monotonic_s=float("nan"),
++            completed_monotonic_s=time.monotonic(),
++            command=None,
++            failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++            error_text="detail",
++            error="TRACK_ENDED",
++        )
++
++
+ def test_planner_result_enforces_exact_success_or_failure():
+     common = {
+         "track_id": 7,
+         "source_generation": 1,
+         "source_frame": 1,
+         "strike_deadline_monotonic_s": time.monotonic() + 1.0,
+         "completed_monotonic_s": time.monotonic(),
+     }
+     command = plan_ok(snapshot())
+ 
+@@ -301,21 +412,21 @@ def test_planner_result_enforces_exact_success_or_failure():
+ 
+ 
+ @pytest.mark.parametrize(
+     "changes",
+     [
+         {"track_id": True},
+         {"track_id": 0},
+         {"source_generation": True},
+         {"source_generation": -1},
+         {"source_frame": True},
+-        {"source_frame": 0},
++        {"source_frame": -1},
+         {"completed_monotonic_s": float("nan")},
+         {"completed_monotonic_s": float("inf")},
+         {"strike_deadline_monotonic_s": float("inf")},
+     ],
+ )
+ def test_planner_result_rejects_invalid_identity_and_time_values(changes):
+     values = {
+         "track_id": 7,
+         "source_generation": 1,
+         "source_frame": 1,
+diff --git a/deploy/tests/test_hitter_runtime_factory.py b/deploy/tests/test_hitter_runtime_factory.py
+index 675b80b..a7f4087 100644
+--- a/deploy/tests/test_hitter_runtime_factory.py
++++ b/deploy/tests/test_hitter_runtime_factory.py
+@@ -267,21 +267,20 @@ def assert_system_planner_equal(
+ 
+ 
+ def armed_recovery_duration(lifecycle, sequence_number: int) -> float:
+     result = PlannerResultSnapshot(
+         track_id=sequence_number,
+         source_generation=1,
+         source_frame=sequence_number,
+         strike_deadline_monotonic_s=10.92,
+         completed_monotonic_s=10.0,
+         command=object(),
+-        error=None,
+     )
+     decision = lifecycle.ingest(result, now=10.0)
+     if decision != "armed":
+         raise AssertionError(f"expected lifecycle to arm, got {decision!r}")
+     return lifecycle.recovery_duration_s
+ 
+ 
+ class RuntimeFactoryCharacterizationTests(unittest.TestCase):
+     @classmethod
+     def setUpClass(cls):
+diff --git a/deploy/tests/test_hitter_strike_target_logging.py b/deploy/tests/test_hitter_strike_target_logging.py
+index 25c6f27..9287fab 100644
+--- a/deploy/tests/test_hitter_strike_target_logging.py
++++ b/deploy/tests/test_hitter_strike_target_logging.py
+@@ -66,21 +66,20 @@ def planner_result(
+ ):
+     if command is None:
+         command = fake_command()
+     return PlannerResultSnapshot(
+         track_id=track_id,
+         source_generation=generation,
+         source_frame=generation,
+         strike_deadline_monotonic_s=deadline,
+         completed_monotonic_s=10.01,
+         command=command,
+-        error=None,
+     )
+ 
+ 
+ def configured_lifecycle() -> HitterCommandLifecycle:
+     return HitterCommandLifecycle(
+         waiting_tts=0.92,
+         arm_tts=0.90,
+         minimum_arm_tts=0.80,
+         maximum_policy_tts=0.92,
+         swing_duration_sampler=lambda: 1.85,
+diff --git a/deploy/tests/test_hitter_task_diagnostics_integration.py b/deploy/tests/test_hitter_task_diagnostics_integration.py
+index 9733e55..c4762a0 100644
+--- a/deploy/tests/test_hitter_task_diagnostics_integration.py
++++ b/deploy/tests/test_hitter_task_diagnostics_integration.py
+@@ -18,20 +18,21 @@ from diagnostics.hitter_task_replay import (
+     replay_attempt,
+ )
+ from utils.hitter_realtime import (
+     FrozenPlannerResult,
+     PlannerResultSnapshot,
+     PlannerWorkerStats,
+     PlannerWorkerTrace,
+     freeze_planner_command_fields,
+ )
+ from utils.hitter_runtime_factory import HitterRuntimeSettings
++from utils.hitter_runtime_types import PlannerFailureReason
+ 
+ 
+ @dataclass(frozen=True)
+ class _StrikePlan:
+     t_strike: float
+     p_racket_target: np.ndarray
+     v_racket_target: np.ndarray
+ 
+ 
+ @dataclass(frozen=True)
+@@ -146,36 +147,38 @@ class _ImmediateWorker:
+         except Exception as exc:
+             error_type = type(exc).__name__
+             error_text = str(exc)
+             result = PlannerResultSnapshot(
+                 track_id=snapshot.track_id,
+                 source_generation=snapshot.generation,
+                 source_frame=snapshot.source_frame,
+                 strike_deadline_monotonic_s=float("nan"),
+                 completed_monotonic_s=completed_s,
+                 command=None,
+-                error="{}: {}".format(error_type, error_text),
++                failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++                error_text="{}: {}".format(error_type, error_text),
+             )
+             deadline_s = float("nan")
+             command_fields = None
+             self.failed += 1
+         frozen = FrozenPlannerResult(
+             snapshot_key=SnapshotKey(
+                 int(snapshot.track_id),
+                 int(snapshot.generation),
+             ),
+             source_frame=int(snapshot.source_frame),
+             strike_deadline_monotonic_s=deadline_s,
+             completed_monotonic_s=completed_s,
+             command_fields=command_fields,
+             error_type=error_type,
+             error_text=error_text,
++            failure_reason=result.failure_reason,
+         )
+         previous_frozen = self.bundle[1]
+         self.bundle = (result, frozen)
+         self.trace_seq += 1
+         self.pipeline._on_worker_trace(
+             PlannerWorkerTrace(
+                 trace_seq=self.trace_seq,
+                 kind="complete",
+                 monotonic_s=completed_s,
+                 snapshot=snapshot,
+diff --git a/deploy/tests/test_hitter_task_pipeline.py b/deploy/tests/test_hitter_task_pipeline.py
+index cfa070e..5db0ed5 100644
+--- a/deploy/tests/test_hitter_task_pipeline.py
++++ b/deploy/tests/test_hitter_task_pipeline.py
+@@ -21,20 +21,21 @@ from diagnostics.hitter_task_pipeline import (
+ from utils.hitter_realtime import (
+     BallEstimateSnapshot,
+     FrozenPlannerResult,
+     IncomingTrackConfirmation,
+     LatestOnlyPlannerWorker,
+     PlannerResultSnapshot,
+     PlannerWorkerStats,
+     PlannerWorkerTrace,
+ )
+ from utils.hitter_runtime_factory import HitterRuntimeSettings
++from utils.hitter_runtime_types import PlannerFailureReason
+ 
+ 
+ @dataclass(frozen=True)
+ class _StrikePlan:
+     t_strike: float
+     p_racket_target: np.ndarray
+     v_racket_target: np.ndarray
+ 
+ 
+ @dataclass(frozen=True)
+@@ -418,21 +419,22 @@ class PlannerWorkerTraceTests(unittest.TestCase):
+                 completed.set()
+ 
+         worker = LatestOnlyPlannerWorker(
+             plan,
+             trace_listener=listener,
+         )
+         worker.submit(_snapshot(1))
+         self.assertTrue(completed.wait(2.0))
+         self.assertTrue(worker.close(timeout_s=2.0))
+         result, frozen = worker.latest_result_bundle()
+-        self.assertGreater(len(result.error), 2048)
++        self.assertEqual(result.error, PlannerFailureReason.INTERNAL_ERROR.value)
++        self.assertGreater(len(result.error_text), 2048)
+         self.assertEqual(len(frozen.error_text), 2048)
+         self.assertTrue(
+             ShadowTaskPipeline._result_bundle_matches(result, frozen)
+         )
+ 
+     def test_trace_sequence_replacements_and_frozen_nested_command_are_exact(self) -> None:
+         started = threading.Event()
+         release = threading.Event()
+         completed_latest = threading.Event()
+         traces = queue.Queue()
+@@ -1804,30 +1806,32 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+             error_type=None,
+             error_text=None,
+         )
+         failure = PlannerResultSnapshot(
+             track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=float("nan"),
+             completed_monotonic_s=0.01,
+             command=None,
+-            error="ValueError: scripted failure",
++            failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++            error_text="ValueError: scripted failure",
+         )
+         failure_frozen = FrozenPlannerResult(
+             snapshot_key=SnapshotKey(1, 1),
+             source_frame=1,
+             strike_deadline_monotonic_s=float("nan"),
+             completed_monotonic_s=0.01,
+             command_fields=None,
+             error_type="ValueError",
+             error_text="scripted failure",
++            failure_reason=PlannerFailureReason.INTERNAL_ERROR,
+         )
+ 
+         self.assertTrue(
+             ShadowTaskPipeline._result_bundle_matches(
+                 success,
+                 success_frozen,
+             )
+         )
+         self.assertTrue(
+             ShadowTaskPipeline._result_bundle_matches(
+@@ -1845,27 +1849,31 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+                 ),
+             )
+         )
+         self.assertFalse(
+             ShadowTaskPipeline._result_bundle_matches(
+                 failure,
+                 replace(
+                     failure_frozen,
+                     error_type=None,
+                     error_text=None,
++                    failure_reason=None,
+                 ),
+             )
+         )
+         self.assertFalse(
+             ShadowTaskPipeline._result_bundle_matches(
+                 failure,
+-                replace(failure_frozen, error_text="other failure"),
++                replace(
++                    failure_frozen,
++                    failure_reason=PlannerFailureReason.TRACK_ENDED,
++                ),
+             )
+         )
+ 
+     def test_bundle_rejects_numeric_string_and_source_frame_coercion(self) -> None:
+         command = _command(time_to_strike=0.85)
+         result = PlannerResultSnapshot(
+             track_id=1,
+             source_generation=1,
+             source_frame=1,
+             strike_deadline_monotonic_s=0.85,
+diff --git a/deploy/utils/hitter_realtime.py b/deploy/utils/hitter_realtime.py
+index 9a67a1d..ef3aa8a 100644
+--- a/deploy/utils/hitter_realtime.py
++++ b/deploy/utils/hitter_realtime.py
+@@ -63,36 +63,24 @@ class BallEstimateSnapshot:
+ @dataclass(frozen=True)
+ class PlannerResultSnapshot:
+     track_id: int
+     source_generation: int
+     source_frame: int
+     strike_deadline_monotonic_s: float
+     completed_monotonic_s: float
+     command: object | None
+     failure_reason: PlannerFailureReason | None = None
+     error_text: str | None = None
+-    error: str | None = None
+ 
+     def __post_init__(self) -> None:
+         failure_reason = self.failure_reason
+         error_text = self.error_text
+-        legacy_error = self.error
+-        if legacy_error is not None:
+-            if type(legacy_error) is not str:
+-                raise ValueError("error must be a string or None")
+-            if error_text is None:
+-                error_text = legacy_error
+-            if failure_reason is None:
+-                try:
+-                    failure_reason = PlannerFailureReason(legacy_error)
+-                except ValueError:
+-                    failure_reason = PlannerFailureReason.INTERNAL_ERROR
+ 
+         if failure_reason is not None and not isinstance(
+             failure_reason,
+             PlannerFailureReason,
+         ):
+             raise ValueError("failure_reason must be a PlannerFailureReason or None")
+         if error_text is not None and type(error_text) is not str:
+             raise ValueError("error_text must be a string or None")
+ 
+         succeeded = self.command is not None and failure_reason is None
+@@ -100,49 +88,46 @@ class PlannerResultSnapshot:
+         if not (succeeded or failed):
+             raise ValueError("planner result must be exactly success or failure")
+ 
+         if type(self.track_id) is not int or self.track_id <= 0:
+             raise ValueError("track_id must be a positive integer")
+         if (
+             type(self.source_generation) is not int
+             or self.source_generation < 0
+         ):
+             raise ValueError("source_generation must be a non-negative integer")
+-        if type(self.source_frame) is not int or self.source_frame <= 0:
+-            raise ValueError("source_frame must be a positive integer")
++        if type(self.source_frame) is not int or self.source_frame < 0:
++            raise ValueError("source_frame must be a non-negative integer")
+         if (
+             not np.isfinite(self.completed_monotonic_s)
+             or self.completed_monotonic_s < 0.0
+         ):
+             raise ValueError("completed_monotonic_s must be finite and non-negative")
+         deadline = float(self.strike_deadline_monotonic_s)
+         if np.isinf(deadline) or (succeeded and not np.isfinite(deadline)):
+             raise ValueError(
+                 "strike_deadline_monotonic_s must be finite for success "
+                 "and never infinite"
+             )
+         if np.isfinite(deadline) and deadline < 0.0:
+             raise ValueError(
+                 "strike_deadline_monotonic_s must be non-negative when finite"
+             )
+ 
+         object.__setattr__(self, "failure_reason", failure_reason)
+         object.__setattr__(self, "error_text", error_text)
+-        if legacy_error is not None:
+-            compatibility_error = legacy_error
+-        elif succeeded:
+-            compatibility_error = None
+-        elif failure_reason is PlannerFailureReason.INTERNAL_ERROR:
+-            compatibility_error = error_text or failure_reason.value
+-        else:
+-            compatibility_error = failure_reason.value
+-        object.__setattr__(self, "error", compatibility_error)
++
++    @property
++    def error(self) -> str | None:
++        if self.failure_reason is None:
++            return None
++        return self.failure_reason.value
+ 
+ 
+ @dataclass(frozen=True)
+ class PlannerWorkerStats:
+     submitted: int
+     completed: int
+     failed: int
+     dropped_pending: int
+     trace_listener_failures: int = 0
+     pending_replaced_total: int = 0
+@@ -361,20 +346,21 @@ class LatestOnlyPlannerWorker:
+             )
+         self._plan_fn = plan_fn
+         self._monotonic_fn = monotonic_fn
+         self._trace_listener = trace_listener
+         self._condition = threading.Condition()
+         self._trace_delivery_condition = threading.Condition(
+             threading.RLock()
+         )
+         self._trace_delivery_pending = {}
+         self._next_trace_delivery_seq = 1
++        self._trace_delivery_active = False
+         self._pending: BallEstimateSnapshot | None = None
+         self._latest_result: PlannerResultSnapshot | None = None
+         self._latest_frozen_result: FrozenPlannerResult | None = None
+         self._completed_result_queue_capacity = completed_result_queue_capacity
+         self._completed_results: list[
+             tuple[PlannerResultSnapshot, FrozenPlannerResult | None]
+         ] = []
+         self._completed_result_queue_overflow_latched = False
+         self._completed_result_queue_overflow_since_drain = 0
+         self._completed_result_queue_overflow_total = 0
+@@ -525,32 +511,42 @@ class LatestOnlyPlannerWorker:
+     def _notify_traces(
+         self,
+         traces: list[PlannerWorkerTrace],
+     ) -> None:
+         listener = self._trace_listener
+         if listener is None:
+             return
+         with self._trace_delivery_condition:
+             for trace in traces:
+                 self._trace_delivery_pending[trace.trace_seq] = trace
+-            while (
+-                self._next_trace_delivery_seq
+-                in self._trace_delivery_pending
+-            ):
++            if self._trace_delivery_active:
++                return
++            self._trace_delivery_active = True
++        while True:
++            with self._trace_delivery_condition:
+                 trace = self._trace_delivery_pending.pop(
+-                    self._next_trace_delivery_seq
++                    self._next_trace_delivery_seq,
++                    None,
+                 )
+-                try:
+-                    listener(trace)
+-                except Exception:
+-                    with self._condition:
+-                        self._trace_listener_failures += 1
++                if trace is None:
++                    self._trace_delivery_active = False
++                    return
++            try:
++                listener(trace)
++            except Exception:
++                with self._condition:
++                    self._trace_listener_failures += 1
++            except BaseException:
++                with self._trace_delivery_condition:
++                    self._trace_delivery_active = False
++                raise
++            with self._trace_delivery_condition:
+                 self._next_trace_delivery_seq += 1
+ 
+     def _run(self) -> None:
+         while True:
+             start_traces = []
+             with self._condition:
+                 while self._pending is None and not self._stop_requested:
+                     self._condition.wait()
+                 if self._stop_requested:
+                     return
+@@ -591,38 +587,36 @@ class LatestOnlyPlannerWorker:
+                 diagnostic_error_text = exc.detail
+                 planned = PlannerResultSnapshot(
+                     track_id=snapshot.track_id,
+                     source_generation=snapshot.generation,
+                     source_frame=snapshot.source_frame,
+                     strike_deadline_monotonic_s=float("nan"),
+                     completed_monotonic_s=float(self._monotonic_fn()),
+                     command=None,
+                     failure_reason=failure_reason,
+                     error_text=error_text,
+-                    error=f"{error_type}: {diagnostic_error_text}",
+                 )
+             except Exception as exc:
+                 failed = True
+                 failure_reason = PlannerFailureReason.INTERNAL_ERROR
+                 error_type = type(exc).__name__
+                 error_text = f"{type(exc).__name__}: {exc}"
+                 diagnostic_error_text = str(exc)
+                 planned = PlannerResultSnapshot(
+                     track_id=snapshot.track_id,
+                     source_generation=snapshot.generation,
+                     source_frame=snapshot.source_frame,
+                     strike_deadline_monotonic_s=float("nan"),
+                     completed_monotonic_s=float(self._monotonic_fn()),
+                     command=None,
+                     failure_reason=failure_reason,
+                     error_text=error_text,
+-                    error=error_text,
+                 )
+ 
+             frozen = None
+             if self._trace_listener is not None:
+                 command_fields = None
+                 diagnostic_error_type = error_type
+                 if planned.command is not None:
+                     try:
+                         command_fields = freeze_planner_command_fields(
+                             planned.command

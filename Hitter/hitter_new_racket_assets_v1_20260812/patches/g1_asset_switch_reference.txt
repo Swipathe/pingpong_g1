@@ -1,0 +1,25 @@
+目标文件：
+source/whole_body_tracking/whole_body_tracking/robots/g1.py
+
+如果文件顶部还没有 import os，先加入：
+
+import os
+
+旧球拍资产的 spawn 配置应改成下面的最小形式：
+
+_G1_HITTER_RACKET_USD_PATH = os.environ.get(
+    "HITTER_G1_HITTER_RACKET_USD_PATH",
+    f"{ASSET_DIR}/unitree_description/usd/g1_hitter_racket/main.usda",
+)
+
+_G1_HITTER_RACKET_SPAWN_CFG = _make_usd_spawn_cfg(
+    usd_path=_G1_HITTER_RACKET_USD_PATH,
+)
+
+G1_HITTER_RACKET_CFG 最终必须使用 _G1_HITTER_RACKET_SPAWN_CFG，例如：
+
+G1_HITTER_RACKET_CFG = deepcopy(G1_CYLINDER_CFG).replace(
+    spawn=_G1_HITTER_RACKET_SPAWN_CFG
+)
+
+默认值仍是旧资产。只有设置 HITTER_G1_HITTER_RACKET_USD_PATH 时才切换新资产。

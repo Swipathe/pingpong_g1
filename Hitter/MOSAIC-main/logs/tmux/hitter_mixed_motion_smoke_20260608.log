@@ -1,0 +1,192 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/isaaclab.python.headless.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260608_202119.log
+2026-06-08 12:21:19 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-06-08 12:21:19 [26ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes' or '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes/config'
+2026-06-08 12:21:19 [280ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-06-08 12:21:19 [538ms] [Warning] [omni.platforminfo.plugin] failed to open the default display.  Can't verify X Server version.
+2026-06-08 12:21:19 [801ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-06-08 12:21:20 [919ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            | Yes: 1 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 153317
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-08 12:21:28 [9,366ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-06-08 12:21:28 [9,366ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 1
+2026-06-08 12:21:28 [9,368ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-08 12:21:28 [9,368ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Cuda failure ../../../source/plugins/carb.cudainterop/p2pBandwidthLatencyTest/p2pBandwidthLatencyTest.cu:681: 'peer access is already enabled'
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[INFO] Logging experiment in directory: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1
+Setting seed: 42
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 42
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+2026-06-08 12:21:32 [13,122ms] [Warning] [isaaclab.terrains.terrain_importer] Visual material specified for ground plane but no diffuse color found. Using default color: (0.0, 0.0, 0.0)
+[INFO]: Time taken for scene creation : 1.466356 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 8
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.902308 seconds
+2026-06-08 12:21:34 [15,432ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:21:34 [15,432ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:21:34 [15,435ms] [Error] [gpu.foundation.plugin] DriverShaderCacheManager::init() called without a shutdown()!
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            | Yes: 1 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 151316
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-08 12:21:36 [17,158ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-06-08 12:21:36 [17,158ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 1
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1267.97  14.45 
+     1  15.29 1291.96 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   3.12  49.59 
+     1  24.59   2.36 
+
+   CPU     0      1 
+     0   3.63  11.14 
+     1  10.65   3.39 
+2026-06-08 12:21:36 [17,308ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 14.4 GB/s.
+2026-06-08 12:21:36 [17,308ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 49.6 us.
+2026-06-08 12:21:36 [17,308ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-08 12:21:36 [17,310ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-08 12:21:36 [17,310ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1276.19  14.38 
+     1  15.86 1291.12 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   2.44  57.95 
+     1  20.08   2.25 
+
+   CPU     0      1 
+     0   3.45  10.46 
+     1   9.75   3.50 
+2026-06-08 12:21:36 [17,454ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 14.4 GB/s.
+2026-06-08 12:21:36 [17,455ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 58.0 us.
+2026-06-08 12:21:36 [17,455ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-08 12:21:37 [18,627ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:21:37 [18,627ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:21:37 [18,729ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:21:37 [18,729ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:21:37 [18,776ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:21:37 [18,776ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:21:38 [18,825ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:21:38 [18,825ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:21:38 [18,859ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:21:38 [18,859ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:21:38 [18,891ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:21:38 [18,891ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:21:38 [19,502ms] [Warning] [omni.graph.visualization.nodes._impl.extension] No Viewport Window to add omni.graph.visualization.nodes-2.1.1 scene to
+2026-06-08 12:21:38 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPreviewSurface.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdUVTexture.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float2.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float3.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float4.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_int.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_string.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_normal.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_point.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,723ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_vector.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,723ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_matrix.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:21:38 [19,723ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdTransform2d.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/source/isaaclab_tasks/isaaclab_tasks/utils/hydra.py", line 101, in hydra_main
+    func(env_cfg, agent_cfg, *args, **kwargs)
+  File "/root/Hitter/MOSAIC-main/scripts/rsl_rl/train.py", line 145, in main
+    env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/gymnasium/envs/registration.py", line 735, in make
+    env = env_creator(**env_spec_kwargs)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/source/isaaclab/isaaclab/envs/manager_based_rl_env.py", line 79, in __init__
+    super().__init__(cfg=cfg)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/source/isaaclab/isaaclab/envs/manager_based_env.py", line 163, in __init__
+    self.load_managers()
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/source/isaaclab/isaaclab/envs/manager_based_rl_env.py", line 113, in load_managers
+    self.command_manager: CommandManager = CommandManager(self.cfg.commands, self)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/source/isaaclab/isaaclab/managers/command_manager.py", line 253, in __init__
+    super().__init__(cfg, env)
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/source/isaaclab/isaaclab/managers/manager_base.py", line 160, in __init__
+    self._prepare_terms()
+  File "/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/source/isaaclab/isaaclab/managers/command_manager.py", line 418, in _prepare_terms
+    term = term_cfg.class_type(term_cfg, self._env)
+  File "/root/Hitter/MOSAIC-main/source/whole_body_tracking/whole_body_tracking/tasks/hitter/mdp/commands.py", line 31, in __init__
+    super().__init__(cfg, env)
+  File "/root/Hitter/MOSAIC-main/source/whole_body_tracking/whole_body_tracking/tasks/tracking/mdp/commands.py", line 996, in __init__
+    self.motion_dir_loader = MultiMotionLoader(
+  File "/root/Hitter/MOSAIC-main/source/whole_body_tracking/whole_body_tracking/tasks/tracking/mdp/commands.py", line 722, in __init__
+    raise ValueError(
+ValueError: No motions matched for motion_groups: ['backhand']. Check motion_groups patterns or dataset layout.
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
+2026-06-08 12:21:39 [20,023ms] [Warning] [omni.fabric.plugin] gFabricState->gUsdStageToSimStageWithHistoryMap had 1 outstanding SimStageWithHistory(s) at shutdown
+2026-06-08 12:21:39 [20,242ms] [Warning] [carb] Recursive unloadAllPlugins() detected!

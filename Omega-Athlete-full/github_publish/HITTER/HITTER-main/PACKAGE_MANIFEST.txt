@@ -1,0 +1,19 @@
+HITTER minimal project package
+
+Included:
+- HITTER training and reserved closed-loop/mocap/planner modules
+- HITTER-owned motion MDP utilities used by HITTER command/motion loading
+- G1 robot config and Unitree assets, including G1 hitter racket USD and cached G1 USD
+- current HITTER motion dataset: motions
+- RSL-RL source and scripts/rsl_rl training entry point
+- HITTER planner/closed-loop tests
+
+Excluded:
+- logs, wandb/swanlab outputs, and non-packaged checkpoints
+- raw capture videos and retargeting intermediate data
+- legacy generic motion task registrations and configs
+- unused PND assets
+- Python caches
+
+Current formal training task:
+Hitter-Striking-PlannerDomain-Flat-G1-v0

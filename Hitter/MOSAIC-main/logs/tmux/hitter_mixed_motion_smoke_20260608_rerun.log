@@ -1,0 +1,321 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/isaaclab.python.headless.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20260608_202256.log
+2026-06-08 12:22:56 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-06-08 12:22:56 [14ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes' or '/root/.venvs/isaaclab-mosaic/lib/python3.10/site-packages/isaaclab/apps/rendering_modes/config'
+2026-06-08 12:22:57 [264ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-06-08 12:22:57 [562ms] [Warning] [omni.platforminfo.plugin] failed to open the default display.  Can't verify X Server version.
+2026-06-08 12:22:57 [794ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-06-08 12:22:57 [908ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            | Yes: 1 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 152977
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-08 12:23:05 [8,911ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-06-08 12:23:05 [8,912ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 1
+2026-06-08 12:23:05 [8,913ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-08 12:23:05 [8,913ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Cuda failure ../../../source/plugins/carb.cudainterop/p2pBandwidthLatencyTest/p2pBandwidthLatencyTest.cu:681: 'peer access is already enabled'
+[INFO]: Parsing configuration from: <class 'whole_body_tracking.tasks.hitter.config.g1.flat_env_cfg.G1HitterStrikingPlannerDomainFlatEnvCfg'>
+[INFO]: Parsing configuration from: whole_body_tracking.tasks.hitter.config.g1.agents.rsl_rl_ppo_cfg:G1HitterStrikingPlannerDomainPPORunnerCfg
+[INFO] Logging experiment in directory: /root/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1
+Setting seed: 42
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 42
+	Physics step-size     : 0.005
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+2026-06-08 12:23:09 [12,514ms] [Warning] [isaaclab.terrains.terrain_importer] Visual material specified for ground plane but no diffuse color found. Using default color: (0.0, 0.0, 0.0)
+[INFO]: Time taken for scene creation : 1.536881 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 8
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.893349 seconds
+2026-06-08 12:23:11 [14,896ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:23:11 [14,896ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:23:11 [14,899ms] [Error] [gpu.foundation.plugin] DriverShaderCacheManager::init() called without a shutdown()!
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 535.161.08    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A100-SXM4-40GB            | Yes: 0 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | d7b2f38c.. |
+|     |                                  |        |     |            | 7         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A100-SXM4-40GB            | Yes: 1 |     | 40960   MB | 10de      | 0          |
+|     |                                  |        |     |            | 20b0      | 2765dc13.. |
+|     |                                  |        |     |            | f         |            |
+|=============================================================================================|
+| OS: 22.04.4 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.4, Kernel: 5.15.0-1053-nvidia
+| Processor: AMD EPYC 7742 64-Core Processor
+| Bare Metal Cores: 128 | Bare Metal Logical Cores: 256
+| Core Usage Quota: 45
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 184320 | Free Memory: 151230
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-06-08 12:23:13 [16,709ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-06-08 12:23:13 [16,709ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 1
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1270.20  16.23 
+     1  14.40 1293.09 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   2.97  58.98 
+     1  24.75   2.45 
+
+   CPU     0      1 
+     0   3.18   9.18 
+     1   9.93   3.50 
+2026-06-08 12:23:13 [16,854ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 14.4 GB/s.
+2026-06-08 12:23:13 [16,854ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 59.0 us.
+2026-06-08 12:23:13 [16,854ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-08 12:23:13 [16,855ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-06-08 12:23:13 [16,855ms] [Warning] [gpu.foundation.plugin] Detected IOMMU is enabled. Running CUDA peer-to-peer bandwidth and latency validation.
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1 
+     0 1280.90  17.26 
+     1  14.49 1288.79 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1 
+     0   2.31  53.09 
+     1  17.57   2.46 
+
+   CPU     0      1 
+     0   3.11   9.17 
+     1   8.94   3.12 
+2026-06-08 12:23:13 [16,993ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed bandwidth: 14.5 GB/s.
+2026-06-08 12:23:13 [16,993ms] [Warning] [gpu.foundation.plugin] CUDA peer-to-peer observed latency: 53.1 us.
+2026-06-08 12:23:13 [16,993ms] [Warning] [gpu.foundation.plugin] Please verify if observed bandwidth and latency are expected.
+2026-06-08 12:23:15 [18,448ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:23:15 [18,448ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:23:15 [18,738ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:23:15 [18,738ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:23:15 [18,855ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:23:15 [18,855ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:23:15 [18,901ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:23:15 [18,901ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:23:15 [18,932ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:23:15 [18,932ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:23:15 [18,963ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-06-08 12:23:15 [18,963ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-06-08 12:23:16 [19,496ms] [Warning] [omni.graph.visualization.nodes._impl.extension] No Viewport Window to add omni.graph.visualization.nodes-2.1.1 scene to
+2026-06-08 12:23:16 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPreviewSurface.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdUVTexture.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float2.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,721ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float3.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float4.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_int.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_string.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_normal.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,722ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_point.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,723ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_vector.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,723ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_matrix.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-06-08 12:23:16 [19,723ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdTransform2d.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+[MultiMotionLoader] Motion group distribution:
+  - backhand: 4 motions
+  - forehand: 4 motions
+[MultiMotionCommand] Registered motion groups: ['backhand', 'forehand']
+[MultiMotionCommand]   - Group 'backhand': 4 motions
+[MultiMotionCommand]   - Group 'forehand': 4 motions
+[MultiMotionCommand] Assigning 8 environments with ratios: backhand=4/8, forehand=4/8
+[INFO] Command Manager:  <CommandManager> contains 1 active terms.
++----------------------------------------+
+|          Active Command Terms          |
++-------+--------+-----------------------+
+| Index | Name   |          Type         |
++-------+--------+-----------------------+
+|   0   | motion | HitterStrikingCommand |
++-------+--------+-----------------------+
+
+[INFO] Event Manager:  <EventManager> contains 2 active terms.
++---------------------------------------+
+| Active Event Terms in Mode: 'startup' |
++---------+-----------------------------+
+|  Index  | Name                        |
++---------+-----------------------------+
+|    0    | physics_material            |
+|    1    | add_joint_default_pos       |
+|    2    | base_com                    |
++---------+-----------------------------+
++----------------------------------------------+
+|    Active Event Terms in Mode: 'interval'    |
++-------+------------+-------------------------+
+| Index | Name       | Interval time range (s) |
++-------+------------+-------------------------+
+|   0   | push_robot |        (1.0, 3.0)       |
++-------+------------+-------------------------+
+
+[INFO] Recorder Manager:  <RecorderManager> contains 0 active terms.
++---------------------+
+| Active Recorder Terms |
++-----------+---------+
+|   Index   | Name    |
++-----------+---------+
++-----------+---------+
+
+[INFO] Action Manager:  <ActionManager> contains 1 active terms.
++------------------------------------+
+|  Active Action Terms (shape: 29)   |
++--------+-------------+-------------+
+| Index  | Name        |   Dimension |
++--------+-------------+-------------+
+|   0    | joint_pos   |          29 |
++--------+-------------+-------------+
+
+[INFO] Observation Manager: <ObservationManager> contains 2 groups.
++---------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (104,)) |
++-----------+---------------------------------+-----------+
+|   Index   | Name                            |   Shape   |
++-----------+---------------------------------+-----------+
+|     0     | base_ang_vel                    |    (3,)   |
+|     1     | projected_gravity               |    (3,)   |
+|     2     | base_forward_xy                 |    (2,)   |
+|     3     | base_target_xy                  |    (2,)   |
+|     4     | racket_target_pos               |    (3,)   |
+|     5     | racket_target_vel               |    (3,)   |
+|     6     | time_to_strike                  |    (1,)   |
+|     7     | joint_pos                       |   (29,)   |
+|     8     | joint_vel                       |   (29,)   |
+|     9     | actions                         |   (29,)   |
++-----------+---------------------------------+-----------+
++------------------------------------------------------------+
+| Active Observation Terms in Group: 'critic' (shape: (301,)) |
++----------+------------------------------------+------------+
+|  Index   | Name                               |   Shape    |
++----------+------------------------------------+------------+
+|    0     | base_ang_vel                       |    (3,)    |
+|    1     | projected_gravity                  |    (3,)    |
+|    2     | base_forward_xy                    |    (2,)    |
+|    3     | motion_anchor_pos_b                |    (3,)    |
+|    4     | motion_anchor_ori_b                |    (6,)    |
+|    5     | base_target_xy                     |    (2,)    |
+|    6     | racket_target_pos                  |    (3,)    |
+|    7     | racket_target_vel                  |    (3,)    |
+|    8     | time_to_strike                     |    (1,)    |
+|    9     | joint_pos                          |   (29,)    |
+|    10    | joint_vel                          |   (29,)    |
+|    11    | actions                            |   (29,)    |
+|    12    | base_lin_vel                       |    (3,)    |
+|    13    | body_pose                          |   (126,)   |
+|    14    | time_left                          |    (1,)    |
+|    15    | reference_joint_state              |   (58,)    |
++----------+------------------------------------+------------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 3 active terms.
++-------------------------------+
+|    Active Termination Terms   |
++-------+------------+----------+
+| Index | Name       | Time Out |
++-------+------------+----------+
+|   0   | time_out   |   True   |
+|   1   | anchor_pos |  False   |
+|   2   | anchor_ori |  False   |
++-------+------------+----------+
+
+[INFO] Reward Manager:  <RewardManager> contains 22 active terms.
++------------------------------------------------+
+|              Active Reward Terms               |
++-------+-----------------------------+----------+
+| Index | Name                        |   Weight |
++-------+-----------------------------+----------+
+|   0   | motion_global_anchor_pos    |      0.5 |
+|   1   | motion_global_anchor_ori    |      0.5 |
+|   2   | motion_body_pos             |      1.0 |
+|   3   | motion_body_ori             |      1.0 |
+|   4   | motion_body_lin_vel         |      1.5 |
+|   5   | motion_body_ang_vel         |      1.5 |
+|   6   | motion_anchor_lin_vel       |      1.0 |
+|   7   | base_pos                    |      5.0 |
+|   8   | racket_pos                  |     80.0 |
+|   9   | racket_vel                  |     30.0 |
+|   10  | racket_ori                  |     30.0 |
+|   11  | torso_forward_lean_l2       |     -2.0 |
+|   12  | base_ang_vel_xy_l2          |     -0.4 |
+|   13  | undesired_contacts          |    -0.05 |
+|   14  | hitter_foot_slip_l2         |     -2.0 |
+|   15  | hitter_hit_unstable_support |     -6.0 |
+|   16  | hitter_foot_edge_drag       |     -1.0 |
+|   17  | hip_yaw_default             |      2.0 |
+|   18  | action_rate_l2              |     -0.1 |
+|   19  | joint_limit                 |    -10.0 |
+|   20  | joint_acc                   | -2.5e-07 |
+|   21  | joint_torque                |   -1e-05 |
++-------+-----------------------------+----------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 0 active terms.
++----------------------+
+| Active Curriculum Terms |
++-----------+----------+
+|   Index   | Name     |
++-----------+----------+
++-----------+----------+
+
+[INFO]: Completed setting up the environment...
+Actor MLP: Sequential(
+  (0): Linear(in_features=104, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=29, bias=True)
+)
+Critic MLP: Sequential(
+  (0): Linear(in_features=301, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+2026-06-08 12:23:22 [25,753ms] [Warning] [omni.usd] Unexpected reference count of 2 for UsdStage 'anon:0x555de875d9a0:World0.usd' while being closed in UsdContext (this may indicate it is still resident in memory).

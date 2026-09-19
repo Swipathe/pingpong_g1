@@ -1,0 +1,81 @@
+产物
+====
+文件名: hitter_model10595_A100_20260816_samechain_model7100_104.onnx
+导出时间: 2026-08-16T19:26:49+08:00
+ONNX SHA256: 3ad4d92404ac96cd1259e696d059fa0c31236164c57fd278f048ed14bc1cf9b2
+ONNX 大小: 891384 bytes
+ONNX opset: 18
+接口: float32 obs [1,104] -> float32 actions [1,29]
+
+源 checkpoint
+===============
+原始文件: /home/loco1/Downloads/model_10595.pt
+导出副本: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/model10595_A100_20260816_samechain_model7100_export/model_10595.pt
+Checkpoint iteration: 10595
+Checkpoint SHA256: 6607534a0ef3f024d76f3116fbcc2779aafbc5f873ee6324e7f046378cbd93ff
+Checkpoint 大小: 6516018 bytes
+Actor: 104 -> 512 -> 256 -> 128 -> 29，ELU
+Critic input: 301
+Normalizer: 使用该 checkpoint 自带的 policy normalizer [1,104]
+
+兼容性依据与边界
+================
+用户于 2026-08-16 确认 model10595 是当前 model7100/model9000 同一条训练任务继续训练的
+checkpoint，期间没有修改 observation、29 关节顺序、action scale、PD 参数或网络配置。
+本机检查确认 model10595、model9000 和 model7100 的 policy normalizer 张量完全一致，actor/critic
+结构也一致。
+
+checkpoint 本身仍不包含 observation/joint/action 的语义元数据。因此本次复用了 model7100
+导出时使用的 model17500 隔离源码、任务、运动和元数据快照；该前提依赖上述用户确认。
+
+导出环境
+========
+MOSAIC root: /home/loco1/BOB/Hitter/MOSAIC-main
+Run directory: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/model10595_A100_20260816_samechain_model7100_export
+兼容源码快照: /home/loco1/BOB/Hitter/MOSAIC-main/imports/8x4090_20260808_model17500
+Task: Hitter-Striking-PlannerDomain-Flat-G1-v0
+Motion: motion/20260806_mqy_g1_npz_raw_peak43_aligned
+Python: /home/loco1/miniconda3/envs/isaaclab/bin/python (3.10.18)
+PyTorch: 2.5.1+cu121
+ONNX exporter opset: 18
+ONNX Runtime validation: 1.19.2 CPUExecutionProvider
+play.py SHA256: f86484c04f1a86dc0171391b300331c7dc63f5bd6d3a45d36ace9d9c6ddd453e
+exporter.py SHA256: 4e05cd5af77bb5f5dad2015cfbf72f3106df390f0166c546b389e6e2fee55513
+params/agent.yaml SHA256: 0faf11a3af8c6b6d9e1b205cf03610fcf7024a566e615e72d1171d8f1dd51674
+params/env.yaml SHA256: 89599ed41e9ffc1da2d021bc451d8d1a583c57baa43d5c39f494164d02fab1e5
+选项: --num_envs=1 --skip_critic --headless --device=cuda:0 --video --video_length=1
+
+验证
+====
+Exporter exit code: 0
+onnx.checker: PASS
+输入/输出: obs [1,104] -> actions [1,29]
+元数据: 11 项；除 run_path 外与当前部署 model7100 完全一致
+Checkpoint 所有浮点张量有限: PASS
+ONNX Runtime CPU: 10 组输入全部输出有限值
+PyTorch 2.5.1 checkpoint 与 ONNX: max_abs=1.90734863e-06，
+allclose(rtol=1e-5, atol=1e-6) 10/10 PASS
+导出原件、命名副本与 RobotBridge4 部署副本 SHA256 一致: PASS
+RobotBridge4 MosaicModelMeta 解析: 29 joints，anchor=pelvis，PASS
+
+MuJoCo 预验证
+==============
+RobotBridge4 使用该 ONNX 运行 1250 个 policy step（25.0 s 仿真时间），覆盖两次配置发球时刻。
+所有 obs [1,104]、actions [1,29] 和 dof_pos 均为有限值；最大绝对 dof_pos=1.38714554 rad。
+两次模拟轨迹均出现 OVERRIDE_DISCONTINUITY / HIT_HEIGHT_OUT_OF_RANGE / BALL_NOT_INCOMING，
+并由现有安全状态机取消；该 smoke test 不证明命中或回球效果。
+
+当前 MuJoCo 清理路径存在与模型无关的既有问题：BaseSim.close() 会访问 MuJoCo 未创建的
+joint_state_subscriber。该问题已用 model7100 独立复现；本次有限步测试仅在进程内绕过该无效
+unsubscribe，以完成 planner worker 等其余清理，未修改生产代码。
+
+部署与回退
+==========
+RobotBridge4 配置已选择本文件。旧模型仍保留，可将 policy.checkpoint 回退为：
+./data/model/hitter/hitter_model7100_A100_20260815_resume6700_posstd012_104.onnx
+
+证据范围
+========
+已验证 checkpoint 结构、项目导出、ONNX 结构、metadata、normalizer 数值路径、CPU 推理一致性、
+RobotBridge4 加载及有限步 MuJoCo 数值稳定性。未启动或测试真实机器人；这些结果不证明真机安全、
+稳定性、击球成功率或回球质量。

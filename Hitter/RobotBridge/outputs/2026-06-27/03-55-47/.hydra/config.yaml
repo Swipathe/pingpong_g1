@@ -1,0 +1,512 @@
+robot:
+  asset:
+    asset_root: ./data/assets/g1
+    asset_file: g1_29dof_hitter_racket_table_tennis.xml
+    default_root_pos:
+    - -0.4
+    - 0.0
+    - 0.793
+    num_action: 29
+    num_dof: 29
+    joint_order:
+      left_hip_pitch_joint: 0
+      left_hip_roll_joint: 1
+      left_hip_yaw_joint: 2
+      left_knee_joint: 3
+      left_ankle_pitch_joint: 4
+      left_ankle_roll_joint: 5
+      right_hip_pitch_joint: 6
+      right_hip_roll_joint: 7
+      right_hip_yaw_joint: 8
+      right_knee_joint: 9
+      right_ankle_pitch_joint: 10
+      right_ankle_roll_joint: 11
+      waist_yaw_joint: 12
+      waist_roll_joint: 13
+      waist_pitch_joint: 14
+      left_shoulder_pitch_joint: 15
+      left_shoulder_roll_joint: 16
+      left_shoulder_yaw_joint: 17
+      left_elbow_joint: 18
+      left_wrist_roll_joint: 19
+      left_wrist_pitch_joint: 20
+      left_wrist_yaw_joint: 21
+      right_shoulder_pitch_joint: 22
+      right_shoulder_roll_joint: 23
+      right_shoulder_yaw_joint: 24
+      right_elbow_joint: 25
+      right_wrist_roll_joint: 26
+      right_wrist_pitch_joint: 27
+      right_wrist_yaw_joint: 28
+    frozen_num_dof: 0
+    frozen_dof_names: []
+    default_angles:
+    - -0.312
+    - 0.0
+    - 0.0
+    - 0.669
+    - -0.363
+    - 0.0
+    - -0.312
+    - 0.0
+    - 0.0
+    - 0.669
+    - -0.363
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - 0.2
+    - 0.0
+    - 0.6
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - -0.2
+    - 0.0
+    - 0.6
+    - 0.0
+    - 0.0
+    - 0.0
+    kps:
+    - 40.179238
+    - 99.098428
+    - 40.179238
+    - 99.098428
+    - 28.501246
+    - 28.501246
+    - 40.179238
+    - 99.098428
+    - 40.179238
+    - 99.098428
+    - 28.501246
+    - 28.501246
+    - 40.179238
+    - 28.501246
+    - 28.501246
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 16.778327
+    - 16.778327
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 16.778327
+    - 16.778327
+    kds:
+    - 2.55789
+    - 6.308802
+    - 2.55789
+    - 6.308802
+    - 1.814446
+    - 1.814446
+    - 2.55789
+    - 6.308802
+    - 2.55789
+    - 6.308802
+    - 1.814446
+    - 1.814446
+    - 2.55789
+    - 1.814446
+    - 1.814446
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 1.068142
+    - 1.068142
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 1.068142
+    - 1.068142
+    torso_name: torso_link
+    kinematic_joint_names:
+    - left_hip_pitch_joint
+    - left_hip_roll_joint
+    - left_hip_yaw_joint
+    - left_knee_joint
+    - left_ankle_pitch_joint
+    - left_ankle_roll_joint
+    - right_hip_pitch_joint
+    - right_hip_roll_joint
+    - right_hip_yaw_joint
+    - right_knee_joint
+    - right_ankle_pitch_joint
+    - right_ankle_roll_joint
+    - waist_yaw_joint
+    - waist_roll_joint
+    - waist_pitch_joint
+    - left_shoulder_pitch_joint
+    - left_shoulder_roll_joint
+    - left_shoulder_yaw_joint
+    - left_elbow_joint
+    - left_wrist_roll_joint
+    - left_wrist_pitch_joint
+    - left_wrist_yaw_joint
+    - right_shoulder_pitch_joint
+    - right_shoulder_roll_joint
+    - right_shoulder_yaw_joint
+    - right_elbow_joint
+    - right_wrist_roll_joint
+    - right_wrist_pitch_joint
+    - right_wrist_yaw_joint
+  control:
+    low_dt: 0.005
+    decimation: 4
+    obs_clip_value: 1000
+    action_scale: 1.0
+    action_clip_value: 10000.0
+    torque_clip_value:
+    - 88
+    - 139
+    - 88
+    - 139
+    - 50
+    - 50
+    - 88
+    - 139
+    - 88
+    - 139
+    - 50
+    - 50
+    - 88
+    - 50
+    - 50
+    - 25
+    - 25
+    - 25
+    - 25
+    - 25
+    - 5
+    - 5
+    - 25
+    - 25
+    - 25
+    - 25
+    - 25
+    - 5
+    - 5
+    use_residual: false
+    residual_joint_indices: []
+    is_mosaic: true
+    update_with_fk: true
+    use_teleop: true
+    reset_heading_on_start: true
+    viewer: true
+    real_time: true
+obs:
+  obs_dict:
+    actor_obs: []
+  obs_scales: {}
+  obs_auxiliary: {}
+  obs_dims: []
+sim:
+  _target_: simulator.real_world.RealWorld
+  _recursive_: false
+  config:
+    control: ${robot.control}
+    asset: ${robot.asset}
+    motion: ${mimic.motion}
+agent:
+  _target_: agents.loco_hitter_agent.LocoHitterAgent
+  _recursive_: true
+  env: ${env}
+  config:
+    locomotion_checkpoint: ${locomotion.policy.checkpoint}
+    hitter_checkpoint: ${mimic.policy.checkpoint}
+    device: ${device}
+    enable_keyboard_commands: true
+env:
+  _target_: envs.loco_hitter.LocoHitterEnv
+  _recursive_: false
+  config:
+    device: ${device}
+    simulator: ${sim}
+    obs: ${obs}
+    control: ${robot.control}
+    policy: ${mimic.policy}
+    motion: ${mimic.motion}
+    locomotion: ${locomotion.cmd}
+    locomotion_policy_control: ${locomotion.policy_control}
+    teleop: ${teleop}
+    upper_dof_num: 17
+    hitter_switch:
+      auto_switch_on_ball: true
+      switch_back_after_hitter: true
+      loco_to_hitter_steps: 10
+      hitter_to_loco_steps: 25
+      return_after_strike_s: 0.15
+      hitter_max_duration_s: 2.4
+      locomotion_default_angles:
+      - -0.1
+      - 0.0
+      - 0.0
+      - 0.3
+      - -0.2
+      - 0.0
+      - -0.1
+      - 0.0
+      - 0.0
+      - 0.3
+      - -0.2
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.2
+      - 0.2
+      - 0.0
+      - 0.9
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.2
+      - -0.2
+      - 0.0
+      - 0.9
+      - 0.0
+      - 0.0
+      - 0.0
+      locomotion_kps:
+      - 100
+      - 100
+      - 100
+      - 150
+      - 40
+      - 40
+      - 100
+      - 100
+      - 100
+      - 150
+      - 40
+      - 40
+      - 400
+      - 400
+      - 400
+      - 100
+      - 100
+      - 50
+      - 50
+      - 20
+      - 20
+      - 20
+      - 100
+      - 100
+      - 50
+      - 50
+      - 20
+      - 20
+      - 20
+      locomotion_kds:
+      - 5
+      - 5
+      - 5
+      - 5
+      - 2
+      - 2
+      - 5
+      - 5
+      - 5
+      - 5
+      - 2
+      - 2
+      - 5
+      - 5
+      - 5
+      - 2
+      - 2
+      - 2
+      - 2
+      - 0.5
+      - 0.5
+      - 0.5
+      - 2
+      - 2
+      - 2
+      - 2
+      - 0.5
+      - 0.5
+      - 0.5
+    collect_dataset: false
+mimic:
+  policy:
+    checkpoint: /home/loco1/BOB/Hitter/MOSAIC-main/logs/rsl_rl/hitter_striking_g1/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body/2026-06-26_13-25-48_fh_bh_uniform_peak43_swapped_normal_resume_m18800_reward_tuned_16000env_31body.onnx
+    without_state_estimator: true
+    action_beta: 1.0
+    max_timestep: -1
+    use_estimator: false
+    eval_mode: false
+    history_length: 1
+    hitter_mode: true
+    hitter_seed: 0
+    save_video: false
+    video_dir: ./videos_offline/hitter_v21
+    video_width: 640
+    video_height: 480
+    video_fps: 50
+  motion:
+    playback_speed: 1.0
+    command_source: ball_planner
+    use_ball_planner: true
+    planner_only: true
+    reset_ball_on_command: true
+    ball_planner:
+      table_center_xy_w:
+      - 1.37
+      - 0.0
+      table_height: 0.76
+      table_length: 2.74
+      table_width: 1.525
+      ball_radius: 0.02
+      virtual_hit_plane_x: 0.0
+      desired_landing_point_w:
+      - 2.05
+      - 0.0
+      - 0.78
+      post_hit_flight_time: 0.48
+      racket_restitution: 0.85
+      prediction_horizon_s: 2.0
+      prediction_dt: 0.005
+      require_future_hit_plane_crossing: true
+      state_estimator_window_size: 31
+      state_estimator_min_samples: 31
+      state_estimator_sample_rate_hz: 300.0
+      state_estimator_bounce_height_tolerance: 0.03
+      state_estimator_bounce_velocity_threshold: 0.1
+      state_estimator_bounce_min_separation_s: 0.2
+      state_estimator_max_sample_gap_s: 0.25
+      vertical_restitution: 0.897474
+      horizontal_restitution: 0.764604
+      drag_coefficient: 0.098847
+      target_base_height_w: 0.793
+      racket_x_offset_b: 0.4
+      swing_duration_range:
+      - 1.75
+      - 1.95
+      arm_on_time_to_strike: true
+      arm_time_to_strike_range:
+      - 0.55
+      - 0.95
+      update_command_while_armed: true
+      update_command_min_time_to_strike: 0.1
+      filter_random_ball_to_wbc_command: true
+      random_ball_max_resample_attempts: 128
+      random_ball_time_to_strike_range:
+      - 0.8
+      - 0.92
+      random_ball_forehand_racket_y_range:
+      - -0.7
+      - 0.0
+      random_ball_backhand_racket_y_range:
+      - 0.0
+      - 0.7
+      random_ball_racket_z_range_w:
+      - 0.8
+      - 1.0
+      force_strike_type: null
+      forehand_nominal_racket_y_b: -0.5
+      backhand_nominal_racket_y_b: 0.22
+      clip_racket_velocity_to_training_range: true
+      racket_velocity_clip_ranges:
+        forehand:
+          x:
+          - 2.6
+          - 3.4
+          'y':
+          - -0.4
+          - 1.6
+          z:
+          - -0.3
+          - 2.7
+        backhand:
+          x:
+          - 2.6
+          - 3.4
+          'y':
+          - -1.6
+          - 0.4
+          z:
+          - -0.3
+          - 2.7
+locomotion:
+  cmd:
+    cmd_scale:
+    - 2.0
+    - 2.0
+    - 0.2
+    height_cmd: 0.75
+    ang_vel_scale: 0.25
+    dof_pos_scale: 1.0
+    dof_vel_scale: 0.05
+    gait_phase_init:
+    - 0.38
+    - 0.38
+    gait_period: 0.8
+    stand_threshold: 0.1
+    obs_history_len: 10
+    num_obs_single: 48
+  policy:
+    checkpoint: /home/loco1/RobotBridge/deploy/data/model/locomotion/loco_level.pt
+  policy_control:
+    action_scale: 0.25
+    action_clip_value: 20.0
+    obs_clip_value: 100
+teleop:
+  keyboard:
+    backend: auto
+    print_help: true
+    step:
+      vx: 0.1
+      vy: 0.1
+      yaw: 0.1
+    limits:
+      vx:
+      - -0.8
+      - 1.2
+      vy:
+      - -0.6
+      - 0.6
+      yaw:
+      - -0.8
+      - 0.8
+    command_screen_size:
+    - 360
+    - 50
+    pygame_step:
+      vx: 0.1
+      vy: 0.1
+      yaw: 0.1
+      height: 0.1
+    pygame_limits:
+      vx:
+      - -0.8
+      - 1.2
+      vy:
+      - -0.6
+      - 0.6
+      yaw:
+      - -0.8
+      - 0.8
+      height:
+      - -0.5
+      - 0.0
+    height_limits:
+    - 0.25
+    - 0.75
+  real_stick:
+    vx_scale: 0.6
+    vy_scale: 0.6
+    yaw_scale: 0.6
+    smoothing: 0.5
+device: cpu

@@ -1,0 +1,166 @@
+[
+  {
+    "name": "unitree_configure",
+    "command": [
+      "cmake",
+      "-S",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2",
+      "-B",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_CXX_FLAGS=-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-DCMAKE_EXE_LINKER_FLAGS=-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib -Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "unitree_build",
+    "command": [
+      "cmake",
+      "--build",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2",
+      "--target",
+      "trans",
+      "-j2"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "build_nexus_probe_cpp",
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+      "-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/include",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/nexus_probe_cpp.cpp",
+      "-L/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-lViconDataStreamSDK_CPP",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/lib/x86_64/libunitree_sdk2.a",
+      "-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-llcm",
+      "-o",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/nexus_probe_cpp"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "build_vicon_datastream_dump",
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+      "-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/include",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/vicon_datastream_dump.cpp",
+      "-L/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-lViconDataStreamSDK_CPP",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/lib/x86_64/libunitree_sdk2.a",
+      "-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-llcm",
+      "-o",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_datastream_dump"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "build_vicon_frame_stream",
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+      "-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/include",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/vicon_frame_stream.cpp",
+      "-L/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-lViconDataStreamSDK_CPP",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/lib/x86_64/libunitree_sdk2.a",
+      "-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-llcm",
+      "-o",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_frame_stream"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "build_vicon_table_lcm_bridge_v2",
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+      "-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/include",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/vicon_table_lcm_bridge.cpp",
+      "-L/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-lViconDataStreamSDK_CPP",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/lib/x86_64/libunitree_sdk2.a",
+      "-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-llcm",
+      "-o",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "build_test_transformation_t_v2",
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+      "-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/include",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/tests/test_transformation_t_v2.cpp",
+      "-L/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-lViconDataStreamSDK_CPP",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/lib/x86_64/libunitree_sdk2.a",
+      "-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-llcm",
+      "-o",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/test_transformation_t_v2"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "build_test_vicon_ball_track_v2",
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor",
+      "-I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-I/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/include",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/tests/test_vicon_ball_track_v2.cpp",
+      "-L/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64",
+      "-lViconDataStreamSDK_CPP",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/lib/x86_64/libunitree_sdk2.a",
+      "-L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib",
+      "-llcm",
+      "-o",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/test_vicon_ball_track_v2"
+    ],
+    "exit_code": 0
+  }
+]

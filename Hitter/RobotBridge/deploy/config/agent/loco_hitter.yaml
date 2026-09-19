@@ -1,0 +1,10 @@
+_target_: agents.loco_hitter_agent.LocoHitterAgent
+_recursive_: True
+env: ${env}
+config:
+  locomotion_checkpoint: ${locomotion.policy.checkpoint}
+  hitter_checkpoint: ${mimic.policy.checkpoint}
+  device: ${device}
+  enable_keyboard_commands: true
+  enable_auto_hitter_switch: false
+  log_armed_hitter_without_switch: true

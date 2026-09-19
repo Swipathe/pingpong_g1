@@ -1,0 +1,13 @@
+package lcm_types;
+
+struct transformation_t
+{
+    string name;
+    int64_t vicon_frame_number;
+    double vicon_time_s;
+    int64_t publish_time_us;
+    int8_t valid;
+    int8_t occluded;
+    double pos_vicon[3];
+    double quat_vicon[4];
+}

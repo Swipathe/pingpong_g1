@@ -1,0 +1,486 @@
+# Review package: d05ad32..655764f8df6158a89b9aba69a260f359b23f26cc
+
+## Commits
+655764f feat: add ChingMu pelvis orientation calibration math
+
+## Files changed
+ deploy/mocap_bridge/chingmu_table_lcm_bridge.py    | 180 ++++++++++++++++++---
+ .../tests/test_chingmu_pelvis_orientation.py       | 178 ++++++++++++++++++++
+ 2 files changed, 337 insertions(+), 21 deletions(-)
+
+## Diff
+diff --git a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+index 6cb8e86..7e99297 100644
+--- a/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
++++ b/deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+@@ -25,38 +25,59 @@ from unitree_sdk2.lcm_types.transformation_t import transformation_t
+ @dataclass(frozen=True)
+ class BridgeConfig:
+     base_subject: str = "G1Pelvis"
+     channel: str = "vicon_state_data"
+     lcm_url: str = "udpm://239.255.76.67:7667?ttl=255"
+     table_length_m: float = 2.730738
+     table_width_m: float = 1.512451
+     table_height_m: float = 0.760000
+     source_rate_hz: float = 360.0
+     corner_exclusion_radius_mm: float = 50.0
++    # Rigid origin -> MuJoCo pelvis origin, expressed in their shared body axes:
++    # +X forward, +Y left, +Z up.
+     pelvis_offset_heading_m: tuple = (0.003145, 0.044074, 0.048231)
+ 
+ 
+ @dataclass(frozen=True)
+ class TableFrame:
+     center_raw_mm: np.ndarray
+     x_axis_raw: np.ndarray
+     y_axis_raw: np.ndarray
+     z_axis_raw: np.ndarray
+     corners_raw_mm: np.ndarray
+     rectangle_score: float
+ 
+ 
+ @dataclass(frozen=True)
+ class CalibrationResult:
+     table_frame: TableFrame
+ 
+ 
++PELVIS_ORIENTATION_FORMAT = "robotbridge2_chingmu_pelvis_orientation_v1"
++PELVIS_ROTATION_CONVENTION = (
++    "R_world_pelvis = R_world_rigid @ R_rigid_from_pelvis"
++)
++MIN_PELVIS_CALIBRATION_SAMPLES = 30
++MIN_PELVIS_CALIBRATION_DURATION_S = 1.0
++MAX_PELVIS_CALIBRATION_POSITION_RMS_M = 0.002
++MAX_PELVIS_CALIBRATION_ANGULAR_RMS_DEG = 0.3
++
++
++@dataclass(frozen=True)
++class PelvisOrientationCalibration:
++    rotation_rigid_from_pelvis: np.ndarray
++    sample_count: int
++    source_duration_s: float
++    position_rms_m: float
++    angular_rms_deg: float
++
++
+ def _stable_marker_centers(
+     frames: Sequence,
+     *,
+     association_radius_mm: float = 80.0,
+     maximum_rms_mm: float = 15.0,
+ ) -> np.ndarray:
+     """Return stationary unlabeled-marker centers observed during calibration."""
+     clusters = []
+     for frame in frames:
+         used_clusters = set()
+@@ -345,30 +366,162 @@ def body_pose_to_table_world(
+         return None
+     if quaternion is None or not np.isfinite(position).all():
+         return None
+     rotation_world = (
+         raw_rotation_to_table_world(table)
+         @ Rotation.from_quat(quaternion).as_matrix()
+     )
+     return raw_to_table_world(position, table, config), rotation_world
+ 
+ 
+-def yaw_quaternion_from_rotation(rotation) -> np.ndarray:
++def quaternion_xyzw_from_rotation(rotation) -> np.ndarray:
+     matrix = np.asarray(rotation, dtype=np.float64).reshape(3, 3)
+-    yaw = float(np.arctan2(matrix[1, 0], matrix[0, 0]))
+-    half = 0.5 * yaw
+-    quaternion = np.array([0.0, 0.0, np.sin(half), np.cos(half)], dtype=np.float64)
++    quaternion = Rotation.from_matrix(matrix).as_quat()
+     if quaternion[3] < 0.0:
+         quaternion = -quaternion
+     return quaternion
+ 
+ 
++def _validate_pelvis_orientation_calibration(
++    calibration: PelvisOrientationCalibration,
++) -> None:
++    matrix = np.asarray(
++        calibration.rotation_rigid_from_pelvis,
++        dtype=np.float64,
++    )
++    if matrix.shape != (3, 3) or not np.isfinite(matrix).all():
++        raise ValueError(
++            "pelvis orientation rotation must be a finite 3x3 matrix"
++        )
++    if not np.allclose(matrix.T @ matrix, np.eye(3), atol=1.0e-8):
++        raise ValueError("pelvis orientation rotation must be orthogonal")
++    if not np.isclose(np.linalg.det(matrix), 1.0, atol=1.0e-8):
++        raise ValueError(
++            "pelvis orientation rotation determinant must be +1"
++        )
++    if (
++        not isinstance(calibration.sample_count, (int, np.integer))
++        or isinstance(calibration.sample_count, bool)
++        or calibration.sample_count < MIN_PELVIS_CALIBRATION_SAMPLES
++    ):
++        raise ValueError(
++            "pelvis orientation calibration needs at least "
++            f"{MIN_PELVIS_CALIBRATION_SAMPLES} valid samples"
++        )
++    if (
++        not np.isfinite(calibration.source_duration_s)
++        or calibration.source_duration_s
++        < MIN_PELVIS_CALIBRATION_DURATION_S
++    ):
++        raise ValueError(
++            "pelvis orientation source-time coverage must be at least "
++            f"{MIN_PELVIS_CALIBRATION_DURATION_S:.1f} s"
++        )
++    if (
++        not np.isfinite(calibration.position_rms_m)
++        or calibration.position_rms_m < 0.0
++        or calibration.position_rms_m
++        > MAX_PELVIS_CALIBRATION_POSITION_RMS_M
++    ):
++        raise ValueError(
++            "pelvis orientation position RMS "
++            f"{calibration.position_rms_m!r} m exceeds "
++            f"{MAX_PELVIS_CALIBRATION_POSITION_RMS_M:.3f} m"
++        )
++    if (
++        not np.isfinite(calibration.angular_rms_deg)
++        or calibration.angular_rms_deg < 0.0
++        or calibration.angular_rms_deg
++        > MAX_PELVIS_CALIBRATION_ANGULAR_RMS_DEG
++    ):
++        raise ValueError(
++            "pelvis orientation angular RMS "
++            f"{calibration.angular_rms_deg!r} deg exceeds "
++            f"{MAX_PELVIS_CALIBRATION_ANGULAR_RMS_DEG:.1f} deg"
++        )
++
++
++def calibrate_pelvis_orientation_from_frames(
++    frames: Iterable,
++    table: TableFrame,
++    config: BridgeConfig,
++) -> PelvisOrientationCalibration:
++    positions_world = []
++    rotation_matrices_world = []
++    source_times_s = []
++    for frame in frames:
++        pose = body_pose_to_table_world(
++            frame.body_position_mm,
++            frame.body_quaternion_xyzw,
++            table,
++            config,
++        )
++        try:
++            source_time_s = float(frame.source_time_s)
++        except (TypeError, ValueError):
++            continue
++        if pose is None or not np.isfinite(source_time_s):
++            continue
++        position_world, rotation_world = pose
++        positions_world.append(
++            np.asarray(position_world, dtype=np.float64).reshape(3)
++        )
++        rotation_matrices_world.append(
++            np.asarray(rotation_world, dtype=np.float64).reshape(3, 3)
++        )
++        source_times_s.append(source_time_s)
++
++    sample_count = len(positions_world)
++    if sample_count < MIN_PELVIS_CALIBRATION_SAMPLES:
++        raise ValueError(
++            "pelvis orientation calibration needs at least "
++            f"{MIN_PELVIS_CALIBRATION_SAMPLES} valid samples; "
++            f"got {sample_count}"
++        )
++
++    source_duration_s = float(
++        max(source_times_s) - min(source_times_s)
++    )
++    positions = np.stack(positions_world)
++    position_mean = positions.mean(axis=0)
++    position_rms_m = float(
++        np.sqrt(
++            np.mean(
++                np.sum((positions - position_mean) ** 2, axis=1)
++            )
++        )
++    )
++
++    rotations_world = Rotation.from_matrix(
++        np.stack(rotation_matrices_world)
++    )
++    mean_rotation_world_rigid = rotations_world.mean()
++    angular_errors_rad = (
++        mean_rotation_world_rigid.inv() * rotations_world
++    ).magnitude()
++    angular_rms_deg = float(
++        np.degrees(np.sqrt(np.mean(angular_errors_rad ** 2)))
++    )
++
++    calibration = PelvisOrientationCalibration(
++        rotation_rigid_from_pelvis=(
++            mean_rotation_world_rigid.inv().as_matrix()
++        ),
++        sample_count=sample_count,
++        source_duration_s=source_duration_s,
++        position_rms_m=position_rms_m,
++        angular_rms_deg=angular_rms_deg,
++    )
++    _validate_pelvis_orientation_calibration(calibration)
++    return calibration
++
++
+ @dataclass(frozen=True)
+ class BallTrackUpdate:
+     position_world: Optional[np.ndarray]
+     ended: bool
+ 
+ 
+ class BallTracker:
+     def __init__(self):
+         self.reset()
+ 
+@@ -463,57 +616,42 @@ def make_message(
+ 
+ class ChingMuTableLcmBridge:
+     def __init__(
+         self,
+         *,
+         config: BridgeConfig,
+         table_frame: TableFrame,
+     ):
+         self.config = config
+         self.table_frame = table_frame
+-        self.initial_base_yaw = None
+         self._base_pose_was_valid = False
+         self.ball_tracker = BallTracker()
+ 
+     def process_frame(self, frame, *, publish_time_us: Optional[int] = None):
+         messages = []
+         body_pose = body_pose_to_table_world(
+             frame.body_position_mm,
+             frame.body_quaternion_xyzw,
+             self.table_frame,
+             self.config,
+         )
+         if body_pose is not None:
+             base_world, base_rotation = body_pose
+-            base_yaw = float(
+-                np.arctan2(base_rotation[1, 0], base_rotation[0, 0])
+-            )
+-            if self.initial_base_yaw is None:
+-                self.initial_base_yaw = base_yaw
+-            relative_yaw = float(
+-                np.arctan2(
+-                    np.sin(base_yaw - self.initial_base_yaw),
+-                    np.cos(base_yaw - self.initial_base_yaw),
+-                )
+-            )
+-            heading_rotation = Rotation.from_euler(
+-                "z", relative_yaw
+-            ).as_matrix()
+-            pelvis_offset_world = heading_rotation @ np.asarray(
++            pelvis_offset_world = base_rotation @ np.asarray(
+                 self.config.pelvis_offset_heading_m,
+                 dtype=np.float64,
+             )
+             messages.append(
+                 make_message(
+                     self.config.base_subject,
+                     base_world + pelvis_offset_world,
+-                    yaw_quaternion_from_rotation(heading_rotation),
++                    quaternion_xyzw_from_rotation(base_rotation),
+                     frame_number=frame.frame_number,
+                     source_time_s=frame.source_time_s,
+                     valid=True,
+                     publish_time_us=publish_time_us,
+                 )
+             )
+             self._base_pose_was_valid = True
+         elif self._base_pose_was_valid:
+             # The consumer ignores the pose when valid=0. Keep the transition
+             # payload finite and schema-correct without fabricating a marker
+diff --git a/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+new file mode 100644
+index 0000000..a5b6cb5
+--- /dev/null
++++ b/deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+@@ -0,0 +1,178 @@
++from __future__ import annotations
++
++import json
++import tempfile
++import unittest
++from pathlib import Path
++
++import numpy as np
++from scipy.spatial.transform import Rotation
++
++from deploy.mocap_bridge.chingmu_sdk_client import MocapFrame
++from deploy.mocap_bridge.chingmu_table_lcm_bridge import (
++    BridgeConfig,
++    PelvisOrientationCalibration,
++    TableFrame,
++    calibrate_pelvis_orientation_from_frames,
++)
++
++
++def identity_table() -> TableFrame:
++    return TableFrame(
++        center_raw_mm=np.zeros(3, dtype=np.float64),
++        x_axis_raw=np.array([1.0, 0.0, 0.0], dtype=np.float64),
++        y_axis_raw=np.array([0.0, 1.0, 0.0], dtype=np.float64),
++        z_axis_raw=np.array([0.0, 0.0, 1.0], dtype=np.float64),
++        corners_raw_mm=np.zeros((4, 3), dtype=np.float64),
++        rectangle_score=0.0,
++    )
++
++
++def mocap_frame(
++    index: int,
++    rotation_world: Rotation,
++    *,
++    position_mm=(100.0, 200.0, 300.0),
++    source_time_s: float | None = None,
++) -> MocapFrame:
++    quaternion = rotation_world.as_quat()
++    if index % 2:
++        quaternion = -quaternion
++    return MocapFrame(
++        frame_number=1000 + index,
++        source_time_s=index / 40.0 if source_time_s is None else source_time_s,
++        body_position_mm=np.asarray(position_mm, dtype=np.float64),
++        body_quaternion_xyzw=quaternion,
++        body_markers_mm={},
++        unlabeled_markers_mm=np.empty((0, 3), dtype=np.float64),
++    )
++
++
++def stable_frames(
++    rigid_world: Rotation,
++    *,
++    count: int = 61,
++) -> list[MocapFrame]:
++    return [mocap_frame(index, rigid_world) for index in range(count)]
++
++
++def valid_orientation_calibration(
++    rotation_rigid_from_pelvis: Rotation | None = None,
++) -> PelvisOrientationCalibration:
++    rotation = (
++        Rotation.identity()
++        if rotation_rigid_from_pelvis is None
++        else rotation_rigid_from_pelvis
++    )
++    return PelvisOrientationCalibration(
++        rotation_rigid_from_pelvis=rotation.as_matrix(),
++        sample_count=61,
++        source_duration_s=1.5,
++        position_rms_m=0.0002,
++        angular_rms_deg=0.05,
++    )
++
++
++class PelvisOrientationCalibrationMathTest(unittest.TestCase):
++    def setUp(self):
++        self.config = BridgeConfig()
++        self.table = identity_table()
++
++    def test_recovers_rigid_from_pelvis_rotation_from_aligned_pose(self):
++        expected = Rotation.from_euler("xyz", [0.12, -0.08, 0.35])
++        rigid_world_in_aligned_pose = expected.inv()
++
++        calibration = calibrate_pelvis_orientation_from_frames(
++            stable_frames(rigid_world_in_aligned_pose),
++            self.table,
++            self.config,
++        )
++
++        recovered = Rotation.from_matrix(
++            calibration.rotation_rigid_from_pelvis
++        )
++        self.assertLess((recovered.inv() * expected).magnitude(), 1.0e-10)
++        self.assertEqual(calibration.sample_count, 61)
++        self.assertAlmostEqual(calibration.source_duration_s, 1.5)
++        self.assertAlmostEqual(calibration.position_rms_m, 0.0)
++        self.assertAlmostEqual(calibration.angular_rms_deg, 0.0)
++
++    def test_quaternion_sign_changes_do_not_change_rotation_mean(self):
++        expected = Rotation.from_euler("xyz", [-0.2, 0.1, -0.4])
++
++        calibration = calibrate_pelvis_orientation_from_frames(
++            stable_frames(expected.inv()),
++            self.table,
++            self.config,
++        )
++
++        recovered = Rotation.from_matrix(
++            calibration.rotation_rigid_from_pelvis
++        )
++        self.assertLess((recovered.inv() * expected).magnitude(), 1.0e-10)
++
++    def test_rejects_insufficient_sample_count(self):
++        with self.assertRaisesRegex(ValueError, "at least 30 valid"):
++            calibrate_pelvis_orientation_from_frames(
++                stable_frames(Rotation.identity(), count=29),
++                self.table,
++                self.config,
++            )
++
++    def test_rejects_insufficient_source_time_coverage(self):
++        frames = [
++            mocap_frame(
++                index,
++                Rotation.identity(),
++                source_time_s=index / 100.0,
++            )
++            for index in range(61)
++        ]
++
++        with self.assertRaisesRegex(ValueError, "source-time coverage"):
++            calibrate_pelvis_orientation_from_frames(
++                frames,
++                self.table,
++                self.config,
++            )
++
++    def test_rejects_position_motion_above_two_millimetres_rms(self):
++        frames = [
++            mocap_frame(
++                index,
++                Rotation.identity(),
++                position_mm=(100.0 + 10.0 * np.sin(index), 200.0, 300.0),
++            )
++            for index in range(61)
++        ]
++
++        with self.assertRaisesRegex(ValueError, "position RMS"):
++            calibrate_pelvis_orientation_from_frames(
++                frames,
++                self.table,
++                self.config,
++            )
++
++    def test_rejects_angular_motion_above_point_three_degrees_rms(self):
++        frames = [
++            mocap_frame(
++                index,
++                Rotation.from_euler(
++                    "z",
++                    np.linspace(-1.0, 1.0, 61)[index],
++                    degrees=True,
++                ),
++            )
++            for index in range(61)
++        ]
++
++        with self.assertRaisesRegex(ValueError, "angular RMS"):
++            calibrate_pelvis_orientation_from_frames(
++                frames,
++                self.table,
++                self.config,
++            )
++
++
++if __name__ == "__main__":
++    unittest.main()

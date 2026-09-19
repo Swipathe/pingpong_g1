@@ -1,0 +1,138 @@
+# Review package: 9bff193..bcfcfe3
+
+## Commits
+bcfcfe3 fix: harden HITTER mocap snapshots
+
+## Files changed
+ deploy/diagnostics/hitter_task_pipeline.py     |  3 ++-
+ deploy/tests/test_hitter_task_input_adapter.py | 35 ++++++++++++++++++++++++++
+ deploy/utils/hitter_realtime.py                |  8 ++++--
+ 3 files changed, 43 insertions(+), 3 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_pipeline.py b/deploy/diagnostics/hitter_task_pipeline.py
+index d99abca..d664563 100644
+--- a/deploy/diagnostics/hitter_task_pipeline.py
++++ b/deploy/diagnostics/hitter_task_pipeline.py
+@@ -448,21 +448,22 @@ class MocapFrameAdapter:
+                     getattr(message, "vicon_frame_number", 0) or 0
+                 ),
+                 source_time_s=source_time_s,
+                 publish_time_us=publish_time_us,
+                 received_monotonic_s=float(received_monotonic_s),
+                 wall_time_us=int(wall_time_us),
+                 payload_size=int(payload_size),
+             )
+             self._next_input_seq += 1
+             warnings = []
+-            self._source_warnings_locked(sample, warnings)
++            if subject in self._KNOWN_SUBJECTS:
++                self._source_warnings_locked(sample, warnings)
+             snapshot = None
+             bounce_detected = False
+             reset_transition = None
+             if subject == "g1pelvis":
+                 self._update_pelvis_locked(sample, warnings)
+             elif subject == "ball":
+                 (
+                     snapshot,
+                     bounce_detected,
+                     reset_transition,
+diff --git a/deploy/tests/test_hitter_task_input_adapter.py b/deploy/tests/test_hitter_task_input_adapter.py
+index a61d660..5d630f5 100644
+--- a/deploy/tests/test_hitter_task_input_adapter.py
++++ b/deploy/tests/test_hitter_task_input_adapter.py
+@@ -117,25 +117,60 @@ class MocapFrameAdapterInputTests(unittest.TestCase):
+         self.assertEqual(output.snapshot.position_w.dtype, np.dtype(np.float32))
+         self.assertEqual(output.snapshot.velocity_w.dtype, np.dtype(np.float32))
+         self.assertEqual(
+             output.snapshot.base_position_w.dtype,
+             np.dtype(np.float32),
+         )
+         self.assertEqual(
+             output.snapshot.base_quaternion_xyzw.dtype,
+             np.dtype(np.float32),
+         )
++        for array in (
++            output.snapshot.position_w,
++            output.snapshot.velocity_w,
++            output.snapshot.base_position_w,
++            output.snapshot.base_quaternion_xyzw,
++        ):
++            self.assertFalse(array.flags.writeable)
++            with self.assertRaises(ValueError):
++                array.setflags(write=True)
+         np.testing.assert_array_equal(
+             output.sample.position_w,
+             [1.25, -0.5, 0.875],
+         )
+ 
++    def test_unknown_subjects_do_not_grow_or_cross_contaminate_warning_history(self) -> None:
++        adapter = _adapter()
++        first = _ingest(
++            adapter,
++            _message(
++                "UnknownSubject",
++                frame=1,
++                source_time_s=10.0,
++                publish_time_us=1_010_000_000,
++            ),
++            received_s=1.0,
++        )
++        second = _ingest(
++            adapter,
++            _message(
++                "unknownsubject",
++                frame=100,
++                source_time_s=10.01,
++                publish_time_us=1_010_010_000,
++            ),
++            received_s=1.01,
++        )
++
++        self.assertEqual(first.warnings, ("UNKNOWN_SUBJECT",))
++        self.assertEqual(second.warnings, ("UNKNOWN_SUBJECT",))
++
+     def test_timestamp_priority_and_independent_zero_based_nominal_fallback(self) -> None:
+         adapter = _adapter(min_samples=1)
+         messages = [
+             _message(
+                 "ball",
+                 frame=1,
+                 source_time_s=10.0,
+                 publish_time_us=90_000_000,
+             ),
+             _message(
+diff --git a/deploy/utils/hitter_realtime.py b/deploy/utils/hitter_realtime.py
+index d54c200..ed564a6 100644
+--- a/deploy/utils/hitter_realtime.py
++++ b/deploy/utils/hitter_realtime.py
+@@ -4,22 +4,26 @@ import threading
+ import time
+ from dataclasses import dataclass
+ from enum import Enum
+ from typing import Callable
+ 
+ import numpy as np
+ 
+ 
+ def _copied_read_only_array(value) -> np.ndarray:
+     array = np.asarray(value).copy()
+-    array.setflags(write=False)
+-    return array
++    immutable = np.frombuffer(
++        array.tobytes(order="C"),
++        dtype=array.dtype,
++    ).reshape(array.shape)
++    immutable.setflags(write=False)
++    return immutable
+ 
+ 
+ @dataclass(frozen=True)
+ class BallEstimateSnapshot:
+     track_epoch: int
+     generation: int
+     source_frame: int
+     source_time_s: float
+     received_monotonic_s: float
+     position_w: np.ndarray

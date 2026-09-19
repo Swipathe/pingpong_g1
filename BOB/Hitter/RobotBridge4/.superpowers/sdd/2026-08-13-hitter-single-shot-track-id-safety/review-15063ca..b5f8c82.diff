@@ -1,0 +1,886 @@
+# Review package: 15063ca88fd2e6ff7ea120201631c40c82f1953d..b5f8c8247fb3354194699804c4a04ee5f01eae52
+
+## Commits
+b5f8c82 feat: queue completed HITTER planner results
+
+## Files changed
+ deploy/tests/test_hitter_completed_result_queue.py | 351 +++++++++++++++++++++
+ deploy/tests/test_hitter_runtime_identity_types.py |   3 +-
+ deploy/utils/hitter_realtime.py                    | 210 +++++++++++-
+ 3 files changed, 559 insertions(+), 5 deletions(-)
+
+## Diff
+diff --git a/deploy/tests/test_hitter_completed_result_queue.py b/deploy/tests/test_hitter_completed_result_queue.py
+new file mode 100644
+index 0000000..035a2a8
+--- /dev/null
++++ b/deploy/tests/test_hitter_completed_result_queue.py
+@@ -0,0 +1,351 @@
++from __future__ import annotations
++
++import threading
++import time
++
++import numpy as np
++import pytest
++
++import utils.hitter_realtime as hitter_realtime
++from utils.hitter_planner import HitterWbcCommand, StrikePlan
++from utils.hitter_realtime import (
++    BallEstimateSnapshot,
++    LatestOnlyPlannerWorker,
++    PlannerResultSnapshot,
++)
++from utils.hitter_runtime_types import PlannerFailureReason, PlannerRejected
++
++
++def snapshot(*, track_id: int = 7, generation: int = 1) -> BallEstimateSnapshot:
++    received_s = time.monotonic()
++    return BallEstimateSnapshot(
++        track_id=track_id,
++        generation=generation,
++        source_frame=generation,
++        source_time_s=float(generation) / 360.0,
++        received_monotonic_s=received_s,
++        position_w=np.array([0.8, 0.0, 1.0], dtype=np.float64),
++        velocity_w=np.array([-2.0, 0.0, 0.0], dtype=np.float64),
++        base_position_w=np.array([-0.4, 0.0, 0.8], dtype=np.float64),
++        base_quaternion_xyzw=np.array(
++            [0.0, 0.0, 0.0, 1.0],
++            dtype=np.float64,
++        ),
++        base_valid=True,
++        visible=True,
++        ready=True,
++    )
++
++
++def plan_ok(value: BallEstimateSnapshot) -> HitterWbcCommand:
++    time_to_strike = 1.0
++    strike_plan = StrikePlan(
++        t_strike=time_to_strike,
++        p_racket_target=np.array([0.0, -0.1, 1.0], dtype=np.float64),
++        v_racket_target=np.array([1.0, 0.0, 0.5], dtype=np.float64),
++        v_ball_in=np.array([-2.0, 0.0, 0.0], dtype=np.float64),
++        v_ball_out=np.array([3.0, 0.0, 0.5], dtype=np.float64),
++    )
++    return HitterWbcCommand(
++        strike_type="forehand",
++        p_base_target_xy=np.array([-0.4, 0.2], dtype=np.float64),
++        v_racket_target_w=strike_plan.v_racket_target.copy(),
++        time_to_strike=time_to_strike,
++        strike_plan=strike_plan,
++        strike_table_y_w=-0.1,
++        strike_side_source=f"generation-{value.generation}",
++    )
++
++
++def plan_in_generation_order(value: BallEstimateSnapshot) -> HitterWbcCommand:
++    return plan_ok(value)
++
++
++def wait_until(predicate, timeout_s: float = 1.0) -> None:
++    deadline = time.monotonic() + timeout_s
++    while time.monotonic() < deadline:
++        if predicate():
++            return
++        time.sleep(0.001)
++    raise AssertionError("condition was not satisfied before timeout")
++
++
++def complete_sequential_submissions(
++    worker: LatestOnlyPlannerWorker,
++    generations=(1, 2, 3),
++) -> None:
++    for completion_count, generation in enumerate(generations, start=1):
++        worker.submit(snapshot(generation=generation))
++        wait_until(
++            lambda: worker.stats.completed + worker.stats.failed
++            == completion_count
++        )
++
++
++def test_completed_results_are_drained_in_order():
++    worker = LatestOnlyPlannerWorker(plan_in_generation_order)
++    try:
++        complete_sequential_submissions(worker)
++        batch = worker.drain_completed_results()
++        assert [result.source_generation for result in batch.results] == [1, 2, 3]
++        assert batch.frozen_results == (None, None, None)
++        assert worker.drain_completed_results().results == ()
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_capacity_overflow_is_sticky_and_never_replaces_existing_results():
++    worker = LatestOnlyPlannerWorker(
++        plan_ok,
++        completed_result_queue_capacity=2,
++    )
++    try:
++        complete_sequential_submissions(worker)
++        batch = worker.drain_completed_results()
++        assert [result.source_generation for result in batch.results] == [1, 2]
++        assert batch.overflowed is True
++        assert batch.overflow_count == 1
++        assert batch.overflowed_track_ids == (7,)
++
++        empty = worker.drain_completed_results()
++        assert empty.results == ()
++        assert empty.frozen_results == ()
++        assert empty.overflowed is False
++        assert empty.overflow_count == 0
++        assert empty.overflowed_track_ids == ()
++        assert worker.stats.completed_result_queue_overflow_total == 1
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_overflow_count_can_exceed_sorted_unique_track_ids():
++    worker = LatestOnlyPlannerWorker(
++        plan_ok,
++        completed_result_queue_capacity=1,
++    )
++    try:
++        complete_sequential_submissions(worker, generations=(1, 2, 3))
++        worker.submit(snapshot(track_id=9, generation=4))
++        wait_until(lambda: worker.stats.completed == 4)
++
++        batch = worker.drain_completed_results()
++        assert [result.source_generation for result in batch.results] == [1]
++        assert batch.overflow_count == 3
++        assert batch.overflowed_track_ids == (7, 9)
++        assert worker.stats.completed_result_queue_overflow_total == 3
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++@pytest.mark.parametrize("capacity", [True, False, 0, -1, 1.0, 64.0])
++def test_completed_queue_capacity_requires_a_positive_plain_integer(capacity):
++    with pytest.raises(ValueError, match="positive integer"):
++        LatestOnlyPlannerWorker(
++            plan_ok,
++            completed_result_queue_capacity=capacity,
++        )
++
++
++def test_completed_queue_capacity_defaults_to_64():
++    worker = LatestOnlyPlannerWorker(plan_ok)
++    try:
++        complete_sequential_submissions(worker, generations=range(1, 66))
++        batch = worker.drain_completed_results()
++        assert len(batch.results) == 64
++        assert batch.overflow_count == 1
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_pending_input_remains_latest_only_while_planner_is_blocked():
++    first_entered = threading.Event()
++    release_first = threading.Event()
++    planned_generations: list[int] = []
++
++    def plan(value: BallEstimateSnapshot) -> HitterWbcCommand:
++        planned_generations.append(value.generation)
++        if value.generation == 1:
++            first_entered.set()
++            if not release_first.wait(timeout=1.0):
++                raise AssertionError("test did not release first plan")
++        return plan_ok(value)
++
++    worker = LatestOnlyPlannerWorker(plan)
++    try:
++        worker.submit(snapshot(generation=1))
++        assert first_entered.wait(timeout=1.0)
++        worker.submit(snapshot(generation=2))
++        worker.submit(snapshot(generation=3))
++        release_first.set()
++        wait_until(lambda: worker.stats.completed == 2)
++
++        assert planned_generations == [1, 3]
++        assert worker.stats.pending_replaced_total == 1
++        assert worker.max_pending_depth == 1
++        assert [
++            result.source_generation
++            for result in worker.drain_completed_results().results
++        ] == [1, 3]
++    finally:
++        release_first.set()
++        assert worker.close(timeout_s=1.0)
++
++
++def test_typed_rejection_preserves_reason_detail_and_frozen_identity():
++    detail = "ball estimate has no future crossing"
++
++    def reject(_value: BallEstimateSnapshot):
++        raise PlannerRejected(
++            PlannerFailureReason.NO_FUTURE_CROSSING,
++            detail,
++        )
++
++    worker = LatestOnlyPlannerWorker(reject, trace_listener=lambda _trace: None)
++    try:
++        worker.submit(snapshot())
++        wait_until(lambda: worker.stats.failed == 1)
++        batch = worker.drain_completed_results()
++        result = batch.results[0]
++        frozen = batch.frozen_results[0]
++
++        assert result.command is None
++        assert result.failure_reason is PlannerFailureReason.NO_FUTURE_CROSSING
++        assert result.error_text == detail
++        assert frozen is not None
++        assert frozen.snapshot_key.track_id == 7
++        assert frozen.failure_reason is PlannerFailureReason.NO_FUTURE_CROSSING
++        assert frozen.error_text == detail
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_unknown_exception_is_internal_error_and_worker_continues():
++    def plan(value: BallEstimateSnapshot) -> HitterWbcCommand:
++        if value.generation == 1:
++            raise LookupError("missing intercept")
++        return plan_ok(value)
++
++    worker = LatestOnlyPlannerWorker(plan, trace_listener=lambda _trace: None)
++    try:
++        complete_sequential_submissions(worker, generations=(1, 2))
++        batch = worker.drain_completed_results()
++        failed, succeeded = batch.results
++
++        assert failed.command is None
++        assert failed.failure_reason is PlannerFailureReason.INTERNAL_ERROR
++        assert failed.error_text == "LookupError: missing intercept"
++        assert (
++            batch.frozen_results[0].failure_reason
++            is PlannerFailureReason.INTERNAL_ERROR
++        )
++        assert succeeded.command is not None
++        assert succeeded.failure_reason is None
++        assert succeeded.error_text is None
++        assert worker.stats.failed == 1
++        assert worker.stats.completed == 1
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_frozen_queue_result_is_detached_from_mutable_command_arrays():
++    command_holder = {}
++
++    def plan(value: BallEstimateSnapshot) -> HitterWbcCommand:
++        command = plan_ok(value)
++        command_holder["command"] = command
++        return command
++
++    worker = LatestOnlyPlannerWorker(plan, trace_listener=lambda _trace: None)
++    try:
++        worker.submit(snapshot())
++        wait_until(lambda: worker.stats.completed == 1)
++        batch = worker.drain_completed_results()
++        frozen = batch.frozen_results[0]
++
++        command_holder["command"].p_base_target_xy[0] = 99.0
++        assert frozen.command_fields["p_base_target_xy"] == (-0.4, 0.2)
++        with pytest.raises(TypeError):
++            frozen.command_fields["new"] = "value"
++    finally:
++        assert worker.close(timeout_s=1.0)
++
++
++def test_planner_result_enforces_exact_success_or_failure():
++    common = {
++        "track_id": 7,
++        "source_generation": 1,
++        "source_frame": 1,
++        "strike_deadline_monotonic_s": time.monotonic() + 1.0,
++        "completed_monotonic_s": time.monotonic(),
++    }
++    command = plan_ok(snapshot())
++
++    success = PlannerResultSnapshot(**common, command=command)
++    failure = PlannerResultSnapshot(
++        **common,
++        command=None,
++        failure_reason=PlannerFailureReason.TRACK_ENDED,
++        error_text="track ended",
++    )
++    assert success.failure_reason is None
++    assert failure.command is None
++
++    with pytest.raises(ValueError, match="exactly success or failure"):
++        PlannerResultSnapshot(**common, command=None)
++    with pytest.raises(ValueError, match="exactly success or failure"):
++        PlannerResultSnapshot(
++            **common,
++            command=command,
++            failure_reason=PlannerFailureReason.INTERNAL_ERROR,
++        )
++
++
++@pytest.mark.parametrize(
++    "changes",
++    [
++        {"track_id": True},
++        {"track_id": 0},
++        {"source_generation": True},
++        {"source_generation": -1},
++        {"source_frame": True},
++        {"source_frame": 0},
++        {"completed_monotonic_s": float("nan")},
++        {"completed_monotonic_s": float("inf")},
++        {"strike_deadline_monotonic_s": float("inf")},
++    ],
++)
++def test_planner_result_rejects_invalid_identity_and_time_values(changes):
++    values = {
++        "track_id": 7,
++        "source_generation": 1,
++        "source_frame": 1,
++        "strike_deadline_monotonic_s": time.monotonic() + 1.0,
++        "completed_monotonic_s": time.monotonic(),
++        "command": plan_ok(snapshot()),
++    }
++    values.update(changes)
++    with pytest.raises(ValueError):
++        PlannerResultSnapshot(**values)
++
++
++def test_completed_batch_rejects_misaligned_or_inconsistent_metadata():
++    batch_type = hitter_realtime.CompletedResultBatch
++    result = PlannerResultSnapshot(
++        track_id=7,
++        source_generation=1,
++        source_frame=1,
++        strike_deadline_monotonic_s=time.monotonic() + 1.0,
++        completed_monotonic_s=time.monotonic(),
++        command=plan_ok(snapshot()),
++    )
++
++    with pytest.raises(ValueError, match="length mismatch"):
++        batch_type((result,), (), False, 0, ())
++    with pytest.raises(ValueError, match="overflowed must match"):
++        batch_type((), (), True, 0, ())
++    with pytest.raises(ValueError, match="sorted and unique"):
++        batch_type((), (), True, 2, (9, 7))
++    with pytest.raises(ValueError, match="positive integers"):
++        batch_type((), (), True, 1, (True,))
++    with pytest.raises(ValueError, match="smaller"):
++        batch_type((), (), True, 1, (7, 9))
+diff --git a/deploy/tests/test_hitter_runtime_identity_types.py b/deploy/tests/test_hitter_runtime_identity_types.py
+index 81052be..4edecae 100644
+--- a/deploy/tests/test_hitter_runtime_identity_types.py
++++ b/deploy/tests/test_hitter_runtime_identity_types.py
+@@ -1,18 +1,18 @@
+ from __future__ import annotations
+ 
+ import numpy as np
+ import pytest
+ 
+ from diagnostics.hitter_task_models import SnapshotKey as DiagnosticSnapshotKey
+ from utils.hitter_realtime import BallEstimateSnapshot, PlannerResultSnapshot
+-from utils.hitter_runtime_types import SnapshotKey
++from utils.hitter_runtime_types import PlannerFailureReason, SnapshotKey
+ 
+ 
+ @pytest.fixture
+ def snapshot() -> BallEstimateSnapshot:
+     return BallEstimateSnapshot(
+         track_id=9,
+         generation=1,
+         source_frame=1,
+         source_time_s=1.0,
+         received_monotonic_s=2.0,
+@@ -61,13 +61,14 @@ def test_runtime_snapshots_expose_no_epoch_attribute(snapshot):
+     assert snapshot.new_track is True
+     assert not hasattr(snapshot, "track_epoch")
+ 
+     result = PlannerResultSnapshot(
+         track_id=9,
+         source_generation=1,
+         source_frame=1,
+         strike_deadline_monotonic_s=3.0,
+         completed_monotonic_s=2.1,
+         command=None,
++        failure_reason=PlannerFailureReason.INTERNAL_ERROR,
+     )
+     assert result.track_id == 9
+     assert not hasattr(result, "track_epoch")
+diff --git a/deploy/utils/hitter_realtime.py b/deploy/utils/hitter_realtime.py
+index 33a53f6..9a67a1d 100644
+--- a/deploy/utils/hitter_realtime.py
++++ b/deploy/utils/hitter_realtime.py
+@@ -5,21 +5,25 @@ import time
+ from dataclasses import dataclass, fields, is_dataclass
+ from enum import Enum
+ from typing import Any, Callable, Mapping, Optional, Tuple
+ 
+ import numpy as np
+ 
+ from diagnostics.hitter_task_models import (
+     JsonValue,
+     freeze_json_value,
+ )
+-from utils.hitter_runtime_types import SnapshotKey
++from utils.hitter_runtime_types import (
++    PlannerFailureReason,
++    PlannerRejected,
++    SnapshotKey,
++)
+ 
+ 
+ def _copied_read_only_array(value) -> np.ndarray:
+     array = np.asarray(value).copy()
+     immutable = np.frombuffer(
+         array.tobytes(order="C"),
+         dtype=array.dtype,
+     ).reshape(array.shape)
+     immutable.setflags(write=False)
+     return immutable
+@@ -57,30 +61,99 @@ class BallEstimateSnapshot:
+ 
+ 
+ @dataclass(frozen=True)
+ class PlannerResultSnapshot:
+     track_id: int
+     source_generation: int
+     source_frame: int
+     strike_deadline_monotonic_s: float
+     completed_monotonic_s: float
+     command: object | None
++    failure_reason: PlannerFailureReason | None = None
++    error_text: str | None = None
+     error: str | None = None
+ 
++    def __post_init__(self) -> None:
++        failure_reason = self.failure_reason
++        error_text = self.error_text
++        legacy_error = self.error
++        if legacy_error is not None:
++            if type(legacy_error) is not str:
++                raise ValueError("error must be a string or None")
++            if error_text is None:
++                error_text = legacy_error
++            if failure_reason is None:
++                try:
++                    failure_reason = PlannerFailureReason(legacy_error)
++                except ValueError:
++                    failure_reason = PlannerFailureReason.INTERNAL_ERROR
++
++        if failure_reason is not None and not isinstance(
++            failure_reason,
++            PlannerFailureReason,
++        ):
++            raise ValueError("failure_reason must be a PlannerFailureReason or None")
++        if error_text is not None and type(error_text) is not str:
++            raise ValueError("error_text must be a string or None")
++
++        succeeded = self.command is not None and failure_reason is None
++        failed = self.command is None and failure_reason is not None
++        if not (succeeded or failed):
++            raise ValueError("planner result must be exactly success or failure")
++
++        if type(self.track_id) is not int or self.track_id <= 0:
++            raise ValueError("track_id must be a positive integer")
++        if (
++            type(self.source_generation) is not int
++            or self.source_generation < 0
++        ):
++            raise ValueError("source_generation must be a non-negative integer")
++        if type(self.source_frame) is not int or self.source_frame <= 0:
++            raise ValueError("source_frame must be a positive integer")
++        if (
++            not np.isfinite(self.completed_monotonic_s)
++            or self.completed_monotonic_s < 0.0
++        ):
++            raise ValueError("completed_monotonic_s must be finite and non-negative")
++        deadline = float(self.strike_deadline_monotonic_s)
++        if np.isinf(deadline) or (succeeded and not np.isfinite(deadline)):
++            raise ValueError(
++                "strike_deadline_monotonic_s must be finite for success "
++                "and never infinite"
++            )
++        if np.isfinite(deadline) and deadline < 0.0:
++            raise ValueError(
++                "strike_deadline_monotonic_s must be non-negative when finite"
++            )
++
++        object.__setattr__(self, "failure_reason", failure_reason)
++        object.__setattr__(self, "error_text", error_text)
++        if legacy_error is not None:
++            compatibility_error = legacy_error
++        elif succeeded:
++            compatibility_error = None
++        elif failure_reason is PlannerFailureReason.INTERNAL_ERROR:
++            compatibility_error = error_text or failure_reason.value
++        else:
++            compatibility_error = failure_reason.value
++        object.__setattr__(self, "error", compatibility_error)
++
+ 
+ @dataclass(frozen=True)
+ class PlannerWorkerStats:
+     submitted: int
+     completed: int
+     failed: int
+     dropped_pending: int
+     trace_listener_failures: int = 0
++    pending_replaced_total: int = 0
++    completed_result_queue_overflow_total: int = 0
+ 
+ 
+ @dataclass(frozen=True)
+ class IncomingTrackSnapshot:
+     track_id: Optional[int]
+     consecutive_count: int
+     confirmed: bool
+ 
+ 
+ def _command_json_value(value: Any) -> Any:
+@@ -119,35 +192,81 @@ def freeze_planner_command_fields(
+ 
+ @dataclass(frozen=True)
+ class FrozenPlannerResult:
+     snapshot_key: SnapshotKey
+     source_frame: int
+     strike_deadline_monotonic_s: float
+     completed_monotonic_s: float
+     command_fields: Optional[Mapping[str, JsonValue]]
+     error_type: Optional[str]
+     error_text: Optional[str]
++    failure_reason: PlannerFailureReason | None = None
+ 
+     def __post_init__(self) -> None:
+         if self.command_fields is not None:
+             frozen = freeze_json_value(self.command_fields)
+             if not isinstance(frozen, Mapping):
+                 raise TypeError("command_fields must be a mapping")
+             object.__setattr__(self, "command_fields", frozen)
+         if self.error_type is not None:
+             object.__setattr__(self, "error_type", str(self.error_type))
+         if self.error_text is not None:
+             object.__setattr__(
+                 self,
+                 "error_text",
+                 str(self.error_text)[:2048],
+             )
++        if self.failure_reason is not None and not isinstance(
++            self.failure_reason,
++            PlannerFailureReason,
++        ):
++            raise ValueError(
++                "failure_reason must be a PlannerFailureReason or None"
++            )
++
++
++@dataclass(frozen=True)
++class CompletedResultBatch:
++    results: tuple[PlannerResultSnapshot, ...]
++    frozen_results: tuple[FrozenPlannerResult | None, ...]
++    overflowed: bool
++    overflow_count: int
++    overflowed_track_ids: tuple[int, ...]
++
++    def __post_init__(self) -> None:
++        if len(self.results) != len(self.frozen_results):
++            raise ValueError("results and frozen_results length mismatch")
++        if type(self.overflow_count) is not int or self.overflow_count < 0:
++            raise ValueError("overflow_count must be a non-negative integer")
++        if type(self.overflowed) is not bool:
++            raise ValueError("overflowed must be a boolean")
++        if self.overflowed != (self.overflow_count > 0):
++            raise ValueError("overflowed must match this drain's overflow_count")
++        if any(
++            type(track_id) is not int or track_id <= 0
++            for track_id in self.overflowed_track_ids
++        ):
++            raise ValueError(
++                "overflowed_track_ids must contain positive integers"
++            )
++        if self.overflowed_track_ids != tuple(
++            sorted(set(self.overflowed_track_ids))
++        ):
++            raise ValueError(
++                "overflowed_track_ids must be sorted and unique"
++            )
++        if self.overflowed and not self.overflowed_track_ids:
++            raise ValueError("overflow must identify at least one affected track")
++        if self.overflow_count < len(self.overflowed_track_ids):
++            raise ValueError(
++                "overflow count cannot be smaller than unique track ids"
++            )
+ 
+ 
+ @dataclass(frozen=True)
+ class PlannerWorkerTrace:
+     trace_seq: int
+     kind: str
+     monotonic_s: float
+     snapshot: BallEstimateSnapshot
+     result: Optional[FrozenPlannerResult]
+     replaced_snapshot: Optional[BallEstimateSnapshot]
+@@ -224,33 +343,51 @@ class LatestOnlyPlannerWorker:
+     """Run a planner off-thread while retaining at most one pending snapshot."""
+ 
+     def __init__(
+         self,
+         plan_fn: Callable[[BallEstimateSnapshot], object],
+         *,
+         monotonic_fn: Callable[[], float] = time.monotonic,
+         trace_listener: Optional[
+             Callable[[PlannerWorkerTrace], None]
+         ] = None,
++        completed_result_queue_capacity: int = 64,
+     ):
++        if (
++            type(completed_result_queue_capacity) is not int
++            or completed_result_queue_capacity <= 0
++        ):
++            raise ValueError(
++                "completed_result_queue_capacity must be a positive integer"
++            )
+         self._plan_fn = plan_fn
+         self._monotonic_fn = monotonic_fn
+         self._trace_listener = trace_listener
+         self._condition = threading.Condition()
+         self._trace_delivery_condition = threading.Condition(
+             threading.RLock()
+         )
+         self._trace_delivery_pending = {}
+         self._next_trace_delivery_seq = 1
+         self._pending: BallEstimateSnapshot | None = None
+         self._latest_result: PlannerResultSnapshot | None = None
+         self._latest_frozen_result: FrozenPlannerResult | None = None
++        self._completed_result_queue_capacity = completed_result_queue_capacity
++        self._completed_results: list[
++            tuple[PlannerResultSnapshot, FrozenPlannerResult | None]
++        ] = []
++        self._completed_result_queue_overflow_latched = False
++        self._completed_result_queue_overflow_since_drain = 0
++        self._completed_result_queue_overflow_total = 0
++        self._completed_result_queue_overflow_track_ids_since_drain: set[
++            int
++        ] = set()
+         self._stop_requested = False
+         self._submitted = 0
+         self._completed = 0
+         self._failed = 0
+         self._dropped_pending = 0
+         self._trace_listener_failures = 0
+         self._trace_seq = 0
+         self._max_pending_depth = 0
+         self._thread = threading.Thread(
+             target=self._run,
+@@ -263,20 +400,24 @@ class LatestOnlyPlannerWorker:
+         with self._condition:
+             return self._stats_locked()
+ 
+     def _stats_locked(self) -> PlannerWorkerStats:
+         return PlannerWorkerStats(
+             submitted=self._submitted,
+             completed=self._completed,
+             failed=self._failed,
+             dropped_pending=self._dropped_pending,
+             trace_listener_failures=self._trace_listener_failures,
++            pending_replaced_total=self._dropped_pending,
++            completed_result_queue_overflow_total=(
++                self._completed_result_queue_overflow_total
++            ),
+         )
+ 
+     @property
+     def trace_listener_failures(self) -> int:
+         with self._condition:
+             return int(self._trace_listener_failures)
+ 
+     @property
+     def max_pending_depth(self) -> int:
+         with self._condition:
+@@ -317,20 +458,45 @@ class LatestOnlyPlannerWorker:
+ 
+     def latest_result_bundle(
+         self,
+     ) -> Tuple[
+         Optional[PlannerResultSnapshot],
+         Optional[FrozenPlannerResult],
+     ]:
+         with self._condition:
+             return self._latest_result, self._latest_frozen_result
+ 
++    def drain_completed_results(self) -> CompletedResultBatch:
++        with self._condition:
++            results = tuple(pair[0] for pair in self._completed_results)
++            frozen_results = tuple(
++                pair[1] for pair in self._completed_results
++            )
++            batch = CompletedResultBatch(
++                results=results,
++                frozen_results=frozen_results,
++                overflowed=self._completed_result_queue_overflow_latched,
++                overflow_count=(
++                    self._completed_result_queue_overflow_since_drain
++                ),
++                overflowed_track_ids=tuple(
++                    sorted(
++                        self._completed_result_queue_overflow_track_ids_since_drain
++                    )
++                ),
++            )
++            self._completed_results.clear()
++            self._completed_result_queue_overflow_latched = False
++            self._completed_result_queue_overflow_since_drain = 0
++            self._completed_result_queue_overflow_track_ids_since_drain.clear()
++            return batch
++
+     def close(self, timeout_s: Optional[float] = None) -> bool:
+         if timeout_s is not None and timeout_s < 0.0:
+             raise ValueError("timeout_s must be nonnegative")
+         with self._condition:
+             self._stop_requested = True
+             self._pending = None
+             self._condition.notify_all()
+         if threading.current_thread() is not self._thread:
+             self._thread.join(timeout_s)
+         return not self._thread.is_alive()
+@@ -393,54 +559,76 @@ class LatestOnlyPlannerWorker:
+                 if self._trace_listener is not None:
+                     start_traces.append(
+                         self._trace_locked(
+                             kind="start",
+                             snapshot=snapshot,
+                         )
+                     )
+             self._notify_traces(start_traces)
+ 
+             failed = False
++            failure_reason = None
+             error_type = None
+             error_text = None
++            diagnostic_error_text = None
+             try:
+                 command = self._plan_fn(snapshot)
+                 deadline = snapshot.received_monotonic_s + float(
+                     command.time_to_strike
+                 )
+                 planned = PlannerResultSnapshot(
+                     track_id=snapshot.track_id,
+                     source_generation=snapshot.generation,
+                     source_frame=snapshot.source_frame,
+                     strike_deadline_monotonic_s=deadline,
+                     completed_monotonic_s=float(self._monotonic_fn()),
+                     command=command,
+                 )
++            except PlannerRejected as exc:
++                failed = True
++                failure_reason = exc.reason
++                error_type = type(exc).__name__
++                error_text = exc.detail
++                diagnostic_error_text = exc.detail
++                planned = PlannerResultSnapshot(
++                    track_id=snapshot.track_id,
++                    source_generation=snapshot.generation,
++                    source_frame=snapshot.source_frame,
++                    strike_deadline_monotonic_s=float("nan"),
++                    completed_monotonic_s=float(self._monotonic_fn()),
++                    command=None,
++                    failure_reason=failure_reason,
++                    error_text=error_text,
++                    error=f"{error_type}: {diagnostic_error_text}",
++                )
+             except Exception as exc:
+                 failed = True
++                failure_reason = PlannerFailureReason.INTERNAL_ERROR
+                 error_type = type(exc).__name__
+-                error_text = str(exc)
++                error_text = f"{type(exc).__name__}: {exc}"
++                diagnostic_error_text = str(exc)
+                 planned = PlannerResultSnapshot(
+                     track_id=snapshot.track_id,
+                     source_generation=snapshot.generation,
+                     source_frame=snapshot.source_frame,
+                     strike_deadline_monotonic_s=float("nan"),
+                     completed_monotonic_s=float(self._monotonic_fn()),
+                     command=None,
+-                    error=f"{type(exc).__name__}: {exc}",
++                    failure_reason=failure_reason,
++                    error_text=error_text,
++                    error=error_text,
+                 )
+ 
+             frozen = None
+             if self._trace_listener is not None:
+                 command_fields = None
+                 diagnostic_error_type = error_type
+-                diagnostic_error_text = error_text
+                 if planned.command is not None:
+                     try:
+                         command_fields = freeze_planner_command_fields(
+                             planned.command
+                         )
+                     except Exception as exc:
+                         diagnostic_error_type = "DiagnosticFreezeError"
+                         diagnostic_error_text = "{}: {}".format(
+                             type(exc).__name__,
+                             exc,
+@@ -453,26 +641,39 @@ class LatestOnlyPlannerWorker:
+                     source_frame=int(snapshot.source_frame),
+                     strike_deadline_monotonic_s=float(
+                         planned.strike_deadline_monotonic_s
+                     ),
+                     completed_monotonic_s=float(
+                         planned.completed_monotonic_s
+                     ),
+                     command_fields=command_fields,
+                     error_type=diagnostic_error_type,
+                     error_text=diagnostic_error_text,
++                    failure_reason=failure_reason,
+                 )
+             completion_traces = []
+             with self._condition:
+                 replaced_frozen = self._latest_frozen_result
+                 self._latest_result = planned
+                 self._latest_frozen_result = frozen
++                if (
++                    len(self._completed_results)
++                    >= self._completed_result_queue_capacity
++                ):
++                    self._completed_result_queue_overflow_latched = True
++                    self._completed_result_queue_overflow_since_drain += 1
++                    self._completed_result_queue_overflow_total += 1
++                    self._completed_result_queue_overflow_track_ids_since_drain.add(
++                        planned.track_id
++                    )
++                else:
++                    self._completed_results.append((planned, frozen))
+                 if failed:
+                     self._failed += 1
+                 else:
+                     self._completed += 1
+                 if self._trace_listener is not None:
+                     completion_traces.append(
+                         self._trace_locked(
+                             kind="complete",
+                             snapshot=snapshot,
+                             result=frozen,
+@@ -702,20 +903,21 @@ class HitterCommandLifecycle:
+             result.strike_deadline_monotonic_s + self.recovery_duration_s
+         )
+         self.active_result = result
+         self.cached_result = None
+         self.phase = CommandPhase.ARMED
+ 
+ 
+ __all__ = [
+     "BallEstimateSnapshot",
+     "CommandPhase",
++    "CompletedResultBatch",
+     "FrozenPlannerResult",
+     "HitterCommandLifecycle",
+     "IncomingTrackConfirmation",
+     "IncomingTrackSnapshot",
+     "LatestOnlyPlannerWorker",
+     "PlannerResultSnapshot",
+     "PlannerWorkerStats",
+     "PlannerWorkerTrace",
+     "freeze_planner_command_fields",
+ ]

@@ -1,0 +1,717 @@
+2026-07-30 13:21:13.021 | INFO     | __main__:main:27 - Log saved to /home/loco1/BOB/Hitter/RobotBridge2/deploy/outputs/2026-07-30/13-21-12/eval.log
+2026-07-30 13:21:13.910 | INFO     | utils.motion_lib.torch_humanoid_batch:<module>:41 - Using Humanoid Batch
+2026-07-30 13:21:14.037 | DEBUG    | utils.kinematics:__init__:34 - [MujocoKinematics] loaded model from ./data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+2026-07-30 13:21:14.037 | DEBUG    | utils.kinematics:update_joint_names_subset:94 - [MujocoKinematics] set fk with 29 joints
+2026-07-30 13:21:14.037 | INFO     | simulator.base_sim:_setup:41 - Robot-level Control Frequency Set to 200.0HZ
+2026-07-30 13:21:14.037 | INFO     | simulator.base_sim:_setup:42 - Policy-level Control Frequency Set to 50.0HZ
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_pitch_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_roll_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_roll_joint  Default Angles -0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:56 - Total Number of dof: 29
+2026-07-30 13:21:14.038 | INFO     | simulator.base_sim:_load_asset:57 - Number of Action: 29
+2026-07-30 13:21:14.039 | INFO     | simulator.real_world:_init_low_state:96 - [RealWorld] terminate_on_r2=True
+2026-07-30 13:21:14.040 | INFO     | simulator.real_world:_vicon_state_handler:349 - Vicon root information received!
+2026-07-30 13:21:14.040 | INFO     | simulator.real_world:_vicon_state_handler:350 - Root Translation World: [-0.3770106   0.19852485  0.7574196 ]
+2026-07-30 13:21:14.041 | INFO     | simulator.real_world:_root_state_handler:299 - State Estimator Information Received!
+2026-07-30 13:21:14.041 | INFO     | simulator.real_world:_root_state_handler:300 - Root Translation: [-0.24899639 -0.18166898  0.73092878], Root Linear Velocity: [-4.25134112e-06 -2.57141255e-06  1.56104725e-04]
+2026-07-30 13:21:14.041 | INFO     | simulator.real_world:_joint_state_handler:402 - Communication build successfully between the policy and the transition layer!
+2026-07-30 13:21:14.041 | INFO     | simulator.real_world:_joint_state_handler:403 - First signal arrives after 0.0021071434020996094s!
+2026-07-30 13:21:14.041 | INFO     | utils.history_handler:__init__:19 - History Handler initialized!
+2026-07-30 13:21:14.043 | INFO     | envs.hitter:__init__:104 - HITTER ball planner configured.
+2026-07-30 13:21:14.046 | INFO     | agents.base_agent:load_onnx_policy:22 - Loading ONNX Checkpoint from /home/loco1/BOB/Hitter/RobotBridge2/deploy/data/model/hitter/hitter_model5400_vx4to8_vz4to8_104_20260730.onnx
+2026-07-30 13:21:14.046 | INFO     | envs.hitter:configure_from_modelmeta:155 - Applying HITTER joint configuration from ONNX model.
+2026-07-30 13:21:14.049 | INFO     | envs.hitter:configure_from_modelmeta:197 - HITTER policy metadata configured, 29 degrees of freedom.
+2026-07-30 13:21:14.050 | INFO     | agents.hitter_agent:load_onnx_policy:19 - HITTER policy metadata loaded. Joints: 29 Anchor body: pelvis
+2026-07-30 13:21:14.050 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-07-30 13:21:14.051 | INFO     | simulator.real_world:calibrate:613 - Calibraiting..., Press R2 to continue
+2026-07-30 13:21:15.405 | INFO     | simulator.real_world:calibrate:616 - R2 button pressed, Start Calibrating...
+2026-07-30 13:21:15.606 | INFO     | simulator.real_world:calibrate:636 - Calibration Done. Press R2 to continue
+2026-07-30 13:21:58.060 | INFO     | simulator.real_world:calibrate:641 - R2 pressed again, Communication built between policy layer and transition layer!
+2026-07-30 13:21:58.061 | INFO     | simulator.real_world:reset_heading:267 - [RealWorld] heading reset enabled, yaw0=0.300 rad
+2026-07-30 13:21:58.062 | INFO     | envs.hitter:_capture_hitter_waiting_base_target:499 - HITTER waiting base target captured at world position [-0.4000000059604645, 0.0, 0.6453521251678467].
+2026-07-30 13:21:58.064 | INFO     | envs.base_env:_update_obs:92 - Receive observation: ['actions', 'root_quat', 'root_rpy', 'base_ang_vel', 'base_lin_vel', 'dof_pos', 'dof_vel', 'projected_gravity']
+2026-07-30 13:21:58.064 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-07-30 13:21:59.067 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-07-30 13:22:00.070 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-07-30 13:22:01.073 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=0 completed=0 failed=0 dropped=0 result_age_s=nan epoch=None generation=None policy_tts=0.920
+2026-07-30 13:22:01.516 | INFO     | simulator.real_world:_update_ball_state_from_vicon:394 - Vicon ball information received!
+2026-07-30 13:22:01.516 | INFO     | simulator.real_world:_update_ball_state_from_vicon:395 - Ball Position World: [2.7239318  0.24563785 1.2397184 ]
+2026-07-30 13:22:01.634 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:861 - HITTER lifecycle transition: waiting -> tracking
+2026-07-30 13:22:01.697 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00172398567199707
+2026-07-30 13:22:01.703 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:01.835 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017027835845947265
+2026-07-30 13:22:01.900 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02348921775817871
+2026-07-30 13:22:01.937 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01744339942932129
+2026-07-30 13:22:02.016 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017620306015014648
+2026-07-30 13:22:02.057 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.019670705795288086
+2026-07-30 13:22:02.082 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=51 completed=34 failed=17 dropped=0 result_age_s=0.000 epoch=1 generation=169 policy_tts=0.920
+2026-07-30 13:22:02.093 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014626007080078125
+2026-07-30 13:22:02.113 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command armed: epoch=1 generation=186 type=forehand tts=0.874s
+2026-07-30 13:22:02.114 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:861 - HITTER lifecycle transition: tracking -> armed
+2026-07-30 13:22:02.134 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=190 type=forehand tts=0.861s
+2026-07-30 13:22:02.142 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=194 type=forehand tts=0.864s
+2026-07-30 13:22:02.164 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01073740005493164
+2026-07-30 13:22:02.168 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=199 type=forehand tts=0.842s
+2026-07-30 13:22:02.186 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=201 type=forehand tts=0.842s
+2026-07-30 13:22:02.196 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010351638793945312
+2026-07-30 13:22:02.198 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=202 type=forehand tts=0.834s
+2026-07-30 13:22:02.215 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=207 type=forehand tts=0.816s
+2026-07-30 13:22:02.238 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=224 type=forehand tts=0.791s
+2026-07-30 13:22:02.261 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=228 type=forehand tts=0.772s
+2026-07-30 13:22:02.268 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:02.276 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=232 type=forehand tts=0.744s
+2026-07-30 13:22:02.281 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0017788219451904293
+2026-07-30 13:22:02.365 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=265 type=forehand tts=0.580s
+2026-07-30 13:22:02.368 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=269 type=forehand tts=0.570s
+2026-07-30 13:22:02.381 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=273 type=forehand tts=0.565s
+2026-07-30 13:22:02.400 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=275 type=forehand tts=0.562s
+2026-07-30 13:22:02.412 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010961513519287109
+2026-07-30 13:22:02.413 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=279 type=forehand tts=0.571s
+2026-07-30 13:22:02.433 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=294 type=forehand tts=0.510s
+2026-07-30 13:22:02.453 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=302 type=forehand tts=0.493s
+2026-07-30 13:22:02.473 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=306 type=forehand tts=0.488s
+2026-07-30 13:22:02.478 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=310 type=forehand tts=0.479s
+2026-07-30 13:22:02.493 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=314 type=forehand tts=0.469s
+2026-07-30 13:22:02.499 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=318 type=forehand tts=0.456s
+2026-07-30 13:22:02.513 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=322 type=forehand tts=0.434s
+2026-07-30 13:22:02.533 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=330 type=forehand tts=0.416s
+2026-07-30 13:22:02.553 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=338 type=forehand tts=0.402s
+2026-07-30 13:22:02.574 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=342 type=forehand tts=0.388s
+2026-07-30 13:22:02.577 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=346 type=forehand tts=0.382s
+2026-07-30 13:22:02.596 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=350 type=forehand tts=0.358s
+2026-07-30 13:22:02.601 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=354 type=forehand tts=0.355s
+2026-07-30 13:22:02.618 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=358 type=forehand tts=0.338s
+2026-07-30 13:22:02.621 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=362 type=forehand tts=0.345s
+2026-07-30 13:22:02.638 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=366 type=forehand tts=0.323s
+2026-07-30 13:22:02.644 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=370 type=forehand tts=0.319s
+2026-07-30 13:22:02.658 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=374 type=forehand tts=0.305s
+2026-07-30 13:22:02.678 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=382 type=forehand tts=0.285s
+2026-07-30 13:22:02.698 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=390 type=forehand tts=0.274s
+2026-07-30 13:22:02.719 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=398 type=forehand tts=0.251s
+2026-07-30 13:22:02.741 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=406 type=forehand tts=0.227s
+2026-07-30 13:22:02.753 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:02.865 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=444 type=forehand tts=0.055s
+2026-07-30 13:22:02.880 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018426637649536132
+2026-07-30 13:22:02.881 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=446 type=forehand tts=0.059s
+2026-07-30 13:22:02.901 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command overridden: epoch=1 generation=463 type=forehand tts=0.014s
+2026-07-30 13:22:02.921 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-07-30 13:22:02.921 | INFO     | envs.hitter:_log_hitter_strike_target:613 - HITTER strike target: epoch=1 generation=463 type=forehand v_ball_in_w_mps=[-1.3851,-0.1283,0.6548] speed_ball_in_mps=1.5374 v_ball_out_w_mps=[4.2708,-0.0258,1.9593] speed_ball_out_mps=4.6989 v_racket_target_w_mps=[1.8837,0.0341,0.4345] speed_racket_mps=1.9335
+2026-07-30 13:22:02.921 | INFO     | envs.hitter:_log_hitter_advance_transitions:884 - HITTER lifecycle transition: armed -> recovery
+2026-07-30 13:22:02.921 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=1 invalid_epoch=2 generation=471
+2026-07-30 13:22:03.100 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=recovery submitted=126 completed=95 failed=31 dropped=0 result_age_s=0.181 epoch=2 generation=471 policy_tts=0.000
+2026-07-30 13:22:03.587 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:03.922 | INFO     | envs.hitter:_log_hitter_advance_transitions:900 - HITTER lifecycle transition: recovery -> waiting
+2026-07-30 13:22:04.016 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:04.102 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=186 completed=95 failed=91 dropped=0 result_age_s=0.009 epoch=3 generation=709 policy_tts=0.920
+2026-07-30 13:22:04.393 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:04.732 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:05.032 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:05.106 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=277 completed=95 failed=182 dropped=0 result_age_s=0.001 epoch=3 generation=1073 policy_tts=0.920
+2026-07-30 13:22:05.285 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:05.510 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:05.774 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:06.109 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=367 completed=95 failed=272 dropped=0 result_age_s=0.002 epoch=3 generation=1434 policy_tts=0.920
+2026-07-30 13:22:06.129 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:06.413 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:06.638 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:06.899 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:07.113 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=457 completed=95 failed=362 dropped=0 result_age_s=0.005 epoch=3 generation=1794 policy_tts=0.920
+2026-07-30 13:22:07.132 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:08.116 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=547 completed=95 failed=452 dropped=0 result_age_s=0.009 epoch=3 generation=2154 policy_tts=0.920
+2026-07-30 13:22:09.119 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=638 completed=95 failed=543 dropped=0 result_age_s=0.001 epoch=3 generation=2518 policy_tts=0.920
+2026-07-30 13:22:10.122 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=728 completed=95 failed=633 dropped=0 result_age_s=0.004 epoch=3 generation=2878 policy_tts=0.920
+2026-07-30 13:22:11.126 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=818 completed=95 failed=723 dropped=0 result_age_s=0.007 epoch=3 generation=3238 policy_tts=0.920
+2026-07-30 13:22:12.129 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=908 completed=95 failed=813 dropped=0 result_age_s=0.008 epoch=3 generation=3599 policy_tts=0.920
+2026-07-30 13:22:13.132 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=999 completed=95 failed=903 dropped=0 result_age_s=0.011 epoch=3 generation=3959 policy_tts=0.920
+2026-07-30 13:22:14.136 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1089 completed=95 failed=994 dropped=0 result_age_s=0.004 epoch=3 generation=4323 policy_tts=0.920
+2026-07-30 13:22:15.139 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1179 completed=95 failed=1084 dropped=0 result_age_s=0.003 epoch=3 generation=4684 policy_tts=0.920
+2026-07-30 13:22:16.143 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1269 completed=95 failed=1174 dropped=0 result_age_s=0.005 epoch=3 generation=5045 policy_tts=0.920
+2026-07-30 13:22:17.146 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1359 completed=95 failed=1264 dropped=0 result_age_s=0.006 epoch=3 generation=5406 policy_tts=0.920
+2026-07-30 13:22:18.150 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1449 completed=95 failed=1354 dropped=0 result_age_s=0.009 epoch=3 generation=5766 policy_tts=0.920
+2026-07-30 13:22:19.153 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1540 completed=95 failed=1445 dropped=0 result_age_s=0.000 epoch=3 generation=6130 policy_tts=0.920
+2026-07-30 13:22:19.910 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03418801307678222
+2026-07-30 13:22:20.016 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08414814949035644
+2026-07-30 13:22:20.093 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05586455345153808
+2026-07-30 13:22:20.181 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06633732795715332
+2026-07-30 13:22:20.186 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1623 completed=95 failed=1520 dropped=6 result_age_s=0.019 epoch=3 generation=6418 policy_tts=0.920
+2026-07-30 13:22:20.309 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10294602394104004
+2026-07-30 13:22:20.363 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030243377685546875
+2026-07-30 13:22:20.442 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05893705368041992
+2026-07-30 13:22:20.556 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0928549575805664
+2026-07-30 13:22:20.602 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:20.607 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02931354522705078
+2026-07-30 13:22:20.664 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:20.806 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.037151794433593746
+2026-07-30 13:22:20.875 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04762123107910156
+2026-07-30 13:22:21.040 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04446003913879394
+2026-07-30 13:22:21.092 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03153298377990722
+2026-07-30 13:22:21.155 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04234502792358398
+2026-07-30 13:22:21.159 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:21.196 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1686 completed=95 failed=1580 dropped=11 result_age_s=0.003 epoch=3 generation=6598 policy_tts=0.920
+2026-07-30 13:22:21.317 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:21.647 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.048530082702636715
+2026-07-30 13:22:21.699 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.031453828811645504
+2026-07-30 13:22:21.788 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06957099914550781
+2026-07-30 13:22:21.867 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.055384140014648434
+2026-07-30 13:22:21.921 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033200960159301754
+2026-07-30 13:22:21.973 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03019378662109375
+2026-07-30 13:22:22.051 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05622933387756347
+2026-07-30 13:22:22.080 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:22.092 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020029048919677734
+2026-07-30 13:22:22.196 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1757 completed=95 failed=1640 dropped=20 result_age_s=0.019 epoch=3 generation=6800 policy_tts=0.920
+2026-07-30 13:22:22.243 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07025955200195312
+2026-07-30 13:22:22.329 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06027410507202148
+2026-07-30 13:22:22.413 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06389735221862793
+2026-07-30 13:22:22.478 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023410778045654296
+2026-07-30 13:22:22.588 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08428810119628906
+2026-07-30 13:22:22.673 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06361101150512695
+2026-07-30 13:22:22.777 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08257744789123535
+2026-07-30 13:22:22.803 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0029415893554687496
+2026-07-30 13:22:22.840 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:22.852 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.028949241638183593
+2026-07-30 13:22:22.997 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.043630342483520504
+2026-07-30 13:22:23.127 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04909704208374023
+2026-07-30 13:22:23.179 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03196738243103027
+2026-07-30 13:22:23.200 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1824 completed=95 failed=1698 dropped=31 result_age_s=0.005 epoch=3 generation=7003 policy_tts=0.920
+2026-07-30 13:22:23.791 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.049839239120483395
+2026-07-30 13:22:23.830 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017970781326293945
+2026-07-30 13:22:23.875 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023488740921020507
+2026-07-30 13:22:23.876 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:24.036 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06001494407653808
+2026-07-30 13:22:24.110 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:24.130 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.053054552078247066
+2026-07-30 13:22:24.228 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1906 completed=95 failed=1775 dropped=34 result_age_s=0.053 epoch=3 generation=7292 policy_tts=0.920
+2026-07-30 13:22:24.251 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.039870719909667965
+2026-07-30 13:22:24.412 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.1394393253326416
+2026-07-30 13:22:24.448 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014842967987060546
+2026-07-30 13:22:24.688 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03963945388793945
+2026-07-30 13:22:24.763 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05206439971923828
+2026-07-30 13:22:24.813 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02863452911376953
+2026-07-30 13:22:24.931 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09701512336730957
+2026-07-30 13:22:24.964 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:24.969 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017938356399536132
+2026-07-30 13:22:25.145 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09540460586547851
+2026-07-30 13:22:25.254 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:25.255 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08952067375183105
+2026-07-30 13:22:25.255 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=1973 completed=95 failed=1835 dropped=43 result_age_s=0.001 epoch=3 generation=7465 policy_tts=0.920
+2026-07-30 13:22:25.441 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08577559471130371
+2026-07-30 13:22:25.589 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.1207322883605957
+2026-07-30 13:22:25.613 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:861 - HITTER lifecycle transition: waiting -> tracking
+2026-07-30 13:22:25.615 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006395320892333984
+2026-07-30 13:22:25.672 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.036805372238159176
+2026-07-30 13:22:25.727 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.034156303405761715
+2026-07-30 13:22:25.750 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.003162126541137695
+2026-07-30 13:22:25.910 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:26.272 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2049 completed=97 failed=1906 dropped=46 result_age_s=0.003 epoch=3 generation=7725 policy_tts=0.920
+2026-07-30 13:22:26.529 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:27.177 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:22:27.275 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2104 completed=97 failed=1961 dropped=46 result_age_s=0.004 epoch=4 generation=7943 policy_tts=0.920
+2026-07-30 13:22:28.278 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=0.739 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:29.281 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=1.742 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:30.284 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=2.745 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:31.287 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=3.748 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:32.290 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=4.751 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:33.293 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=5.754 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:34.296 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=6.757 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:35.299 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=7.760 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:36.302 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=8.763 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:37.305 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=9.766 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:38.307 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=10.768 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:39.310 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=11.771 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:40.313 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=12.774 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:41.316 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=13.777 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:42.319 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=14.780 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:43.322 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=15.782 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:44.324 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=16.785 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:45.327 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=17.788 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:46.330 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=18.791 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:47.333 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=19.794 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:48.336 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=20.797 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:49.339 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=21.800 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:50.342 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=22.803 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:51.345 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=23.806 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:52.348 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2128 completed=97 failed=1985 dropped=46 result_age_s=24.809 epoch=4 generation=8039 policy_tts=0.920
+2026-07-30 13:22:53.282 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.050211648941040035
+2026-07-30 13:22:53.381 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07795451164245605
+2026-07-30 13:22:53.384 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2149 completed=97 failed=2001 dropped=49 result_age_s=0.013 epoch=5 generation=8096 policy_tts=0.920
+2026-07-30 13:22:53.435 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030392866134643554
+2026-07-30 13:22:53.469 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01396010398864746
+2026-07-30 13:22:53.595 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04528520584106445
+2026-07-30 13:22:53.691 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07565567970275879
+2026-07-30 13:22:53.751 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03917763710021972
+2026-07-30 13:22:53.864 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09159849166870117
+2026-07-30 13:22:53.924 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04036615371704101
+2026-07-30 13:22:53.979 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02841446876525879
+2026-07-30 13:22:54.175 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11291096687316894
+2026-07-30 13:22:54.271 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06836007118225097
+2026-07-30 13:22:54.371 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07984922409057617
+2026-07-30 13:22:54.397 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2202 completed=97 failed=2046 dropped=57 result_age_s=0.016 epoch=5 generation=8213 policy_tts=0.920
+2026-07-30 13:22:54.442 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04864666938781738
+2026-07-30 13:22:54.603 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0801434326171875
+2026-07-30 13:22:54.661 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.037308912277221676
+2026-07-30 13:22:54.721 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03943202972412109
+2026-07-30 13:22:54.803 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05685494422912597
+2026-07-30 13:22:54.867 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.036086778640747066
+2026-07-30 13:22:54.921 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033599596023559566
+2026-07-30 13:22:55.005 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06393073081970214
+2026-07-30 13:22:55.407 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2259 completed=97 failed=2094 dropped=68 result_age_s=0.188 epoch=5 generation=8386 policy_tts=0.920
+2026-07-30 13:22:56.409 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2259 completed=97 failed=2094 dropped=68 result_age_s=1.191 epoch=5 generation=8386 policy_tts=0.920
+2026-07-30 13:22:57.412 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2259 completed=97 failed=2094 dropped=68 result_age_s=2.194 epoch=5 generation=8386 policy_tts=0.920
+2026-07-30 13:22:58.415 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2259 completed=97 failed=2094 dropped=68 result_age_s=3.196 epoch=5 generation=8386 policy_tts=0.920
+2026-07-30 13:22:59.418 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2259 completed=97 failed=2094 dropped=68 result_age_s=4.199 epoch=5 generation=8386 policy_tts=0.920
+2026-07-30 13:23:00.251 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06951473236083984
+2026-07-30 13:23:00.307 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03536699295043945
+2026-07-30 13:23:00.456 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12800453186035157
+2026-07-30 13:23:00.456 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2287 completed=97 failed=2117 dropped=72 result_age_s=0.017 epoch=6 generation=8460 policy_tts=0.920
+2026-07-30 13:23:00.520 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.043764572143554684
+2026-07-30 13:23:00.803 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07923410415649414
+2026-07-30 13:23:00.910 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08694003105163574
+2026-07-30 13:23:01.034 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10335157394409179
+2026-07-30 13:23:01.095 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04096553802490234
+2026-07-30 13:23:01.186 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06904838562011718
+2026-07-30 13:23:01.227 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014684658050537109
+2026-07-30 13:23:01.469 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2352 completed=97 failed=2181 dropped=74 result_age_s=0.008 epoch=6 generation=8660 policy_tts=0.920
+2026-07-30 13:23:01.929 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05592225074768066
+2026-07-30 13:23:01.998 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.047677021026611324
+2026-07-30 13:23:02.079 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.055664997100830074
+2026-07-30 13:23:02.173 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07318900108337402
+2026-07-30 13:23:02.247 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05144522666931152
+2026-07-30 13:23:02.333 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06466362953186035
+2026-07-30 13:23:02.435 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08134506225585937
+2026-07-30 13:23:02.498 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2421 completed=97 failed=2238 dropped=85 result_age_s=0.001 epoch=6 generation=8847 policy_tts=0.920
+2026-07-30 13:23:02.499 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04430721282958984
+2026-07-30 13:23:02.689 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08418367385864257
+2026-07-30 13:23:02.768 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05842159271240234
+2026-07-30 13:23:02.841 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051557283401489254
+2026-07-30 13:23:02.884 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02135727882385254
+2026-07-30 13:23:03.085 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07917163848876953
+2026-07-30 13:23:03.137 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030959110260009765
+2026-07-30 13:23:03.214 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05717776298522949
+2026-07-30 13:23:03.288 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04955957412719726
+2026-07-30 13:23:03.378 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07028172492980957
+2026-07-30 13:23:03.500 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2486 completed=97 failed=2297 dropped=91 result_age_s=0.023 epoch=6 generation=9034 policy_tts=0.920
+2026-07-30 13:23:03.592 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.072026948928833
+2026-07-30 13:23:03.681 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06759403228759765
+2026-07-30 13:23:03.774 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06918166160583496
+2026-07-30 13:23:04.208 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05290220260620117
+2026-07-30 13:23:04.288 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.054682474136352535
+2026-07-30 13:23:04.361 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0508627700805664
+2026-07-30 13:23:04.438 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05591438293457031
+2026-07-30 13:23:04.492 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033539991378784176
+2026-07-30 13:23:04.523 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2556 completed=97 failed=2362 dropped=96 result_age_s=0.003 epoch=6 generation=9235 policy_tts=0.920
+2026-07-30 13:23:04.578 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06403897285461425
+2026-07-30 13:23:04.649 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05082128524780273
+2026-07-30 13:23:04.710 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0410051155090332
+2026-07-30 13:23:04.815 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08412549972534179
+2026-07-30 13:23:04.913 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07661865234375
+2026-07-30 13:23:05.003 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06920907974243164
+2026-07-30 13:23:05.125 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06247542381286621
+2026-07-30 13:23:05.238 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09262726783752441
+2026-07-30 13:23:05.333 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07334397315979004
+2026-07-30 13:23:05.413 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05951617240905761
+2026-07-30 13:23:05.525 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2610 completed=97 failed=2413 dropped=99 result_age_s=0.006 epoch=6 generation=9360 policy_tts=0.920
+2026-07-30 13:23:05.589 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07473323822021484
+2026-07-30 13:23:05.684 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07117889404296875
+2026-07-30 13:23:05.739 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03471062660217285
+2026-07-30 13:23:05.874 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11450312614440918
+2026-07-30 13:23:05.915 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020845632553100586
+2026-07-30 13:23:05.937 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002307634353637695
+2026-07-30 13:23:06.089 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051206331253051754
+2026-07-30 13:23:06.208 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09131715774536132
+2026-07-30 13:23:06.261 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03044245719909668
+2026-07-30 13:23:06.355 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07046506881713867
+2026-07-30 13:23:06.453 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07788870811462402
+2026-07-30 13:23:06.554 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08052990913391113
+2026-07-30 13:23:06.555 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2662 completed=97 failed=2463 dropped=101 result_age_s=0.003 epoch=6 generation=9459 policy_tts=0.920
+2026-07-30 13:23:06.603 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.027756433486938476
+2026-07-30 13:23:06.715 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030575971603393554
+2026-07-30 13:23:06.821 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08233569145202636
+2026-07-30 13:23:06.889 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.047912340164184566
+2026-07-30 13:23:06.971 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06057618141174316
+2026-07-30 13:23:07.038 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.045206766128540035
+2026-07-30 13:23:07.105 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04717848777770996
+2026-07-30 13:23:07.161 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03438876152038574
+2026-07-30 13:23:07.481 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05736992835998535
+2026-07-30 13:23:07.596 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09518454551696777
+2026-07-30 13:23:07.597 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2730 completed=97 failed=2527 dropped=105 result_age_s=0.010 epoch=6 generation=9633 policy_tts=0.920
+2026-07-30 13:23:07.678 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0610403823852539
+2026-07-30 13:23:07.801 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.1029867935180664
+2026-07-30 13:23:07.840 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017272214889526367
+2026-07-30 13:23:07.862 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0015249061584472652
+2026-07-30 13:23:08.068 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06624505996704101
+2026-07-30 13:23:08.153 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06383440971374511
+2026-07-30 13:23:08.231 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05789087295532226
+2026-07-30 13:23:08.330 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07859156608581543
+2026-07-30 13:23:08.418 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06770084381103515
+2026-07-30 13:23:08.446 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0074810791015625
+2026-07-30 13:23:08.607 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2791 completed=97 failed=2581 dropped=112 result_age_s=0.015 epoch=6 generation=9799 policy_tts=0.920
+2026-07-30 13:23:08.694 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06738279342651367
+2026-07-30 13:23:08.784 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06931326866149902
+2026-07-30 13:23:08.831 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024494152069091796
+2026-07-30 13:23:08.887 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.035418252944946285
+2026-07-30 13:23:08.948 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04073832511901855
+2026-07-30 13:23:09.041 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07195518493652343
+2026-07-30 13:23:09.191 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04653761863708496
+2026-07-30 13:23:09.254 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04358098983764648
+2026-07-30 13:23:09.297 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021700363159179687
+2026-07-30 13:23:09.416 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03724668502807617
+2026-07-30 13:23:09.457 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0209090518951416
+2026-07-30 13:23:09.602 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02108142852783203
+2026-07-30 13:23:09.633 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2859 completed=97 failed=2636 dropped=124 result_age_s=0.003 epoch=6 generation=9981 policy_tts=0.920
+2026-07-30 13:23:09.671 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.045816879272460934
+2026-07-30 13:23:09.735 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04257867813110351
+2026-07-30 13:23:09.794 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03852103233337402
+2026-07-30 13:23:09.824 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.009562711715698242
+2026-07-30 13:23:09.854 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00991938591003418
+2026-07-30 13:23:09.941 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024988393783569336
+2026-07-30 13:23:10.000 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03861401557922363
+2026-07-30 13:23:10.650 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=2938 completed=97 failed=2711 dropped=128 result_age_s=0.042 epoch=6 generation=10274 policy_tts=0.920
+2026-07-30 13:23:10.706 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06350276947021484
+2026-07-30 13:23:10.773 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04644153594970703
+2026-07-30 13:23:10.917 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.023636083602905273
+2026-07-30 13:23:10.959 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020867090225219726
+2026-07-30 13:23:10.988 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007971506118774414
+2026-07-30 13:23:11.456 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10465190887451171
+2026-07-30 13:23:11.499 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021522979736328125
+2026-07-30 13:23:11.563 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04277632713317871
+2026-07-30 13:23:11.623 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03711841583251953
+2026-07-30 13:23:11.672 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3015 completed=97 failed=2775 dropped=142 result_age_s=0.004 epoch=6 generation=10519 policy_tts=0.920
+2026-07-30 13:23:11.713 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06931946754455566
+2026-07-30 13:23:11.825 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09152005195617675
+2026-07-30 13:23:11.888 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.043220024108886715
+2026-07-30 13:23:11.959 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.045046310424804684
+2026-07-30 13:23:12.023 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04163525581359863
+2026-07-30 13:23:12.113 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06725929260253906
+2026-07-30 13:23:12.215 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05974910736083984
+2026-07-30 13:23:12.286 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04933188438415527
+2026-07-30 13:23:12.370 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06301544189453125
+2026-07-30 13:23:12.427 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.037058334350585934
+2026-07-30 13:23:12.544 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07590721130371093
+2026-07-30 13:23:12.626 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06163237571716308
+2026-07-30 13:23:12.681 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03500650405883789
+2026-07-30 13:23:12.685 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3075 completed=97 failed=2825 dropped=151 result_age_s=0.021 epoch=6 generation=10632 policy_tts=0.920
+2026-07-30 13:23:12.760 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05511830329895019
+2026-07-30 13:23:12.824 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04226301193237304
+2026-07-30 13:23:12.879 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.034044723510742184
+2026-07-30 13:23:13.076 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.035914163589477535
+2026-07-30 13:23:13.146 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.048500995635986324
+2026-07-30 13:23:13.273 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10505578994750976
+2026-07-30 13:23:13.317 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0235793399810791
+2026-07-30 13:23:13.431 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0927474308013916
+2026-07-30 13:23:13.458 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006546955108642578
+2026-07-30 13:23:13.698 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07784722328186035
+2026-07-30 13:23:13.699 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3145 completed=97 failed=2882 dropped=166 result_age_s=0.001 epoch=6 generation=10843 policy_tts=0.920
+2026-07-30 13:23:13.788 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06915877342224121
+2026-07-30 13:23:14.240 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0696000862121582
+2026-07-30 13:23:14.341 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08087037086486816
+2026-07-30 13:23:14.367 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.005453567504882812
+2026-07-30 13:23:14.545 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09528420448303222
+2026-07-30 13:23:14.607 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.041559915542602535
+2026-07-30 13:23:14.691 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06312296867370605
+2026-07-30 13:23:14.768 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3220 completed=97 failed=2952 dropped=170 result_age_s=0.018 epoch=6 generation=11062 policy_tts=0.920
+2026-07-30 13:23:14.805 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08720372200012207
+2026-07-30 13:23:14.905 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07119367599487304
+2026-07-30 13:23:15.031 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08292840003967285
+2026-07-30 13:23:15.076 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021202306747436523
+2026-07-30 13:23:15.187 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0705911922454834
+2026-07-30 13:23:15.282 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07480881690979004
+2026-07-30 13:23:15.359 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05675671577453613
+2026-07-30 13:23:15.430 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04686592102050781
+2026-07-30 13:23:15.496 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0435993480682373
+2026-07-30 13:23:15.581 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06428716659545898
+2026-07-30 13:23:15.608 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.004356842041015625
+2026-07-30 13:23:15.769 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3285 completed=97 failed=3012 dropped=176 result_age_s=0.010 epoch=6 generation=11233 policy_tts=0.920
+2026-07-30 13:23:16.269 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11845729827880859
+2026-07-30 13:23:16.344 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05473015785217285
+2026-07-30 13:23:16.379 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.014720659255981445
+2026-07-30 13:23:16.610 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0691270637512207
+2026-07-30 13:23:16.707 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07567761421203613
+2026-07-30 13:23:16.753 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.020318965911865234
+2026-07-30 13:23:16.778 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3362 completed=97 failed=3086 dropped=179 result_age_s=0.002 epoch=6 generation=11463 policy_tts=0.920
+2026-07-30 13:23:16.782 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.007362823486328125
+2026-07-30 13:23:16.913 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030140380859375
+2026-07-30 13:23:16.981 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.047326307296752926
+2026-07-30 13:23:17.045 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04268811225891113
+2026-07-30 13:23:17.112 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.042379121780395504
+2026-07-30 13:23:17.150 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017530899047851562
+2026-07-30 13:23:17.720 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04810665130615234
+2026-07-30 13:23:17.800 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.059548358917236324
+2026-07-30 13:23:17.806 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3442 completed=97 failed=3154 dropped=190 result_age_s=0.018 epoch=6 generation=11736 policy_tts=0.920
+2026-07-30 13:23:17.896 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07010267257690429
+2026-07-30 13:23:17.974 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05762408256530761
+2026-07-30 13:23:18.017 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02082322120666504
+2026-07-30 13:23:18.158 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07991860389709472
+2026-07-30 13:23:18.239 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0608870792388916
+2026-07-30 13:23:18.294 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033574800491333004
+2026-07-30 13:23:18.345 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030013303756713867
+2026-07-30 13:23:18.438 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06657288551330566
+2026-07-30 13:23:18.505 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.045931320190429684
+2026-07-30 13:23:18.556 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030240755081176757
+2026-07-30 13:23:18.640 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06389878273010254
+2026-07-30 13:23:18.671 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.009519319534301757
+2026-07-30 13:23:18.703 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012357692718505859
+2026-07-30 13:23:18.828 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10415719032287597
+2026-07-30 13:23:18.840 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3500 completed=97 failed=3200 dropped=202 result_age_s=0.011 epoch=6 generation=11845 policy_tts=0.920
+2026-07-30 13:23:18.952 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09293745040893554
+2026-07-30 13:23:19.027 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05420849800109863
+2026-07-30 13:23:19.078 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029416542053222656
+2026-07-30 13:23:19.175 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07635066986083984
+2026-07-30 13:23:19.236 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04032204627990722
+2026-07-30 13:23:19.281 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0246319580078125
+2026-07-30 13:23:19.367 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06498907089233398
+2026-07-30 13:23:19.429 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04074476242065429
+2026-07-30 13:23:19.519 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06890438079833984
+2026-07-30 13:23:19.605 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06570742607116699
+2026-07-30 13:23:19.612 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:19.650 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024799327850341796
+2026-07-30 13:23:19.813 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08166454315185546
+2026-07-30 13:23:19.885 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3558 completed=97 failed=3250 dropped=210 result_age_s=0.005 epoch=6 generation=11957 policy_tts=0.920
+2026-07-30 13:23:19.946 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11217067718505859
+2026-07-30 13:23:19.998 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03156922340393066
+2026-07-30 13:23:20.092 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06849835395812988
+2026-07-30 13:23:20.178 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06622384071350097
+2026-07-30 13:23:20.283 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08050177574157714
+2026-07-30 13:23:20.324 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:20.329 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.025953750610351562
+2026-07-30 13:23:20.478 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0682735252380371
+2026-07-30 13:23:20.567 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06841180801391601
+2026-07-30 13:23:20.636 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.048157672882080074
+2026-07-30 13:23:20.705 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.047277431488037105
+2026-07-30 13:23:20.768 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.042538146972656246
+2026-07-30 13:23:20.801 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:20.819 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030904512405395507
+2026-07-30 13:23:20.913 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3615 completed=97 failed=3303 dropped=213 result_age_s=0.025 epoch=6 generation=12072 policy_tts=0.920
+2026-07-30 13:23:20.943 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04235432624816894
+2026-07-30 13:23:21.034 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07100627899169921
+2026-07-30 13:23:21.076 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018608312606811523
+2026-07-30 13:23:21.211 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09036872863769531
+2026-07-30 13:23:21.283 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051505546569824215
+2026-07-30 13:23:21.285 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:21.650 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06581781387329101
+2026-07-30 13:23:21.678 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00840876579284668
+2026-07-30 13:23:21.919 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3693 completed=97 failed=3376 dropped=220 result_age_s=0.006 epoch=6 generation=12348 policy_tts=0.920
+2026-07-30 13:23:22.029 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04911730766296386
+2026-07-30 13:23:22.122 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07073972702026367
+2026-07-30 13:23:22.215 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07154915809631347
+2026-07-30 13:23:22.279 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04140494346618652
+2026-07-30 13:23:22.797 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:22.922 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3773 completed=97 failed=3454 dropped=222 result_age_s=0.002 epoch=6 generation=12633 policy_tts=0.920
+2026-07-30 13:23:23.456 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:23.925 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3863 completed=97 failed=3544 dropped=222 result_age_s=0.002 epoch=6 generation=12994 policy_tts=0.920
+2026-07-30 13:23:24.067 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04092095375061035
+2026-07-30 13:23:24.140 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0526320743560791
+2026-07-30 13:23:24.200 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03880641937255859
+2026-07-30 13:23:24.294 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0730938720703125
+2026-07-30 13:23:24.355 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04073236465454101
+2026-07-30 13:23:24.419 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04430673599243164
+2026-07-30 13:23:24.479 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03930685997009277
+2026-07-30 13:23:24.515 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01571033477783203
+2026-07-30 13:23:24.781 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:24.937 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=3937 completed=97 failed=3612 dropped=228 result_age_s=0.004 epoch=6 generation=13230 policy_tts=0.920
+2026-07-30 13:23:25.276 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017294387817382812
+2026-07-30 13:23:25.343 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04628346443176269
+2026-07-30 13:23:25.413 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.049839477539062496
+2026-07-30 13:23:25.448 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010331134796142578
+2026-07-30 13:23:25.481 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013069372177124023
+2026-07-30 13:23:25.593 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0910234260559082
+2026-07-30 13:23:25.648 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.031969528198242184
+2026-07-30 13:23:25.697 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.028377037048339843
+2026-07-30 13:23:25.784 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.026291112899780273
+2026-07-30 13:23:25.892 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08799860954284668
+2026-07-30 13:23:25.957 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04474041938781738
+2026-07-30 13:23:25.967 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4009 completed=97 failed=3675 dropped=236 result_age_s=0.011 epoch=6 generation=13430 policy_tts=0.920
+2026-07-30 13:23:26.035 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.047489624023437496
+2026-07-30 13:23:26.099 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04335687637329101
+2026-07-30 13:23:26.139 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:26.170 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.046592216491699215
+2026-07-30 13:23:26.647 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:26.972 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4095 completed=97 failed=3759 dropped=239 result_age_s=0.003 epoch=6 generation=13750 policy_tts=0.920
+2026-07-30 13:23:27.110 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.017582159042358398
+2026-07-30 13:23:27.700 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06762383460998535
+2026-07-30 13:23:27.784 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06378243446350097
+2026-07-30 13:23:27.868 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.058027009963989254
+2026-07-30 13:23:27.941 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.052758436203002926
+2026-07-30 13:23:27.989 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4173 completed=97 failed=3834 dropped=241 result_age_s=0.019 epoch=6 generation=13998 policy_tts=0.920
+2026-07-30 13:23:28.020 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05747077941894531
+2026-07-30 13:23:28.128 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08713744163513183
+2026-07-30 13:23:28.444 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0534868049621582
+2026-07-30 13:23:28.502 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03582523345947265
+2026-07-30 13:23:28.625 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.10235069274902343
+2026-07-30 13:23:28.758 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.11010621070861816
+2026-07-30 13:23:28.851 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07343242645263671
+2026-07-30 13:23:28.988 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0545093822479248
+2026-07-30 13:23:29.016 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4241 completed=97 failed=3896 dropped=247 result_age_s=0.010 epoch=6 generation=14176 policy_tts=0.920
+2026-07-30 13:23:29.055 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04655049324035644
+2026-07-30 13:23:29.172 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09650967597961425
+2026-07-30 13:23:29.270 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07770631790161132
+2026-07-30 13:23:29.330 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0393881607055664
+2026-07-30 13:23:29.401 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.050309400558471676
+2026-07-30 13:23:29.562 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.13983057022094728
+2026-07-30 13:23:29.647 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06554458618164062
+2026-07-30 13:23:29.709 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04109476089477539
+2026-07-30 13:23:29.766 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03659699440002441
+2026-07-30 13:23:29.861 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07493851661682129
+2026-07-30 13:23:29.922 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04079006195068359
+2026-07-30 13:23:30.008 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.058240633010864254
+2026-07-30 13:23:30.029 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4302 completed=97 failed=3948 dropped=256 result_age_s=0.013 epoch=6 generation=14285 policy_tts=0.920
+2026-07-30 13:23:30.152 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08082030296325683
+2026-07-30 13:23:30.198 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02508376121520996
+2026-07-30 13:23:30.288 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06952140808105468
+2026-07-30 13:23:30.349 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.039402227401733395
+2026-07-30 13:23:30.415 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04333541870117187
+2026-07-30 13:23:30.509 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07342360496520996
+2026-07-30 13:23:30.574 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04290173530578613
+2026-07-30 13:23:30.658 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06187055587768554
+2026-07-30 13:23:30.712 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03411601066589355
+2026-07-30 13:23:30.778 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04255078315734863
+2026-07-30 13:23:30.860 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.058808307647705074
+2026-07-30 13:23:30.931 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0491688060760498
+2026-07-30 13:23:31.021 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06910274505615234
+2026-07-30 13:23:31.067 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4361 completed=97 failed=3991 dropped=272 result_age_s=0.002 epoch=6 generation=14392 policy_tts=0.920
+2026-07-30 13:23:31.112 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07046697616577148
+2026-07-30 13:23:31.187 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05357239723205566
+2026-07-30 13:23:31.332 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04087112426757812
+2026-07-30 13:23:31.479 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08636615753173828
+2026-07-30 13:23:31.553 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.051910142898559566
+2026-07-30 13:23:32.075 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4429 completed=97 failed=4058 dropped=274 result_age_s=0.003 epoch=7 generation=14634 policy_tts=0.920
+2026-07-30 13:23:32.627 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:33.078 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4519 completed=97 failed=4148 dropped=274 result_age_s=0.004 epoch=7 generation=14995 policy_tts=0.920
+2026-07-30 13:23:33.195 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:34.081 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=tracking submitted=4609 completed=97 failed=4238 dropped=274 result_age_s=0.004 epoch=7 generation=15356 policy_tts=0.920
+2026-07-30 13:23:34.400 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0528609561920166
+2026-07-30 13:23:34.429 | INFO     | envs.hitter:_consume_hitter_planner_result:842 - HITTER command armed: epoch=7 generation=15456 type=forehand tts=0.748s
+2026-07-30 13:23:34.429 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:861 - HITTER lifecycle transition: tracking -> armed
+2026-07-30 13:23:34.509 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04400322914123535
+2026-07-30 13:23:34.568 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029389123916625976
+2026-07-30 13:23:34.707 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018831710815429687
+2026-07-30 13:23:34.735 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0036849784851074215
+2026-07-30 13:23:34.778 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0213818359375
+2026-07-30 13:23:34.815 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.015966157913208007
+2026-07-30 13:23:34.841 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.002270441055297851
+2026-07-30 13:23:35.082 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=armed submitted=4687 completed=101 failed=4304 dropped=282 result_age_s=0.006 epoch=7 generation=15632 policy_tts=0.095
+2026-07-30 13:23:35.140 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.018033008575439453
+2026-07-30 13:23:35.171 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006071071624755859
+2026-07-30 13:23:35.189 | INFO     | simulator.real_world:reset_ball_state_estimator:209 - [RealWorld] ball state estimator reset.
+2026-07-30 13:23:35.190 | INFO     | envs.hitter:_log_hitter_strike_target:613 - HITTER strike target: epoch=7 generation=15456 type=forehand v_ball_in_w_mps=[-2.0939,-0.2226,0.9318] speed_ball_in_mps=2.3026 v_ball_out_w_mps=[4.2708,1.0483,2.0095] speed_ball_out_mps=4.8350 v_racket_target_w_mps=[1.5869,0.3169,0.2687] speed_racket_mps=1.6404
+2026-07-30 13:23:35.196 | INFO     | envs.hitter:_log_hitter_advance_transitions:884 - HITTER lifecycle transition: armed -> recovery
+2026-07-30 13:23:35.205 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013594608306884765
+2026-07-30 13:23:35.353 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.026784639358520507
+2026-07-30 13:23:35.388 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.013553361892700195
+2026-07-30 13:23:35.421 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.011001806259155273
+2026-07-30 13:23:35.472 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.029906253814697265
+2026-07-30 13:23:35.509 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.016110877990722656
+2026-07-30 13:23:35.938 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021650772094726562
+2026-07-30 13:23:35.980 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021592836380004882
+2026-07-30 13:23:36.049 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04789422035217285
+2026-07-30 13:23:36.082 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.012753944396972656
+2026-07-30 13:23:36.082 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=recovery submitted=4759 completed=101 failed=4358 dropped=300 result_age_s=0.001 epoch=8 generation=15857 policy_tts=0.000
+2026-07-30 13:23:36.139 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0369009780883789
+2026-07-30 13:23:36.180 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01970789909362793
+2026-07-30 13:23:36.239 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033216457366943355
+2026-07-30 13:23:36.239 | INFO     | envs.hitter:_log_hitter_advance_transitions:900 - HITTER lifecycle transition: recovery -> waiting
+2026-07-30 13:23:36.312 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.052772026062011715
+2026-07-30 13:23:36.435 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09638069152832031
+2026-07-30 13:23:36.522 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06638262748718261
+2026-07-30 13:23:36.586 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04292676925659179
+2026-07-30 13:23:36.612 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0061018276214599605
+2026-07-30 13:23:36.925 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09199069023132324
+2026-07-30 13:23:37.021 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07329414367675781
+2026-07-30 13:23:37.085 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=4827 completed=101 failed=4421 dropped=305 result_age_s=0.002 epoch=8 generation=16027 policy_tts=0.920
+2026-07-30 13:23:37.183 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:37.679 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.033657531738281246
+2026-07-30 13:23:37.724 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.024220447540283203
+2026-07-30 13:23:37.753 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:37.754 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.00869105339050293
+2026-07-30 13:23:38.095 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=4913 completed=101 failed=4504 dropped=308 result_age_s=0.003 epoch=8 generation=16363 policy_tts=0.920
+2026-07-30 13:23:38.125 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:38.499 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0630838680267334
+2026-07-30 13:23:38.572 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.030495386123657226
+2026-07-30 13:23:38.629 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.035991888046264645
+2026-07-30 13:23:38.811 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07937548637390136
+2026-07-30 13:23:38.901 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06748173713684082
+2026-07-30 13:23:38.976 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05471179962158203
+2026-07-30 13:23:38.989 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:39.005 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.006136636734008789
+2026-07-30 13:23:39.112 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.02695272445678711
+2026-07-30 13:23:39.112 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=4987 completed=101 failed=4567 dropped=318 result_age_s=0.001 epoch=8 generation=16600 policy_tts=0.920
+2026-07-30 13:23:39.154 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.021747570037841796
+2026-07-30 13:23:39.234 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.056612710952758785
+2026-07-30 13:23:39.290 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0341694164276123
+2026-07-30 13:23:39.321 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:39.326 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01592705726623535
+2026-07-30 13:23:39.417 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.01105020523071289
+2026-07-30 13:23:39.494 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05611870765686035
+2026-07-30 13:23:39.599 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08507106781005859
+2026-07-30 13:23:39.709 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:39.710 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.09068654060363769
+2026-07-30 13:23:39.775 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:40.137 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06534431457519531
+2026-07-30 13:23:40.137 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=5058 completed=101 failed=4633 dropped=324 result_age_s=0.001 epoch=8 generation=16812 policy_tts=0.920
+2026-07-30 13:23:40.246 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.08882735252380371
+2026-07-30 13:23:40.326 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=8 invalid_epoch=9 generation=16858
+2026-07-30 13:23:40.834 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06654737472534179
+2026-07-30 13:23:40.913 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.057325105667114254
+2026-07-30 13:23:40.971 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03497336387634277
+2026-07-30 13:23:41.070 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07938931465148925
+2026-07-30 13:23:41.127 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.036559562683105465
+2026-07-30 13:23:41.154 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=5127 completed=101 failed=4695 dropped=330 result_age_s=0.000 epoch=9 generation=17013 policy_tts=0.920
+2026-07-30 13:23:41.208 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05858204841613769
+2026-07-30 13:23:41.271 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04361556053161621
+2026-07-30 13:23:41.351 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.057195644378662105
+2026-07-30 13:23:41.423 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04955194473266601
+2026-07-30 13:23:41.482 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:41.483 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03941081047058105
+2026-07-30 13:23:41.647 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06106589317321777
+2026-07-30 13:23:41.746 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07650874137878418
+2026-07-30 13:23:41.798 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.031356315612792965
+2026-07-30 13:23:41.885 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06662772178649902
+2026-07-30 13:23:42.180 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05132148742675781
+2026-07-30 13:23:42.180 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=5190 completed=101 failed=4756 dropped=333 result_age_s=0.001 epoch=9 generation=17181 policy_tts=0.920
+2026-07-30 13:23:42.667 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:43.240 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0885052490234375
+2026-07-30 13:23:43.241 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=5281 completed=101 failed=4845 dropped=334 result_age_s=0.008 epoch=9 generation=17541 policy_tts=0.920
+2026-07-30 13:23:43.288 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:43.315 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.05402682304382324
+2026-07-30 13:23:43.376 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0006460952758789058
+2026-07-30 13:23:43.520 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.12209818840026855
+2026-07-30 13:23:43.591 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:43.609 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06758735656738281
+2026-07-30 13:23:43.735 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.04408262252807617
+2026-07-30 13:23:43.795 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.03951547622680664
+2026-07-30 13:23:43.812 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:43.826 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.010682802200317382
+2026-07-30 13:23:43.989 | INFO     | simulator.real_world:_update_ball_state_from_vicon:390 - [RealWorld] Vicon ball table bounce detected; cleared polynomial fit buffer.
+2026-07-30 13:23:44.007 | INFO     | envs.hitter:_mark_hitter_track_ended:795 - HITTER track ended: ended_epoch=9 invalid_epoch=10 generation=17725
+2026-07-30 13:23:44.247 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=5355 completed=101 failed=4917 dropped=337 result_age_s=0.003 epoch=10 generation=17807 policy_tts=0.920
+2026-07-30 13:23:45.251 | INFO     | envs.hitter:_log_hitter_status:934 - HITTER realtime status: phase=waiting submitted=5445 completed=101 failed=5007 dropped=337 result_age_s=0.007 epoch=10 generation=18167 policy_tts=0.920
+2026-07-30 13:23:45.504 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.032612304687499996
+2026-07-30 13:23:45.589 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.06191871643066406
+2026-07-30 13:23:45.684 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.07409642219543457
+2026-07-30 13:23:45.738 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.0324148941040039
+2026-07-30 13:23:45.788 | WARNING  | agents.hitter_agent:run:48 - Time until next step is negative: -0.027787189483642578

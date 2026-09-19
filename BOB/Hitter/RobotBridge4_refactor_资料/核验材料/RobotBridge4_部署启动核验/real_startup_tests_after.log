@@ -1,0 +1,162 @@
+.................................................F...................... [ 59%]
+F..F.............................................                        [100%]
+=================================== FAILURES ===================================
+______ test_early_new_id_is_consumed_and_does_not_revive_after_gate_time _______
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_real_world_v2_consumer.py", line 562, in test_early_new_id_is_consumed_and_does_not_revive_after_gate_time
+    assert world.consumed_ball_track_ids == {7}
+AssertionError
+----------------------------- Captured stderr call -----------------------------
+2026-09-09 19:52:21.830 | INFO     | simulator.real_world:_ingest_vicon_v2_message:893 - Vicon root information received!
+2026-09-09 19:52:21.830 | INFO     | simulator.real_world:_ingest_vicon_v2_message:894 - Root Translation World: [0.2 0.  0.8]
+2026-09-09 19:52:21.830 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=7 state=pending admitted=false pending=true no_ball_gap_s=0.490 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-09-09 19:52:21.830 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1227 - Vicon ball information received!
+2026-09-09 19:52:21.830 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1228 - Ball Position World: [1.5 0.  1. ]
+_____ test_quarantined_new_track_cuts_old_window_without_adding_own_sample _____
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_real_world_v2_consumer.py", line 864, in test_quarantined_new_track_cuts_old_window_without_adding_own_sample
+    assert world.consumed_ball_track_ids == {8}
+AssertionError
+----------------------------- Captured stderr call -----------------------------
+2026-09-09 19:52:21.865 | INFO     | simulator.real_world:_ingest_vicon_v2_message:893 - Vicon root information received!
+2026-09-09 19:52:21.865 | INFO     | simulator.real_world:_ingest_vicon_v2_message:894 - Root Translation World: [0.2 0.  0.8]
+2026-09-09 19:52:21.865 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=7 state=admitted admitted=true pending=false no_ball_gap_s=0.500 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=none
+2026-09-09 19:52:21.865 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1227 - Vicon ball information received!
+2026-09-09 19:52:21.866 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1228 - Ball Position World: [1.5 0.  1. ]
+2026-09-09 19:52:21.866 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=8 state=pending admitted=false pending=true no_ball_gap_s=0.270 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+_______ test_every_valid_ball_clears_no_ball_timer_even_when_quarantined _______
+Traceback (most recent call last):
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "/tmp/rb4-refactor-tools/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "/tmp/rb4-refactor-tools/pluggy/_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 167, in _multicall
+    raise exception
+  File "/tmp/rb4-refactor-tools/pluggy/_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "/tmp/rb4-refactor-tools/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/home/yhl/Desktop/RobotBridge4_refactor/deploy/tests/test_real_world_v2_consumer.py", line 895, in test_every_valid_ball_clears_no_ball_timer_even_when_quarantined
+    assert 7 in world.consumed_ball_track_ids
+AssertionError
+----------------------------- Captured stderr call -----------------------------
+2026-09-09 19:52:21.870 | INFO     | simulator.real_world:_ingest_vicon_v2_message:893 - Vicon root information received!
+2026-09-09 19:52:21.870 | INFO     | simulator.real_world:_ingest_vicon_v2_message:894 - Root Translation World: [0.2 0.  0.8]
+2026-09-09 19:52:21.870 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1190 - HITTER Vicon new-track admission: track_id=7 state=pending admitted=false pending=true no_ball_gap_s=0.200 required_no_ball_s=0.500 policy_session_open=true latched_fault=none stream_fresh=true base_pose_valid=true rejection_reasons=no_ball_gap_too_short
+2026-09-09 19:52:21.870 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1227 - Vicon ball information received!
+2026-09-09 19:52:21.870 | INFO     | simulator.real_world:_update_ball_state_from_vicon:1228 - Ball Position World: [1.5 0.  1. ]
+=============================== warnings summary ===============================
+<unknown>:4
+<unknown>:4
+  <unknown>:4: DeprecationWarning: invalid escape sequence '\*'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED deploy/tests/test_real_world_v2_consumer.py::test_early_new_id_is_consumed_and_does_not_revive_after_gate_time
+FAILED deploy/tests/test_real_world_v2_consumer.py::test_quarantined_new_track_cuts_old_window_without_adding_own_sample
+FAILED deploy/tests/test_real_world_v2_consumer.py::test_every_valid_ball_clears_no_ball_timer_even_when_quarantined
+3 failed, 118 passed, 2 warnings in 1.13s

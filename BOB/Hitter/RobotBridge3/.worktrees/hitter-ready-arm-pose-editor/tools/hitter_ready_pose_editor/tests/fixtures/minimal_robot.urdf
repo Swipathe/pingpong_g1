@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<robot name="minimal">
+  <material name="fixture_gray">
+    <color rgba="0.1 0.2 0.3 0.9"/>
+  </material>
+  <link name="base_link">
+    <visual>
+      <origin xyz="0.1 0.2 0.3" rpy="0.2 0.0 -0.1"/>
+      <geometry>
+        <mesh filename="minimal_ascii.stl" scale="2 3 4"/>
+      </geometry>
+      <material name="fixture_gray"/>
+    </visual>
+  </link>
+  <link name="arm_link"/>
+  <link name="left_hand_palm_link"/>
+  <link name="right_racket_link"/>
+  <joint name="arm_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="arm_link"/>
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1" upper="2" effort="1" velocity="1"/>
+  </joint>
+  <joint name="left_hand_palm_joint" type="fixed">
+    <parent link="arm_link"/>
+    <child link="left_hand_palm_link"/>
+    <origin xyz="0.1 0.2 0" rpy="0 0 0"/>
+  </joint>
+  <joint name="right_racket_fixed_joint" type="fixed">
+    <parent link="arm_link"/>
+    <child link="right_racket_link"/>
+    <origin xyz="0.2 0 0.3" rpy="0.1 0.2 0.3"/>
+  </joint>
+</robot>

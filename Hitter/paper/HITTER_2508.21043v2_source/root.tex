@@ -1,0 +1,136 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+% \documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+\IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+%In case you encounter the following error:
+%Error 1010 The PDF file may be corrupt (unable to open PDF file) OR
+%Error 1000 An error occurred while parsing a contents stream. Unable to analyze the PDF file.
+%This is a known problem with pdfLaTeX conversion filter. The file cannot be opened with acrobat reader
+%Please use one of the alternatives below to circumvent this error by uncommenting one or the other
+%\pdfobjcompresslevel=0
+%\pdfminorversion=4
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+\usepackage{amsmath} % assumes amsmath package installed
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{makecell}
+\definecolor{myLinkColor}{HTML}{1A73E8}
+\usepackage[colorlinks=true, urlcolor=myLinkColor]{hyperref}
+\usepackage[skip=3pt, font={small}]{caption}
+\usepackage{bm}
+\usepackage{cases}
+\usepackage{balance}
+
+\newcommand{\todo}[1]{\textcolor{red}{#1}}
+\newcommand{\qy}[1]{\textcolor{blue}{#1}}
+
+\title{\LARGE \bf
+HITTER: A HumanoId Table TEnnis Robot \\ via Hierarchical Planning and Learning
+}
+
+\author{Zhi Su, Bike Zhang, Nima Rahmanian, Yuman Gao, Qiayuan Liao, Caitlin Regan,\\
+Koushil Sreenath, S. Shankar Sastry % <-this % stops a space
+\thanks{The authors are with the University of California, Berkeley.}
+}
+
+\makeatletter
+\let\@oldmaketitle\@maketitle
+\renewcommand{\@maketitle}{\@oldmaketitle
+  \vspace{0.3cm}
+  \centering
+  \setcounter{figure}{0}%
+  \begin{minipage}{\linewidth}
+    \includegraphics[width=\textwidth]{figures/teaser.png}
+    \vspace{0pt}
+    {\captionsetup{hypcap=false}%
+    \captionof{figure}{\label{fig:teaser}\textbf{Humanoid table tennis rallies.}
+    Our system enables both humanoid-humanoid (left) and humanoid-human (right)
+    matches, achieving rallies of up to 106 consecutive shots against a human
+    opponent. Project website: \href{https://humanoid-table-tennis.github.io}{humanoid-table-tennis.github.io}.}}
+  \end{minipage}
+  \vspace{0pt}
+}
+\makeatother
+
+
+\begin{document}
+
+\maketitle
+
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+Humanoid robots have recently achieved impressive progress in locomotion and whole-body control, yet they remain constrained in tasks that demand rapid interaction with dynamic environments through manipulation. Table tennis exemplifies such a challenge: with ball speeds exceeding 5\,m/s, players must perceive, predict, and act within sub-second reaction times, requiring both agility and precision. To address this, we present a hierarchical framework for humanoid table tennis that integrates a model-based planner for ball trajectory prediction and racket target planning with a reinforcement learning-based whole-body controller. The planner determines striking position, velocity and timing, while the controller generates coordinated arm and leg motions that mimic human strikes and maintain stability and agility across consecutive rallies. Moreover, to encourage natural movements, human motion references are incorporated during training. We validate our system on a general-purpose humanoid robot, achieving up to 106 consecutive shots with a human opponent and sustained exchanges against another humanoid. These results demonstrate real-world humanoid table tennis with sub-second reactive control, marking a step toward agile and interactive humanoid behaviors.
+
+
+\end{abstract}
+
+\input{sections/1_intro}
+\input{sections/2_related_work}
+\input{sections/3_system}
+\input{sections/4_planner}
+\input{sections/5_WBC}
+\input{sections/6_results}
+\input{sections/7_discussion}
+\input{sections/8_conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section*{APPENDIX}
+
+% Appendixes should appear before the acknowledgment.
+
+\section*{ACKNOWLEDGMENT}
+
+We would like to thank Zhaoming Xie and Takara Truong for their insightful discussions, and Toby Yegian for his assistance with the motion capture system. This work was performed in the FHL Vive Center for Enhanced Reality and was supported in part by The Robotics and AI Institute, NSF CMMI-2140650, and by the program ``Design of Robustly Implementable Autonomous and Intelligent Machines (TIAMAT)", Defense Advanced Research Projects Agency award number HR00112490425.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% BIBLIOGRAPHY
+{
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{bibtex}
+}
+
+\end{document}

@@ -1,0 +1,775 @@
+# Review package: 661659c68f480315d75f4395f5b1998ebb88e2b5..8366f2b3701056859ba713fe5d219225a02e303f
+
+## Commits
+8366f2b feat: align completed HITTER planner CSV rows
+
+## Files changed
+ deploy/diagnostics/export_hitter_task_csv.py | 268 +++++++++++++++++
+ deploy/tests/test_hitter_task_csv_export.py  | 414 ++++++++++++++++++++++++++-
+ 2 files changed, 681 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/deploy/diagnostics/export_hitter_task_csv.py b/deploy/diagnostics/export_hitter_task_csv.py
+index 5718372..de385b7 100644
+--- a/deploy/diagnostics/export_hitter_task_csv.py
++++ b/deploy/diagnostics/export_hitter_task_csv.py
+@@ -26,20 +26,288 @@ class CompletedPlannerCall:
+     latest_replaced_key: Optional[PlannerExportKey]
+ 
+ 
+ @dataclass(frozen=True)
+ class PlannerEventScan:
+     submitted_keys: FrozenSet[PlannerExportKey]
+     pending_replaced_keys: FrozenSet[PlannerExportKey]
+     completed_calls: Tuple[CompletedPlannerCall, ...]
+ 
+ 
++@dataclass(frozen=True)
++class AlignedPlannerRow:
++    call: CompletedPlannerCall
++    input_row: Mapping[str, Any]
++
++
++def _planner_key_csv_fields(
++    key: PlannerExportKey,
++) -> Dict[str, int]:
++    return {
++        "attempt_id": key.attempt_id,
++        "snapshot_key.schema_version": key.schema_version,
++        "snapshot_key.track_epoch": key.track_epoch,
++        "snapshot_key.generation": key.generation,
++    }
++
++
++def _compact_json(value: Any) -> str:
++    return json.dumps(
++        value,
++        allow_nan=False,
++        ensure_ascii=False,
++        separators=(",", ":"),
++        sort_keys=True,
++    )
++
++
++def _csv_value(value: Any) -> Any:
++    if isinstance(value, Mapping) or isinstance(value, (list, tuple)):
++        return _compact_json(value)
++    return value
++
++
++def _optional_planner_key_json(
++    key: Optional[PlannerExportKey],
++) -> Optional[str]:
++    if key is None:
++        return None
++    return _compact_json({
++        "attempt_id": key.attempt_id,
++        "schema_version": key.schema_version,
++        "track_epoch": key.track_epoch,
++        "generation": key.generation,
++    })
++
++
++def load_attempt_inputs(
++    session_dir: Path,
++    attempt_ids: Sequence[int],
++) -> Mapping[PlannerExportKey, Mapping[str, Any]]:
++    inputs: Dict[PlannerExportKey, Mapping[str, Any]] = {}
++    details_dir = Path(session_dir) / "attempt_details"
++    for attempt_value in attempt_ids:
++        attempt_id = int(attempt_value)
++        detail_path = details_dir / "{}.json".format(attempt_id)
++        with detail_path.open("r", encoding="utf-8") as stream:
++            detail = json.load(stream)
++        if not isinstance(detail, Mapping):
++            raise ValueError(
++                "attempt detail must be a mapping: {}".format(
++                    detail_path
++                )
++            )
++        try:
++            detail_attempt_id = int(detail["attempt_id"])
++        except (KeyError, TypeError, ValueError) as exc:
++            raise ValueError(
++                "invalid attempt detail id: {}".format(detail_path)
++            ) from exc
++        if detail_attempt_id != attempt_id:
++            raise ValueError(
++                "attempt detail id mismatch: path={}, detail={}".format(
++                    attempt_id,
++                    detail_attempt_id,
++                )
++            )
++        planner_inputs = detail.get("planner_inputs")
++        if not isinstance(planner_inputs, list):
++            raise ValueError(
++                "planner_inputs must be a list for attempt {}".format(
++                    attempt_id
++                )
++            )
++        for index, value in enumerate(planner_inputs):
++            if not isinstance(value, Mapping):
++                raise ValueError(
++                    "planner input must be a mapping: attempt={}, "
++                    "index={}".format(attempt_id, index)
++                )
++            input_row = dict(value)
++            input_attempt_value = input_row.get("attempt_id")
++            if input_attempt_value is not None:
++                try:
++                    input_attempt_id = int(input_attempt_value)
++                except (TypeError, ValueError) as exc:
++                    raise ValueError(
++                        "invalid planner input attempt_id: "
++                        "attempt={}, index={}".format(
++                            attempt_id,
++                            index,
++                        )
++                    ) from exc
++                if input_attempt_id != attempt_id:
++                    raise ValueError(
++                        "planner input attempt_id mismatch: "
++                        "path={}, input={}".format(
++                            attempt_id,
++                            input_attempt_id,
++                        )
++                    )
++            input_row["attempt_id"] = attempt_id
++            key = _planner_key(
++                attempt_id,
++                input_row.get("snapshot_key"),
++                field="planner input snapshot_key",
++            )
++            if key in inputs:
++                raise ValueError(
++                    "duplicate planner input key: {!r}".format(key)
++                )
++            for field, field_value in tuple(input_row.items()):
++                if field in ("attempt_id", "snapshot_key"):
++                    continue
++                input_row[field] = _csv_value(field_value)
++            inputs[key] = input_row
++    return inputs
++
++
++def align_completed_calls(
++    scan: PlannerEventScan,
++    inputs: Mapping[PlannerExportKey, Mapping[str, Any]],
++) -> Tuple[AlignedPlannerRow, ...]:
++    rows = []
++    seen_keys = set()
++    for call in scan.completed_calls:
++        if call.key in seen_keys:
++            raise ValueError(
++                "duplicate completed planner call key: {!r}".format(
++                    call.key
++                )
++            )
++        seen_keys.add(call.key)
++        input_row = inputs.get(call.key)
++        if input_row is None:
++            raise ValueError(
++                "completed planner call has no input: {!r}".format(
++                    call.key
++                )
++            )
++        if not isinstance(input_row, Mapping):
++            raise ValueError(
++                "planner input must be a mapping for {!r}".format(
++                    call.key
++                )
++            )
++        try:
++            input_attempt_id = int(input_row["attempt_id"])
++        except (KeyError, TypeError, ValueError) as exc:
++            raise ValueError(
++                "invalid planner input attempt_id for {!r}".format(
++                    call.key
++                )
++            ) from exc
++        if input_attempt_id != call.key.attempt_id:
++            raise ValueError(
++                "planner input attempt_id mismatch for {!r}".format(
++                    call.key
++                )
++            )
++        input_key = _planner_key(
++            input_attempt_id,
++            input_row.get("snapshot_key"),
++            field="planner input snapshot_key",
++        )
++        if input_key != call.key:
++            raise ValueError(
++                "planner input key mismatch for {!r}: {!r}".format(
++                    call.key,
++                    input_key,
++                )
++            )
++        try:
++            input_source_frame = int(input_row["source_frame"])
++        except (KeyError, TypeError, ValueError) as exc:
++            raise ValueError(
++                "invalid planner input source_frame for {!r}".format(
++                    call.key
++                )
++            ) from exc
++        if input_source_frame != call.source_frame:
++            raise ValueError(
++                "source_frame mismatch for {!r}".format(call.key)
++            )
++        rows.append(
++            AlignedPlannerRow(
++                call=call,
++                input_row=input_row,
++            )
++        )
++    return tuple(rows)
++
++
++def planner_input_csv_rows(
++    aligned: Sequence[AlignedPlannerRow],
++) -> Tuple[Mapping[str, Any], ...]:
++    rows = []
++    for aligned_row in aligned:
++        row: Dict[str, Any] = _planner_key_csv_fields(
++            aligned_row.call.key
++        )
++        for field, value in aligned_row.input_row.items():
++            if field in ("attempt_id", "snapshot_key"):
++                continue
++            row[field] = _csv_value(value)
++        rows.append(row)
++    return tuple(rows)
++
++
++def planner_call_csv_rows(
++    aligned: Sequence[AlignedPlannerRow],
++) -> Tuple[Mapping[str, Any], ...]:
++    rows = []
++    for aligned_row in aligned:
++        call = aligned_row.call
++        row: Dict[str, Any] = _planner_key_csv_fields(call.key)
++        row.update({
++            "submitted_monotonic_s": call.submitted_monotonic_s,
++            "started_monotonic_s": call.started_monotonic_s,
++            "completed_monotonic_s": call.completed_monotonic_s,
++            "duration_s": (
++                call.completed_monotonic_s
++                - call.started_monotonic_s
++            ),
++            "source_frame": call.source_frame,
++            "pending_replaced_key": _optional_planner_key_json(
++                call.pending_replaced_key
++            ),
++            "latest_replaced_key": _optional_planner_key_json(
++                call.latest_replaced_key
++            ),
++        })
++        rows.append(row)
++    return tuple(rows)
++
++
++def planner_result_csv_rows(
++    aligned: Sequence[AlignedPlannerRow],
++) -> Tuple[Mapping[str, Any], ...]:
++    rows = []
++    for aligned_row in aligned:
++        row: Dict[str, Any] = _planner_key_csv_fields(
++            aligned_row.call.key
++        )
++        for field, value in aligned_row.call.result.items():
++            if field == "snapshot_key":
++                continue
++            row[field] = _csv_value(value)
++        for field in (
++            "command_fields",
++            "reason_code",
++            "error_type",
++            "error_text",
++        ):
++            row.setdefault(field, None)
++        rows.append(row)
++    return tuple(rows)
++
++
+ def _planner_key(
+     attempt_id: int,
+     value: Any,
+     *,
+     field: str,
+ ) -> PlannerExportKey:
+     if not isinstance(value, Mapping):
+         raise ValueError("{} must be a mapping".format(field))
+     try:
+         return PlannerExportKey(
+diff --git a/deploy/tests/test_hitter_task_csv_export.py b/deploy/tests/test_hitter_task_csv_export.py
+index e91e54b..6827c7a 100644
+--- a/deploy/tests/test_hitter_task_csv_export.py
++++ b/deploy/tests/test_hitter_task_csv_export.py
+@@ -1,19 +1,22 @@
+ from __future__ import annotations
+ 
+ import copy
+ import json
+ from pathlib import Path
+ import tempfile
+ import unittest
+ 
+-from diagnostics.export_hitter_task_csv import scan_planner_events
++from diagnostics import export_hitter_task_csv as csv_export
++
++
++scan_planner_events = csv_export.scan_planner_events
+ 
+ 
+ def snapshot_key(
+     *,
+     generation: int,
+     schema_version: int = 1,
+     track_epoch: int = 1,
+ ):
+     return {
+         "schema_version": schema_version,
+@@ -192,20 +195,140 @@ def cross_attempt_pending_replacement_events():
+         planner_trace_replaced_event(
+             replaced_attempt_id=1,
+             replaced_generation=10,
+             replacing_attempt_id=2,
+             replacing_generation=11,
+             t=1.011,
+         ),
+     ]
+ 
+ 
++def export_key(
++    *,
++    generation: int,
++    attempt_id: int = 1,
++    schema_version: int = 1,
++    track_epoch: int = 1,
++):
++    return csv_export.PlannerExportKey(
++        attempt_id=attempt_id,
++        schema_version=schema_version,
++        track_epoch=track_epoch,
++        generation=generation,
++    )
++
++
++def completed_call(
++    *,
++    generation: int,
++    completed_t: float,
++    source_frame: int,
++    attempt_id: int = 1,
++    command_fields=None,
++    error_type="ValueError",
++    error_text="example rejection",
++    reason_code="PLANNER_EXCEPTION",
++    pending_replaced_key=None,
++    latest_replaced_key=None,
++):
++    key = export_key(
++        attempt_id=attempt_id,
++        generation=generation,
++    )
++    return csv_export.CompletedPlannerCall(
++        key=key,
++        submitted_monotonic_s=completed_t - 0.02,
++        started_monotonic_s=completed_t - 0.01,
++        completed_monotonic_s=completed_t,
++        source_frame=source_frame,
++        result={
++            "snapshot_key": snapshot_key(generation=generation),
++            "source_frame": source_frame,
++            "strike_deadline_monotonic_s": completed_t + 0.5,
++            "completed_monotonic_s": completed_t,
++            "command_fields": command_fields,
++            "error_type": error_type,
++            "error_text": error_text,
++            "reason_code": reason_code,
++        },
++        pending_replaced_key=pending_replaced_key,
++        latest_replaced_key=latest_replaced_key,
++    )
++
++
++def planner_scan(calls):
++    return csv_export.PlannerEventScan(
++        submitted_keys=frozenset(call.key for call in calls),
++        pending_replaced_keys=frozenset(),
++        completed_calls=tuple(calls),
++    )
++
++
++def planner_input(
++    *,
++    generation: int,
++    source_frame: int,
++    velocity_x: float,
++    attempt_id: int = 1,
++):
++    return {
++        "attempt_id": attempt_id,
++        "snapshot_key": snapshot_key(generation=generation),
++        "source_frame": source_frame,
++        "source_time_s": 100.0 + generation,
++        "received_monotonic_s": 200.0 + generation,
++        "position_w": [1.0, 2.0, 3.0],
++        "velocity_w": [velocity_x, 0.0, 0.0],
++        "base_position_w": [4.0, 5.0, 6.0],
++        "base_quaternion_xyzw": [0.0, 0.0, 0.0, 1.0],
++        "base_valid": True,
++        "visible": True,
++        "ready": True,
++    }
++
++
++def csv_keys(rows):
++    return [
++        (
++            row["attempt_id"],
++            row["snapshot_key.schema_version"],
++            row["snapshot_key.track_epoch"],
++            row["snapshot_key.generation"],
++        )
++        for row in rows
++    ]
++
++
++def write_attempt_detail(
++    session_dir: Path,
++    *,
++    attempt_id: int,
++    planner_inputs,
++    detail_attempt_id=None,
++) -> None:
++    details_dir = session_dir / "attempt_details"
++    details_dir.mkdir(parents=True, exist_ok=True)
++    value = {
++        "schema_version": 1,
++        "attempt_id": (
++            attempt_id
++            if detail_attempt_id is None
++            else detail_attempt_id
++        ),
++        "planner_inputs": planner_inputs,
++    }
++    (details_dir / "{}.json".format(attempt_id)).write_text(
++        json.dumps(value, separators=(",", ":")),
++        encoding="utf-8",
++    )
++
++
+ class PlannerEventScanTests(unittest.TestCase):
+     def test_scan_keeps_cross_attempt_pending_key_when_replacer_is_unselected(
+         self,
+     ):
+         with tempfile.TemporaryDirectory() as directory:
+             events_path = Path(directory) / "events.jsonl"
+             write_json_lines(
+                 events_path,
+                 cross_attempt_pending_replacement_events(),
+             )
+@@ -466,12 +589,301 @@ class PlannerEventScanTests(unittest.TestCase):
+             ]
+             write_json_lines(events_path, events)
+ 
+             with self.assertRaisesRegex(
+                 ValueError,
+                 "completed and pending-replaced keys overlap",
+             ):
+                 scan_planner_events(events_path, [1])
+ 
+ 
++class AlignedPlannerRowsTests(unittest.TestCase):
++    def test_three_core_tables_share_the_same_completed_key_order(self):
++        calls = (
++            completed_call(
++                generation=31,
++                completed_t=3.1,
++                source_frame=1031,
++            ),
++            completed_call(
++                generation=42,
++                completed_t=4.2,
++                source_frame=1042,
++            ),
++        )
++        inputs = {
++            export_key(generation=42): planner_input(
++                generation=42,
++                source_frame=1042,
++                velocity_x=-1.2,
++            ),
++            export_key(generation=31): planner_input(
++                generation=31,
++                source_frame=1031,
++                velocity_x=0.4,
++            ),
++        }
++
++        aligned = csv_export.align_completed_calls(
++            planner_scan(calls),
++            inputs,
++        )
++        input_rows = csv_export.planner_input_csv_rows(aligned)
++        call_rows = csv_export.planner_call_csv_rows(aligned)
++        result_rows = csv_export.planner_result_csv_rows(aligned)
++
++        expected = [(1, 1, 1, 31), (1, 1, 1, 42)]
++        self.assertEqual(csv_keys(input_rows), expected)
++        self.assertEqual(csv_keys(call_rows), expected)
++        self.assertEqual(csv_keys(result_rows), expected)
++
++    def test_core_rows_preserve_values_with_stable_compact_json(self):
++        success = completed_call(
++            generation=51,
++            completed_t=5.1,
++            source_frame=1051,
++            command_fields={
++                "strike_type": "forehand",
++                "p_base_target_xy": [0.2, -0.1],
++            },
++            error_type=None,
++            error_text=None,
++            reason_code=None,
++            pending_replaced_key=export_key(generation=50),
++            latest_replaced_key=export_key(generation=49),
++        )
++        failure = completed_call(
++            generation=52,
++            completed_t=5.2,
++            source_frame=1052,
++        )
++        failure.result["strike_deadline_monotonic_s"] = "NaN"
++        inputs = {
++            success.key: planner_input(
++                generation=51,
++                source_frame=1051,
++                velocity_x=-0.25,
++            ),
++            failure.key: planner_input(
++                generation=52,
++                source_frame=1052,
++                velocity_x=0.75,
++            ),
++        }
++
++        aligned = csv_export.align_completed_calls(
++            planner_scan((success, failure)),
++            inputs,
++        )
++        input_rows = csv_export.planner_input_csv_rows(aligned)
++        call_rows = csv_export.planner_call_csv_rows(aligned)
++        result_rows = csv_export.planner_result_csv_rows(aligned)
++
++        self.assertEqual(input_rows[0]["velocity_w"], "[-0.25,0.0,0.0]")
++        self.assertEqual(input_rows[0]["position_w"], "[1.0,2.0,3.0]")
++        self.assertEqual(call_rows[0]["source_frame"], 1051)
++        self.assertAlmostEqual(call_rows[0]["duration_s"], 0.01)
++        self.assertEqual(
++            call_rows[0]["pending_replaced_key"],
++            (
++                '{"attempt_id":1,"generation":50,"schema_version":1,'
++                '"track_epoch":1}'
++            ),
++        )
++        self.assertEqual(
++            call_rows[0]["latest_replaced_key"],
++            (
++                '{"attempt_id":1,"generation":49,"schema_version":1,'
++                '"track_epoch":1}'
++            ),
++        )
++        self.assertEqual(
++            result_rows[0]["command_fields"],
++            (
++                '{"p_base_target_xy":[0.2,-0.1],'
++                '"strike_type":"forehand"}'
++            ),
++        )
++        self.assertIsNone(result_rows[0]["reason_code"])
++        self.assertIsNone(result_rows[0]["error_type"])
++        self.assertIsNone(result_rows[0]["error_text"])
++        self.assertIsNone(result_rows[1]["command_fields"])
++        self.assertEqual(result_rows[1]["reason_code"], "PLANNER_EXCEPTION")
++        self.assertEqual(result_rows[1]["error_type"], "ValueError")
++        self.assertEqual(result_rows[1]["error_text"], "example rejection")
++        self.assertEqual(
++            result_rows[1]["strike_deadline_monotonic_s"],
++            "NaN",
++        )
++
++    def test_load_attempt_inputs_uses_detail_identity_and_compact_json(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = Path(directory)
++            input_row = planner_input(
++                generation=61,
++                source_frame=1061,
++                velocity_x=-0.125,
++            )
++            input_row.pop("attempt_id")
++            input_row["estimator_metadata"] = {
++                "zeta": [3, 2],
++                "alpha": True,
++            }
++            write_attempt_detail(
++                session_dir,
++                attempt_id=1,
++                planner_inputs=[input_row],
++            )
++
++            inputs = csv_export.load_attempt_inputs(session_dir, [1])
++
++            key = export_key(generation=61)
++            self.assertEqual(set(inputs), {key})
++            self.assertEqual(inputs[key]["attempt_id"], 1)
++            self.assertEqual(
++                inputs[key]["snapshot_key"],
++                snapshot_key(generation=61),
++            )
++            self.assertEqual(
++                inputs[key]["velocity_w"],
++                "[-0.125,0.0,0.0]",
++            )
++            self.assertEqual(
++                inputs[key]["estimator_metadata"],
++                '{"alpha":true,"zeta":[3,2]}',
++            )
++
++    def test_completed_call_without_input_is_rejected(self):
++        call = completed_call(
++            generation=9,
++            completed_t=0.9,
++            source_frame=1009,
++        )
++
++        with self.assertRaisesRegex(ValueError, "has no input"):
++            csv_export.align_completed_calls(
++                planner_scan((call,)),
++                {},
++            )
++
++    def test_duplicate_planner_input_key_is_rejected(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = Path(directory)
++            input_row = planner_input(
++                generation=9,
++                source_frame=1009,
++                velocity_x=0.2,
++            )
++            input_row.pop("attempt_id")
++            write_attempt_detail(
++                session_dir,
++                attempt_id=1,
++                planner_inputs=[input_row, copy.deepcopy(input_row)],
++            )
++
++            with self.assertRaisesRegex(
++                ValueError,
++                "duplicate planner input key",
++            ):
++                csv_export.load_attempt_inputs(session_dir, [1])
++
++    def test_source_frame_conflict_is_rejected(self):
++        call = completed_call(
++            generation=9,
++            completed_t=0.9,
++            source_frame=1009,
++        )
++        input_row = planner_input(
++            generation=9,
++            source_frame=9999,
++            velocity_x=0.2,
++        )
++
++        with self.assertRaisesRegex(ValueError, "source_frame mismatch"):
++            csv_export.align_completed_calls(
++                planner_scan((call,)),
++                {call.key: input_row},
++            )
++
++    def test_input_snapshot_key_conflict_is_rejected(self):
++        call = completed_call(
++            generation=9,
++            completed_t=0.9,
++            source_frame=1009,
++        )
++        input_row = planner_input(
++            generation=10,
++            source_frame=1009,
++            velocity_x=0.2,
++        )
++
++        with self.assertRaisesRegex(
++            ValueError,
++            "planner input key mismatch",
++        ):
++            csv_export.align_completed_calls(
++                planner_scan((call,)),
++                {call.key: input_row},
++            )
++
++    def test_input_attempt_id_conflict_is_rejected(self):
++        call = completed_call(
++            generation=9,
++            completed_t=0.9,
++            source_frame=1009,
++        )
++        input_row = planner_input(
++            attempt_id=2,
++            generation=9,
++            source_frame=1009,
++            velocity_x=0.2,
++        )
++
++        with self.assertRaisesRegex(
++            ValueError,
++            "planner input attempt_id mismatch",
++        ):
++            csv_export.align_completed_calls(
++                planner_scan((call,)),
++                {call.key: input_row},
++            )
++
++    def test_attempt_detail_identity_conflict_is_rejected(self):
++        with tempfile.TemporaryDirectory() as directory:
++            session_dir = Path(directory)
++            write_attempt_detail(
++                session_dir,
++                attempt_id=1,
++                detail_attempt_id=2,
++                planner_inputs=[],
++            )
++
++            with self.assertRaisesRegex(
++                ValueError,
++                "attempt detail id mismatch",
++            ):
++                csv_export.load_attempt_inputs(session_dir, [1])
++
++    def test_duplicate_completed_call_key_is_rejected(self):
++        call = completed_call(
++            generation=9,
++            completed_t=0.9,
++            source_frame=1009,
++        )
++        input_row = planner_input(
++            generation=9,
++            source_frame=1009,
++            velocity_x=0.2,
++        )
++
++        with self.assertRaisesRegex(
++            ValueError,
++            "duplicate completed planner call key",
++        ):
++            csv_export.align_completed_calls(
++                planner_scan((call, call)),
++                {call.key: input_row},
++            )
++
++
+ if __name__ == "__main__":
+     unittest.main()

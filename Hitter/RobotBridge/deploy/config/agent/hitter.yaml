@@ -1,0 +1,9 @@
+_target_: agents.hitter_agent.HitterAgent
+_recursive_: True
+env: ${env}
+config:
+  checkpoint: ${mimic.policy.checkpoint}
+  device: ${device}
+  startup_interp_enabled: true
+  startup_interp_seconds: 5.0
+  startup_action_clip: 10.0

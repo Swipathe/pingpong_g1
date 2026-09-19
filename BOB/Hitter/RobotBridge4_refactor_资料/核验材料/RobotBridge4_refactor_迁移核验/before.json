@@ -1,0 +1,79 @@
+[
+  {
+    "command": [
+      "readelf",
+      "-d",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2/bin/trans"
+    ],
+    "exit_code": 0,
+    "output": "\nDynamic section at offset 0x1c9c38 contains 34 entries:\n  标记        类型                         名称/值\n 0x0000000000000001 (NEEDED)             共享库：[libddsc.so.0]\n 0x0000000000000001 (NEEDED)             共享库：[libddscxx.so.0]\n 0x0000000000000001 (NEEDED)             共享库：[liblcm.so.1]\n 0x0000000000000001 (NEEDED)             共享库：[libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             共享库：[libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             共享库：[libc.so.6]\n 0x0000000000000001 (NEEDED)             共享库：[ld-linux-x86-64.so.2]\n 0x000000000000001d (RUNPATH)            Library runpath: [/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib:/home/yhl/Desktop/RobotBridge4_refactor/unitree_sdk2/thirdparty/lib/x86_64]\n 0x000000000000000c (INIT)               0x3f000\n 0x000000000000000d (FINI)               0x14ecc4\n 0x0000000000000019 (INIT_ARRAY)         0x1c1d38\n 0x000000000000001b (INIT_ARRAYSZ)       320 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x1c1e78\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x3e8\n 0x0000000000000005 (STRTAB)             0xab58\n 0x0000000000000006 (SYMTAB)             0x1e40\n 0x000000000000000a (STRSZ)              117410 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x1cae98\n 0x0000000000000002 (PLTRELSZ)           12240 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x3bfa8\n 0x0000000000000007 (RELA)               0x283a0\n 0x0000000000000008 (RELASZ)             80904 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            标志： NOW PIE\n 0x000000006ffffffe (VERNEED)            0x281c0\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x275fa\n 0x000000006ffffff9 (RELACOUNT)          2395\n 0x0000000000000000 (NULL)               0x0\n"
+  },
+  {
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/unitree_sdk2/.build-robotbridge4-v2/bin/trans"
+    ],
+    "exit_code": 0,
+    "output": "\tlinux-vdso.so.1 (0x00007ffd7b5b2000)\n\tlibddsc.so.0 => not found\n\tlibddscxx.so.0 => not found\n\tliblcm.so.1 => /home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib/liblcm.so.1 (0x00007ac33d3f2000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007ac33d000000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007ac33d3d2000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ac33cc00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007ac33d5f1000)\n\tlibglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007ac33d295000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007ac33d290000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007ac33cf19000)\n\tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007ac33cea3000)\n"
+  },
+  {
+    "command": [
+      "readelf",
+      "-d",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2"
+    ],
+    "exit_code": 0,
+    "output": "\nDynamic section at offset 0x63828 contains 33 entries:\n  标记        类型                         名称/值\n 0x0000000000000001 (NEEDED)             共享库：[libViconDataStreamSDK_CPP.so]\n 0x0000000000000001 (NEEDED)             共享库：[liblcm.so.1]\n 0x0000000000000001 (NEEDED)             共享库：[libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             共享库：[libm.so.6]\n 0x0000000000000001 (NEEDED)             共享库：[libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             共享库：[libc.so.6]\n 0x000000000000001d (RUNPATH)            Library runpath: [/home/yhl/Desktop/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64:/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib]\n 0x000000000000000c (INIT)               0x7000\n 0x000000000000000d (FINI)               0x4921c\n 0x0000000000000019 (INIT_ARRAY)         0x63d78\n 0x000000000000001b (INIT_ARRAYSZ)       32 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x63d98\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x3b0\n 0x0000000000000005 (STRTAB)             0x1920\n 0x0000000000000006 (SYMTAB)             0x528\n 0x000000000000000a (STRSZ)              8188 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x64a78\n 0x0000000000000002 (PLTRELSZ)           3624 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x6090\n 0x0000000000000007 (RELA)               0x3c48\n 0x0000000000000008 (RELASZ)             9288 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            标志： NOW PIE\n 0x000000006ffffffe (VERNEED)            0x3ac8\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x391c\n 0x000000006ffffff9 (RELACOUNT)          293\n 0x0000000000000000 (NULL)               0x0\n"
+  },
+  {
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2"
+    ],
+    "exit_code": 0,
+    "output": "\tlinux-vdso.so.1 (0x00007ffcbf683000)\n\tlibViconDataStreamSDK_CPP.so => not found\n\tliblcm.so.1 => /home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib/liblcm.so.1 (0x000075a019312000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000075a019000000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000075a018f19000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000075a0192f2000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000075a018c00000)\n\tlibglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x000075a018ac5000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x000075a0192eb000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000075a0193a6000)\n\tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x000075a019275000)\n"
+  },
+  {
+    "command": [
+      "readelf",
+      "-d",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/test_vicon_ball_track_v2"
+    ],
+    "exit_code": 0,
+    "output": "\nDynamic section at offset 0x68938 contains 31 entries:\n  标记        类型                         名称/值\n 0x0000000000000001 (NEEDED)             共享库：[libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             共享库：[libm.so.6]\n 0x0000000000000001 (NEEDED)             共享库：[libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             共享库：[libc.so.6]\n 0x000000000000001d (RUNPATH)            Library runpath: [/home/yhl/Desktop/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64:/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib]\n 0x000000000000000c (INIT)               0x7000\n 0x000000000000000d (FINI)               0x4d21c\n 0x0000000000000019 (INIT_ARRAY)         0x68e58\n 0x000000000000001b (INIT_ARRAYSZ)       32 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x68e78\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x3b0\n 0x0000000000000005 (STRTAB)             0x1578\n 0x0000000000000006 (SYMTAB)             0x510\n 0x000000000000000a (STRSZ)              6795 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x69b68\n 0x0000000000000002 (PLTRELSZ)           2856 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x56b0\n 0x0000000000000007 (RELA)               0x32c8\n 0x0000000000000008 (RELASZ)             9192 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            标志： NOW PIE\n 0x000000006ffffffe (VERNEED)            0x3168\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x3004\n 0x000000006ffffff9 (RELACOUNT)          289\n 0x0000000000000000 (NULL)               0x0\n"
+  },
+  {
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/.build-v2/test_vicon_ball_track_v2"
+    ],
+    "exit_code": 0,
+    "output": "\tlinux-vdso.so.1 (0x00007fffddffc000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007cc0b5000000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007cc0b5317000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007cc0b52f7000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007cc0b4c00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007cc0b547e000)\n"
+  },
+  {
+    "command": [
+      "readelf",
+      "-d",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/bin/vicon_frame_stream"
+    ],
+    "exit_code": 0,
+    "output": "\nDynamic section at offset 0x4c48 contains 31 entries:\n  标记        类型                         名称/值\n 0x0000000000000001 (NEEDED)             共享库：[libViconDataStreamSDK_CPP.so]\n 0x0000000000000001 (NEEDED)             共享库：[libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             共享库：[libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             共享库：[libc.so.6]\n 0x000000000000001d (RUNPATH)            Library runpath: [/home/loco1/BOB/Hitter/RobotBridge2/vicon_datastream_sdk/linux64/Linux64]\n 0x000000000000000c (INIT)               0x2000\n 0x000000000000000d (FINI)               0x3ab4\n 0x0000000000000019 (INIT_ARRAY)         0x5c30\n 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x5c40\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x3b0\n 0x0000000000000005 (STRTAB)             0x890\n 0x0000000000000006 (SYMTAB)             0x3e0\n 0x000000000000000a (STRSZ)              2102 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x5e78\n 0x0000000000000002 (PLTRELSZ)           960 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x1348\n 0x0000000000000007 (RELA)               0x1210\n 0x0000000000000008 (RELASZ)             312 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            标志： NOW PIE\n 0x000000006ffffffe (VERNEED)            0x1130\n 0x000000006fffffff (VERNEEDNUM)         3\n 0x000000006ffffff0 (VERSYM)             0x10c6\n 0x000000006ffffff9 (RELACOUNT)          4\n 0x0000000000000000 (NULL)               0x0\n"
+  },
+  {
+    "command": [
+      "ldd",
+      "/home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/bin/vicon_frame_stream"
+    ],
+    "exit_code": 0,
+    "output": "\tlinux-vdso.so.1 (0x00007ffc70532000)\n\tlibViconDataStreamSDK_CPP.so => not found\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x0000774c4de00000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x0000774c4e191000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000774c4da00000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000774c4e0aa000)\n\t/lib64/ld-linux-x86-64.so.2 (0x0000774c4e1cd000)\n"
+  },
+  {
+    "command": [
+      "bash",
+      "deploy/mocap_bridge/run_robotbridge4_vicon_real.sh",
+      "--check-only"
+    ],
+    "exit_code": 0,
+    "output": "table calibration: /home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/calibrations/vicon_table_frame_20260822_validated.json (sha256=3a7b08abd615e0fa06715c8af424b01cf346a39c0734f4e32bdf6d5d0663b649)\npelvis calibration: /home/yhl/Desktop/BOB/Hitter/RobotBridge4_refactor/deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260822_validated.json (sha256=a9f841d119ba8db531a7c463d5c7c2bcef27e747e5f62e88418531a15d9d56ee)\npolicy calibration contract: vicon_state_data_v2/G2Pelvis, center=[1.365369, 0.0], H/L/W=0.76/2.730738/1.512451\nRobotBridge4 real deployment calibration bundle: 20260822 validated\nCalibration preflight: PASS\n"
+  }
+]

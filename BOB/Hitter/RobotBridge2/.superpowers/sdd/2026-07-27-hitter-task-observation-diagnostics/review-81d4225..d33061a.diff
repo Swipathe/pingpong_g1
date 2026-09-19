@@ -1,0 +1,1406 @@
+# Review package: 81d4225..d33061a
+
+## Commits
+d33061a feat: model HITTER diagnostic attempts
+
+## Files changed
+ deploy/diagnostics/__init__.py             |   3 +
+ deploy/diagnostics/hitter_task_attempts.py | 472 +++++++++++++++++++++++++++
+ deploy/diagnostics/hitter_task_models.py   | 396 +++++++++++++++++++++++
+ deploy/tests/test_hitter_task_attempts.py  | 498 +++++++++++++++++++++++++++++
+ 4 files changed, 1369 insertions(+)
+
+## Diff
+diff --git a/deploy/diagnostics/__init__.py b/deploy/diagnostics/__init__.py
+new file mode 100644
+index 0000000..5135f56
+--- /dev/null
++++ b/deploy/diagnostics/__init__.py
+@@ -0,0 +1,3 @@
++from __future__ import annotations
++
++"""Read-only HITTER diagnostics primitives."""
+diff --git a/deploy/diagnostics/hitter_task_attempts.py b/deploy/diagnostics/hitter_task_attempts.py
+new file mode 100644
+index 0000000..73fe2de
+--- /dev/null
++++ b/deploy/diagnostics/hitter_task_attempts.py
+@@ -0,0 +1,472 @@
++from __future__ import annotations
++
++from dataclasses import dataclass, field
++from typing import Dict, List, Mapping, Optional, Tuple
++
++from diagnostics.hitter_task_models import (
++    AttemptBinding,
++    AttemptTransition,
++    JsonValue,
++    NormalizedMocapSample,
++    SnapshotKey,
++)
++
++_PLANNER_REASONS = {
++    "BALL_X_NOT_AHEAD",
++    "BALL_NOT_INCOMING",
++    "NO_DIRECTED_CROSSING",
++    "HIT_HEIGHT_OUT_OF_RANGE",
++    "NONFINITE_TRAJECTORY",
++    "MALFORMED_COMMAND",
++    "PLANNER_EXCEPTION",
++    "NO_VALID_PLAN",
++}
++
++
++@dataclass
++class _AttemptState:
++    attempt_id: int
++    ready: bool = False
++    confirmed: bool = False
++    planned: bool = False
++    armed: bool = False
++    passed: bool = False
++    late_skip: bool = False
++    last_planner_reason: Optional[str] = None
++    last_obs_failure: Optional[str] = None
++    closed: bool = False
++    timeline: List[AttemptTransition] = field(default_factory=list)
++
++
++@dataclass
++class _SegmentState:
++    attempt_id: int
++    track_segment_id: int
++    role: str
++    open: bool = True
++
++
++class AttemptTracker:
++    """Pure display grouping for production-owned snapshots and results."""
++
++    def __init__(self, *, reacquire_grace_s: float = 0.20) -> None:
++        if reacquire_grace_s < 0.0:
++            raise ValueError("reacquire_grace_s must be non-negative")
++        self._reacquire_grace_s = float(reacquire_grace_s)
++        self._next_attempt_id = 1
++        self._next_segment_id = 1
++        self._attempts: Dict[int, _AttemptState] = {}
++        self._bindings: Dict[SnapshotKey, AttemptBinding] = {}
++        self._active_attempt_id: Optional[int] = None
++        self._current_segment: Optional[_SegmentState] = None
++        self._latest_binding: Optional[AttemptBinding] = None
++        self._grace_deadline_s: Optional[float] = None
++        self._pending_reset_epoch: Optional[int] = None
++        self._pending_reset_segment: Optional[_SegmentState] = None
++        self._last_lifecycle_stage: Dict[int, str] = {}
++
++    def observe_ball_sample(
++        self,
++        sample: NormalizedMocapSample,
++        *,
++        snapshot_key: SnapshotKey,
++    ) -> Tuple[AttemptTransition, ...]:
++        """Update display grouping only; never mutate estimator/incoming/lifecycle."""
++        transitions: List[AttemptTransition] = list(
++            self._expire_grace(sample.received_monotonic_s)
++        )
++        visible = bool(sample.valid and not sample.occluded)
++        if visible:
++            if self._active_attempt_id is None:
++                self._start_attempt()
++                transitions.append(
++                    self._start_segment(
++                        snapshot_key=snapshot_key,
++                        monotonic_s=sample.received_monotonic_s,
++                    )
++                )
++            elif self._current_segment is None or not self._current_segment.open:
++                transitions.append(
++                    self._start_segment(
++                        snapshot_key=snapshot_key,
++                        monotonic_s=sample.received_monotonic_s,
++                    )
++                )
++            else:
++                self._store_binding(snapshot_key, self._current_segment)
++            self._grace_deadline_s = None
++            self._pending_reset_epoch = None
++            self._pending_reset_segment = None
++            return tuple(transitions)
++
++        if self._active_attempt_id is None:
++            return tuple(transitions)
++
++        segment = self._segment_for_invisible(snapshot_key)
++        if segment is not None:
++            self._store_binding(snapshot_key, segment)
++        if self._current_segment is not None and self._current_segment.open:
++            transitions.append(
++                self._end_segment(
++                    reason_code="BALL_INVALID_OR_OCCLUDED",
++                    monotonic_s=sample.received_monotonic_s,
++                    snapshot_key=snapshot_key,
++                )
++            )
++        return tuple(transitions)
++
++    def observe_production_reset(
++        self,
++        *,
++        previous_track_epoch: int,
++        new_track_epoch: int,
++        reason: str,
++        monotonic_s: float,
++    ) -> Tuple[AttemptTransition, ...]:
++        """End the production segment on invalid or strike-deadline reset."""
++        transitions: List[AttemptTransition] = list(self._expire_grace(monotonic_s))
++        if self._active_attempt_id is None or self._current_segment is None:
++            return tuple(transitions)
++        self._pending_reset_epoch = new_track_epoch
++        self._pending_reset_segment = self._current_segment
++        if self._current_segment.open:
++            transitions.append(
++                self._end_segment(
++                    reason_code=reason,
++                    monotonic_s=monotonic_s,
++                    snapshot_key=None,
++                    values={
++                        "previous_track_epoch": previous_track_epoch,
++                        "new_track_epoch": new_track_epoch,
++                    },
++                )
++            )
++        return tuple(transitions)
++
++    def bind_snapshot(
++        self,
++        *,
++        snapshot_key: SnapshotKey,
++    ) -> Optional[AttemptBinding]:
++        """Return exact ownership established when the snapshot was observed."""
++        return self._bindings.get(snapshot_key)
++
++    def binding_for_result(
++        self,
++        snapshot_key: SnapshotKey,
++    ) -> Optional[AttemptBinding]:
++        """Look up immutable async-result ownership."""
++        return self._bindings.get(snapshot_key)
++
++    def record_stage(
++        self,
++        *,
++        binding: AttemptBinding,
++        stage: str,
++        monotonic_s: float,
++        reason_code: Optional[str],
++        values: Mapping[str, JsonValue],
++    ) -> AttemptTransition:
++        """Append a stage/rejection without changing production state."""
++        self._validate_binding(binding)
++        transition = AttemptTransition(
++            attempt_id=binding.attempt_id,
++            track_segment_id=binding.track_segment_id,
++            stage=stage,
++            monotonic_s=monotonic_s,
++            snapshot_key=binding.snapshot_key,
++            reason_code=reason_code,
++            values=values,
++        )
++        attempt = self._attempts[binding.attempt_id]
++        attempt.timeline.append(transition)
++        self._update_progress(attempt, stage=stage, reason_code=reason_code)
++        return transition
++
++    def record_task_pass(
++        self,
++        *,
++        binding: AttemptBinding,
++        monotonic_s: float,
++    ) -> AttemptTransition:
++        """Mark first task PASS and make later reacquisition a post-deadline tail."""
++        return self.record_stage(
++            binding=binding,
++            stage="TASK_OBS_PASS",
++            monotonic_s=monotonic_s,
++            reason_code=None,
++            values={},
++        )
++
++    def record_health_warning(
++        self,
++        *,
++        reason_code: str,
++        monotonic_s: float,
++        values: Mapping[str, JsonValue],
++    ) -> Optional[AttemptTransition]:
++        """Record warning only; never open/close attempts."""
++        if self._active_attempt_id is None:
++            return None
++        segment_id = (
++            None
++            if self._current_segment is None
++            else self._current_segment.track_segment_id
++        )
++        snapshot_key = (
++            None if self._latest_binding is None else self._latest_binding.snapshot_key
++        )
++        transition = AttemptTransition(
++            attempt_id=self._active_attempt_id,
++            track_segment_id=segment_id,
++            stage="WARNING",
++            monotonic_s=monotonic_s,
++            snapshot_key=snapshot_key,
++            reason_code=reason_code,
++            values=values,
++        )
++        self._attempts[self._active_attempt_id].timeline.append(transition)
++        return transition
++
++    def set_lifecycle_context(
++        self,
++        *,
++        phase: str,
++        active_key: Optional[SnapshotKey],
++        cached_key: Optional[SnapshotKey],
++        monotonic_s: float,
++    ) -> Tuple[AttemptTransition, ...]:
++        """Project recovery/cached status onto the owning attempt."""
++        if phase.upper() != "RECOVERY" or self._active_attempt_id is None:
++            return ()
++        current_id = self._active_attempt_id
++        active = None if active_key is None else self._bindings.get(active_key)
++        cached = None if cached_key is None else self._bindings.get(cached_key)
++        if active is not None and active.attempt_id == current_id:
++            return ()
++        if cached is not None and cached.attempt_id == current_id:
++            stage = "CACHED_DURING_RECOVERY"
++            binding = cached
++        else:
++            stage = "WAITING_FOR_PREVIOUS_RECOVERY"
++            binding = self._latest_binding
++        if self._last_lifecycle_stage.get(current_id) == stage:
++            return ()
++        self._last_lifecycle_stage[current_id] = stage
++        transition = AttemptTransition(
++            attempt_id=current_id,
++            track_segment_id=(
++                None if binding is None else binding.track_segment_id
++            ),
++            stage=stage,
++            monotonic_s=monotonic_s,
++            snapshot_key=None if binding is None else binding.snapshot_key,
++            reason_code=None,
++            values={
++                "active_key": None if active_key is None else active_key.to_json_dict(),
++                "cached_key": None if cached_key is None else cached_key.to_json_dict(),
++            },
++        )
++        self._attempts[current_id].timeline.append(transition)
++        return (transition,)
++
++    def advance(
++        self,
++        *,
++        now_monotonic_s: float,
++    ) -> Tuple[AttemptTransition, ...]:
++        """Close expired reacquire grace without changing production state."""
++        return self._expire_grace(now_monotonic_s)
++
++    def _start_attempt(self) -> None:
++        attempt_id = self._next_attempt_id
++        self._next_attempt_id += 1
++        self._attempts[attempt_id] = _AttemptState(attempt_id=attempt_id)
++        self._active_attempt_id = attempt_id
++
++    def _start_segment(
++        self,
++        *,
++        snapshot_key: SnapshotKey,
++        monotonic_s: float,
++    ) -> AttemptTransition:
++        if self._active_attempt_id is None:
++            raise RuntimeError("cannot start a segment without an attempt")
++        attempt = self._attempts[self._active_attempt_id]
++        role = "POST_DEADLINE_TAIL" if attempt.passed else "PRIMARY"
++        segment = _SegmentState(
++            attempt_id=attempt.attempt_id,
++            track_segment_id=self._next_segment_id,
++            role=role,
++        )
++        self._next_segment_id += 1
++        self._current_segment = segment
++        binding = self._store_binding(snapshot_key, segment)
++        stage = "POST_DEADLINE_TAIL" if role == "POST_DEADLINE_TAIL" else "DETECTED"
++        transition = AttemptTransition(
++            attempt_id=attempt.attempt_id,
++            track_segment_id=segment.track_segment_id,
++            stage=stage,
++            monotonic_s=monotonic_s,
++            snapshot_key=snapshot_key,
++            reason_code=None,
++            values={"role": role},
++        )
++        attempt.timeline.append(transition)
++        self._latest_binding = binding
++        return transition
++
++    def _store_binding(
++        self,
++        snapshot_key: SnapshotKey,
++        segment: _SegmentState,
++    ) -> AttemptBinding:
++        existing = self._bindings.get(snapshot_key)
++        if existing is not None:
++            return existing
++        binding = AttemptBinding(
++            attempt_id=segment.attempt_id,
++            track_segment_id=segment.track_segment_id,
++            role=segment.role,
++            snapshot_key=snapshot_key,
++        )
++        self._bindings[snapshot_key] = binding
++        self._latest_binding = binding
++        return binding
++
++    def _segment_for_invisible(
++        self,
++        snapshot_key: SnapshotKey,
++    ) -> Optional[_SegmentState]:
++        if (
++            self._pending_reset_epoch == snapshot_key.track_epoch
++            and self._pending_reset_segment is not None
++        ):
++            return self._pending_reset_segment
++        return self._current_segment
++
++    def _end_segment(
++        self,
++        *,
++        reason_code: str,
++        monotonic_s: float,
++        snapshot_key: Optional[SnapshotKey],
++        values: Optional[Mapping[str, JsonValue]] = None,
++    ) -> AttemptTransition:
++        if self._current_segment is None or self._active_attempt_id is None:
++            raise RuntimeError("cannot end a missing segment")
++        self._current_segment.open = False
++        self._grace_deadline_s = monotonic_s + self._reacquire_grace_s
++        transition = AttemptTransition(
++            attempt_id=self._active_attempt_id,
++            track_segment_id=self._current_segment.track_segment_id,
++            stage="REACQUIRE_GRACE",
++            monotonic_s=monotonic_s,
++            snapshot_key=snapshot_key,
++            reason_code=reason_code,
++            values={} if values is None else values,
++        )
++        self._attempts[self._active_attempt_id].timeline.append(transition)
++        return transition
++
++    def _expire_grace(self, now_monotonic_s: float) -> Tuple[AttemptTransition, ...]:
++        if (
++            self._grace_deadline_s is None
++            or now_monotonic_s <= self._grace_deadline_s + 1.0e-12
++            or self._active_attempt_id is None
++        ):
++            return ()
++        attempt = self._attempts[self._active_attempt_id]
++        blocker = self._primary_blocker(attempt)
++        status = "SUCCESS" if blocker is None else "FAILED"
++        transition = AttemptTransition(
++            attempt_id=attempt.attempt_id,
++            track_segment_id=(
++                None
++                if self._current_segment is None
++                else self._current_segment.track_segment_id
++            ),
++            stage="ATTEMPT_CLOSED",
++            monotonic_s=now_monotonic_s,
++            snapshot_key=None,
++            reason_code=blocker,
++            values={"status": status, "primary_blocker": blocker},
++        )
++        attempt.timeline.append(transition)
++        attempt.closed = True
++        self._active_attempt_id = None
++        self._current_segment = None
++        self._latest_binding = None
++        self._grace_deadline_s = None
++        self._pending_reset_epoch = None
++        self._pending_reset_segment = None
++        return (transition,)
++
++    def _validate_binding(self, binding: AttemptBinding) -> None:
++        known = self._bindings.get(binding.snapshot_key)
++        if known != binding:
++            raise ValueError("binding does not match immutable snapshot ownership")
++
++    @staticmethod
++    def _update_progress(
++        attempt: _AttemptState,
++        *,
++        stage: str,
++        reason_code: Optional[str],
++    ) -> None:
++        normalized = stage.upper().replace("-", "_").replace(" ", "_")
++        if "ESTIMATOR_READY" in normalized or "PLANNER_READY" in normalized:
++            attempt.ready = True
++        if "INCOMING_CONFIRMED" in normalized:
++            attempt.ready = True
++            attempt.confirmed = True
++        if normalized in ("PLANNED", "PLAN_READY", "PLANNER_SUCCEEDED"):
++            attempt.ready = True
++            attempt.confirmed = True
++            attempt.planned = True
++        if normalized == "ARMED":
++            attempt.ready = True
++            attempt.confirmed = True
++            attempt.planned = True
++            attempt.armed = True
++        if normalized.endswith("TASK_OBS_PASS") or "TASK_OBS_11/11_PASS" in normalized:
++            attempt.ready = True
++            attempt.confirmed = True
++            attempt.planned = True
++            attempt.armed = True
++            attempt.passed = True
++        if normalized == "LATE_SKIP" or reason_code == "LATE_SKIP":
++            attempt.late_skip = True
++        if (
++            reason_code is not None
++            and (
++                normalized == "PLANNER_REJECTED"
++                or reason_code in _PLANNER_REASONS
++            )
++        ):
++            attempt.last_planner_reason = reason_code
++        if (
++            reason_code is not None
++            and attempt.armed
++            and (
++                normalized in ("TASK_OBS_FAILED", "OBS_VALIDATION_FAILED")
++                or reason_code.startswith("OBS_")
++            )
++        ):
++            attempt.last_obs_failure = reason_code
++
++    @staticmethod
++    def _primary_blocker(attempt: _AttemptState) -> Optional[str]:
++        if attempt.passed:
++            return None
++        if not attempt.ready:
++            return "TRACK_ENDED_BEFORE_READY"
++        if not attempt.confirmed:
++            return "TRACK_ENDED_BEFORE_CONFIRMATION"
++        if not attempt.planned:
++            return attempt.last_planner_reason or "NO_VALID_PLAN"
++        if not attempt.armed:
++            if attempt.late_skip:
++                return "LATE_SKIP"
++            return "TRACK_ENDED_BEFORE_ARM"
++        return attempt.last_obs_failure or "TASK_OBS_FAILED"
+diff --git a/deploy/diagnostics/hitter_task_models.py b/deploy/diagnostics/hitter_task_models.py
+new file mode 100644
+index 0000000..8c042ad
+--- /dev/null
++++ b/deploy/diagnostics/hitter_task_models.py
+@@ -0,0 +1,396 @@
++from __future__ import annotations
++
++from dataclasses import dataclass
++from types import MappingProxyType
++from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
++
++import numpy as np
++
++
++SCHEMA_VERSION = 1
++
++JsonScalar = Union[None, bool, int, float, str]
++JsonValue = Union[
++    JsonScalar,
++    Tuple["JsonValue", ...],
++    Mapping[str, "JsonValue"],
++]
++
++
++def freeze_json_value(value: Any) -> JsonValue:
++    """Return a detached, recursively immutable JSON-compatible value."""
++    if value is None or isinstance(value, (bool, int, float, str)):
++        return value
++    if isinstance(value, np.generic):
++        return freeze_json_value(value.item())
++    if isinstance(value, np.ndarray):
++        return freeze_json_value(value.tolist())
++    if isinstance(value, Mapping):
++        frozen: Dict[str, JsonValue] = {}
++        for key, item in value.items():
++            if not isinstance(key, str):
++                raise TypeError("JSON mapping keys must be strings")
++            frozen[key] = freeze_json_value(item)
++        return MappingProxyType(frozen)
++    if isinstance(value, (tuple, list)):
++        return tuple(freeze_json_value(item) for item in value)
++    raise TypeError("value is not JSON-compatible: {!r}".format(type(value).__name__))
++
++
++def to_builtin_json(value: Any) -> Any:
++    """Convert a frozen JSON value to fresh dict/list/scalar builtins."""
++    if value is None or isinstance(value, (bool, int, float, str)):
++        return value
++    if isinstance(value, np.generic):
++        return to_builtin_json(value.item())
++    if isinstance(value, np.ndarray):
++        return [to_builtin_json(item) for item in value.tolist()]
++    if isinstance(value, Mapping):
++        return {str(key): to_builtin_json(item) for key, item in value.items()}
++    if isinstance(value, (tuple, list)):
++        return [to_builtin_json(item) for item in value]
++    raise TypeError("value is not JSON-compatible: {!r}".format(type(value).__name__))
++
++
++def _freeze_mapping(value: Mapping[str, Any]) -> Mapping[str, JsonValue]:
++    frozen = freeze_json_value(value)
++    if not isinstance(frozen, Mapping):
++        raise TypeError("expected a mapping")
++    return frozen
++
++
++def _readonly_float64(value: np.ndarray, *, shape: Tuple[int, ...], field: str) -> np.ndarray:
++    array = np.array(value, dtype=np.float64, copy=True)
++    if array.shape != shape:
++        raise ValueError("{} must have shape {}, got {}".format(field, shape, array.shape))
++    array.setflags(write=False)
++    return array
++
++
++def _optional_key_json(value: Optional["SnapshotKey"]) -> Any:
++    return None if value is None else value.to_json_dict()
++
++
++@dataclass(frozen=True)
++class NormalizedMocapSample:
++    input_seq: int
++    channel: str
++    subject: str
++    position_w: np.ndarray
++    quaternion_xyzw: np.ndarray
++    valid: bool
++    occluded: bool
++    source_frame: int
++    source_time_s: Optional[float]
++    publish_time_us: Optional[int]
++    received_monotonic_s: float
++    wall_time_us: int
++    payload_size: int
++
++    def __post_init__(self) -> None:
++        object.__setattr__(
++            self,
++            "position_w",
++            _readonly_float64(self.position_w, shape=(3,), field="position_w"),
++        )
++        object.__setattr__(
++            self,
++            "quaternion_xyzw",
++            _readonly_float64(
++                self.quaternion_xyzw,
++                shape=(4,),
++                field="quaternion_xyzw",
++            ),
++        )
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "input_seq": self.input_seq,
++            "channel": self.channel,
++            "subject": self.subject,
++            "position_w": to_builtin_json(self.position_w),
++            "quaternion_xyzw": to_builtin_json(self.quaternion_xyzw),
++            "valid": self.valid,
++            "occluded": self.occluded,
++            "source_frame": self.source_frame,
++            "source_time_s": self.source_time_s,
++            "publish_time_us": self.publish_time_us,
++            "received_monotonic_s": self.received_monotonic_s,
++            "wall_time_us": self.wall_time_us,
++            "payload_size": self.payload_size,
++        }
++
++
++@dataclass(frozen=True, order=True)
++class SnapshotKey:
++    track_epoch: int
++    generation: int
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "track_epoch": self.track_epoch,
++            "generation": self.generation,
++        }
++
++
++@dataclass(frozen=True)
++class AttemptBinding:
++    attempt_id: int
++    track_segment_id: int
++    role: str
++    snapshot_key: SnapshotKey
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "attempt_id": self.attempt_id,
++            "track_segment_id": self.track_segment_id,
++            "role": self.role,
++            "snapshot_key": self.snapshot_key.to_json_dict(),
++        }
++
++
++@dataclass(frozen=True)
++class AttemptTransition:
++    attempt_id: int
++    track_segment_id: Optional[int]
++    stage: str
++    monotonic_s: float
++    snapshot_key: Optional[SnapshotKey]
++    reason_code: Optional[str]
++    values: Mapping[str, JsonValue]
++
++    def __post_init__(self) -> None:
++        object.__setattr__(self, "values", _freeze_mapping(self.values))
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "attempt_id": self.attempt_id,
++            "track_segment_id": self.track_segment_id,
++            "stage": self.stage,
++            "monotonic_s": self.monotonic_s,
++            "snapshot_key": _optional_key_json(self.snapshot_key),
++            "reason_code": self.reason_code,
++            "values": to_builtin_json(self.values),
++        }
++
++
++@dataclass(frozen=True)
++class EventDraft:
++    kind: str
++    monotonic_s: float
++    wall_time_us: int
++    scope: str
++    attempt_id: Optional[int]
++    payload: Mapping[str, JsonValue]
++
++    def __post_init__(self) -> None:
++        object.__setattr__(self, "payload", _freeze_mapping(self.payload))
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "kind": self.kind,
++            "monotonic_s": self.monotonic_s,
++            "wall_time_us": self.wall_time_us,
++            "scope": self.scope,
++            "attempt_id": self.attempt_id,
++            "payload": to_builtin_json(self.payload),
++        }
++
++
++@dataclass(frozen=True)
++class HealthSnapshot:
++    lcm_connected: bool
++    message_rate_hz_by_subject: Mapping[str, float]
++    message_age_s_by_subject: Mapping[str, Optional[float]]
++    source_frame_by_subject: Mapping[str, Optional[int]]
++    pelvis_valid: bool
++    pelvis_age_s: Optional[float]
++    planner_submitted: int
++    planner_completed: int
++    planner_failed: int
++    planner_dropped_pending: int
++    planner_results_overwritten_before_consume: int
++    raw_samples_dropped: int
++    recorder_event_gaps: int
++    diagnostic_events_dropped: int
++    recorder_healthy: bool
++    recording_complete: bool
++    config_name: str
++    session_basename: str
++    warnings: Tuple[str, ...]
++
++    def __post_init__(self) -> None:
++        object.__setattr__(
++            self,
++            "message_rate_hz_by_subject",
++            _freeze_mapping(self.message_rate_hz_by_subject),
++        )
++        object.__setattr__(
++            self,
++            "message_age_s_by_subject",
++            _freeze_mapping(self.message_age_s_by_subject),
++        )
++        object.__setattr__(
++            self,
++            "source_frame_by_subject",
++            _freeze_mapping(self.source_frame_by_subject),
++        )
++        object.__setattr__(self, "warnings", tuple(self.warnings))
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "lcm_connected": self.lcm_connected,
++            "message_rate_hz_by_subject": to_builtin_json(self.message_rate_hz_by_subject),
++            "message_age_s_by_subject": to_builtin_json(self.message_age_s_by_subject),
++            "source_frame_by_subject": to_builtin_json(self.source_frame_by_subject),
++            "pelvis_valid": self.pelvis_valid,
++            "pelvis_age_s": self.pelvis_age_s,
++            "planner_submitted": self.planner_submitted,
++            "planner_completed": self.planner_completed,
++            "planner_failed": self.planner_failed,
++            "planner_dropped_pending": self.planner_dropped_pending,
++            "planner_results_overwritten_before_consume": self.planner_results_overwritten_before_consume,
++            "raw_samples_dropped": self.raw_samples_dropped,
++            "recorder_event_gaps": self.recorder_event_gaps,
++            "diagnostic_events_dropped": self.diagnostic_events_dropped,
++            "recorder_healthy": self.recorder_healthy,
++            "recording_complete": self.recording_complete,
++            "config_name": self.config_name,
++            "session_basename": self.session_basename,
++            "warnings": to_builtin_json(self.warnings),
++        }
++
++
++@dataclass(frozen=True)
++class LifecycleSnapshot:
++    phase: str
++    last_decision: str
++    active_key: Optional[SnapshotKey]
++    cached_key: Optional[SnapshotKey]
++    lifecycle_now_s: Optional[float]
++    obs_now_s: Optional[float]
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "phase": self.phase,
++            "last_decision": self.last_decision,
++            "active_key": _optional_key_json(self.active_key),
++            "cached_key": _optional_key_json(self.cached_key),
++            "lifecycle_now_s": self.lifecycle_now_s,
++            "obs_now_s": self.obs_now_s,
++        }
++
++
++@dataclass(frozen=True)
++class AttemptSummary:
++    attempt_id: int
++    status: str
++    stage: str
++    primary_blocker: Optional[str]
++    ball_speed_mps: Optional[float]
++    predicted_strike_time_s: Optional[float]
++    planner_tts_s: Optional[float]
++    arm_tts_s: Optional[float]
++    task_obs_status: str
++    ab_summary: Optional[str]
++    recording_complete: bool
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "attempt_id": self.attempt_id,
++            "status": self.status,
++            "stage": self.stage,
++            "primary_blocker": self.primary_blocker,
++            "ball_speed_mps": self.ball_speed_mps,
++            "predicted_strike_time_s": self.predicted_strike_time_s,
++            "planner_tts_s": self.planner_tts_s,
++            "arm_tts_s": self.arm_tts_s,
++            "task_obs_status": self.task_obs_status,
++            "ab_summary": self.ab_summary,
++            "recording_complete": self.recording_complete,
++        }
++
++
++@dataclass(frozen=True)
++class AttemptDetail:
++    attempt_id: int
++    summary: AttemptSummary
++    segments: Tuple[Mapping[str, JsonValue], ...]
++    stage_timeline: Tuple[Mapping[str, JsonValue], ...]
++    planner_inputs: Tuple[Mapping[str, JsonValue], ...]
++    planner_results: Tuple[Mapping[str, JsonValue], ...]
++    task_observation_pre_clip: Optional[Tuple[float, ...]]
++    task_observation_post_clip: Optional[Tuple[float, ...]]
++    task_observation_clip_count: Optional[int]
++    variant_outcomes: Tuple[Mapping[str, JsonValue], ...]
++    ab_deltas: Mapping[str, JsonValue]
++
++    def __post_init__(self) -> None:
++        for field_name in (
++            "segments",
++            "stage_timeline",
++            "planner_inputs",
++            "planner_results",
++            "variant_outcomes",
++        ):
++            values = getattr(self, field_name)
++            object.__setattr__(
++                self,
++                field_name,
++                tuple(_freeze_mapping(item) for item in values),
++            )
++        if self.task_observation_pre_clip is not None:
++            object.__setattr__(
++                self,
++                "task_observation_pre_clip",
++                tuple(float(item) for item in self.task_observation_pre_clip),
++            )
++        if self.task_observation_post_clip is not None:
++            object.__setattr__(
++                self,
++                "task_observation_post_clip",
++                tuple(float(item) for item in self.task_observation_post_clip),
++            )
++        object.__setattr__(self, "ab_deltas", _freeze_mapping(self.ab_deltas))
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "attempt_id": self.attempt_id,
++            "summary": self.summary.to_json_dict(),
++            "segments": to_builtin_json(self.segments),
++            "stage_timeline": to_builtin_json(self.stage_timeline),
++            "planner_inputs": to_builtin_json(self.planner_inputs),
++            "planner_results": to_builtin_json(self.planner_results),
++            "task_observation_pre_clip": to_builtin_json(self.task_observation_pre_clip),
++            "task_observation_post_clip": to_builtin_json(self.task_observation_post_clip),
++            "task_observation_clip_count": self.task_observation_clip_count,
++            "variant_outcomes": to_builtin_json(self.variant_outcomes),
++            "ab_deltas": to_builtin_json(self.ab_deltas),
++        }
++
++
++@dataclass(frozen=True)
++class AttemptPage:
++    items: Tuple[AttemptSummary, ...]
++    has_more: bool
++    next_before: Optional[int]
++
++    def __post_init__(self) -> None:
++        object.__setattr__(self, "items", tuple(self.items))
++
++    def to_json_dict(self) -> Dict[str, Any]:
++        return {
++            "schema_version": SCHEMA_VERSION,
++            "items": [item.to_json_dict() for item in self.items],
++            "has_more": self.has_more,
++            "next_before": self.next_before,
++        }
+diff --git a/deploy/tests/test_hitter_task_attempts.py b/deploy/tests/test_hitter_task_attempts.py
+new file mode 100644
+index 0000000..2cd4b22
+--- /dev/null
++++ b/deploy/tests/test_hitter_task_attempts.py
+@@ -0,0 +1,498 @@
++from __future__ import annotations
++
++import json
++import unittest
++from dataclasses import FrozenInstanceError
++
++import numpy as np
++
++from diagnostics.hitter_task_attempts import AttemptTracker
++from diagnostics.hitter_task_models import (
++    AttemptBinding,
++    AttemptDetail,
++    AttemptPage,
++    AttemptSummary,
++    AttemptTransition,
++    EventDraft,
++    HealthSnapshot,
++    LifecycleSnapshot,
++    NormalizedMocapSample,
++    SnapshotKey,
++)
++
++
++def _sample(
++    monotonic_s: float,
++    *,
++    valid: bool = True,
++    occluded: bool = False,
++) -> NormalizedMocapSample:
++    return NormalizedMocapSample(
++        input_seq=int(monotonic_s * 1000),
++        channel="vicon_state_data",
++        subject="ball",
++        position_w=np.array([1.0, 2.0, 3.0], dtype=np.float32),
++        quaternion_xyzw=np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32),
++        valid=valid,
++        occluded=occluded,
++        source_frame=123,
++        source_time_s=None,
++        publish_time_us=None,
++        received_monotonic_s=monotonic_s,
++        wall_time_us=1_700_000_000_000_000,
++        payload_size=64,
++    )
++
++
++def _close_attempt(
++    tracker: AttemptTracker,
++    *,
++    invalid_time_s: float = 10.0,
++) -> AttemptTransition:
++    tracker.observe_ball_sample(
++        _sample(invalid_time_s, valid=False),
++        snapshot_key=SnapshotKey(2, 2),
++    )
++    transitions = tracker.advance(now_monotonic_s=invalid_time_s + 0.200001)
++    return next(item for item in transitions if item.stage == "ATTEMPT_CLOSED")
++
++
++class ImmutableModelTests(unittest.TestCase):
++    def test_mocap_arrays_are_independent_readonly_float64_and_json_round_trip(self) -> None:
++        position = np.array([1.0, 2.0, 3.0], dtype=np.float32)
++        quaternion = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
++        sample = NormalizedMocapSample(
++            input_seq=7,
++            channel="chan",
++            subject="ball",
++            position_w=position,
++            quaternion_xyzw=quaternion,
++            valid=True,
++            occluded=False,
++            source_frame=9,
++            source_time_s=None,
++            publish_time_us=None,
++            received_monotonic_s=1.25,
++            wall_time_us=99,
++            payload_size=12,
++        )
++
++        position[0] = 99.0
++        quaternion[3] = 0.0
++        self.assertEqual(sample.position_w.dtype, np.dtype(np.float64))
++        self.assertEqual(sample.quaternion_xyzw.dtype, np.dtype(np.float64))
++        self.assertFalse(sample.position_w.flags.writeable)
++        self.assertFalse(sample.quaternion_xyzw.flags.writeable)
++        np.testing.assert_array_equal(sample.position_w, [1.0, 2.0, 3.0])
++        np.testing.assert_array_equal(sample.quaternion_xyzw, [0.0, 0.0, 0.0, 1.0])
++        with self.assertRaises(ValueError):
++            sample.position_w[0] = -1.0
++
++        encoded = sample.to_json_dict()
++        self.assertEqual(encoded["schema_version"], 1)
++        self.assertIsNone(encoded["source_time_s"])
++        self.assertIsNone(encoded["publish_time_us"])
++        round_tripped = json.loads(json.dumps(encoded))
++        np.testing.assert_array_equal(
++            np.asarray(round_tripped["position_w"], dtype=np.float64),
++            sample.position_w,
++        )
++
++    def test_nested_json_values_are_deep_copied_frozen_and_explicitly_serialized(self) -> None:
++        nested = {"metrics": [1, {"reason": "warm"}]}
++        draft = EventDraft(
++            kind="progress",
++            monotonic_s=1.0,
++            wall_time_us=2,
++            scope="attempt",
++            attempt_id=3,
++            payload=nested,
++        )
++        nested["metrics"][1]["reason"] = "mutated"
++        nested["metrics"].append(2)
++
++        self.assertEqual(draft.payload["metrics"][1]["reason"], "warm")
++        with self.assertRaises(TypeError):
++            draft.payload["other"] = 1
++        with self.assertRaises(TypeError):
++            draft.payload["metrics"][1]["reason"] = "changed"
++        self.assertEqual(
++            json.loads(json.dumps(draft.to_json_dict()))["payload"],
++            {"metrics": [1, {"reason": "warm"}]},
++        )
++        with self.assertRaises(FrozenInstanceError):
++            draft.kind = "changed"
++
++    def test_all_protocol_models_emit_schema_version_one_json_values(self) -> None:
++        key = SnapshotKey(4, 5)
++        binding = AttemptBinding(1, 2, "PRIMARY", key)
++        transition = AttemptTransition(
++            attempt_id=1,
++            track_segment_id=2,
++            stage="PLANNED",
++            monotonic_s=3.0,
++            snapshot_key=key,
++            reason_code=None,
++            values={"tts_s": 0.4},
++        )
++        health = HealthSnapshot(
++            lcm_connected=True,
++            message_rate_hz_by_subject={"ball": 360.0},
++            message_age_s_by_subject={"ball": None},
++            source_frame_by_subject={"ball": 5},
++            pelvis_valid=True,
++            pelvis_age_s=None,
++            planner_submitted=1,
++            planner_completed=1,
++            planner_failed=0,
++            planner_dropped_pending=0,
++            planner_results_overwritten_before_consume=0,
++            raw_samples_dropped=0,
++            recorder_event_gaps=0,
++            diagnostic_events_dropped=0,
++            recorder_healthy=True,
++            recording_complete=True,
++            config_name="hitter",
++            session_basename="session",
++            warnings=("SOURCE_FRAME_GAP",),
++        )
++        lifecycle = LifecycleSnapshot(
++            phase="TRACKING",
++            last_decision="ACCEPTED",
++            active_key=key,
++            cached_key=None,
++            lifecycle_now_s=1.0,
++            obs_now_s=None,
++        )
++        summary = AttemptSummary(
++            attempt_id=1,
++            status="ACTIVE",
++            stage="PLANNED",
++            primary_blocker=None,
++            ball_speed_mps=4.5,
++            predicted_strike_time_s=None,
++            planner_tts_s=0.4,
++            arm_tts_s=None,
++            task_obs_status="PENDING",
++            ab_summary=None,
++            recording_complete=True,
++        )
++        detail = AttemptDetail(
++            attempt_id=1,
++            summary=summary,
++            segments=({"track_segment_id": 2},),
++            stage_timeline=(transition.to_json_dict(),),
++            planner_inputs=(),
++            planner_results=(),
++            task_observation_pre_clip=None,
++            task_observation_post_clip=None,
++            task_observation_clip_count=None,
++            variant_outcomes=(),
++            ab_deltas={},
++        )
++        page = AttemptPage(items=(summary,), has_more=False, next_before=None)
++
++        for model in (key, binding, transition, health, lifecycle, summary, detail, page):
++            payload = model.to_json_dict()
++            self.assertEqual(payload["schema_version"], 1)
++            json.dumps(payload, allow_nan=False)
++
++
++class AttemptTrackerTests(unittest.TestCase):
++    def test_visible_edges_allocate_globally_monotonic_attempt_and_segment_ids(self) -> None:
++        tracker = AttemptTracker(reacquire_grace_s=0.20)
++        key_1 = SnapshotKey(5, 31)
++        transitions = tracker.observe_ball_sample(_sample(1.0), snapshot_key=key_1)
++        self.assertEqual([item.stage for item in transitions], ["DETECTED"])
++        self.assertEqual(tracker.bind_snapshot(snapshot_key=key_1), AttemptBinding(1, 1, "PRIMARY", key_1))
++
++        tracker.observe_ball_sample(
++            _sample(1.1, valid=False),
++            snapshot_key=SnapshotKey(6, 32),
++        )
++        tracker.advance(now_monotonic_s=1.300001)
++        key_2 = SnapshotKey(7, 40)
++        tracker.observe_ball_sample(_sample(1.4), snapshot_key=key_2)
++        self.assertEqual(tracker.bind_snapshot(snapshot_key=key_2), AttemptBinding(2, 2, "PRIMARY", key_2))
++
++        tracker.observe_ball_sample(
++            _sample(1.5, valid=False),
++            snapshot_key=SnapshotKey(8, 41),
++        )
++        key_3 = SnapshotKey(8, 42)
++        tracker.observe_ball_sample(_sample(1.6), snapshot_key=key_3)
++        self.assertEqual(tracker.bind_snapshot(snapshot_key=key_3), AttemptBinding(2, 3, "PRIMARY", key_3))
++
++    def test_advanced_epoch_invalid_snapshot_stays_with_closed_segment_then_reacquires(self) -> None:
++        tracker = AttemptTracker(reacquire_grace_s=0.20)
++        visible_key = SnapshotKey(5, 31)
++        invalid_key = SnapshotKey(6, 32)
++        reacquired_key = SnapshotKey(6, 33)
++
++        tracker.observe_ball_sample(_sample(10.0), snapshot_key=visible_key)
++        invalid_events = tracker.observe_ball_sample(
++            _sample(10.1, valid=False),
++            snapshot_key=invalid_key,
++        )
++        self.assertEqual([item.stage for item in invalid_events], ["REACQUIRE_GRACE"])
++        self.assertEqual(
++            tracker.binding_for_result(invalid_key),
++            AttemptBinding(1, 1, "PRIMARY", invalid_key),
++        )
++
++        reacquired = tracker.observe_ball_sample(_sample(10.2), snapshot_key=reacquired_key)
++        self.assertEqual([item.stage for item in reacquired], ["DETECTED"])
++        self.assertEqual(
++            tracker.binding_for_result(reacquired_key),
++            AttemptBinding(1, 2, "PRIMARY", reacquired_key),
++        )
++
++    def test_production_reset_closes_display_segment_without_invoking_production(self) -> None:
++        tracker = AttemptTracker(reacquire_grace_s=0.20)
++        tracker.observe_ball_sample(_sample(4.0), snapshot_key=SnapshotKey(9, 10))
++        events = tracker.observe_production_reset(
++            previous_track_epoch=9,
++            new_track_epoch=10,
++            reason="STRIKE_DEADLINE_RESET",
++            monotonic_s=4.1,
++        )
++        self.assertEqual([item.stage for item in events], ["REACQUIRE_GRACE"])
++        invisible_key = SnapshotKey(10, 11)
++        self.assertEqual(
++            tracker.observe_ball_sample(
++                _sample(4.11, valid=False),
++                snapshot_key=invisible_key,
++            ),
++            (),
++        )
++        self.assertEqual(
++            tracker.binding_for_result(invisible_key),
++            AttemptBinding(1, 1, "PRIMARY", invisible_key),
++        )
++
++    def test_grace_deadline_is_closed_interval_and_strictly_later_closes(self) -> None:
++        tracker = AttemptTracker(reacquire_grace_s=0.20)
++        tracker.observe_ball_sample(_sample(10.0), snapshot_key=SnapshotKey(1, 1))
++        tracker.observe_ball_sample(
++            _sample(10.1, valid=False),
++            snapshot_key=SnapshotKey(2, 2),
++        )
++        self.assertEqual(tracker.advance(now_monotonic_s=10.3), ())
++        boundary_key = SnapshotKey(2, 3)
++        tracker.observe_ball_sample(_sample(10.3), snapshot_key=boundary_key)
++        self.assertEqual(
++            tracker.binding_for_result(boundary_key),
++            AttemptBinding(1, 2, "PRIMARY", boundary_key),
++        )
++
++        tracker.observe_ball_sample(
++            _sample(11.0, valid=False),
++            snapshot_key=SnapshotKey(3, 4),
++        )
++        closed = tracker.advance(now_monotonic_s=11.200001)
++        self.assertEqual([item.stage for item in closed], ["ATTEMPT_CLOSED"])
++        next_key = SnapshotKey(4, 5)
++        tracker.observe_ball_sample(_sample(11.3), snapshot_key=next_key)
++        self.assertEqual(
++            tracker.binding_for_result(next_key),
++            AttemptBinding(2, 3, "PRIMARY", next_key),
++        )
++
++    def test_passed_attempt_reacquisition_is_post_deadline_tail(self) -> None:
++        tracker = AttemptTracker()
++        first_key = SnapshotKey(1, 1)
++        tracker.observe_ball_sample(_sample(1.0), snapshot_key=first_key)
++        binding = tracker.bind_snapshot(snapshot_key=first_key)
++        self.assertIsNotNone(binding)
++        tracker.record_task_pass(binding=binding, monotonic_s=1.1)
++        tracker.observe_ball_sample(
++            _sample(1.2, valid=False),
++            snapshot_key=SnapshotKey(2, 2),
++        )
++        tail_key = SnapshotKey(2, 3)
++        events = tracker.observe_ball_sample(_sample(1.3), snapshot_key=tail_key)
++        self.assertEqual([item.stage for item in events], ["POST_DEADLINE_TAIL"])
++        self.assertEqual(
++            tracker.bind_snapshot(snapshot_key=tail_key),
++            AttemptBinding(1, 2, "POST_DEADLINE_TAIL", tail_key),
++        )
++
++    def test_health_warnings_do_not_open_close_or_change_segment(self) -> None:
++        tracker = AttemptTracker()
++        self.assertIsNone(
++            tracker.record_health_warning(
++                reason_code="LCM_HEARTBEAT_STALE",
++                monotonic_s=0.0,
++                values={},
++            )
++        )
++        key = SnapshotKey(1, 1)
++        tracker.observe_ball_sample(_sample(1.0), snapshot_key=key)
++        before = tracker.bind_snapshot(snapshot_key=key)
++        warning = tracker.record_health_warning(
++            reason_code="PELVIS_INVALID",
++            monotonic_s=1.1,
++            values={"age_s": 0.2},
++        )
++        self.assertEqual(warning.stage, "WARNING")
++        self.assertEqual(warning.reason_code, "PELVIS_INVALID")
++        later_key = SnapshotKey(1, 2)
++        tracker.observe_ball_sample(_sample(1.2), snapshot_key=later_key)
++        after = tracker.bind_snapshot(snapshot_key=later_key)
++        self.assertEqual(before.attempt_id, after.attempt_id)
++        self.assertEqual(before.track_segment_id, after.track_segment_id)
++
++    def test_recovery_projects_waiting_and_cached_onto_next_attempt(self) -> None:
++        tracker = AttemptTracker()
++        old_key = SnapshotKey(1, 1)
++        tracker.observe_ball_sample(_sample(1.0), snapshot_key=old_key)
++        tracker.observe_ball_sample(
++            _sample(1.1, valid=False),
++            snapshot_key=SnapshotKey(2, 2),
++        )
++        tracker.advance(now_monotonic_s=1.300001)
++        next_key = SnapshotKey(3, 3)
++        tracker.observe_ball_sample(_sample(1.4), snapshot_key=next_key)
++
++        waiting = tracker.set_lifecycle_context(
++            phase="RECOVERY",
++            active_key=old_key,
++            cached_key=None,
++            monotonic_s=1.5,
++        )
++        self.assertEqual([item.stage for item in waiting], ["WAITING_FOR_PREVIOUS_RECOVERY"])
++        self.assertEqual(waiting[0].attempt_id, 2)
++
++        cached = tracker.set_lifecycle_context(
++            phase="RECOVERY",
++            active_key=old_key,
++            cached_key=next_key,
++            monotonic_s=1.6,
++        )
++        self.assertEqual([item.stage for item in cached], ["CACHED_DURING_RECOVERY"])
++        self.assertEqual(cached[0].attempt_id, 2)
++
++    def test_late_result_uses_immutable_snapshot_binding_not_current_attempt(self) -> None:
++        tracker = AttemptTracker()
++        old_key = SnapshotKey(1, 10)
++        tracker.observe_ball_sample(_sample(1.0), snapshot_key=old_key)
++        old_binding = tracker.bind_snapshot(snapshot_key=old_key)
++        tracker.observe_ball_sample(
++            _sample(1.1, valid=False),
++            snapshot_key=SnapshotKey(2, 11),
++        )
++        tracker.advance(now_monotonic_s=1.300001)
++        tracker.observe_ball_sample(_sample(1.4), snapshot_key=SnapshotKey(3, 12))
++
++        self.assertEqual(tracker.binding_for_result(old_key), old_binding)
++        late = tracker.record_stage(
++            binding=old_binding,
++            stage="PLANNER_REJECTED",
++            monotonic_s=1.5,
++            reason_code="NO_DIRECTED_CROSSING",
++            values={},
++        )
++        self.assertEqual(late.attempt_id, 1)
++        self.assertEqual(late.track_segment_id, 1)
++
++    def test_primary_blocker_is_selected_from_farthest_stage(self) -> None:
++        cases = (
++            ("never_ready", (), "TRACK_ENDED_BEFORE_READY", "FAILED"),
++            (
++                "never_confirmed",
++                (("ESTIMATOR_READY", None),),
++                "TRACK_ENDED_BEFORE_CONFIRMATION",
++                "FAILED",
++            ),
++            (
++                "last_planner_reason",
++                (
++                    ("ESTIMATOR_READY", None),
++                    ("INCOMING_CONFIRMED", None),
++                    ("PLANNER_REJECTED", "NO_DIRECTED_CROSSING"),
++                ),
++                "NO_DIRECTED_CROSSING",
++                "FAILED",
++            ),
++            (
++                "fallback_no_plan",
++                (("ESTIMATOR_READY", None), ("INCOMING_CONFIRMED", None)),
++                "NO_VALID_PLAN",
++                "FAILED",
++            ),
++            (
++                "late_before_arm",
++                (
++                    ("ESTIMATOR_READY", None),
++                    ("INCOMING_CONFIRMED", None),
++                    ("PLANNED", None),
++                    ("LATE_SKIP", "LATE_SKIP"),
++                ),
++                "LATE_SKIP",
++                "FAILED",
++            ),
++            (
++                "before_arm",
++                (
++                    ("ESTIMATOR_READY", None),
++                    ("INCOMING_CONFIRMED", None),
++                    ("PLANNED", None),
++                ),
++                "TRACK_ENDED_BEFORE_ARM",
++                "FAILED",
++            ),
++            (
++                "explicit_obs_failure",
++                (
++                    ("ESTIMATOR_READY", None),
++                    ("INCOMING_CONFIRMED", None),
++                    ("PLANNED", None),
++                    ("ARMED", None),
++                    ("TASK_OBS_FAILED", "OBS_CLIPPED"),
++                ),
++                "OBS_CLIPPED",
++                "FAILED",
++            ),
++            (
++                "pass_wins",
++                (
++                    ("ESTIMATOR_READY", None),
++                    ("INCOMING_CONFIRMED", None),
++                    ("PLANNED", None),
++                    ("ARMED", None),
++                    ("TASK_OBS_PASS", None),
++                ),
++                None,
++                "SUCCESS",
++            ),
++        )
++        for name, stages, expected_blocker, expected_status in cases:
++            with self.subTest(name=name):
++                tracker = AttemptTracker()
++                key = SnapshotKey(1, 1)
++                tracker.observe_ball_sample(_sample(1.0), snapshot_key=key)
++                binding = tracker.bind_snapshot(snapshot_key=key)
++                tracker.record_health_warning(
++                    reason_code="LCM_HEARTBEAT_STALE",
++                    monotonic_s=1.01,
++                    values={},
++                )
++                for stage, reason in stages:
++                    if stage == "TASK_OBS_PASS":
++                        tracker.record_task_pass(binding=binding, monotonic_s=1.1)
++                    else:
++                        tracker.record_stage(
++                            binding=binding,
++                            stage=stage,
++                            monotonic_s=1.1,
++                            reason_code=reason,
++                            values={},
++                        )
++                closed = _close_attempt(tracker)
++                self.assertEqual(closed.reason_code, expected_blocker)
++                self.assertEqual(closed.values["primary_blocker"], expected_blocker)
++                self.assertEqual(closed.values["status"], expected_status)
++
++
++if __name__ == "__main__":
++    unittest.main()

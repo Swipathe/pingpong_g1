@@ -1,0 +1,374 @@
+# Review package: c8d59451fd7a5f371e7a1937cae5265e6c72ee9a..HEAD
+
+## Commits
+8bc598a feat: add HITTER v2 track id schema
+
+## Files changed
+ deploy/mocap_bridge/build_v2_mocap.sh              | 35 +++++++++++
+ .../tests/test_transformation_t_v2.cpp             | 31 ++++++++++
+ .../mocap_bridge/tests/test_transformation_t_v2.py | 71 ++++++++++++++++++++++
+ unitree_sdk2/lcm_types/transformation_t.hpp        | 11 +++-
+ unitree_sdk2/lcm_types/transformation_t.lcm        |  1 +
+ unitree_sdk2/lcm_types/transformation_t.py         |  9 +--
+ 6 files changed, 153 insertions(+), 5 deletions(-)
+
+## Diff
+diff --git a/deploy/mocap_bridge/build_v2_mocap.sh b/deploy/mocap_bridge/build_v2_mocap.sh
+new file mode 100644
+index 0000000..9af062e
+--- /dev/null
++++ b/deploy/mocap_bridge/build_v2_mocap.sh
+@@ -0,0 +1,35 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++ROBOTBRIDGE_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
++SDK_DIR="${ROBOTBRIDGE_DIR}/vicon_datastream_sdk/linux64/Linux64"
++UNITREE_INCLUDE_DIR="${ROBOTBRIDGE_DIR}/unitree_sdk2/include"
++UNITREE_SDK_LIB="${ROBOTBRIDGE_DIR}/unitree_sdk2/lib/x86_64/libunitree_sdk2.a"
++BUILD_DIR="${SCRIPT_DIR}/.build-v2"
++mkdir -p "${BUILD_DIR}"
++
++mapfile -t LCM_CFLAGS < <(pkg-config --cflags-only-I lcm | tr ' ' '\n' | sed '/^$/d')
++mapfile -t LCM_LIBS < <(pkg-config --libs lcm | tr ' ' '\n' | sed '/^$/d')
++
++g++ -std=c++17 -O2 -I"${ROBOTBRIDGE_DIR}" \
++  "${LCM_CFLAGS[@]}" \
++  "${SCRIPT_DIR}/tests/test_transformation_t_v2.cpp" \
++  "${LCM_LIBS[@]}" \
++  -o "${BUILD_DIR}/test_transformation_t_v2"
++
++g++ -std=c++17 -O2 -I"${SDK_DIR}" -I"${ROBOTBRIDGE_DIR}" \
++  -I"${UNITREE_INCLUDE_DIR}" "${LCM_CFLAGS[@]}" \
++  "${SCRIPT_DIR}/vicon_table_lcm_bridge.cpp" \
++  -L"${SDK_DIR}" -Wl,-rpath,"${SDK_DIR}" -lViconDataStreamSDK_CPP \
++  "${UNITREE_SDK_LIB}" "${LCM_LIBS[@]}" \
++  -o "${BUILD_DIR}/vicon_table_lcm_bridge_v2"
++
++if [[ -f "${SCRIPT_DIR}/tests/test_vicon_ball_track_v2.cpp" ]]; then
++  g++ -std=c++17 -O2 -I"${SDK_DIR}" -I"${ROBOTBRIDGE_DIR}" \
++    -I"${UNITREE_INCLUDE_DIR}" "${LCM_CFLAGS[@]}" \
++    "${SCRIPT_DIR}/tests/test_vicon_ball_track_v2.cpp" \
++    -L"${SDK_DIR}" -Wl,-rpath,"${SDK_DIR}" -lViconDataStreamSDK_CPP \
++    "${UNITREE_SDK_LIB}" "${LCM_LIBS[@]}" \
++    -o "${BUILD_DIR}/test_vicon_ball_track_v2"
++fi
+diff --git a/deploy/mocap_bridge/tests/test_transformation_t_v2.cpp b/deploy/mocap_bridge/tests/test_transformation_t_v2.cpp
+new file mode 100644
+index 0000000..04f9cc4
+--- /dev/null
++++ b/deploy/mocap_bridge/tests/test_transformation_t_v2.cpp
+@@ -0,0 +1,31 @@
++#include "unitree_sdk2/lcm_types/transformation_t.hpp"
++
++#include <iomanip>
++#include <iostream>
++#include <string>
++#include <vector>
++
++int main(int argc, char** argv) {
++  lcm_types::transformation_t msg{};
++  msg.name = "ball";
++  msg.vicon_frame_number = 41;
++  msg.vicon_time_s = 0.125;
++  msg.publish_time_us = 1700000000000000LL;
++  msg.track_id = 9001;
++  msg.valid = 1;
++  msg.occluded = 0;
++  msg.pos_vicon[0] = 0.7;
++  msg.pos_vicon[1] = -0.2;
++  msg.pos_vicon[2] = 1.0;
++  msg.quat_vicon[3] = 1.0;
++
++  std::vector<unsigned char> wire(msg.getEncodedSize());
++  if (msg.encode(wire.data(), 0, wire.size()) < 0) return 2;
++  if (argc == 2 && std::string(argv[1]) == "--emit-hex") {
++    for (unsigned char byte : wire) {
++      std::cout << std::hex << std::setw(2) << std::setfill('0') << int(byte);
++    }
++    std::cout << "\n";
++  }
++  return msg.track_id == 9001 ? 0 : 3;
++}
+diff --git a/deploy/mocap_bridge/tests/test_transformation_t_v2.py b/deploy/mocap_bridge/tests/test_transformation_t_v2.py
+new file mode 100644
+index 0000000..19ae32a
+--- /dev/null
++++ b/deploy/mocap_bridge/tests/test_transformation_t_v2.py
+@@ -0,0 +1,71 @@
++import subprocess
++from pathlib import Path
++
++import pytest
++
++from unitree_sdk2.lcm_types.transformation_t import transformation_t
++
++
++def test_new_messages_default_track_id_to_zero():
++    """A missing v2 track field would make the generated binding unusable."""
++    assert transformation_t().track_id == 0
++
++
++def test_python_round_trip_preserves_track_id():
++    """Dropping or misordering track_id on the v2 wire must be observable."""
++    msg = transformation_t()
++    msg.name = "ball"
++    msg.vicon_frame_number = 41
++    msg.vicon_time_s = 0.125
++    msg.publish_time_us = 1_700_000_000_000_000
++    msg.track_id = 9001
++    msg.valid, msg.occluded = 1, 0
++    msg.pos_vicon = [0.7, -0.2, 1.0]
++    msg.quat_vicon = [0.0, 0.0, 0.0, 1.0]
++
++    decoded = transformation_t.decode(msg.encode())
++
++    assert (
++        decoded.name,
++        decoded.vicon_frame_number,
++        decoded.vicon_time_s,
++        decoded.publish_time_us,
++        decoded.track_id,
++        decoded.valid,
++        decoded.occluded,
++        decoded.pos_vicon,
++        decoded.quat_vicon,
++    ) == (
++        "ball",
++        41,
++        0.125,
++        1_700_000_000_000_000,
++        9001,
++        1,
++        0,
++        (0.7, -0.2, 1.0),
++        (0.0, 0.0, 0.0, 1.0),
++    )
++
++
++def test_v1_payload_is_rejected_by_the_v2_fingerprint():
++    """A v1 message must fail on its known fingerprint, not a truncated body."""
++    v1_payload_bytes = bytes.fromhex("71f936e3b20f1df5") + (b"\0" * 96)
++
++    assert transformation_t._get_packed_fingerprint() != v1_payload_bytes[:8]
++    with pytest.raises(ValueError, match="Decode error"):
++        transformation_t.decode(v1_payload_bytes)
++
++
++def test_python_decodes_fixed_cpp_v2_wire_fixture():
++    """The C++ producer's fixed v2 payload must decode in the Python binding."""
++    binary = Path(__file__).parents[1] / ".build-v2" / "test_transformation_t_v2"
++    if not binary.is_file():
++        pytest.skip("C++ v2 fixture is built by build_v2_mocap.sh")
++
++    completed = subprocess.run(
++        [str(binary), "--emit-hex"], check=True, capture_output=True, text=True
++    )
++    decoded = transformation_t.decode(bytes.fromhex(completed.stdout.strip()))
++
++    assert decoded.track_id == 9001
+diff --git a/unitree_sdk2/lcm_types/transformation_t.hpp b/unitree_sdk2/lcm_types/transformation_t.hpp
+index f659ee3..20c290d 100755
+--- a/unitree_sdk2/lcm_types/transformation_t.hpp
++++ b/unitree_sdk2/lcm_types/transformation_t.hpp
+@@ -18,20 +18,22 @@ class transformation_t
+ {
+     public:
+         std::string name;
+ 
+         int64_t    vicon_frame_number;
+ 
+         double     vicon_time_s;
+ 
+         int64_t    publish_time_us;
+ 
++        int64_t    track_id;
++
+         int8_t     valid;
+ 
+         int8_t     occluded;
+ 
+         double     pos_vicon[3];
+ 
+         double     quat_vicon[4];
+ 
+     public:
+         /**
+@@ -135,20 +137,23 @@ int transformation_t::_encodeNoHash(void *buf, int offset, int maxlen) const
+ 
+     tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &this->vicon_frame_number, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->vicon_time_s, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &this->publish_time_us, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
++    tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &this->track_id, 1);
++    if(tlen < 0) return tlen; else pos += tlen;
++
+     tlen = __int8_t_encode_array(buf, offset + pos, maxlen - pos, &this->valid, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __int8_t_encode_array(buf, offset + pos, maxlen - pos, &this->occluded, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->pos_vicon[0], 3);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->quat_vicon[0], 4);
+@@ -170,20 +175,23 @@ int transformation_t::_decodeNoHash(const void *buf, int offset, int maxlen)
+ 
+     tlen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &this->vicon_frame_number, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->vicon_time_s, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &this->publish_time_us, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
++    tlen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &this->track_id, 1);
++    if(tlen < 0) return tlen; else pos += tlen;
++
+     tlen = __int8_t_decode_array(buf, offset + pos, maxlen - pos, &this->valid, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __int8_t_decode_array(buf, offset + pos, maxlen - pos, &this->occluded, 1);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->pos_vicon[0], 3);
+     if(tlen < 0) return tlen; else pos += tlen;
+ 
+     tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->quat_vicon[0], 4);
+@@ -192,26 +200,27 @@ int transformation_t::_decodeNoHash(const void *buf, int offset, int maxlen)
+     return pos;
+ }
+ 
+ int transformation_t::_getEncodedSizeNoHash() const
+ {
+     int enc_size = 0;
+     enc_size += this->name.size() + 4 + 1;
+     enc_size += __int64_t_encoded_array_size(NULL, 1);
+     enc_size += __double_encoded_array_size(NULL, 1);
+     enc_size += __int64_t_encoded_array_size(NULL, 1);
++    enc_size += __int64_t_encoded_array_size(NULL, 1);
+     enc_size += __int8_t_encoded_array_size(NULL, 1);
+     enc_size += __int8_t_encoded_array_size(NULL, 1);
+     enc_size += __double_encoded_array_size(NULL, 3);
+     enc_size += __double_encoded_array_size(NULL, 4);
+     return enc_size;
+ }
+ 
+ uint64_t transformation_t::_computeHash(const __lcm_hash_ptr *)
+ {
+-    uint64_t hash = 0xb8fc9b71d9078efaLL;
++    uint64_t hash = 0x3dd71b8c3cece0f3LL;
+     return (hash<<1) + ((hash>>63)&1);
+ }
+ 
+ }
+ 
+ #endif
+diff --git a/unitree_sdk2/lcm_types/transformation_t.lcm b/unitree_sdk2/lcm_types/transformation_t.lcm
+index 6e7829b..2ca5cc7 100755
+--- a/unitree_sdk2/lcm_types/transformation_t.lcm
++++ b/unitree_sdk2/lcm_types/transformation_t.lcm
+@@ -1,13 +1,14 @@
+ package lcm_types;
+ 
+ struct transformation_t
+ {
+     string name;
+     int64_t vicon_frame_number;
+     double vicon_time_s;
+     int64_t publish_time_us;
++    int64_t track_id;
+     int8_t valid;
+     int8_t occluded;
+     double pos_vicon[3];
+     double quat_vicon[4];
+ }
+diff --git a/unitree_sdk2/lcm_types/transformation_t.py b/unitree_sdk2/lcm_types/transformation_t.py
+index cbb4523..800cee7 100755
+--- a/unitree_sdk2/lcm_types/transformation_t.py
++++ b/unitree_sdk2/lcm_types/transformation_t.py
+@@ -3,71 +3,72 @@ This file automatically generated by lcm.
+ DO NOT MODIFY BY HAND!!!!
+ """
+ 
+ try:
+     import cStringIO.StringIO as BytesIO
+ except ImportError:
+     from io import BytesIO
+ import struct
+ 
+ class transformation_t(object):
+-    __slots__ = ["name", "vicon_frame_number", "vicon_time_s", "publish_time_us", "valid", "occluded", "pos_vicon", "quat_vicon"]
++    __slots__ = ["name", "vicon_frame_number", "vicon_time_s", "publish_time_us", "track_id", "valid", "occluded", "pos_vicon", "quat_vicon"]
+ 
+     def __init__(self):
+         self.name = ""
+         self.vicon_frame_number = 0
+         self.vicon_time_s = 0.0
+         self.publish_time_us = 0
++        self.track_id = 0
+         self.valid = 0
+         self.occluded = 0
+         self.pos_vicon = [ 0.0 for dim0 in range(3) ]
+         self.quat_vicon = [ 0.0 for dim0 in range(4) ]
+ 
+     def encode(self):
+         buf = BytesIO()
+         buf.write(transformation_t._get_packed_fingerprint())
+         self._encode_one(buf)
+         return buf.getvalue()
+ 
+     def _encode_one(self, buf):
+         __name_encoded = self.name.encode('utf-8')
+         buf.write(struct.pack('>I', len(__name_encoded)+1))
+         buf.write(__name_encoded)
+         buf.write(b"\0")
+-        buf.write(struct.pack(">qdqbb", self.vicon_frame_number, self.vicon_time_s, self.publish_time_us, self.valid, self.occluded))
++        buf.write(struct.pack(">qdqqbb", self.vicon_frame_number, self.vicon_time_s, self.publish_time_us, self.track_id, self.valid, self.occluded))
+         buf.write(struct.pack('>3d', *self.pos_vicon[:3]))
+         buf.write(struct.pack('>4d', *self.quat_vicon[:4]))
+ 
+     def decode(data):
+         if hasattr(data, 'read'):
+             buf = data
+         else:
+             buf = BytesIO(data)
+         if buf.read(8) != transformation_t._get_packed_fingerprint():
+             raise ValueError("Decode error")
+         return transformation_t._decode_one(buf)
+     decode = staticmethod(decode)
+ 
+     def _decode_one(buf):
+         self = transformation_t()
+         __name_len = struct.unpack('>I', buf.read(4))[0]
+         self.name = buf.read(__name_len)[:-1].decode('utf-8', 'replace')
+-        self.vicon_frame_number, self.vicon_time_s, self.publish_time_us, self.valid, self.occluded = struct.unpack(">qdqbb", buf.read(26))
++        self.vicon_frame_number, self.vicon_time_s, self.publish_time_us, self.track_id, self.valid, self.occluded = struct.unpack(">qdqqbb", buf.read(34))
+         self.pos_vicon = struct.unpack('>3d', buf.read(24))
+         self.quat_vicon = struct.unpack('>4d', buf.read(32))
+         return self
+     _decode_one = staticmethod(_decode_one)
+ 
+     _hash = None
+     def _get_hash_recursive(parents):
+         if transformation_t in parents: return 0
+-        tmphash = (0xb8fc9b71d9078efa) & 0xffffffffffffffff
++        tmphash = (0x3dd71b8c3cece0f3) & 0xffffffffffffffff
+         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
+         return tmphash
+     _get_hash_recursive = staticmethod(_get_hash_recursive)
+     _packed_fingerprint = None
+ 
+     def _get_packed_fingerprint():
+         if transformation_t._packed_fingerprint is None:
+             transformation_t._packed_fingerprint = struct.pack(">Q", transformation_t._get_hash_recursive([]))
+         return transformation_t._packed_fingerprint
+     _get_packed_fingerprint = staticmethod(_get_packed_fingerprint)

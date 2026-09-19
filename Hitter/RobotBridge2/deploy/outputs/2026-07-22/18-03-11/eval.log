@@ -1,0 +1,1079 @@
+2026-07-22 18:03:11.715 | INFO     | __main__:main:27 - Log saved to /home/yhl/Desktop/Hitter/RobotBridge2/deploy/outputs/2026-07-22/18-03-11/eval.log
+2026-07-22 18:03:12.646 | INFO     | utils.motion_lib.torch_humanoid_batch:<module>:41 - Using Humanoid Batch
+2026-07-22 18:03:12.801 | DEBUG    | utils.kinematics:__init__:34 - [MujocoKinematics] loaded model from ./data/assets/g1/g1_29dof_hitter_racket_table_tennis.xml
+2026-07-22 18:03:12.801 | DEBUG    | utils.kinematics:update_joint_names_subset:94 - [MujocoKinematics] set fk with 29 joints
+2026-07-22 18:03:12.801 | INFO     | simulator.base_sim:_setup:41 - Robot-level Control Frequency Set to 200.0HZ
+2026-07-22 18:03:12.801 | INFO     | simulator.base_sim:_setup:42 - Policy-level Control Frequency Set to 50.0HZ
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_pitch_joint  Default Angles -0.31200000643730164  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_roll_joint  Default Angles 0.0  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_hip_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_knee_joint  Default Angles 0.6690000295639038  P_gain 99.09842681884766  D_gain 6.308802127838135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_pitch_joint  Default Angles -0.3630000054836273  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_ankle_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_yaw_joint  Default Angles 0.0  P_gain 40.179237365722656  D_gain 2.557889938354492 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_roll_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint waist_pitch_joint  Default Angles 0.0  P_gain 28.501245498657227  D_gain 1.814445972442627 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_roll_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.802 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint left_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_pitch_joint  Default Angles 0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_roll_joint  Default Angles -0.20000000298023224  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_shoulder_yaw_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_elbow_joint  Default Angles 0.6000000238418579  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_roll_joint  Default Angles 0.0  P_gain 14.250622749328613  D_gain 0.9072229862213135 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_pitch_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:55 - Joint right_wrist_yaw_joint  Default Angles 0.0  P_gain 16.77832794189453  D_gain 1.068142056465149 
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:56 - Total Number of dof: 29
+2026-07-22 18:03:12.803 | INFO     | simulator.base_sim:_load_asset:57 - Number of Action: 29
+2026-07-22 18:03:12.897 | INFO     | simulator.mujoco:__init__:39 - Visualization Marker: True
+2026-07-22 18:03:13.363 | INFO     | utils.history_handler:__init__:19 - History Handler initialized!
+2026-07-22 18:03:13.365 | INFO     | envs.hitter:__init__:86 - HITTER ball planner configured.
+2026-07-22 18:03:13.374 | INFO     | agents.base_agent:load_onnx_policy:22 - Loading ONNX Checkpoint from ./data/model/hitter/hitter.onnx
+2026-07-22 18:03:13.374 | INFO     | envs.hitter:configure_from_modelmeta:137 - Applying HITTER joint configuration from ONNX model.
+2026-07-22 18:03:13.379 | INFO     | envs.hitter:configure_from_modelmeta:179 - HITTER policy metadata configured, 29 degrees of freedom.
+2026-07-22 18:03:13.379 | INFO     | agents.hitter_agent:load_onnx_policy:19 - HITTER policy metadata loaded. Joints: 29 Anchor body: pelvis
+2026-07-22 18:03:13.379 | INFO     | simulator.mujoco:calibrate:665 - Resetting envs with ref_dof_pos=['-0.312', '0.000', '0.000', '0.669', '-0.363', '0.000', '-0.312', '0.000', '0.000', '0.669', '-0.363', '0.000', '0.000', '0.000', '0.000', '0.200', '0.200', '0.000', '0.600', '0.000', '0.000', '0.000', '0.200', '-0.200', '0.000', '0.600', '0.000', '0.000', '0.000']
+2026-07-22 18:03:13.380 | INFO     | envs.hitter:_capture_hitter_waiting_base_target:444 - HITTER waiting base target captured at world position [-0.4000000059604645, 0.0, 0.7929999828338623].
+2026-07-22 18:03:13.381 | INFO     | envs.base_env:_update_obs:92 - Receive observation: ['actions', 'root_quat', 'root_rpy', 'base_ang_vel', 'base_lin_vel', 'dof_pos', 'dof_vel', 'projected_gravity']
+2026-07-22 18:03:13.407 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:13.709 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=2 generation=16 type=backhand tts=0.904s
+2026-07-22 18:03:13.709 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:13.727 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=17 type=backhand tts=0.873s
+2026-07-22 18:03:13.747 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=18 type=backhand tts=0.848s
+2026-07-22 18:03:13.765 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=19 type=backhand tts=0.823s
+2026-07-22 18:03:13.786 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=20 type=backhand tts=0.800s
+2026-07-22 18:03:13.806 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=21 type=backhand tts=0.776s
+2026-07-22 18:03:13.826 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=22 type=backhand tts=0.752s
+2026-07-22 18:03:13.846 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=23 type=backhand tts=0.728s
+2026-07-22 18:03:13.865 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=24 type=backhand tts=0.705s
+2026-07-22 18:03:13.886 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=25 type=backhand tts=0.675s
+2026-07-22 18:03:13.906 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=26 type=backhand tts=0.652s
+2026-07-22 18:03:13.931 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=27 type=backhand tts=0.629s
+2026-07-22 18:03:13.951 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=28 type=backhand tts=0.606s
+2026-07-22 18:03:13.971 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=29 type=backhand tts=0.583s
+2026-07-22 18:03:13.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=30 type=backhand tts=0.560s
+2026-07-22 18:03:14.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=31 type=backhand tts=0.537s
+2026-07-22 18:03:14.027 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=32 type=backhand tts=0.513s
+2026-07-22 18:03:14.046 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=33 type=backhand tts=0.490s
+2026-07-22 18:03:14.066 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=34 type=backhand tts=0.467s
+2026-07-22 18:03:14.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=35 type=backhand tts=0.448s
+2026-07-22 18:03:14.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=36 type=backhand tts=0.426s
+2026-07-22 18:03:14.126 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=37 type=backhand tts=0.403s
+2026-07-22 18:03:14.146 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=38 type=backhand tts=0.380s
+2026-07-22 18:03:14.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=39 type=backhand tts=0.359s
+2026-07-22 18:03:14.186 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=40 type=backhand tts=0.337s
+2026-07-22 18:03:14.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=41 type=backhand tts=0.316s
+2026-07-22 18:03:14.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=42 type=backhand tts=0.295s
+2026-07-22 18:03:14.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=43 type=backhand tts=0.274s
+2026-07-22 18:03:14.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=44 type=backhand tts=0.253s
+2026-07-22 18:03:14.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=45 type=backhand tts=0.232s
+2026-07-22 18:03:14.306 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=46 type=backhand tts=0.212s
+2026-07-22 18:03:14.326 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=47 type=backhand tts=0.191s
+2026-07-22 18:03:14.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=48 type=backhand tts=0.169s
+2026-07-22 18:03:14.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=49 type=backhand tts=0.148s
+2026-07-22 18:03:14.386 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=50 type=backhand tts=0.128s
+2026-07-22 18:03:14.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=51 type=backhand tts=0.107s
+2026-07-22 18:03:14.427 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=52 type=backhand tts=0.087s
+2026-07-22 18:03:14.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=2 generation=53 type=backhand tts=0.066s
+2026-07-22 18:03:14.448 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.85337335], outgoing_vel=[4.2708335 0.        2.2015388], target_dist=0.0795
+2026-07-22 18:03:14.522 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:15.482 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:15.486 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:15.785 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=3 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:15.786 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:15.805 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:15.825 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:15.845 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:15.866 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:15.886 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:15.906 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:15.926 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:15.946 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:15.966 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:15.986 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:16.006 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:16.026 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:16.046 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:16.070 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:16.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:16.111 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:16.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:16.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:16.171 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:16.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:16.208 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:16.231 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:16.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:16.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:16.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:16.311 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:16.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:16.351 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:16.371 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:16.391 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:16.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:16.426 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:16.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:16.466 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:16.486 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:16.512 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:16.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:16.553 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:16.575 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=3 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:16.578 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0164
+2026-07-22 18:03:16.602 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:17.502 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:17.511 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:17.809 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=4 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:17.809 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:17.830 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:17.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:17.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:17.891 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:17.910 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:17.930 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:17.951 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:17.971 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:17.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:18.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:18.031 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:18.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:18.072 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:18.085 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:18.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:18.130 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:18.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:18.171 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:18.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:18.211 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:18.231 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:18.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:18.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:18.290 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:18.310 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:18.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:18.353 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:18.373 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:18.393 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:18.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:18.432 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:18.452 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:18.472 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:18.492 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:18.513 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:18.535 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:18.554 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:18.566 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:18.590 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=4 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:18.593 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:18.622 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:19.482 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:19.491 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:19.790 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=5 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:19.790 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:19.810 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:19.830 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:19.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:19.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:19.890 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:19.910 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:19.930 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:19.951 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:19.970 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:19.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:20.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:20.030 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:20.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:20.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:20.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:20.110 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:20.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:20.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:20.170 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:20.190 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:20.211 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:20.231 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:20.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:20.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:20.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:20.310 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:20.330 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:20.351 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:20.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:20.386 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:20.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:20.426 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:20.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:20.466 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:20.486 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:20.506 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:20.526 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:20.546 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:20.572 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=5 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:20.575 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:20.602 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:21.442 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:21.446 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:21.745 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=6 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:21.746 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:21.765 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:21.785 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:21.805 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:21.830 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:21.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:21.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:21.890 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:21.910 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:21.930 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:21.950 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:21.970 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:21.990 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:22.010 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:22.030 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:22.050 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:22.070 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:22.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:22.109 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:22.130 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:22.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:22.171 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:22.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:22.211 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:22.231 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:22.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:22.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:22.290 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:22.311 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:22.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:22.351 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:22.371 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:22.390 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:22.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:22.431 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:22.451 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:22.470 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:22.491 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:22.511 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:22.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=6 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:22.534 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:22.562 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:23.562 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:23.570 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:23.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=7 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:23.870 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:23.890 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:23.910 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:23.930 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:23.950 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:23.971 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:23.990 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:24.010 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:24.030 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:24.050 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:24.070 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:24.090 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:24.110 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:24.130 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:24.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:24.170 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:24.188 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:24.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:24.231 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:24.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:24.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:24.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:24.310 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:24.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:24.351 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:24.370 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:24.390 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:24.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:24.431 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:24.451 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:24.471 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:24.491 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:24.511 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:24.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:24.551 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:24.571 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:24.591 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:24.611 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:24.631 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:24.651 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=7 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:24.655 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:24.682 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:25.702 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:25.706 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:26.005 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=8 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:26.006 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:26.026 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:26.046 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:26.066 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:26.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:26.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:26.126 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:26.146 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:26.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:26.186 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:26.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:26.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:26.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:26.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:26.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:26.306 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:26.327 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:26.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:26.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:26.386 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:26.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:26.426 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:26.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:26.466 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:26.487 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:26.506 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:26.526 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:26.546 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:26.567 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:26.586 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:26.606 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:26.626 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:26.646 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:26.666 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:26.688 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:26.706 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:26.727 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:26.746 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:26.766 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:26.786 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=8 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:26.788 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:26.822 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:27.782 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:27.786 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:28.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=9 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:28.086 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:28.105 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:28.125 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:28.146 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:28.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:28.186 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:28.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:28.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:28.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:28.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:28.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:28.306 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:28.326 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:28.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:28.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:28.386 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:28.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:28.426 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:28.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:28.467 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:28.487 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:28.506 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:28.526 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:28.546 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:28.566 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:28.586 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:28.606 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:28.626 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:28.646 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:28.666 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:28.686 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:28.706 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:28.726 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:28.746 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:28.766 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:28.786 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:28.806 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:28.826 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:28.846 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:28.867 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=9 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:28.869 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:28.902 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:29.882 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:29.891 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:30.186 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=10 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:30.186 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:30.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:30.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:30.245 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:30.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:30.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:30.307 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:30.326 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:30.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:30.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:30.386 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:30.407 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:30.430 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:30.451 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:30.466 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:30.486 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:30.506 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:30.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:30.551 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:30.571 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:30.589 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:30.606 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:30.626 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:30.651 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:30.671 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:30.686 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:30.706 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:30.726 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:30.746 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:30.766 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:30.786 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:30.806 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:30.826 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:30.846 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:30.866 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:30.886 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:30.906 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:30.926 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:30.946 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:30.966 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=10 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:30.968 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:31.002 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:31.962 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:31.971 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:32.270 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=11 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:32.270 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:32.290 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:32.310 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:32.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:32.350 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:32.370 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:32.390 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:32.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:32.430 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:32.451 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:32.470 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:32.490 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:32.510 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:32.530 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:32.550 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:32.570 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:32.591 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:32.611 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:32.631 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:32.651 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:32.671 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:32.691 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:32.711 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:32.731 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:32.751 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:32.771 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:32.792 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:32.810 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:32.831 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:32.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:32.871 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:32.892 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:32.912 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:32.933 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:32.953 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:32.973 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:32.993 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:33.015 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:33.035 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:33.054 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=11 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:33.058 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:33.082 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:34.122 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:34.131 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:34.430 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=12 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:34.430 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:34.451 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:34.470 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:34.490 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:34.510 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:34.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:34.551 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:34.570 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:34.590 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:34.611 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:34.631 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:34.651 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:34.672 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:34.690 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:34.711 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:34.731 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:34.751 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:34.771 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:34.791 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:34.812 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:34.832 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:34.852 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:34.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:34.891 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:34.911 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:34.931 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:34.951 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:34.972 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:34.992 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:35.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:35.032 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:35.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:35.070 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:35.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:35.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:35.126 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:35.147 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:35.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:35.186 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:35.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=12 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:35.208 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:35.242 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:36.242 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:36.250 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:36.550 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=13 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:36.550 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:36.570 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:36.590 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:36.610 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:36.630 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:36.650 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:36.670 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:36.690 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:36.710 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:36.730 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:36.751 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:36.771 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:36.790 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:36.811 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:36.830 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:36.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:36.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:36.890 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:36.910 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:36.931 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:36.950 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:36.971 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:36.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:37.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:37.031 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:37.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:37.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:37.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:37.111 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:37.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:37.152 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:37.173 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:37.193 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:37.213 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:37.233 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:37.253 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:37.272 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:37.292 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:37.311 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:37.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=13 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:37.334 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:37.362 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:38.202 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:38.211 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:38.546 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=14 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:38.547 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:38.564 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:38.582 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:38.599 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:38.616 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:38.633 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:38.642 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:38.655 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:38.672 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:38.690 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:38.710 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:38.730 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:38.750 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:38.770 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:38.790 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:38.810 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:38.830 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:38.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:38.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:38.890 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:38.910 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:38.931 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:38.951 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:38.971 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:38.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:39.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:39.031 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:39.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:39.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:39.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:39.111 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:39.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:39.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:39.170 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:39.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:39.211 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:39.231 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:39.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:39.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:39.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=14 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:39.294 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:39.322 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:40.342 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:40.350 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:40.646 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=15 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:40.646 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:40.666 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:40.686 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:40.705 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:40.726 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:40.746 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:40.766 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:40.785 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:40.806 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:40.826 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:40.846 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:40.866 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:40.886 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:40.906 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:40.926 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:40.946 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:40.967 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:40.986 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:41.006 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:41.026 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:41.046 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:41.066 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:41.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:41.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:41.126 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:41.146 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:41.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:41.186 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:41.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:41.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:41.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:41.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:41.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:41.311 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:41.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:41.351 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:41.371 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:41.391 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:41.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:41.432 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=15 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:41.435 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:41.462 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:42.302 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:42.310 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:42.610 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=16 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:42.610 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:42.630 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:42.650 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:42.670 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:42.690 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:42.710 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:42.731 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:42.751 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:42.771 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:42.790 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:42.810 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:42.830 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:42.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:42.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:42.890 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:42.911 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:42.931 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:42.951 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:42.970 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:42.990 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:43.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:43.031 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:43.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:43.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:43.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:43.111 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:43.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:43.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:43.171 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:43.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:43.211 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:43.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:43.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:43.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:43.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:43.306 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:43.326 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:43.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:43.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:43.391 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=16 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:43.395 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:43.422 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:44.402 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:44.406 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:44.705 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=17 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:44.706 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:44.725 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:44.745 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:44.765 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:44.786 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:44.805 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:44.825 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:44.846 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:44.866 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:44.885 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:44.905 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:44.926 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:44.946 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:44.966 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:44.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:45.010 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:45.031 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:45.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:45.070 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:45.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:45.110 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:45.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:45.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:45.171 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:45.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:45.211 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:45.231 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:45.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:45.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:45.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:45.311 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:45.326 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:45.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:45.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:45.386 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:45.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:45.426 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:45.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:45.466 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:45.486 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=17 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:45.488 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:45.522 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:46.402 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:46.406 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:46.706 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=18 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:46.706 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:46.726 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:46.747 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:46.765 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:46.786 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:46.806 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:46.826 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:46.846 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:46.866 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:46.886 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:46.906 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:46.926 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:46.946 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:46.966 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:46.986 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:47.006 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:47.026 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:47.046 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:47.066 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:47.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:47.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:47.126 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:47.146 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:47.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:47.187 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:47.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:47.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:47.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:47.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:47.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:47.306 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:47.328 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:47.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:47.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:47.387 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:47.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:47.426 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:47.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:47.466 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:47.486 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=18 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:47.488 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:47.522 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:48.542 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:48.550 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:48.850 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=19 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:48.850 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:48.870 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:48.890 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:48.910 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:48.930 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:48.950 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:48.970 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:48.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:49.012 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:49.031 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:49.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:49.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:49.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:49.110 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:49.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:49.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:49.170 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:49.190 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:49.211 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:49.230 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:49.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:49.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:49.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:49.312 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:49.332 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:49.351 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:49.371 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:49.392 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:49.413 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:49.433 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:49.455 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:49.474 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:49.495 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:49.513 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:49.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:49.551 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:49.571 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:49.592 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:49.613 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:49.632 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=19 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:49.635 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:49.662 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:50.622 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:50.630 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:50.930 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=20 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:50.930 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:50.950 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:50.970 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:50.986 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:51.005 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:51.026 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:51.048 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:51.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:51.090 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:51.110 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:51.125 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:51.146 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:51.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:51.186 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:51.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:51.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:51.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:51.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:51.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:51.306 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:51.326 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:51.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:51.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:51.391 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:51.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:51.431 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:51.451 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:51.471 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:51.491 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:51.511 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:51.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:51.551 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:51.571 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:51.591 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:51.611 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:51.631 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:51.651 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:51.671 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:51.691 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:51.711 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=20 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:51.714 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:51.742 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:52.642 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:52.646 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:52.950 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=21 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:52.950 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:52.970 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:52.990 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:53.010 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:53.030 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:53.050 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:53.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:53.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:53.110 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:53.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:53.150 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:53.170 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:53.190 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:53.210 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:53.230 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:53.250 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:53.270 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:53.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:53.310 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:53.330 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:53.350 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:53.371 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:53.391 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:53.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:53.431 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:53.451 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:53.471 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:53.491 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:53.511 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:53.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:53.551 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:53.571 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:53.591 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:53.611 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:53.631 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:53.651 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:53.671 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:53.691 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:53.711 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:53.731 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=21 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:53.735 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:53.762 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:54.682 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:54.691 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:54.991 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=22 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:54.991 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:55.011 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:55.031 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:55.051 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:55.071 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:55.091 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:55.111 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:55.131 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:55.151 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:55.171 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:55.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:55.207 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:55.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:55.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:55.269 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:55.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:55.311 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:55.332 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:55.409 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:55.431 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:55.441 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:55.450 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:55.459 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:55.467 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:55.475 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:55.491 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:55.508 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:55.526 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:55.546 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:55.566 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:55.586 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:55.606 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:55.631 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:55.646 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:55.666 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:55.686 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:55.706 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:55.726 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:55.746 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:55.766 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=22 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:55.768 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:55.802 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:56.642 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:56.651 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:56.950 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=23 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:56.950 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:56.967 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:56.985 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:57.005 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:57.025 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:57.046 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:57.065 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:57.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:57.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:57.126 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:57.146 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:57.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:57.191 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:57.210 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:57.230 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:57.251 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:57.271 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:57.291 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:57.311 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:57.331 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:57.351 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:57.371 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:57.391 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:57.411 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:57.431 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:57.450 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:57.470 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:57.491 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:57.511 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:57.531 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:57.551 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:57.571 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:57.591 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:57.611 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:57.631 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:57.651 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:57.671 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:57.686 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:57.706 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:57.726 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=23 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:57.728 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:57.762 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery
+2026-07-22 18:03:58.622 | INFO     | envs.hitter:_log_hitter_advance_transitions:864 - HITTER lifecycle transition: recovery -> waiting
+2026-07-22 18:03:58.626 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: waiting -> tracking
+2026-07-22 18:03:58.925 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command armed: epoch=24 generation=16 type=forehand tts=0.904s
+2026-07-22 18:03:58.926 | INFO     | envs.hitter:_log_hitter_lifecycle_transition:826 - HITTER lifecycle transition: tracking -> armed
+2026-07-22 18:03:58.946 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=17 type=forehand tts=0.873s
+2026-07-22 18:03:58.965 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=18 type=forehand tts=0.848s
+2026-07-22 18:03:58.986 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=19 type=forehand tts=0.823s
+2026-07-22 18:03:59.006 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=20 type=forehand tts=0.800s
+2026-07-22 18:03:59.026 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=21 type=forehand tts=0.776s
+2026-07-22 18:03:59.045 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=22 type=forehand tts=0.752s
+2026-07-22 18:03:59.065 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=23 type=forehand tts=0.728s
+2026-07-22 18:03:59.086 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=24 type=forehand tts=0.705s
+2026-07-22 18:03:59.106 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=25 type=forehand tts=0.675s
+2026-07-22 18:03:59.126 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=26 type=forehand tts=0.652s
+2026-07-22 18:03:59.145 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=27 type=forehand tts=0.629s
+2026-07-22 18:03:59.166 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=28 type=forehand tts=0.606s
+2026-07-22 18:03:59.187 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=29 type=forehand tts=0.583s
+2026-07-22 18:03:59.206 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=30 type=forehand tts=0.560s
+2026-07-22 18:03:59.226 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=31 type=forehand tts=0.537s
+2026-07-22 18:03:59.246 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=32 type=forehand tts=0.513s
+2026-07-22 18:03:59.266 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=33 type=forehand tts=0.490s
+2026-07-22 18:03:59.286 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=34 type=forehand tts=0.467s
+2026-07-22 18:03:59.306 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=35 type=forehand tts=0.448s
+2026-07-22 18:03:59.326 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=36 type=forehand tts=0.426s
+2026-07-22 18:03:59.346 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=37 type=forehand tts=0.403s
+2026-07-22 18:03:59.366 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=38 type=forehand tts=0.380s
+2026-07-22 18:03:59.386 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=39 type=forehand tts=0.359s
+2026-07-22 18:03:59.406 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=40 type=forehand tts=0.337s
+2026-07-22 18:03:59.426 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=41 type=forehand tts=0.316s
+2026-07-22 18:03:59.446 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=42 type=forehand tts=0.295s
+2026-07-22 18:03:59.466 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=43 type=forehand tts=0.274s
+2026-07-22 18:03:59.486 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=44 type=forehand tts=0.253s
+2026-07-22 18:03:59.506 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=45 type=forehand tts=0.232s
+2026-07-22 18:03:59.526 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=46 type=forehand tts=0.212s
+2026-07-22 18:03:59.546 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=47 type=forehand tts=0.191s
+2026-07-22 18:03:59.566 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=48 type=forehand tts=0.169s
+2026-07-22 18:03:59.586 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=49 type=forehand tts=0.148s
+2026-07-22 18:03:59.606 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=50 type=forehand tts=0.128s
+2026-07-22 18:03:59.626 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=51 type=forehand tts=0.107s
+2026-07-22 18:03:59.646 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=52 type=forehand tts=0.087s
+2026-07-22 18:03:59.666 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=53 type=forehand tts=0.066s
+2026-07-22 18:03:59.686 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=54 type=forehand tts=0.046s
+2026-07-22 18:03:59.706 | INFO     | envs.hitter:_consume_hitter_planner_result:807 - HITTER command overridden: epoch=24 generation=55 type=forehand tts=0.026s
+2026-07-22 18:03:59.708 | INFO     | simulator.mujoco:_apply_hitter_ball_analytic_racket_hit:310 - [Mujoco] Applied analytic racket hit: target_pos=[0.         0.         0.84934837], outgoing_vel=[4.2708335 0.        2.2099242], target_dist=0.0086
+2026-07-22 18:03:59.742 | INFO     | envs.hitter:_log_hitter_advance_transitions:848 - HITTER lifecycle transition: armed -> recovery

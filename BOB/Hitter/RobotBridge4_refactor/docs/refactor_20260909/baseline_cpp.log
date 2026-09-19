@@ -1,0 +1,84 @@
+g++ -std=c++17 -O2 -I/home/yhl/Desktop/BOB/Hitter/RobotBridge4 -I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include -I/home/yhl/Desktop/BOB/Hitter/RobotBridge4/vicon_datastream_sdk/linux64/Linux64 -I/home/yhl/Desktop/BOB/Hitter/RobotBridge4/unitree_sdk2/include /home/yhl/Desktop/BOB/Hitter/RobotBridge4/deploy/mocap_bridge/tests/test_transformation_t_v2.cpp -L/home/yhl/Desktop/BOB/Hitter/RobotBridge4/vicon_datastream_sdk/linux64/Linux64 -Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4/vicon_datastream_sdk/linux64/Linux64 -lViconDataStreamSDK_CPP /home/yhl/Desktop/BOB/Hitter/RobotBridge4/unitree_sdk2/lib/x86_64/libunitree_sdk2.a -L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib -Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib -llcm -o /tmp/rb4-refactor-work/baseline-cpp/test_transformation_t_v2
+g++ -std=c++17 -O2 -I/home/yhl/Desktop/BOB/Hitter/RobotBridge4 -I/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/include -I/home/yhl/Desktop/BOB/Hitter/RobotBridge4/vicon_datastream_sdk/linux64/Linux64 -I/home/yhl/Desktop/BOB/Hitter/RobotBridge4/unitree_sdk2/include /home/yhl/Desktop/BOB/Hitter/RobotBridge4/deploy/mocap_bridge/tests/test_vicon_ball_track_v2.cpp -L/home/yhl/Desktop/BOB/Hitter/RobotBridge4/vicon_datastream_sdk/linux64/Linux64 -Wl,-rpath,/home/yhl/Desktop/BOB/Hitter/RobotBridge4/vicon_datastream_sdk/linux64/Linux64 -lViconDataStreamSDK_CPP /home/yhl/Desktop/BOB/Hitter/RobotBridge4/unitree_sdk2/lib/x86_64/libunitree_sdk2.a -L/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib -Wl,-rpath,/home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib -llcm -o /tmp/rb4-refactor-work/baseline-cpp/test_vicon_ball_track_v2
+--tracker-name must be exactly G1Pelvis because the deployed pelvis calibration is bound to it
+--table-calib and --save-table-calib are mutually exclusive
+--save-table-calib and --pelvis-orientation-calib resolve to the same calibration file: /tmp/robotbridge4-calib.json
+--channel must be exactly vicon_state_data_v2
+Invalid --ball-track-end-timeout-s value, expected a finite positive number: 0
+Invalid --ball-track-association-radius-m value, expected a finite positive number: nan
+Invalid --ball-track-end-timeout-s value, expected a finite positive number: inf
+Missing value for --channel
+Missing value for --ball-track-association-radius-m
+Missing value for --ball-track-end-timeout-s
+Invalid --ball-track-association-radius-m value, expected a finite positive number: abc
+Invalid --ball-track-association-radius-m value, expected a finite positive number: 0.35junk
+Invalid --ball-track-end-timeout-s value, expected a finite positive number: abc
+Invalid --ball-track-end-timeout-s value, expected a finite positive number: 0.25junk
+Missing value for --pelvis-orientation-calib
+Missing value for --host
+Missing value for --host
+Missing value for --table-calib
+Missing value for --save-table-calib
+Missing value for --lcm-url
+Missing value for --ignore-raw-sphere-m
+Invalid --duration value, expected a finite non-negative number: abc
+Invalid --duration value, expected a finite non-negative number: nan
+Invalid --duration value, expected a finite non-negative number: inf
+Invalid --duration value, expected a finite non-negative number: 1junk
+Invalid --duration value, expected a finite non-negative number: -1
+Missing value for --duration
+Invalid --print-hz value, expected a finite positive number: abc
+Invalid --print-hz value, expected a finite positive number: nan
+Invalid --print-hz value, expected a finite positive number: inf
+Invalid --print-hz value, expected a finite positive number: 1junk
+Invalid --print-hz value, expected a finite positive number: -1
+Invalid --print-hz value, expected a finite positive number: 0
+Missing value for --print-hz
+Invalid --calib-sec value, expected a finite positive number: abc
+Invalid --calib-sec value, expected a finite positive number: nan
+Invalid --calib-sec value, expected a finite positive number: inf
+Invalid --calib-sec value, expected a finite positive number: 1junk
+Invalid --calib-sec value, expected a finite positive number: -1
+Invalid --calib-sec value, expected a finite positive number: 0
+Missing value for --calib-sec
+Invalid --table-length value, expected a finite positive number: abc
+Invalid --table-length value, expected a finite positive number: nan
+Invalid --table-length value, expected a finite positive number: inf
+Invalid --table-length value, expected a finite positive number: 1junk
+Invalid --table-length value, expected a finite positive number: -1
+Invalid --table-length value, expected a finite positive number: 0
+Missing value for --table-length
+Invalid --table-width value, expected a finite positive number: abc
+Invalid --table-width value, expected a finite positive number: nan
+Invalid --table-width value, expected a finite positive number: inf
+Invalid --table-width value, expected a finite positive number: 1junk
+Invalid --table-width value, expected a finite positive number: -1
+Invalid --table-width value, expected a finite positive number: 0
+Missing value for --table-width
+Invalid --table-height value, expected a finite positive number: abc
+Invalid --table-height value, expected a finite positive number: nan
+Invalid --table-height value, expected a finite positive number: inf
+Invalid --table-height value, expected a finite positive number: 1junk
+Invalid --table-height value, expected a finite positive number: -1
+Invalid --table-height value, expected a finite positive number: 0
+Missing value for --table-height
+Invalid --vicon-frame-rate-hz value, expected a finite positive number: abc
+Invalid --vicon-frame-rate-hz value, expected a finite positive number: nan
+Invalid --vicon-frame-rate-hz value, expected a finite positive number: inf
+Invalid --vicon-frame-rate-hz value, expected a finite positive number: 1junk
+Invalid --vicon-frame-rate-hz value, expected a finite positive number: -1
+Invalid --vicon-frame-rate-hz value, expected a finite positive number: 0
+Missing value for --vicon-frame-rate-hz
+Invalid --expected-base-edge-distance value, expected a finite non-negative number: abc
+Invalid --expected-base-edge-distance value, expected a finite non-negative number: nan
+Invalid --expected-base-edge-distance value, expected a finite non-negative number: inf
+Invalid --expected-base-edge-distance value, expected a finite non-negative number: 1junk
+Invalid --expected-base-edge-distance value, expected a finite non-negative number: -1
+Missing value for --expected-base-edge-distance
+Invalid --corner-exclusion-radius-mm value, expected a finite non-negative number: abc
+Invalid --corner-exclusion-radius-mm value, expected a finite non-negative number: nan
+Invalid --corner-exclusion-radius-mm value, expected a finite non-negative number: inf
+Invalid --corner-exclusion-radius-mm value, expected a finite non-negative number: 1junk
+Invalid --corner-exclusion-radius-mm value, expected a finite non-negative number: -1
+Missing value for --corner-exclusion-radius-mm
+PASS: Vicon v2 ball track contract

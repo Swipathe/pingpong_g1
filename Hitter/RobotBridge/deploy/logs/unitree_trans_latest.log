@@ -1,0 +1,18 @@
+Make sure the robot is hung up!
+The transition layer will move to default pose over 5s after lowstate is received.
+Start the policy layer only after this startup interpolation is stable.
+You may press [L2 + B] to stop the process.
+You may press [L2 + Y] to recover from stopped state.
+You may double press [L1 + B] for emergency termination.
+Press Enter to continue ...
+Safety precheck: ServiceSwitch name=ai_sport switch=0 ret=0 returned_status=1
+Safety precheck: ServiceList ret=0
+Safety precheck: service name=ai_sport status=0 protect=0
+Default Joint Position Set!
+Communication built successfully between transition layer and robot!
+Startup interpolation captured current joint positions; moving to default pose over 5s.
+G1 type: 5
+Communication built successfully between transition layer and robot!
+Commnication built successfully between transition layer and odometer!
+Startup interpolation complete; holding current joint positions until policy commands arrive.
+Communication built successfully between transition layer and policy!

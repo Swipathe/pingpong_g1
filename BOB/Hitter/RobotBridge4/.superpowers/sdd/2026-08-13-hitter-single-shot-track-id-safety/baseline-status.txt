@@ -1,0 +1,127 @@
+ff02a32619d2a5fded5e94fe3dc64ec155295cc4
+ M chingmu_sdk
+ M deploy/MUJOCO_LOG.TXT
+ M deploy/agents/hitter_agent.py
+ M deploy/config/hitter.yaml
+ M deploy/config/mimic/hitter.yaml
+ M deploy/diagnostics/hitter_task_monitor.py
+ M deploy/envs/base_env.py
+ M deploy/envs/hitter.py
+ M deploy/mocap_bridge/calibrations/chingmu_table_frame_latest.json
+ M deploy/mocap_bridge/chingmu_sdk_client.py
+ M deploy/mocap_bridge/chingmu_table_lcm_bridge.py
+ D deploy/mocap_bridge/monitor_hitter_prediction.py
+ M deploy/mocap_bridge/monitor_vicon_lcm.py
+ M deploy/mocap_bridge/nexus_probe_cpp.cpp
+ D deploy/mocap_bridge/record_vicon_ball.py
+ D deploy/mocap_bridge/tests/__init__.py
+ M deploy/mocap_bridge/tests/test_chingmu_pelvis_orientation.py
+ D deploy/mocap_bridge/tests/test_chingmu_sdk_client.py
+ D deploy/mocap_bridge/tests/test_chingmu_table_lcm_bridge.py
+ D deploy/mocap_bridge/tests/test_monitor_hitter_prediction.py
+ D deploy/mocap_bridge/tests/test_monitor_vicon_lcm.py
+ D deploy/mocap_bridge/tests/test_vicon_table_lcm_bridge.cpp
+ M deploy/mocap_bridge/vicon_table_lcm_bridge.cpp
+ M deploy/simulator/real_world.py
+ D deploy/tests/__init__.py
+ D deploy/tests/test_hitter_agent_timing.py
+ D deploy/tests/test_hitter_env_lifecycle.py
+ D deploy/tests/test_hitter_geometry_config.py
+ D deploy/tests/test_hitter_planner_boundaries.py
+ D deploy/tests/test_hitter_realtime.py
+ D deploy/tests/test_hitter_recorded_replay.py
+ M deploy/tests/test_hitter_runtime_factory.py
+ M deploy/tests/test_hitter_task_diagnostics_integration.py
+ M deploy/tests/test_hitter_task_diagnostics_performance.py
+ M deploy/tests/test_hitter_task_diagnostics_safety.py
+ M deploy/tests/test_hitter_task_input_adapter.py
+ M deploy/tests/test_hitter_task_monitor.py
+ D deploy/tests/test_real_world_hitter_snapshots.py
+ D deploy/tests/test_record_vicon_ball.py
+ M deploy/utils/hitter_planner.py
+ M deploy/utils/hitter_runtime_factory.py
+ D docs/hitter_robotbridge_integration.md
+ M docs/hitter_task_observation_diagnostics.md
+ D docs/superpowers/plans/2026-07-12-chingmu-realtime-planner-policy.md
+ D docs/superpowers/plans/2026-07-13-chingmu-pelvis-origin-offset.md
+ D docs/superpowers/plans/2026-07-14-vicon-tracer-datastream-switch.md
+ D docs/superpowers/plans/2026-07-15-hitter-next-incoming-epoch.md
+ D docs/superpowers/plans/2026-07-15-stable-incoming-track-confirmation.md
+ D docs/superpowers/plans/2026-07-15-vicon-ball-recorder.md
+ M docs/superpowers/plans/2026-07-24-chingmu-pelvis-orientation-calibration.md
+ M docs/superpowers/plans/2026-07-27-hitter-task-observation-diagnostics.md
+ D docs/superpowers/specs/2026-07-10-mujoco-planner-physics-parity-design.md
+ D docs/superpowers/specs/2026-07-11-chingmu-table-calibration-design.md
+ D docs/superpowers/specs/2026-07-12-chingmu-realtime-planner-policy-design.md
+ D docs/superpowers/specs/2026-07-13-chingmu-pelvis-origin-offset-design.md
+ D docs/superpowers/specs/2026-07-14-vicon-tracer-datastream-switch-design.md
+ D docs/superpowers/specs/2026-07-15-hitter-next-incoming-epoch-design.md
+ D docs/superpowers/specs/2026-07-15-stable-incoming-track-confirmation-design.md
+ D docs/superpowers/specs/2026-07-16-vicon-handler-timing-design.md
+ M docs/superpowers/specs/2026-07-24-chingmu-pelvis-orientation-calibration-design.md
+ M docs/superpowers/specs/2026-07-27-hitter-task-observation-diagnostics-design.md
+?? .codex_backups/pelvis_extrinsic_20260731_184344/chingmu_g2_pelvis_orientation_latest.json
+?? .codex_backups/pelvis_extrinsic_20260731_184344/chingmu_table_lcm_bridge.py
+?? .codex_backups/pelvis_extrinsic_20260731_184344/test_chingmu_pelvis_orientation.py
+?? deploy/config/mimic/hitter.yaml.before-model14100-20260808_135517
+?? deploy/config/mimic/hitter.yaml.before-model60500-20260805
+?? deploy/config/mimic/hitter.yaml.before-model7400-20260806_171240
+?? deploy/config/mimic/hitter.yaml.before-racket-vel-align-main-20260805_163515
+?? "deploy/mocap_bridge (copy)/bin/nexus_probe_cpp"
+?? "deploy/mocap_bridge (copy)/bin/test_vicon_table_lcm_bridge"
+?? "deploy/mocap_bridge (copy)/bin/vicon_table_lcm_bridge"
+?? "deploy/mocap_bridge (copy)/build_cpp_probe.sh"
+?? "deploy/mocap_bridge (copy)/calibrations/chingmu_table_frame_latest.json"
+?? "deploy/mocap_bridge (copy)/calibrations/table_frame_latest.json"
+?? "deploy/mocap_bridge (copy)/calibrations/table_frame_pre_tracer_20260715.json"
+?? "deploy/mocap_bridge (copy)/calibrations/vicon_table_frame_candidate.json"
+?? "deploy/mocap_bridge (copy)/chingmu_sdk_client.py"
+?? "deploy/mocap_bridge (copy)/chingmu_table_lcm_bridge.py"
+?? "deploy/mocap_bridge (copy)/monitor_vicon_lcm.py"
+?? "deploy/mocap_bridge (copy)/nexus_probe_cpp.cpp"
+?? "deploy/mocap_bridge (copy)/vicon_table_lcm_bridge.cpp"
+?? deploy/mocap_bridge/bin/nexus_probe_cpp
+?? deploy/mocap_bridge/bin/test_vicon_table_lcm_bridge
+?? deploy/mocap_bridge/bin/vicon_datastream_dump
+?? deploy/mocap_bridge/bin/vicon_frame_stream
+?? deploy/mocap_bridge/bin/vicon_table_lcm_bridge
+?? deploy/mocap_bridge/build_vicon_frame_stream.sh
+?? deploy/mocap_bridge/calibrations/chingmu_g2_pelvis_orientation_latest.json
+?? deploy/mocap_bridge/calibrations/chingmu_pelvis_orientation_20260725_candidate.json
+?? deploy/mocap_bridge/calibrations/chingmu_pelvis_orientation_latest.json
+?? deploy/mocap_bridge/calibrations/chingmu_table_frame_20260725_candidate.json
+?? deploy/mocap_bridge/calibrations/chingmu_table_frame_latest.before_20260725_promotion.json
+?? deploy/mocap_bridge/calibrations/table_frame_latest.20260709_114145.json
+?? deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260805_before_translation.json
+?? deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260805_validated.json
+?? deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260807_live_retry.json
+?? deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260807_live_retry_validated.json
+?? deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260812_candidate.json
+?? deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260812_validated.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260805_REJECTED_score1p0606.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260805_validated.before_robotbridge2_sync_20260807_165957.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260805_validated.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260807_164834_validated.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260807_candidate.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260807_live_retry.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260812_candidate.json
+?? deploy/mocap_bridge/calibrations/vicon_table_frame_20260812_validated.json
+?? deploy/mocap_bridge/tests/test_vicon_sdk_client.py
+?? deploy/mocap_bridge/tests/test_vicon_table_lcm_bridge.py
+?? deploy/mocap_bridge/vicon_datastream_dump.cpp
+?? deploy/mocap_bridge/vicon_frame_stream.cpp
+?? deploy/mocap_bridge/vicon_sdk_client.py
+?? deploy/mocap_bridge/vicon_table_lcm_bridge.py
+?? deploy/robotbridge2_model7900_20260725.log
+?? deploy/robotbridge2_model8000_20260725.log
+?? deploy/tests/test_hitter_planner_velocity_alignment.py
+?? deploy/tests/test_hitter_runtime_factory.py.before-racket-vel-align-main-20260805_163515
+?? deploy/tests/test_mujoco_physical_table_tennis.py
+?? deploy/tests/test_real_world_connection_wait.py
+?? deploy/utils/hitter_planner.py.before-racket-vel-align-main-20260805_163515
+?? deploy/utils/hitter_runtime_factory.py.before-racket-vel-align-main-20260805_163515
+?? recordings/hitter_ball_20260715-143511_xyz_vx.csv
+?? recordings/hitter_ball_throw3_raw.csv
+?? recordings/hitter_ball_throw3_xyz_vx.csv
+?? tracker_log.txt
+

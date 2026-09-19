@@ -1,0 +1,46 @@
+[
+  {
+    "command": [
+      "/home/yhl/miniforge3/envs/isaaclab/bin/python",
+      "deploy/mocap_bridge/chingmu_table_lcm_bridge.py",
+      "--help"
+    ],
+    "exit_code": 0,
+    "help_output_present": true
+  },
+  {
+    "command": [
+      "/home/yhl/miniforge3/envs/isaaclab/bin/python",
+      "deploy/mocap_bridge/vicon_table_lcm_bridge.py",
+      "--help"
+    ],
+    "exit_code": 0,
+    "help_output_present": true
+  },
+  {
+    "command": [
+      "/home/yhl/miniforge3/envs/isaaclab/bin/python",
+      "-m",
+      "diagnostics.hitter_task_monitor",
+      "--help"
+    ],
+    "exit_code": 0,
+    "help_output_present": true
+  },
+  {
+    "target": "agents.hitter_agent.HitterAgent",
+    "resolved_class": "agents.hitter_agent.HitterAgent"
+  },
+  {
+    "target": "envs.hitter.HitterEnv",
+    "resolved_class": "envs.hitter.HitterEnv"
+  },
+  {
+    "target": "simulator.mujoco.Mujoco",
+    "resolved_class": "simulator.mujoco.Mujoco"
+  },
+  {
+    "target": "simulator.real_world.RealWorld",
+    "resolved_class": "simulator.real_world.RealWorld"
+  }
+]

@@ -1,0 +1,140 @@
+# Review package: c65a543..479e97f
+
+## Commits
+479e97f feat: log final HITTER strike target once
+
+## Files changed
+ deploy/envs/hitter.py                             |  1 +
+ deploy/tests/test_hitter_strike_target_logging.py | 88 +++++++++++++++++++++++
+ 2 files changed, 89 insertions(+)
+
+## Diff
+diff --git a/deploy/envs/hitter.py b/deploy/envs/hitter.py
+index 6720c62..f60bb0c 100644
+--- a/deploy/envs/hitter.py
++++ b/deploy/envs/hitter.py
+@@ -939,20 +939,21 @@ class HitterEnv(BaseEnv):
+         *,
+         now: float,
+     ) -> None:
+         current_phase = self.hitter_command_lifecycle.phase
+         crossed_strike = bool(
+             previous_phase == CommandPhase.ARMED
+             and previous_active is not None
+             and now >= previous_active.strike_deadline_monotonic_s
+         )
+         if crossed_strike:
++            self._log_hitter_strike_target(previous_active)
+             logger.info(
+                 "HITTER lifecycle transition: {} -> {}",
+                 CommandPhase.ARMED.value,
+                 CommandPhase.RECOVERY.value,
+             )
+             if current_phase != CommandPhase.RECOVERY:
+                 logger.info(
+                     "HITTER lifecycle transition: {} -> {}",
+                     CommandPhase.RECOVERY.value,
+                     current_phase.value,
+diff --git a/deploy/tests/test_hitter_strike_target_logging.py b/deploy/tests/test_hitter_strike_target_logging.py
+index 101ea8f..1365786 100644
+--- a/deploy/tests/test_hitter_strike_target_logging.py
++++ b/deploy/tests/test_hitter_strike_target_logging.py
+@@ -196,10 +196,98 @@ class StrikeTargetPayloadTests(unittest.TestCase):
+ 
+         warnings = [
+             message
+             for message in messages
+             if message.startswith(
+                 "Failed to log HITTER strike target:"
+             )
+         ]
+         self.assertEqual(len(warnings), 1)
+         self.assertIn("missing a command", warnings[0])
++
++
++class StrikeTargetBoundaryTests(unittest.TestCase):
++    def test_late_advance_logs_latest_override_exactly_once(self):
++        env = minimal_env()
++        lifecycle = configured_lifecycle()
++        env.hitter_command_lifecycle = lifecycle
++
++        first = planner_result(
++            epoch=27,
++            generation=1,
++            deadline=10.90,
++            command=fake_command(marker=1.0),
++        )
++        self.assertEqual(
++            lifecycle.ingest(first, now=10.00),
++            "armed",
++        )
++
++        final_override = planner_result(
++            epoch=27,
++            generation=2,
++            deadline=10.88,
++            command=fake_command(marker=2.0),
++        )
++        self.assertEqual(
++            lifecycle.ingest(final_override, now=10.02),
++            "overridden",
++        )
++
++        previous_phase = lifecycle.phase
++        previous_active = lifecycle.active_result
++        previous_end = lifecycle.command_end_deadline_s
++        late_now = float(previous_end) + 0.10
++        lifecycle.advance(late_now)
++        self.assertEqual(lifecycle.phase, CommandPhase.WAITING)
++
++        with captured_log_messages() as messages:
++            env._log_hitter_advance_transitions(
++                previous_phase,
++                previous_active,
++                previous_end,
++                now=late_now,
++            )
++            env._log_hitter_advance_transitions(
++                lifecycle.phase,
++                lifecycle.active_result,
++                lifecycle.command_end_deadline_s,
++                now=late_now + 0.01,
++            )
++
++        target_messages = [
++            message
++            for message in messages
++            if message.startswith("HITTER strike target:")
++        ]
++        self.assertEqual(len(target_messages), 1)
++        message = target_messages[0]
++        self.assertIn("epoch=27 generation=2", message)
++        self.assertIn(
++            "v_ball_out_w_mps=[2.0000,2.0000,2.0000]",
++            message,
++        )
++        self.assertNotIn(
++            "v_ball_out_w_mps=[1.0000,1.0000,1.0000]",
++            message,
++        )
++
++    def test_non_strike_transition_does_not_log_target(self):
++        env = minimal_env()
++        env.hitter_command_lifecycle = SimpleNamespace(
++            phase=CommandPhase.TRACKING
++        )
++
++        with captured_log_messages() as messages:
++            env._log_hitter_advance_transitions(
++                CommandPhase.WAITING,
++                None,
++                None,
++                now=10.0,
++            )
++
++        self.assertFalse(
++            any(
++                message.startswith("HITTER strike target:")
++                for message in messages
++            )
++        )

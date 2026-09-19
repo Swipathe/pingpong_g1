@@ -1,0 +1,312 @@
+robot:
+  asset:
+    asset_root: ./data/assets/g1
+    asset_file: g1_29dof_hitter_racket_table_tennis.xml
+    default_root_pos:
+    - -0.4
+    - 0.0
+    - 0.793
+    num_action: 29
+    num_dof: 29
+    joint_order:
+      left_hip_pitch_joint: 0
+      left_hip_roll_joint: 1
+      left_hip_yaw_joint: 2
+      left_knee_joint: 3
+      left_ankle_pitch_joint: 4
+      left_ankle_roll_joint: 5
+      right_hip_pitch_joint: 6
+      right_hip_roll_joint: 7
+      right_hip_yaw_joint: 8
+      right_knee_joint: 9
+      right_ankle_pitch_joint: 10
+      right_ankle_roll_joint: 11
+      waist_yaw_joint: 12
+      waist_roll_joint: 13
+      waist_pitch_joint: 14
+      left_shoulder_pitch_joint: 15
+      left_shoulder_roll_joint: 16
+      left_shoulder_yaw_joint: 17
+      left_elbow_joint: 18
+      left_wrist_roll_joint: 19
+      left_wrist_pitch_joint: 20
+      left_wrist_yaw_joint: 21
+      right_shoulder_pitch_joint: 22
+      right_shoulder_roll_joint: 23
+      right_shoulder_yaw_joint: 24
+      right_elbow_joint: 25
+      right_wrist_roll_joint: 26
+      right_wrist_pitch_joint: 27
+      right_wrist_yaw_joint: 28
+    frozen_num_dof: 0
+    frozen_dof_names: []
+    default_angles:
+    - -0.312
+    - 0.0
+    - 0.0
+    - 0.669
+    - -0.363
+    - 0.0
+    - -0.312
+    - 0.0
+    - 0.0
+    - 0.669
+    - -0.363
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - 0.2
+    - 0.0
+    - 0.6
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - -0.2
+    - 0.0
+    - 0.6
+    - 0.0
+    - 0.0
+    - 0.0
+    kps:
+    - 40.179238
+    - 99.098428
+    - 40.179238
+    - 99.098428
+    - 28.501246
+    - 28.501246
+    - 40.179238
+    - 99.098428
+    - 40.179238
+    - 99.098428
+    - 28.501246
+    - 28.501246
+    - 40.179238
+    - 28.501246
+    - 28.501246
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 16.778327
+    - 16.778327
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 14.250623
+    - 16.778327
+    - 16.778327
+    kds:
+    - 2.55789
+    - 6.308802
+    - 2.55789
+    - 6.308802
+    - 1.814446
+    - 1.814446
+    - 2.55789
+    - 6.308802
+    - 2.55789
+    - 6.308802
+    - 1.814446
+    - 1.814446
+    - 2.55789
+    - 1.814446
+    - 1.814446
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 1.068142
+    - 1.068142
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 0.907223
+    - 1.068142
+    - 1.068142
+    torso_name: torso_link
+    kinematic_joint_names:
+    - left_hip_pitch_joint
+    - left_hip_roll_joint
+    - left_hip_yaw_joint
+    - left_knee_joint
+    - left_ankle_pitch_joint
+    - left_ankle_roll_joint
+    - right_hip_pitch_joint
+    - right_hip_roll_joint
+    - right_hip_yaw_joint
+    - right_knee_joint
+    - right_ankle_pitch_joint
+    - right_ankle_roll_joint
+    - waist_yaw_joint
+    - waist_roll_joint
+    - waist_pitch_joint
+    - left_shoulder_pitch_joint
+    - left_shoulder_roll_joint
+    - left_shoulder_yaw_joint
+    - left_elbow_joint
+    - left_wrist_roll_joint
+    - left_wrist_pitch_joint
+    - left_wrist_yaw_joint
+    - right_shoulder_pitch_joint
+    - right_shoulder_roll_joint
+    - right_shoulder_yaw_joint
+    - right_elbow_joint
+    - right_wrist_roll_joint
+    - right_wrist_pitch_joint
+    - right_wrist_yaw_joint
+  control:
+    low_dt: 0.005
+    decimation: 4
+    obs_clip_value: 1000
+    action_scale: 1.0
+    action_clip_value: 10000.0
+    torque_clip_value:
+    - 88
+    - 139
+    - 88
+    - 139
+    - 50
+    - 50
+    - 88
+    - 139
+    - 88
+    - 139
+    - 50
+    - 50
+    - 88
+    - 50
+    - 50
+    - 25
+    - 25
+    - 25
+    - 25
+    - 25
+    - 5
+    - 5
+    - 25
+    - 25
+    - 25
+    - 25
+    - 25
+    - 5
+    - 5
+    use_residual: false
+    residual_joint_indices: []
+    is_mosaic: true
+    update_with_fk: true
+    use_teleop: false
+    reset_heading_on_start: true
+    viewer: true
+    real_time: true
+obs:
+  obs_dict: {}
+  obs_scales: {}
+  obs_auxiliary: {}
+  obs_dims: []
+sim:
+  _target_: simulator.real_world.RealWorld
+  _recursive_: false
+  config:
+    control: ${robot.control}
+    asset: ${robot.asset}
+    motion: ${mimic.motion}
+    table_tennis:
+      enabled: true
+      ball_body_name: hitter_ball
+      ball_joint_name: hitter_ball_freejoint
+env:
+  _target_: envs.hitter.HitterEnv
+  _recursive_: false
+  config:
+    device: ${device}
+    simulator: ${sim}
+    obs: ${obs}
+    control: ${robot.control}
+    collect_dataset: false
+    motion: ${mimic.motion}
+    policy: ${mimic.policy}
+agent:
+  _target_: agents.hitter_agent.HitterAgent
+  _recursive_: true
+  env: ${env}
+  config:
+    checkpoint: ${mimic.policy.checkpoint}
+    device: ${device}
+mimic:
+  policy:
+    checkpoint: ./data/model/hitter/hitter_model14100_8x4090_poswin001_velstd18_velwin003_104_20260808.onnx
+    action_beta: 1.0
+    real_world_first_frame_transition_s: 5.0
+    hitter_seed: 0
+    save_video: false
+  motion:
+    playback_speed: 1.0
+    reset_ball_on_command: true
+    mujoco_serve_times_s:
+    - 0.0
+    - 20.0
+    waiting_time_to_strike_s: 0.92
+    waiting_base_target_mode: fixed_world
+    waiting_base_target_xy_w:
+    - -0.4
+    - 0.0
+    ball_planner:
+      table_center_xy_w:
+      - 1.365369
+      - 0.0
+      table_height: 0.76
+      table_length: 2.730738
+      table_width: 1.512451
+      ball_radius: 0.02
+      virtual_hit_plane_x: -0.2
+      desired_landing_point_w:
+      - 2.05
+      - 0.0
+      - 0.78
+      post_hit_flight_time: 0.48
+      racket_restitution: 0.85
+      prediction_horizon_s: 2.0
+      prediction_dt: 0.005
+      planner_update_rate_hz: 100.0
+      minimum_stable_incoming_speed_x_mps: 0.2
+      stable_incoming_confirmation_snapshots: 3
+      require_future_hit_plane_crossing: true
+      state_estimator_window_size: 31
+      state_estimator_sample_rate_hz: 360.0
+      state_estimator_bounce_height_tolerance: 0.03
+      state_estimator_bounce_velocity_threshold: 0.1
+      state_estimator_bounce_min_separation_s: 0.2
+      vertical_restitution: 0.897474
+      horizontal_restitution: 0.764604
+      drag_coefficient: 0.098847
+      target_base_height_w: 0.78
+      racket_x_offset_b: 0.4
+      arm_time_to_strike_s: 0.92
+      minimum_arm_time_to_strike_s: 0.3
+      maximum_policy_time_to_strike_s: 0.92
+      maximum_hit_height_above_table_m: 0.69
+      maximum_prediction_horizon_s: 5.0
+      racket_velocity_component_ranges_mps:
+        x:
+        - 0.0
+        - 6.0
+        'y':
+        - -0.5
+        - 0.5
+        z:
+        - 0.0
+        - 6.0
+      swing_duration_range:
+      - 1.75
+      - 1.95
+      force_strike_type: null
+      forehand_nominal_racket_y_b: -0.5
+      backhand_nominal_racket_y_b: 0.22
+device: cpu

@@ -1,0 +1,2190 @@
+# Review package: 1814e1ee3cd620e4fc9e21e80ef24fa78e86e517..HEAD
+
+## Commits
+9c1f6a8 fix: preserve coherent HITTER diagnostic authority
+
+## Files changed
+ deploy/diagnostics/hitter_task_events.py   |  19 +-
+ deploy/diagnostics/hitter_task_monitor.py  | 421 +++++++++-------------
+ deploy/diagnostics/hitter_task_pipeline.py |  85 ++++-
+ deploy/tests/test_hitter_task_events.py    | 217 ++++++++++++
+ deploy/tests/test_hitter_task_monitor.py   | 538 +++++++++++++++++++++++++++--
+ deploy/tests/test_hitter_task_pipeline.py  |  72 ++++
+ 6 files changed, 1067 insertions(+), 285 deletions(-)
+
+## Diff
+diff --git a/deploy/diagnostics/hitter_task_events.py b/deploy/diagnostics/hitter_task_events.py
+index 476a8c8..289eb17 100644
+--- a/deploy/diagnostics/hitter_task_events.py
++++ b/deploy/diagnostics/hitter_task_events.py
+@@ -138,20 +138,28 @@ class DiagnosticState:
+     live_snapshot: Optional[LiveDiagnosticSnapshot] = None
+ 
+     def __post_init__(self) -> None:
+         if self.schema_version not in (
+             SCHEMA_VERSION,
+             LIVE_SNAPSHOT_SCHEMA_VERSION,
+         ):
+             raise ValueError("unsupported schema_version")
+         if self.watermark_event_id < 0:
+             raise ValueError("watermark_event_id must be non-negative")
++        if (
++            self.live_snapshot is not None
++            and self.current_attempt
++            != self.live_snapshot.current_attempt
++        ):
++            raise ValueError(
++                "current_attempt mirror must match live snapshot"
++            )
+         object.__setattr__(
+             self,
+             "recent_attempts",
+             tuple(self.recent_attempts[:_RECENT_ATTEMPT_LIMIT]),
+         )
+ 
+     def to_json_dict(self) -> Dict[str, Any]:
+         value = {
+             "schema_version": self.schema_version,
+             "watermark_event_id": self.watermark_event_id,
+@@ -408,34 +416,41 @@ def reduce_diagnostic_state(
+             watermark_event_id=event.event_id,
+             health=_health(event.payload),
+         )
+     if event.kind == "LIFECYCLE_SNAPSHOT":
+         return replace(
+             state,
+             watermark_event_id=event.event_id,
+             lifecycle=_lifecycle(event.payload),
+         )
+     if event.kind == "ATTEMPT_CURRENT":
++        current = _attempt(event.payload)
++        if state.live_snapshot is not None:
++            current = state.live_snapshot.current_attempt
+         return replace(
+             state,
+             watermark_event_id=event.event_id,
+-            current_attempt=_attempt(event.payload),
++            current_attempt=current,
+         )
+     if event.kind == "ATTEMPT_CLOSED":
+         closed = _attempt(event.payload)
+         recent = (closed,) + tuple(
+             item
+             for item in state.recent_attempts
+             if item.attempt_id != closed.attempt_id
+         )
+         current = state.current_attempt
+-        if current is not None and current.attempt_id == closed.attempt_id:
++        if (
++            state.live_snapshot is None
++            and current is not None
++            and current.attempt_id == closed.attempt_id
++        ):
+             current = None
+         return replace(
+             state,
+             watermark_event_id=event.event_id,
+             current_attempt=current,
+             recent_attempts=recent[:_RECENT_ATTEMPT_LIMIT],
+         )
+     if event.kind == "LIVE_SNAPSHOT":
+         live_snapshot = _live_snapshot(event.payload)
+         return replace(
+diff --git a/deploy/diagnostics/hitter_task_monitor.py b/deploy/diagnostics/hitter_task_monitor.py
+index 0bdd796..656de9b 100644
+--- a/deploy/diagnostics/hitter_task_monitor.py
++++ b/deploy/diagnostics/hitter_task_monitor.py
+@@ -139,32 +139,20 @@ def _positive_integer(name: str, value: object) -> int:
+ 
+ 
+ def _finite_float_or_none(value: object) -> Optional[float]:
+     try:
+         converted = float(value)
+     except (TypeError, ValueError, OverflowError):
+         return None
+     return converted if math.isfinite(converted) else None
+ 
+ 
+-def _finite_vector3_or_none(
+-    value: object,
+-) -> Optional[Tuple[float, float, float]]:
+-    try:
+-        vector = np.asarray(value, dtype=np.float64).reshape(-1)
+-    except (TypeError, ValueError):
+-        return None
+-    if vector.shape != (3,) or not np.isfinite(vector).all():
+-        return None
+-    return tuple(float(item) for item in vector)
+-
+-
+ @dataclass(frozen=True)
+ class MonitorOptions:
+     mimic_config: Path
+     control_config: Path
+     table_calib: Path
+     pelvis_calib: Path
+     lcm_url: str
+     channel: str
+     base_name: str
+     ball_name: str
+@@ -761,20 +749,23 @@ class HitterTaskMonitor:
+         )
+         self.replay_forced_strike_type = replay_forced_strike_type
+         self._monotonic_fn = monotonic_fn
+         self._wall_time_fn = wall_time_fn
+         self._select_fn = select_fn
+         self._arrival = _ArrivalWindow(
+             ("ball", "g1pelvis", "table")
+         )
+         self._state_lock = threading.RLock()
+         self._lifecycle_lock = threading.RLock()
++        # Lock order: capture -> tick/pipeline -> monitor state. Event and
++        # recorder publication must happen after the capture lock is released.
++        self._snapshot_capture_lock = threading.RLock()
+         self._tick_lock = threading.Lock()
+         self._attempt_projection_lock = threading.RLock()
+         self._attempt_close_drain_lock = threading.Lock()
+         self._close_lock = threading.RLock()
+         self._stop_event = threading.Event()
+         self._input_condition = threading.Condition(threading.Lock())
+         self._input_queue: Deque[_DecodedInput] = deque()
+         self._input_inflight = False
+         self._input_accepting = True
+         self._input_stop_requested = False
+@@ -782,29 +773,20 @@ class HitterTaskMonitor:
+         self._recording_global_incomplete = False
+         self._recording_incomplete_attempt_ids = set()
+         self._started = False
+         self._closed = False
+         self._close_result = True
+         self._subscription = None
+         self._deadline_s: Optional[float] = None
+         self._failure: Optional[str] = None
+         self._warnings: Deque[str] = deque(maxlen=64)
+         self._last_adapter_warnings: Tuple[str, ...] = ()
+-        self._latest_estimator_sample_count = 0
+-        self._latest_ball_speed_mps: Optional[float] = None
+-        self._latest_ball_source_frame: Optional[int] = None
+-        self._latest_ball_diagnostic_base: Optional[
+-            BallDiagnosticState
+-        ] = None
+-        self._latest_ball_diagnostic_projection: Optional[
+-            BallDiagnosticState
+-        ] = None
+         self._live_snapshot_revision = 0
+         self._last_planner_input_received_s: Optional[float] = None
+         self._last_tick_result = None
+         self._recorder_status = RecorderStatus(
+             healthy=True,
+             recording_complete=True,
+             bytes_written=0,
+             last_error=None,
+         )
+         self._closed_attempt_ids: "OrderedDict[int, None]" = OrderedDict()
+@@ -1125,143 +1107,59 @@ class HitterTaskMonitor:
+                 self._input_condition.notify()
+         if dropped:
+             self._add_warning("INPUT_QUEUE_FULL_RECORDING_INCOMPLETE")
+             self._mark_recording_incomplete(
+                 self._current_attempt_id(),
+                 "INPUT_SAMPLES_DROPPED",
+             )
+ 
+     def _process_input(self, item: _DecodedInput) -> None:
+         try:
+-            message = item.message
+-            raw_name = str(getattr(message, "name", "") or "").strip()
+-            if raw_name.casefold() == self.options.base_name.casefold():
+-                setattr(message, "name", "g1pelvis")
+-            elif raw_name.casefold() == self.options.ball_name.casefold():
+-                setattr(message, "name", "ball")
+-            output = self.adapter.ingest_decoded(
+-                channel=item.channel,
+-                message=message,
+-                payload_size=item.payload_size,
+-                received_monotonic_s=item.received_monotonic_s,
+-                wall_time_us=item.wall_time_us,
+-            )
+-            self.pipeline.ingest_adapter_output(output)
++            with self._snapshot_capture_lock:
++                message = item.message
++                raw_name = str(
++                    getattr(message, "name", "") or ""
++                ).strip()
++                if raw_name.casefold() == self.options.base_name.casefold():
++                    setattr(message, "name", "g1pelvis")
++                elif (
++                    raw_name.casefold()
++                    == self.options.ball_name.casefold()
++                ):
++                    setattr(message, "name", "ball")
++                output = self.adapter.ingest_decoded(
++                    channel=item.channel,
++                    message=message,
++                    payload_size=item.payload_size,
++                    received_monotonic_s=item.received_monotonic_s,
++                    wall_time_us=item.wall_time_us,
++                )
++                self.pipeline.ingest_adapter_output(output)
++                sample = output.sample
++                self._arrival.record(
++                    subject=sample.subject,
++                    received_monotonic_s=sample.received_monotonic_s,
++                    source_frame=sample.source_frame,
++                    valid=getattr(sample, "valid", None),
++                    occluded=getattr(sample, "occluded", None),
++                )
++                with self._state_lock:
++                    self._last_adapter_warnings = tuple(output.warnings)
++                self._remember_planner_input(output)
+         except Exception as exc:
+             self._add_warning(
+                 "LCM_INPUT_ERROR:{}:{}".format(
+                     type(exc).__name__,
+                     str(exc),
+                 )
+             )
+             return
+-        sample = output.sample
+-        self._arrival.record(
+-            subject=sample.subject,
+-            received_monotonic_s=sample.received_monotonic_s,
+-            source_frame=sample.source_frame,
+-            valid=getattr(sample, "valid", None),
+-            occluded=getattr(sample, "occluded", None),
+-        )
+-        diagnostic_base = None
+-        diagnostic_projection = None
+-        if str(sample.subject) == "ball":
+-            tracker = getattr(self.pipeline, "ball_diagnostics", None)
+-            snapshot_fn = getattr(tracker, "snapshot", None)
+-            if callable(snapshot_fn):
+-                candidate = snapshot_fn()
+-                if isinstance(candidate, BallDiagnosticState):
+-                    diagnostic_base = candidate
+-                    estimate = output.snapshot
+-                    diagnostic_projection = replace(
+-                        candidate,
+-                        source_frame=(
+-                            int(sample.source_frame)
+-                            if estimate is None
+-                            else int(estimate.source_frame)
+-                        ),
+-                        track_epoch=(
+-                            None
+-                            if estimate is None
+-                            else int(estimate.track_epoch)
+-                        ),
+-                        generation=(
+-                            None
+-                            if estimate is None
+-                            else int(estimate.generation)
+-                        ),
+-                        raw_position_w=_finite_vector3_or_none(
+-                            getattr(sample, "position_w", None)
+-                        ),
+-                        estimated_position_w=(
+-                            None
+-                            if estimate is None
+-                            else _finite_vector3_or_none(
+-                                getattr(estimate, "position_w", None)
+-                            )
+-                        ),
+-                        observed_monotonic_s=_finite_float_or_none(
+-                            (
+-                                sample.received_monotonic_s
+-                                if estimate is None
+-                                else estimate.received_monotonic_s
+-                            )
+-                        ),
+-                        last_estimator_reset_reason=(
+-                            (
+-                                "BOUNCE_RESET"
+-                                if bool(
+-                                    getattr(
+-                                        output,
+-                                        "bounce_detected",
+-                                        False,
+-                                    )
+-                                )
+-                                else getattr(
+-                                    getattr(
+-                                        output,
+-                                        "reset_transition",
+-                                        None,
+-                                    ),
+-                                    "reason",
+-                                    None,
+-                                )
+-                            )
+-                            or (
+-                                candidate.blocker
+-                                if candidate.status.upper()
+-                                == "TRACK_ENDED"
+-                                else candidate.last_estimator_reset_reason
+-                            )
+-                        ),
+-                    )
+-        with self._state_lock:
+-            self._latest_estimator_sample_count = int(
+-                output.estimator_sample_count
+-            )
+-            self._last_adapter_warnings = tuple(output.warnings)
+-            snapshot = output.snapshot
+-            if snapshot is not None:
+-                velocity = np.asarray(snapshot.velocity_w, dtype=np.float64)
+-                if velocity.shape == (3,) and np.isfinite(velocity).all():
+-                    self._latest_ball_speed_mps = float(
+-                        np.linalg.norm(velocity)
+-                    )
+-                self._latest_ball_source_frame = int(
+-                    snapshot.source_frame
+-                )
+-            if diagnostic_base is not None:
+-                self._latest_ball_diagnostic_base = diagnostic_base
+-                self._latest_ball_diagnostic_projection = (
+-                    diagnostic_projection
+-                )
+-        self._remember_planner_input(output)
+ 
+     def _input_loop(self) -> None:
+         while True:
+             with self._input_condition:
+                 while (
+                     not self._input_queue
+                     and not self._input_stop_requested
+                 ):
+                     self._input_condition.wait()
+                 if self._input_queue:
+@@ -1911,28 +1809,21 @@ class HitterTaskMonitor:
+ 
+     def _ball_diagnostic_snapshot(
+         self,
+         *,
+         obs_now_s: float,
+         incoming: object,
+     ) -> BallDiagnosticState:
+         tracker = getattr(self.pipeline, "ball_diagnostics", None)
+         snapshot_fn = getattr(tracker, "snapshot", None)
+         candidate = snapshot_fn() if callable(snapshot_fn) else None
+-        if isinstance(candidate, BallDiagnosticState):
+-            with self._state_lock:
+-                if (
+-                    candidate is self._latest_ball_diagnostic_base
+-                    and self._latest_ball_diagnostic_projection is not None
+-                ):
+-                    candidate = self._latest_ball_diagnostic_projection
+-        else:
++        if not isinstance(candidate, BallDiagnosticState):
+             configured_required = getattr(
+                 self.runtime_settings,
+                 "incoming_confirmation_snapshots",
+                 None,
+             )
+             required = (
+                 None
+                 if configured_required is None
+                 else int(configured_required)
+             )
+@@ -2112,27 +2003,37 @@ class HitterTaskMonitor:
+                     "strike_deadline_monotonic_s",
+                     None,
+                 )
+             )
+             if deadline is not None:
+                 planner_tts_s = deadline - float(obs_now_s)
+         if not pelvis_ready:
+             planner_status = "BLOCKED"
+             planner_reason = "PELVIS_UNAVAILABLE"
+             planner_tts_s = None
++        elif ball.estimator_ready is not True:
++            planner_status = "BLOCKED"
++            ball_status = ball.status.upper()
++            if ball.blocker is not None:
++                planner_reason = ball.blocker
++            elif ball_status == "ESTIMATING":
++                planner_reason = "ESTIMATOR_WARMING"
++            elif ball_status == "NOT_SEEN":
++                planner_reason = "BALL_NOT_SEEN"
++            elif ball.estimator_ready is None:
++                planner_reason = "BALL_STATE_UNKNOWN"
++            else:
++                planner_reason = "BALL_STATE_UNAVAILABLE"
++            planner_tts_s = None
+         elif production_incoming_status != "CONFIRMED":
+             planner_status = "BLOCKED"
+-            planner_reason = (
+-                "ESTIMATOR_WARMING"
+-                if ball.estimator_ready is not True
+-                else "INCOMING_NOT_CONFIRMED"
+-            )
++            planner_reason = "INCOMING_NOT_CONFIRMED"
+             planner_tts_s = None
+         elif command is None:
+             planner_status = "PENDING"
+             planner_reason = None
+         else:
+             planner_reason = planner_reason_code(command)
+             planner_status = (
+                 "REJECTED"
+                 if planner_reason is not None
+                 else "READY"
+@@ -2146,21 +2047,21 @@ class HitterTaskMonitor:
+         else:
+             arm_status = "NOT_ARMED"
+         arm_trigger_tts_s = _finite_float_or_none(
+             getattr(self.runtime_settings, "arm_tts_s", None)
+         )
+ 
+         task = getattr(tick_result, "task_observation", None)
+         errors = tuple(getattr(tick_result, "errors", ()) or ())
+         valid_dimensions = None
+         clip_count = None
+-        if not pelvis_ready:
++        if arm_status != "ARMED":
+             task_status = "NOT_AVAILABLE"
+         elif task is None:
+             task_status = "ERROR" if errors else "NOT_AVAILABLE"
+         else:
+             values = getattr(task, "post_clip", ())
+             try:
+                 observation = tuple(float(item) for item in values)
+             except (TypeError, ValueError):
+                 observation = ()
+             if observation and all(
+@@ -2210,24 +2111,48 @@ class HitterTaskMonitor:
+         summary: AttemptSummary,
+         tick_result: object,
+         incoming: object,
+         *,
+         estimator_sample_count: Optional[int],
+         estimator_window_size: Optional[int] = None,
+         diagnostic_incoming_count: Optional[int] = None,
+         diagnostic_incoming_required: Optional[int] = None,
+         diagnostic_incoming_confirmed: Optional[bool] = None,
+         diagnostic_status: Optional[str] = None,
++        production_gate: Optional[ProductionGateState] = None,
+     ) -> str:
+         original = str(summary.stage).upper()
+         if original in _SPECIAL_ATTEMPT_STAGES:
+             return original
++        if production_gate is not None:
++            planner_status = production_gate.planner_status.upper()
++            planner_reason = production_gate.planner_reason_code
++            if planner_status in ("BLOCKED", "REJECTED"):
++                return "PLANNER_{}".format(
++                    planner_reason or planner_status
++                )
++            if planner_status == "PENDING":
++                return "PLANNER_PENDING"
++            if planner_status == "READY":
++                if production_gate.arm_status.upper() != "ARMED":
++                    return "PLANNER_READY"
++                task_status = (
++                    production_gate.task_observation_status.upper()
++                )
++                if (
++                    task_status == "AVAILABLE"
++                    and bool(getattr(tick_result, "task_pass", False))
++                ):
++                    return "TASK_OBS_PASS"
++                if task_status == "ERROR":
++                    return "TASK_OBS_ERROR"
++                return "ARMED"
+         if bool(getattr(tick_result, "task_pass", False)):
+             return "TASK_OBS_PASS"
+         phase = str(getattr(tick_result, "phase", "")).upper()
+         if phase == "ARMED":
+             return "ARMED"
+         command = getattr(tick_result, "command_result", None)
+         if command is not None:
+             reason = planner_reason_code(command)
+             if reason is not None:
+                 return "PLANNER_{}".format(reason)
+@@ -2259,20 +2184,26 @@ class HitterTaskMonitor:
+         )
+         confirmed = (
+             bool(getattr(incoming, "confirmed", False))
+             if diagnostic_incoming_confirmed is None
+             else bool(diagnostic_incoming_confirmed)
+         )
+         if confirmed:
+             return "INCOMING_CONFIRMED {}/{}".format(count, required)
+         if count > 0:
+             return "INCOMING_CONFIRMING {}/{}".format(count, required)
++        if estimator_sample_count is None:
++            return (
++                "UNKNOWN"
++                if diagnostic_status is None
++                else str(diagnostic_status).upper()
++            )
+         samples = int(estimator_sample_count)
+         window_size = (
+             self.estimator_window_size
+             if estimator_window_size is None
+             else int(estimator_window_size)
+         )
+         if samples < window_size:
+             return "ESTIMATING {}/{}".format(
+                 samples,
+                 window_size,
+@@ -2301,66 +2232,47 @@ class HitterTaskMonitor:
+                 predicted = deadline
+                 planner_tts = deadline - float(obs_now_s)
+         if (
+             production_gate is not None
+             and production_gate.planner_status != "READY"
+         ):
+             predicted = None
+             planner_tts = None
+         elif production_gate is not None:
+             planner_tts = production_gate.planner_tts_s
+-        legacy_sample_count = 0
+-        legacy_ball_speed_mps = None
+-        use_legacy_projection = bool(
+-            ball is None or ball.status.upper() == "UNKNOWN"
+-        )
+-        if use_legacy_projection:
+-            with self._state_lock:
+-                legacy_sample_count = int(
+-                    self._latest_estimator_sample_count
+-                )
+-                legacy_ball_speed_mps = self._latest_ball_speed_mps
+-        if use_legacy_projection:
+-            estimator_sample_count = legacy_sample_count
+-            estimator_window_size = int(self.estimator_window_size)
+-            ball_speed_mps = legacy_ball_speed_mps
+-            incoming_count = int(
+-                getattr(incoming, "consecutive_count", 0)
+-            )
+-            incoming_required_count = int(
+-                getattr(
+-                    self.runtime_settings,
+-                    "incoming_confirmation_snapshots",
+-                    3,
+-                )
+-            )
+-        else:
++        if ball is not None:
+             estimator_sample_count = ball.estimator_sample_count
+             estimator_window_size = ball.estimator_window_size
+             ball_speed_mps = ball.speed_mps
+             incoming_count = ball.incoming_count
+             incoming_required_count = ball.incoming_required_count
++        else:
++            estimator_sample_count = None
++            estimator_window_size = None
++            ball_speed_mps = None
++            incoming_count = None
++            incoming_required_count = None
+         diagnostic_confirmed = (
+             None
+             if ball is None
+             else ball.ball_only_incoming_confirmed
+         )
+         task_obs_status = (
+             summary.task_obs_status
+             if production_gate is None
+             else production_gate.task_observation_status
+         )
+         primary_blocker = summary.primary_blocker
+         if (
+-            primary_blocker is None
+-            and production_gate is not None
+-            and production_gate.planner_status == "BLOCKED"
++            production_gate is not None
++            and production_gate.planner_status in ("BLOCKED", "REJECTED")
++            and production_gate.planner_reason_code is not None
+         ):
+             primary_blocker = production_gate.planner_reason_code
+         live_arm_tts = (
+             planner_tts
+             if (
+                 production_gate is not None
+                 and production_gate.arm_status == "ARMED"
+             )
+             else None
+         )
+@@ -2369,22 +2281,23 @@ class HitterTaskMonitor:
+             stage=self._attempt_stage(
+                 summary,
+                 tick_result,
+                 incoming,
+                 estimator_sample_count=estimator_sample_count,
+                 estimator_window_size=estimator_window_size,
+                 diagnostic_incoming_count=incoming_count,
+                 diagnostic_incoming_required=incoming_required_count,
+                 diagnostic_incoming_confirmed=diagnostic_confirmed,
+                 diagnostic_status=(
+-                    None if use_legacy_projection else ball.status
++                    None if ball is None else ball.status
+                 ),
++                production_gate=production_gate,
+             ),
+             primary_blocker=primary_blocker,
+             ball_speed_mps=ball_speed_mps,
+             predicted_strike_time_s=predicted,
+             planner_tts_s=planner_tts,
+             arm_tts_s=live_arm_tts,
+             task_obs_status=task_obs_status,
+             recording_complete=bool(
+                 recorder_status.recording_complete
+                 and self.input_recording_complete
+@@ -2667,108 +2580,110 @@ class HitterTaskMonitor:
+         with self._attempt_projection_lock:
+             if self._closed:
+                 return
+             self._tick_once_under_projection()
+ 
+     def _tick_once_under_projection(self) -> None:
+         """Run one production-order tick with exactly two semantic clocks."""
+         lifecycle_now_s = self._monotonic_fn()
+         obs_now_s = self._monotonic_fn()
+         wall_time_us = int(self._wall_time_fn() * 1.0e6)
+-        with self._tick_lock:
+-            tick_result = self.pipeline.tick(
++        with self._snapshot_capture_lock:
++            with self._tick_lock:
++                tick_result = self.pipeline.tick(
++                    lifecycle_now_s=lifecycle_now_s,
++                    obs_now_s=obs_now_s,
++                    wall_time_us=wall_time_us,
++                )
++                transitions = self.pipeline.attempt_tracker.advance(
++                    now_monotonic_s=obs_now_s
++                )
++            self._last_tick_result = tick_result
++            self._remember_tick_detail(tick_result)
++
++            lifecycle = LifecycleSnapshot(
++                phase=str(tick_result.phase),
++                last_decision=str(tick_result.lifecycle_decision),
++                active_key=_snapshot_key(tick_result.active_binding),
++                cached_key=_snapshot_key(tick_result.cached_binding),
+                 lifecycle_now_s=lifecycle_now_s,
+                 obs_now_s=obs_now_s,
+-                wall_time_us=wall_time_us,
+             )
+-            transitions = self.pipeline.attempt_tracker.advance(
+-                now_monotonic_s=obs_now_s
++            recorder_status = self._cached_recorder_status()
++            incoming = self.pipeline.incoming.snapshot()
++            ball = self._ball_diagnostic_snapshot(
++                obs_now_s=obs_now_s,
++                incoming=incoming,
++            )
++            arrival = self._arrival.snapshot(obs_now_s)
++            pelvis = self.adapter.copy_latest_pelvis()
++            current_state = self.event_hub.state_snapshot()
++            current_health = current_state.health
++            subjects = self._subject_health_snapshots(
++                arrival=arrival,
++                pelvis=pelvis,
++            )
++            production_gate = self._production_gate_snapshot(
++                tick_result=tick_result,
++                incoming=incoming,
++                ball=ball,
++                subjects=subjects,
++                obs_now_s=obs_now_s,
++            )
++            current = self.pipeline.attempt_tracker.current_summary()
++            projected = None
++            if (
++                current is not None
++                and self._tick_can_project_attempt(tick_result, current)
++            ):
++                projected = self._project_attempt(
++                    current,
++                    tick_result=tick_result,
++                    incoming=incoming,
++                    obs_now_s=obs_now_s,
++                    recorder_status=recorder_status,
++                    ball=ball,
++                    production_gate=production_gate,
++                )
++                with self._state_lock:
++                    self._attempt_observations.setdefault(
++                        projected.attempt_id,
++                        {},
++                    )["projected_summary"] = projected
++
++            health = self._health_snapshot(
++                obs_now_s=obs_now_s,
++                recorder_status=recorder_status,
++                arrival=arrival,
++                pelvis=pelvis,
++                current_health=current_health,
++            )
++            live_snapshot = LiveDiagnosticSnapshot(
++                revision=self._next_live_snapshot_revision(),
++                captured_monotonic_s=obs_now_s,
++                subjects=subjects,
++                ball=ball,
++                production_gate=production_gate,
++                current_attempt=projected,
+             )
+-        self._last_tick_result = tick_result
+-        self._remember_tick_detail(tick_result)
++
+         for transition in transitions:
+             self._offer(
+                 EventDraft(
+                     kind="attempt_transition",
+                     monotonic_s=transition.monotonic_s,
+                     wall_time_us=wall_time_us,
+                     scope="attempt",
+                     attempt_id=transition.attempt_id,
+                     payload=_transition_payload(transition),
+                 )
+             )
+-
+-        lifecycle = LifecycleSnapshot(
+-            phase=str(tick_result.phase),
+-            last_decision=str(tick_result.lifecycle_decision),
+-            active_key=_snapshot_key(tick_result.active_binding),
+-            cached_key=_snapshot_key(tick_result.cached_binding),
+-            lifecycle_now_s=lifecycle_now_s,
+-            obs_now_s=obs_now_s,
+-        )
+-        recorder_status = self._cached_recorder_status()
+-        incoming = self.pipeline.incoming.snapshot()
+-        ball = self._ball_diagnostic_snapshot(
+-            obs_now_s=obs_now_s,
+-            incoming=incoming,
+-        )
+-        arrival = self._arrival.snapshot(obs_now_s)
+-        pelvis = self.adapter.copy_latest_pelvis()
+-        current_state = self.event_hub.state_snapshot()
+-        current_health = current_state.health
+-        subjects = self._subject_health_snapshots(
+-            arrival=arrival,
+-            pelvis=pelvis,
+-        )
+-        production_gate = self._production_gate_snapshot(
+-            tick_result=tick_result,
+-            incoming=incoming,
+-            ball=ball,
+-            subjects=subjects,
+-            obs_now_s=obs_now_s,
+-        )
+-        current = self.pipeline.attempt_tracker.current_summary()
+-        projected = None
+-        if (
+-            current is not None
+-            and self._tick_can_project_attempt(tick_result, current)
+-        ):
+-            projected = self._project_attempt(
+-                current,
+-                tick_result=tick_result,
+-                incoming=incoming,
+-                obs_now_s=obs_now_s,
+-                recorder_status=recorder_status,
+-                ball=ball,
+-                production_gate=production_gate,
+-            )
+-            with self._state_lock:
+-                self._attempt_observations.setdefault(
+-                    projected.attempt_id,
+-                    {},
+-                )["projected_summary"] = projected
+-
+-        health = self._health_snapshot(
+-            obs_now_s=obs_now_s,
+-            recorder_status=recorder_status,
+-            arrival=arrival,
+-            pelvis=pelvis,
+-            current_health=current_health,
+-        )
+-        live_snapshot = LiveDiagnosticSnapshot(
+-            revision=self._next_live_snapshot_revision(),
+-            captured_monotonic_s=obs_now_s,
+-            subjects=subjects,
+-            ball=ball,
+-            production_gate=production_gate,
+-            current_attempt=projected,
+-        )
+         self._offer(
+             EventDraft(
+                 kind="LIVE_SNAPSHOT",
+                 monotonic_s=obs_now_s,
+                 wall_time_us=wall_time_us,
+                 scope="state",
+                 attempt_id=None,
+                 payload=live_snapshot.to_json_dict(),
+             )
+         )
+diff --git a/deploy/diagnostics/hitter_task_pipeline.py b/deploy/diagnostics/hitter_task_pipeline.py
+index a88a969..caf8e47 100644
+--- a/deploy/diagnostics/hitter_task_pipeline.py
++++ b/deploy/diagnostics/hitter_task_pipeline.py
+@@ -1,14 +1,14 @@
+ from __future__ import annotations
+ 
+ from collections import OrderedDict
+-from dataclasses import dataclass
++from dataclasses import dataclass, replace
+ import math
+ import threading
+ from typing import Any, Callable, Mapping, Optional, Tuple
+ 
+ import numpy as np
+ 
+ from diagnostics.hitter_task_attempts import AttemptTracker
+ from diagnostics.hitter_task_models import (
+     AttemptBinding,
+     BallDiagnosticState,
+@@ -612,20 +612,21 @@ class BallDiagnosticTracker:
+         self.required_consecutive_snapshots = int(
+             required_consecutive_snapshots
+         )
+         if self.required_consecutive_snapshots < 1:
+             raise ValueError(
+                 "required_consecutive_snapshots must be positive"
+             )
+         self._lock = threading.RLock()
+         self._latest_key: Optional[SnapshotKey] = None
+         self._incoming_count = 0
++        self._last_estimator_reset_reason: Optional[str] = None
+         self._state = self._unavailable_state(
+             status="NOT_SEEN",
+             incoming_status="NOT_EVALUATED",
+             blocker="BALL_NOT_SEEN",
+         )
+ 
+     def _unavailable_state(
+         self,
+         *,
+         status: str,
+@@ -643,78 +644,139 @@ class BallDiagnosticTracker:
+                 self.required_consecutive_snapshots
+             ),
+             incoming_status=incoming_status,
+             blocker=blocker,
+         )
+ 
+     def reset(self, *, blocker: str) -> BallDiagnosticState:
+         with self._lock:
+             self._latest_key = None
+             self._incoming_count = 0
++            self._last_estimator_reset_reason = str(blocker)
+             self._state = self._unavailable_state(
+                 status="TRACK_ENDED",
+                 incoming_status="TRACK_ENDED",
+                 blocker=str(blocker),
+             )
++            self._state = replace(
++                self._state,
++                last_estimator_reset_reason=(
++                    self._last_estimator_reset_reason
++                ),
++            )
+             return self._state
+ 
+     def observe(
+         self,
+         snapshot: BallEstimateSnapshot,
+         *,
+         estimator_sample_count: Optional[int],
++        raw_position_w: Optional[object] = None,
++        last_estimator_reset_reason: Optional[str] = None,
+     ) -> BallDiagnosticState:
+         key = SnapshotKey(
+             int(snapshot.track_epoch),
+             int(snapshot.generation),
+         )
++        raw_position = np.asarray(
++            (
++                snapshot.position_w
++                if raw_position_w is None
++                else raw_position_w
++            ),
++            dtype=np.float64,
++        ).reshape(-1)
++        estimated_position = np.asarray(
++            snapshot.position_w,
++            dtype=np.float64,
++        ).reshape(-1)
++        observation_fields = {
++            "source_frame": int(snapshot.source_frame),
++            "track_epoch": int(snapshot.track_epoch),
++            "generation": int(snapshot.generation),
++            "raw_position_w": (
++                tuple(float(value) for value in raw_position)
++                if (
++                    raw_position.shape == (3,)
++                    and np.isfinite(raw_position).all()
++                )
++                else None
++            ),
++            "estimated_position_w": (
++                tuple(float(value) for value in estimated_position)
++                if (
++                    estimated_position.shape == (3,)
++                    and np.isfinite(estimated_position).all()
++                )
++                else None
++            ),
++            "observed_monotonic_s": float(
++                snapshot.received_monotonic_s
++            ),
++        }
+         with self._lock:
+             latest = self._latest_key
+             if latest is not None:
+                 if key.track_epoch < latest.track_epoch:
+                     return self._state
+                 if (
+                     key.track_epoch == latest.track_epoch
+                     and key.generation <= latest.generation
+                 ):
+                     return self._state
+                 if key.track_epoch != latest.track_epoch:
+                     self._incoming_count = 0
+             self._latest_key = key
++            if last_estimator_reset_reason is not None:
++                self._last_estimator_reset_reason = str(
++                    last_estimator_reset_reason
++                )
+ 
+             if not bool(snapshot.visible):
+                 self._incoming_count = 0
+                 self._state = self._unavailable_state(
+                     status="TRACK_ENDED",
+                     incoming_status="TRACK_ENDED",
+                     blocker="BALL_NOT_VISIBLE",
+                 )
++                self._last_estimator_reset_reason = "BALL_NOT_VISIBLE"
++                self._state = replace(
++                    self._state,
++                    **observation_fields,
++                    last_estimator_reset_reason=(
++                        self._last_estimator_reset_reason
++                    ),
++                )
+                 return self._state
+ 
+             sample_count = (
+                 None
+                 if estimator_sample_count is None
+                 else int(estimator_sample_count)
+             )
+             if not bool(snapshot.ready):
+                 self._state = BallDiagnosticState(
+                     status="ESTIMATING",
+                     estimator_sample_count=sample_count,
+                     estimator_window_size=self.estimator_window_size,
+                     speed_mps=None,
+                     velocity_world_mps=None,
+                     incoming_count=None,
+                     incoming_required_count=(
+                         self.required_consecutive_snapshots
+                     ),
+                     incoming_status="NOT_EVALUATED",
+                     blocker="ESTIMATOR_WARMING",
++                    **observation_fields,
++                    last_estimator_reset_reason=(
++                        self._last_estimator_reset_reason
++                    ),
+                 )
+                 return self._state
+ 
+             velocity = np.asarray(
+                 snapshot.velocity_w,
+                 dtype=np.float64,
+             ).reshape(-1)
+             if velocity.shape != (3,) or not np.isfinite(velocity).all():
+                 self._incoming_count = 0
+                 self._state = BallDiagnosticState(
+@@ -722,20 +784,24 @@ class BallDiagnosticTracker:
+                     estimator_sample_count=sample_count,
+                     estimator_window_size=self.estimator_window_size,
+                     speed_mps=None,
+                     velocity_world_mps=None,
+                     incoming_count=None,
+                     incoming_required_count=(
+                         self.required_consecutive_snapshots
+                     ),
+                     incoming_status="NOT_EVALUATED",
+                     blocker="ESTIMATE_NONFINITE",
++                    **observation_fields,
++                    last_estimator_reset_reason=(
++                        self._last_estimator_reset_reason
++                    ),
+                 )
+                 return self._state
+ 
+             velocity_tuple = tuple(float(value) for value in velocity)
+             incoming = bool(
+                 velocity_tuple[0] <= -self.minimum_speed_x_mps
+             )
+             if incoming:
+                 self._incoming_count = min(
+                     self._incoming_count + 1,
+@@ -754,20 +820,24 @@ class BallDiagnosticTracker:
+                     self.required_consecutive_snapshots
+                 ),
+                 incoming_status=(
+                     "INCOMING" if incoming else "NOT_INCOMING"
+                 ),
+                 blocker=(
+                     None
+                     if incoming
+                     else "INCOMING_SPEED_REJECTED"
+                 ),
++                **observation_fields,
++                last_estimator_reset_reason=(
++                    self._last_estimator_reset_reason
++                ),
+             )
+             return self._state
+ 
+     def snapshot(self) -> BallDiagnosticState:
+         with self._lock:
+             return self._state
+ 
+ 
+ class ShadowTaskPipeline:
+     """Production-equivalent estimator-to-task-observation shadow path."""
+@@ -1118,50 +1188,63 @@ class ShadowTaskPipeline:
+                     wall_time_us=sample.wall_time_us,
+                     binding=binding,
+                     payload={
+                         "reason_code": warning,
+                         "input_seq": sample.input_seq,
+                     },
+                 )
+ 
+             if snapshot is None:
+                 return
++            reset_reason = (
++                "BOUNCE_RESET"
++                if output.bounce_detected
++                else (
++                    None
++                    if output.reset_transition is None
++                    else output.reset_transition.reason
++                )
++            )
+             diagnostic_boundary = bool(
+                 output.bounce_detected
+                 or not bool(snapshot.visible)
+             )
+             if output.bounce_detected:
+                 self.ball_diagnostics.reset(
+                     blocker="BOUNCE_RESET"
+                 )
+             if diagnostic_boundary:
+                 self.ball_diagnostics.observe(
+                     snapshot,
+                     estimator_sample_count=(
+                         output.estimator_sample_count
+                     ),
++                    raw_position_w=sample.position_w,
++                    last_estimator_reset_reason=reset_reason,
+                 )
+             received = float(snapshot.received_monotonic_s)
+             last = self._last_submit_received_s
+             if (
+                 last is not None
+                 and received - last
+                 < self.settings.planner_update_interval_s - 1.0e-12
+             ):
+                 return
+             self._last_submit_received_s = received
+             if not diagnostic_boundary:
+                 self.ball_diagnostics.observe(
+                     snapshot,
+                     estimator_sample_count=(
+                         output.estimator_sample_count
+                     ),
++                    raw_position_w=sample.position_w,
++                    last_estimator_reset_reason=reset_reason,
+                 )
+             submission = (
+                 snapshot,
+                 received,
+                 sample.wall_time_us,
+                 binding,
+                 sample.input_seq,
+                 self.lifecycle.phase.value,
+             )
+ 
+diff --git a/deploy/tests/test_hitter_task_events.py b/deploy/tests/test_hitter_task_events.py
+index ecb0799..798e2c1 100644
+--- a/deploy/tests/test_hitter_task_events.py
++++ b/deploy/tests/test_hitter_task_events.py
+@@ -10,23 +10,27 @@ import weakref
+ 
+ from diagnostics.hitter_task_events import (
+     DiagnosticState,
+     EventHub,
+     EventPublisherLane,
+     ProgressMailbox,
+     reduce_diagnostic_state,
+ )
+ from diagnostics.hitter_task_models import (
+     AttemptSummary,
++    BallDiagnosticState,
+     EventDraft,
+     HealthSnapshot,
+     LifecycleSnapshot,
++    LiveDiagnosticSnapshot,
++    ProductionGateState,
++    SubjectHealth,
+ )
+ 
+ 
+ def _health(*, dropped: int = 0) -> HealthSnapshot:
+     return HealthSnapshot(
+         lcm_connected=True,
+         message_rate_hz_by_subject={"ball": 360.0},
+         message_age_s_by_subject={"ball": 0.01},
+         source_frame_by_subject={"ball": 10},
+         pelvis_valid=True,
+@@ -67,20 +71,91 @@ def _summary(attempt_id: int, *, status: str = "ACTIVE") -> AttemptSummary:
+         ball_speed_mps=None,
+         predicted_strike_time_s=None,
+         planner_tts_s=None,
+         arm_tts_s=None,
+         task_obs_status="PENDING",
+         ab_summary=None,
+         recording_complete=True,
+     )
+ 
+ 
++_DEFAULT_LIVE_CURRENT = object()
++
++
++def _live_payload(
++    *,
++    current_attempt=_DEFAULT_LIVE_CURRENT,
++    revision: int = 1,
++):
++    current = (
++        _summary(7)
++        if current_attempt is _DEFAULT_LIVE_CURRENT
++        else current_attempt
++    )
++    return LiveDiagnosticSnapshot(
++        revision=revision,
++        captured_monotonic_s=10.0 + revision,
++        subjects={
++            "ball": SubjectHealth(
++                status="LIVE",
++                rate_hz=360.0,
++                age_s=0.001,
++                source_frame=10,
++                valid=True,
++                occluded=False,
++            ),
++            "g1pelvis": SubjectHealth(
++                status="LIVE",
++                rate_hz=360.0,
++                age_s=0.001,
++                source_frame=10,
++                valid=True,
++                occluded=False,
++            ),
++        },
++        ball=BallDiagnosticState(
++            status="READY",
++            estimator_sample_count=31,
++            estimator_window_size=31,
++            speed_mps=1.0,
++            velocity_world_mps=(-1.0, 0.0, 0.0),
++            incoming_count=3,
++            incoming_required_count=3,
++            incoming_status="INCOMING",
++            blocker=None,
++            source_frame=10,
++            track_epoch=1,
++            generation=2,
++            raw_position_w=(1.0, 0.0, 1.0),
++            estimated_position_w=(1.0, 0.0, 1.0),
++            observed_monotonic_s=10.0,
++            age_s=0.0,
++        ),
++        production_gate=ProductionGateState(
++            pelvis_status="READY",
++            production_incoming_status="CONFIRMED",
++            production_incoming_count=3,
++            production_incoming_required=3,
++            planner_status="READY",
++            planner_reason_code=None,
++            planner_tts_s=0.8,
++            arm_status="ARMED",
++            arm_trigger_tts_s=0.35,
++            task_observation_status="AVAILABLE",
++            task_observation_valid_dimensions=11,
++            task_observation_total_dimensions=11,
++            task_observation_clip_count=0,
++        ),
++        current_attempt=current,
++    ).to_json_dict()
++
++
+ def _state() -> DiagnosticState:
+     return DiagnosticState(
+         schema_version=1,
+         watermark_event_id=0,
+         health=_health(),
+         lifecycle=_lifecycle(),
+         current_attempt=None,
+         recent_attempts=(),
+     )
+ 
+@@ -403,20 +478,162 @@ class EventHubTests(unittest.TestCase):
+         )
+ 
+         state = hub.state_snapshot().to_json_dict()
+         self.assertEqual(state["schema_version"], 2)
+         self.assertEqual(state["live_snapshot"], payload)
+         self.assertEqual(
+             state["current_attempt"],
+             payload["current_attempt"],
+         )
+ 
++    def test_v2_state_rejects_mismatched_current_attempt_mirror(self) -> None:
++        hub = EventHub(_state())
++        hub.publish(
++            _draft(
++                1,
++                kind="LIVE_SNAPSHOT",
++                attempt_id=7,
++                payload=_live_payload(),
++            )
++        )
++
++        with self.assertRaisesRegex(ValueError, "current_attempt mirror"):
++            replace(
++                hub.state_snapshot(),
++                current_attempt=_summary(8),
++            )
++
++    def test_v2_legacy_current_cannot_override_live_current(self) -> None:
++        hub = EventHub(_state())
++        hub.publish(
++            _draft(
++                1,
++                kind="LIVE_SNAPSHOT",
++                attempt_id=7,
++                payload=_live_payload(),
++            )
++        )
++        hub.publish(
++            _draft(
++                2,
++                kind="ATTEMPT_CURRENT",
++                attempt_id=8,
++                payload=_summary(8).to_json_dict(),
++            )
++        )
++
++        state = hub.state_snapshot()
++        self.assertEqual(state.watermark_event_id, 2)
++        self.assertEqual(state.current_attempt.attempt_id, 7)
++        self.assertEqual(
++            state.current_attempt,
++            state.live_snapshot.current_attempt,
++        )
++        value = state.to_json_dict()
++        self.assertEqual(
++            value["current_attempt"],
++            value["live_snapshot"]["current_attempt"],
++        )
++
++    def test_v2_close_updates_history_without_rewriting_live_current(self) -> None:
++        hub = EventHub(_state())
++        hub.publish(
++            _draft(
++                1,
++                kind="LIVE_SNAPSHOT",
++                attempt_id=7,
++                payload=_live_payload(revision=3),
++            )
++        )
++        hub.publish(
++            _draft(
++                2,
++                kind="ATTEMPT_CLOSED",
++                attempt_id=7,
++                payload=_summary(7, status="FAILED").to_json_dict(),
++            )
++        )
++
++        state = hub.state_snapshot()
++        self.assertEqual(state.current_attempt.status, "ACTIVE")
++        self.assertEqual(
++            state.current_attempt,
++            state.live_snapshot.current_attempt,
++        )
++        self.assertEqual(state.live_snapshot.revision, 3)
++        self.assertEqual(state.recent_attempts[0].attempt_id, 7)
++        self.assertEqual(state.recent_attempts[0].status, "FAILED")
++
++    def test_v2_stale_legacy_current_cannot_resurrect_closed_attempt(self) -> None:
++        hub = EventHub(_state())
++        hub.publish(
++            _draft(
++                1,
++                kind="LIVE_SNAPSHOT",
++                attempt_id=7,
++                payload=_live_payload(current_attempt=None),
++            )
++        )
++        hub.publish(
++            _draft(
++                2,
++                kind="ATTEMPT_CLOSED",
++                attempt_id=7,
++                payload=_summary(7, status="FAILED").to_json_dict(),
++            )
++        )
++        hub.publish(
++            _draft(
++                3,
++                kind="ATTEMPT_CURRENT",
++                attempt_id=7,
++                payload=_summary(7).to_json_dict(),
++            )
++        )
++
++        state = hub.state_snapshot()
++        self.assertIsNone(state.current_attempt)
++        self.assertIsNone(state.live_snapshot.current_attempt)
++        self.assertEqual(state.recent_attempts[0].attempt_id, 7)
++        value = state.to_json_dict()
++        self.assertEqual(
++            value["current_attempt"],
++            value["live_snapshot"]["current_attempt"],
++        )
++
++    def test_v2_old_close_preserves_new_live_current(self) -> None:
++        hub = EventHub(_state())
++        hub.publish(
++            _draft(
++                1,
++                kind="LIVE_SNAPSHOT",
++                attempt_id=8,
++                payload=_live_payload(current_attempt=_summary(8)),
++            )
++        )
++        hub.publish(
++            _draft(
++                2,
++                kind="ATTEMPT_CLOSED",
++                attempt_id=7,
++                payload=_summary(7, status="FAILED").to_json_dict(),
++            )
++        )
++
++        state = hub.state_snapshot()
++        self.assertEqual(state.current_attempt.attempt_id, 8)
++        self.assertEqual(
++            state.current_attempt,
++            state.live_snapshot.current_attempt,
++        )
++        self.assertEqual(state.recent_attempts[0].attempt_id, 7)
++
+     def test_payload_is_detached_deeply_immutable_and_never_rewritten(self) -> None:
+         hub = EventHub(_state(), capacity=4)
+         source = {"nested": [{"value": 1}]}
+         draft = _draft(1, payload=source)
+         event = hub.publish(draft)
+         source["nested"][0]["value"] = 99
+         source["nested"].append({"value": 2})
+         with self.assertRaises(TypeError):
+             event.payload["other"] = 3
+         with self.assertRaises(TypeError):
+diff --git a/deploy/tests/test_hitter_task_monitor.py b/deploy/tests/test_hitter_task_monitor.py
+index c8c21d5..420efe8 100644
+--- a/deploy/tests/test_hitter_task_monitor.py
++++ b/deploy/tests/test_hitter_task_monitor.py
+@@ -13,20 +13,21 @@ from types import SimpleNamespace
+ import unittest
+ 
+ from diagnostics.hitter_task_models import (
+     AttemptBinding,
+     AttemptDetail,
+     AttemptSummary,
+     AttemptTransition,
+     BallDiagnosticState,
+     EventDraft,
+     SnapshotKey,
++    SubjectHealth,
+ )
+ from diagnostics.hitter_task_events import EventHub
+ from diagnostics.hitter_task_attempts import AttemptTracker
+ from diagnostics.hitter_task_monitor import (
+     HitterTaskMonitor,
+     MonitorOptions,
+     _initial_state,
+     _parser,
+     build_monitor,
+     default_output_dir,
+@@ -716,37 +717,36 @@ class HitterTaskMonitorTest(unittest.TestCase):
+                 pipeline.tick_calls[0]["obs_now_s"],
+                 10.125,
+             )
+             current = next(
+                 draft
+                 for draft in lane.drafts
+                 if draft.kind == "ATTEMPT_CURRENT"
+             )
+             self.assertEqual(
+                 current.payload["attempt"]["stage"],
+-                "INCOMING_CONFIRMING 2/3",
++                "PLANNER_PELVIS_UNAVAILABLE",
+             )
+             self.assertEqual(
+-                current.payload["attempt"]["estimator_sample_count"],
+-                31,
+-            )
+-            self.assertEqual(
+-                current.payload["attempt"]["estimator_window_size"],
+-                31,
+-            )
+-            self.assertEqual(
+-                current.payload["attempt"]["incoming_count"],
+-                2,
+-            )
+-            self.assertEqual(
+-                current.payload["attempt"]["incoming_required_count"],
+-                3,
++                (
++                    current.payload["attempt"][
++                        "estimator_sample_count"
++                    ],
++                    current.payload["attempt"][
++                        "estimator_window_size"
++                    ],
++                    current.payload["attempt"]["incoming_count"],
++                    current.payload["attempt"][
++                        "incoming_required_count"
++                    ],
++                ),
++                (None, 31, None, None),
+             )
+             self.assertTrue(
+                 any(draft.kind == "HEALTH_SNAPSHOT" for draft in lane.drafts)
+             )
+             self.assertTrue(
+                 any(
+                     draft.kind == "LIFECYCLE_SNAPSHOT"
+                     for draft in lane.drafts
+                 )
+             )
+@@ -887,20 +887,182 @@ class HitterTaskMonitorTest(unittest.TestCase):
+         self.assertIsNone(attempt["planner_tts_s"])
+         self.assertIsNone(attempt["arm_tts_s"])
+         self.assertEqual(attempt["task_obs_status"], "NOT_AVAILABLE")
+         self.assertEqual(attempt["primary_blocker"], "PELVIS_UNAVAILABLE")
+         self.assertEqual(
+             sum(draft.kind == "LIVE_SNAPSHOT" for draft in lane.drafts),
+             1,
+         )
+         self.assertEqual(len(diagnostic_reads), 1)
+ 
++    def test_throttled_input_does_not_relabel_canonical_ball_generation(self):
++        with tempfile.TemporaryDirectory() as temp_dir:
++            (
++                monitor,
++                _log,
++                transport,
++                _decoder_log,
++                _ingested,
++                pipeline,
++                _recorder,
++                _web,
++                _lane,
++            ) = _constructed_monitor(Path(temp_dir))
++            canonical = BallDiagnosticState(
++                status="READY",
++                estimator_sample_count=31,
++                estimator_window_size=31,
++                speed_mps=1.0,
++                velocity_world_mps=(-1.0, 0.0, 0.0),
++                incoming_count=1,
++                incoming_required_count=3,
++                incoming_status="INCOMING",
++                blocker=None,
++                source_frame=101,
++                track_epoch=4,
++                generation=11,
++                raw_position_w=(1.1, 1.2, 1.3),
++                estimated_position_w=(1.4, 1.5, 1.6),
++                observed_monotonic_s=5.0,
++            )
++            pipeline.ball_diagnostics = SimpleNamespace(
++                snapshot=lambda: canonical
++            )
++            pipeline.attempt_tracker.binding_for_result = (
++                lambda _key: None
++            )
++            monitor.adapter.ingest_decoded = lambda **_kwargs: SimpleNamespace(
++                sample=SimpleNamespace(
++                    subject="ball",
++                    source_frame=102,
++                    position_w=(2.1, 2.2, 2.3),
++                    received_monotonic_s=5.005,
++                    valid=True,
++                    occluded=False,
++                ),
++                snapshot=SimpleNamespace(
++                    source_frame=102,
++                    track_epoch=4,
++                    generation=12,
++                    position_w=(2.4, 2.5, 2.6),
++                    velocity_w=(-2.0, 0.0, 0.0),
++                    received_monotonic_s=5.005,
++                ),
++                warnings=(),
++                estimator_sample_count=32,
++                bounce_detected=False,
++                reset_transition=None,
++            )
++            item = SimpleNamespace(
++                channel="vicon_state_data",
++                message=SimpleNamespace(name="ball"),
++                payload_size=96,
++                received_monotonic_s=5.005,
++                wall_time_us=1,
++            )
++            try:
++                monitor._process_input(item)
++                captured = monitor._ball_diagnostic_snapshot(
++                    obs_now_s=5.006,
++                    incoming=pipeline.incoming.snapshot(),
++                )
++            finally:
++                monitor.close(timeout_s=0.0)
++                transport.close_fds()
++
++        self.assertEqual(
++            (
++                captured.source_frame,
++                captured.track_epoch,
++                captured.generation,
++                captured.raw_position_w,
++                captured.estimated_position_w,
++                captured.velocity_world_mps,
++                captured.estimator_sample_count,
++                captured.incoming_count,
++            ),
++            (
++                101,
++                4,
++                11,
++                (1.1, 1.2, 1.3),
++                (1.4, 1.5, 1.6),
++                (-1.0, 0.0, 0.0),
++                31,
++                1,
++            ),
++        )
++
++    def test_tick_capture_waits_for_inflight_input_projection_boundary(self):
++        with tempfile.TemporaryDirectory() as temp_dir:
++            (
++                monitor,
++                _log,
++                transport,
++                _decoder_log,
++                _ingested,
++                pipeline,
++                _recorder,
++                _web,
++                _lane,
++            ) = _constructed_monitor(Path(temp_dir))
++            release_input = threading.Event()
++            monitor.adapter.release = release_input
++            tick_started = threading.Event()
++            tick_entered_pipeline = threading.Event()
++            original_tick = pipeline.tick
++
++            def observed_tick(**kwargs):
++                tick_entered_pipeline.set()
++                return original_tick(**kwargs)
++
++            pipeline.tick = observed_tick
++            item = SimpleNamespace(
++                channel="vicon_state_data",
++                message=SimpleNamespace(name="ball"),
++                payload_size=96,
++                received_monotonic_s=5.0,
++                wall_time_us=1,
++            )
++            input_thread = threading.Thread(
++                target=monitor._process_input,
++                args=(item,),
++            )
++
++            def run_tick():
++                tick_started.set()
++                monitor._tick_once()
++
++            tick_thread = threading.Thread(target=run_tick)
++            try:
++                input_thread.start()
++                self.assertTrue(monitor.adapter.entered.wait(1.0))
++                tick_thread.start()
++                self.assertTrue(tick_started.wait(1.0))
++                self.assertFalse(tick_entered_pipeline.wait(0.1))
++                release_input.set()
++                input_thread.join(1.0)
++                tick_thread.join(1.0)
++                self.assertFalse(input_thread.is_alive())
++                self.assertFalse(tick_thread.is_alive())
++                self.assertTrue(tick_entered_pipeline.is_set())
++                self.assertLess(
++                    pipeline.log.index("pipeline.ingest"),
++                    pipeline.log.index("pipeline.tick"),
++                )
++            finally:
++                release_input.set()
++                input_thread.join(1.0)
++                tick_thread.join(1.0)
++                monitor.close(timeout_s=0.0)
++                transport.close_fds()
++
+     def test_subject_health_distinguishes_never_live_stale_and_invalid(self):
+         values = iter(
+             (
+                 10.0,
+                 10.025,
+                 10.1,
+                 10.125,
+                 10.7,
+                 10.725,
+                 10.9,
+@@ -1069,20 +1231,344 @@ class HitterTaskMonitorTest(unittest.TestCase):
+         self.assertIsNone(
+             live.production_gate.task_observation_valid_dimensions
+         )
+         self.assertIsNone(
+             live.production_gate.task_observation_clip_count
+         )
+         self.assertIsNone(live.current_attempt.predicted_strike_time_s)
+         self.assertIsNone(live.current_attempt.planner_tts_s)
+         self.assertIsNone(live.current_attempt.arm_tts_s)
+ 
++    def test_upstream_gate_precedence_dominates_stale_downstream_state(self):
++        with tempfile.TemporaryDirectory() as temp_dir:
++            (
++                monitor,
++                _log,
++                transport,
++                _decoder_log,
++                _ingested,
++                _pipeline,
++                recorder,
++                _web,
++                _lane,
++            ) = _constructed_monitor(Path(temp_dir))
++            monitor.runtime_settings = SimpleNamespace(
++                incoming_confirmation_snapshots=3,
++                arm_tts_s=0.35,
++            )
++            ready_ball = BallDiagnosticState(
++                status="READY",
++                estimator_sample_count=31,
++                estimator_window_size=31,
++                speed_mps=1.0,
++                velocity_world_mps=(-1.0, 0.0, 0.0),
++                incoming_count=3,
++                incoming_required_count=3,
++                incoming_status="INCOMING",
++                blocker=None,
++            )
++            warming_ball = replace(
++                ready_ball,
++                status="ESTIMATING",
++                estimator_sample_count=10,
++                speed_mps=None,
++                velocity_world_mps=None,
++                incoming_count=None,
++                incoming_status="NOT_EVALUATED",
++                blocker="ESTIMATOR_WARMING",
++            )
++            live_pelvis = SubjectHealth(
++                status="LIVE",
++                rate_hz=360.0,
++                age_s=0.001,
++                source_frame=1,
++                valid=True,
++                occluded=False,
++            )
++            missing_pelvis = replace(
++                live_pelvis,
++                status="NEVER_SEEN",
++                rate_hz=None,
++                age_s=None,
++                source_frame=None,
++                valid=None,
++                occluded=None,
++            )
++            confirmed = SimpleNamespace(
++                track_epoch=1,
++                consecutive_count=3,
++                confirmed=True,
++            )
++            confirming = SimpleNamespace(
++                track_epoch=1,
++                consecutive_count=1,
++                confirmed=False,
++            )
++            ready_command = SimpleNamespace(
++                strike_deadline_monotonic_s=12.0,
++                error_type=None,
++                error_text=None,
++                command_fields={"strike_type": 0},
++            )
++            rejected_command = SimpleNamespace(
++                strike_deadline_monotonic_s=12.0,
++                error_type="ValueError",
++                error_text="no directed crossing",
++                command_fields=None,
++            )
++            stale_task = SimpleNamespace(
++                post_clip=tuple(0.0 for _ in range(11)),
++                clip_count=2,
++            )
++            summary = AttemptSummary(
++                attempt_id=1,
++                status="ACTIVE",
++                stage="DETECTED",
++                primary_blocker=None,
++                ball_speed_mps=None,
++                predicted_strike_time_s=None,
++                planner_tts_s=None,
++                arm_tts_s=None,
++                task_obs_status="PENDING",
++                ab_summary=None,
++                recording_complete=True,
++            )
++            cases = (
++                (
++                    "pelvis unavailable",
++                    missing_pelvis,
++                    ready_ball,
++                    confirmed,
++                    "armed",
++                    ready_command,
++                    "BLOCKED",
++                    "PELVIS_UNAVAILABLE",
++                    "NOT_EVALUATED",
++                    "NOT_AVAILABLE",
++                    "PLANNER_PELVIS_UNAVAILABLE",
++                    "PELVIS_UNAVAILABLE",
++                ),
++                (
++                    "estimator warming",
++                    live_pelvis,
++                    warming_ball,
++                    confirmed,
++                    "armed",
++                    ready_command,
++                    "BLOCKED",
++                    "ESTIMATOR_WARMING",
++                    "NOT_EVALUATED",
++                    "NOT_AVAILABLE",
++                    "PLANNER_ESTIMATOR_WARMING",
++                    "ESTIMATOR_WARMING",
++                ),
++                (
++                    "incoming not confirmed",
++                    live_pelvis,
++                    ready_ball,
++                    confirming,
++                    "armed",
++                    ready_command,
++                    "BLOCKED",
++                    "INCOMING_NOT_CONFIRMED",
++                    "NOT_EVALUATED",
++                    "NOT_AVAILABLE",
++                    "PLANNER_INCOMING_NOT_CONFIRMED",
++                    "INCOMING_NOT_CONFIRMED",
++                ),
++                (
++                    "planner rejected",
++                    live_pelvis,
++                    ready_ball,
++                    confirmed,
++                    "armed",
++                    rejected_command,
++                    "REJECTED",
++                    "NO_DIRECTED_CROSSING",
++                    "NOT_EVALUATED",
++                    "NOT_AVAILABLE",
++                    "PLANNER_NO_DIRECTED_CROSSING",
++                    "NO_DIRECTED_CROSSING",
++                ),
++                (
++                    "stale armed task result",
++                    live_pelvis,
++                    ready_ball,
++                    confirmed,
++                    "tracking",
++                    ready_command,
++                    "READY",
++                    None,
++                    "NOT_ARMED",
++                    "NOT_AVAILABLE",
++                    "PLANNER_READY",
++                    None,
++                ),
++            )
++            try:
++                for (
++                    name,
++                    pelvis,
++                    ball,
++                    incoming,
++                    phase,
++                    command,
++                    expected_planner,
++                    expected_reason,
++                    expected_arm,
++                    expected_task,
++                    expected_stage,
++                    expected_blocker,
++                ) in cases:
++                    with self.subTest(name=name):
++                        tick_result = SimpleNamespace(
++                            phase=phase,
++                            command_result=command,
++                            task_observation=stale_task,
++                            task_pass=True,
++                            errors=(),
++                        )
++                        gate = monitor._production_gate_snapshot(
++                            tick_result=tick_result,
++                            incoming=incoming,
++                            ball=ball,
++                            subjects={"g1pelvis": pelvis},
++                            obs_now_s=10.0,
++                        )
++                        projected = monitor._project_attempt(
++                            summary,
++                            tick_result=tick_result,
++                            incoming=incoming,
++                            obs_now_s=10.0,
++                            recorder_status=recorder.status(),
++                            ball=ball,
++                            production_gate=gate,
++                        )
++                        self.assertEqual(
++                            (
++                                gate.planner_status,
++                                gate.planner_reason_code,
++                                gate.arm_status,
++                                gate.task_observation_status,
++                                gate.task_observation_valid_dimensions,
++                                gate.task_observation_clip_count,
++                                projected.stage,
++                                projected.primary_blocker,
++                                projected.task_obs_status,
++                            ),
++                            (
++                                expected_planner,
++                                expected_reason,
++                                expected_arm,
++                                expected_task,
++                                None,
++                                None,
++                                expected_stage,
++                                expected_blocker,
++                                expected_task,
++                            ),
++                        )
++            finally:
++                monitor.close(timeout_s=0.0)
++                transport.close_fds()
++
++    def test_unknown_ball_projection_preserves_null_progress(self):
++        with tempfile.TemporaryDirectory() as temp_dir:
++            (
++                monitor,
++                _log,
++                transport,
++                _decoder_log,
++                _ingested,
++                _pipeline,
++                recorder,
++                _web,
++                _lane,
++            ) = _constructed_monitor(Path(temp_dir))
++            monitor._latest_estimator_sample_count = 17
++            monitor._latest_ball_speed_mps = 1.5
++            unknown = BallDiagnosticState(
++                status="UNKNOWN",
++                estimator_sample_count=None,
++                estimator_window_size=None,
++                speed_mps=None,
++                velocity_world_mps=None,
++                incoming_count=None,
++                incoming_required_count=None,
++                incoming_status="UNKNOWN",
++                blocker=None,
++            )
++            pelvis = SubjectHealth(
++                status="LIVE",
++                rate_hz=360.0,
++                age_s=0.001,
++                source_frame=1,
++                valid=True,
++                occluded=False,
++            )
++            incoming = SimpleNamespace(
++                track_epoch=None,
++                consecutive_count=0,
++                confirmed=False,
++            )
++            tick_result = SimpleNamespace(
++                phase="armed",
++                command_result=None,
++                task_observation=None,
++                task_pass=False,
++                errors=(),
++            )
++            summary = AttemptSummary(
++                attempt_id=1,
++                status="ACTIVE",
++                stage="DETECTED",
++                primary_blocker=None,
++                ball_speed_mps=None,
++                predicted_strike_time_s=None,
++                planner_tts_s=None,
++                arm_tts_s=None,
++                task_obs_status="PENDING",
++                ab_summary=None,
++                recording_complete=True,
++            )
++            try:
++                gate = monitor._production_gate_snapshot(
++                    tick_result=tick_result,
++                    incoming=incoming,
++                    ball=unknown,
++                    subjects={"g1pelvis": pelvis},
++                    obs_now_s=10.0,
++                )
++                projected = monitor._project_attempt(
++                    summary,
++                    tick_result=tick_result,
++                    incoming=incoming,
++                    obs_now_s=10.0,
++                    recorder_status=recorder.status(),
++                    ball=unknown,
++                    production_gate=gate,
++                )
++            finally:
++                monitor.close(timeout_s=0.0)
++                transport.close_fds()
++
++        self.assertEqual(gate.planner_status, "BLOCKED")
++        self.assertEqual(gate.planner_reason_code, "BALL_STATE_UNKNOWN")
++        self.assertNotEqual(gate.planner_reason_code, "ESTIMATOR_WARMING")
++        self.assertEqual(projected.stage, "PLANNER_BALL_STATE_UNKNOWN")
++        self.assertEqual(projected.primary_blocker, "BALL_STATE_UNKNOWN")
++        self.assertIsNone(projected.ball_speed_mps)
++        self.assertIsNone(projected.estimator_sample_count)
++        self.assertIsNone(projected.estimator_window_size)
++        self.assertIsNone(projected.incoming_count)
++        self.assertIsNone(projected.incoming_required_count)
++
+     def test_attempt_projection_uses_same_ball_window_and_required_counts(self):
+         values = iter((10.0, 10.125))
+         with tempfile.TemporaryDirectory() as temp_dir:
+             (
+                 monitor,
+                 _log,
+                 transport,
+                 _decoder_log,
+                 _ingested,
+                 pipeline,
+@@ -1124,32 +1610,35 @@ class HitterTaskMonitorTest(unittest.TestCase):
+             finally:
+                 monitor.close(timeout_s=0.0)
+                 transport.close_fds()
+ 
+         live = next(
+             draft.payload
+             for draft in lane.drafts
+             if draft.kind == "LIVE_SNAPSHOT"
+         )
+         attempt = live["current_attempt"]
+-        self.assertEqual(attempt["stage"], "INCOMING_CONFIRMING 2/4")
++        self.assertEqual(
++            attempt["stage"],
++            "PLANNER_PELVIS_UNAVAILABLE",
++        )
+         self.assertEqual(
+             (
+                 attempt["estimator_sample_count"],
+                 attempt["estimator_window_size"],
+                 attempt["incoming_count"],
+                 attempt["incoming_required_count"],
+             ),
+             (17, 29, 2, 4),
+         )
+ 
+-    def test_attempt_stage_and_estimator_field_use_one_count_snapshot(self):
++    def test_attempt_ignores_legacy_count_without_canonical_ball_snapshot(self):
+         values = iter((10.0, 10.125))
+         with tempfile.TemporaryDirectory() as temp_dir:
+             (
+                 monitor,
+                 _log,
+                 transport,
+                 _decoder_log,
+                 _ingested,
+                 pipeline,
+                 _recorder,
+@@ -1172,46 +1661,37 @@ class HitterTaskMonitorTest(unittest.TestCase):
+                 ab_summary=None,
+                 recording_complete=True,
+             )
+             pipeline.incoming = SimpleNamespace(
+                 snapshot=lambda: SimpleNamespace(
+                     consecutive_count=0,
+                     confirmed=False,
+                 )
+             )
+             monitor._latest_estimator_sample_count = 17
+-            original_attempt_stage = monitor._attempt_stage
+-
+-            def reset_count_after_stage(*args, **kwargs):
+-                stage = original_attempt_stage(*args, **kwargs)
+-                monitor._latest_estimator_sample_count = 0
+-                return stage
+-
+-            monitor._attempt_stage = reset_count_after_stage
+             try:
+                 monitor._tick_once()
+             finally:
+                 monitor.close(timeout_s=0.0)
+                 transport.close_fds()
+ 
+             current = next(
+                 draft
+                 for draft in lane.drafts
+                 if draft.kind == "ATTEMPT_CURRENT"
+             )
+             self.assertEqual(
+                 current.payload["attempt"]["stage"],
+-                "ESTIMATING 17/31",
++                "PLANNER_PELVIS_UNAVAILABLE",
+             )
+-            self.assertEqual(
+-                current.payload["attempt"]["estimator_sample_count"],
+-                17,
++            self.assertIsNone(
++                current.payload["attempt"]["estimator_sample_count"]
+             )
+ 
+     def test_health_requires_fresh_heartbeat_and_reports_result_overwrite(self):
+         with tempfile.TemporaryDirectory() as temp_dir:
+             (
+                 monitor,
+                 _log,
+                 transport,
+                 _decoder_log,
+                 _ingested,
+diff --git a/deploy/tests/test_hitter_task_pipeline.py b/deploy/tests/test_hitter_task_pipeline.py
+index 745f88c..aabca18 100644
+--- a/deploy/tests/test_hitter_task_pipeline.py
++++ b/deploy/tests/test_hitter_task_pipeline.py
+@@ -654,20 +654,92 @@ class ShadowTaskPipelineTests(unittest.TestCase):
+         self.assertEqual(
+             [snapshot.generation for snapshot in worker.submissions],
+             [1, 3],
+         )
+         self.assertEqual(
+             [sample.input_seq for sample, _binding in raw.items],
+             [1, 2, 3],
+         )
+         self.assertTrue(all(binding is not None for _, binding in raw.items))
+ 
++    def test_throttled_ingest_keeps_one_canonical_ball_observation(self) -> None:
++        pipeline, _worker, _adapter, _raw, _events = self._pipeline(
++            required=3
++        )
++        first = _output(
++            11,
++            received_s=5.0,
++            velocity=(-1.0, 0.1, 0.2),
++            epoch=4,
++            estimator_sample_count=31,
++        )
++        first = replace(
++            first,
++            sample=replace(
++                first.sample,
++                source_frame=101,
++                position_w=np.array([1.1, 1.2, 1.3]),
++            ),
++            snapshot=replace(
++                first.snapshot,
++                source_frame=101,
++                position_w=np.array([1.4, 1.5, 1.6]),
++            ),
++        )
++        throttled = _output(
++            12,
++            received_s=5.005,
++            velocity=(-2.0, 2.1, 2.2),
++            epoch=4,
++            estimator_sample_count=32,
++        )
++        throttled = replace(
++            throttled,
++            sample=replace(
++                throttled.sample,
++                source_frame=102,
++                position_w=np.array([2.1, 2.2, 2.3]),
++            ),
++            snapshot=replace(
++                throttled.snapshot,
++                source_frame=102,
++                position_w=np.array([2.4, 2.5, 2.6]),
++            ),
++        )
++
++        pipeline.ingest_adapter_output(first)
++        pipeline.ingest_adapter_output(throttled)
++
++        state = self._ball_diagnostics(pipeline).snapshot()
++        self.assertEqual(
++            (
++                state.source_frame,
++                state.track_epoch,
++                state.generation,
++                state.estimator_sample_count,
++                state.incoming_count,
++            ),
++            (101, 4, 11, 31, 1),
++        )
++        np.testing.assert_allclose(
++            state.raw_position_w,
++            (1.1, 1.2, 1.3),
++        )
++        np.testing.assert_allclose(
++            state.estimated_position_w,
++            (1.4, 1.5, 1.6),
++        )
++        np.testing.assert_allclose(
++            state.velocity_world_mps,
++            (-1.0, 0.1, 0.2),
++        )
++
+     def test_ingest_submits_without_pipeline_trace_lock_inversion(self) -> None:
+         worker = _LockOrderProbeWorker()
+         pipeline, _worker, _adapter, _raw, _events = self._pipeline(
+             worker=worker
+         )
+         worker.pipeline = pipeline
+ 
+         pipeline.ingest_adapter_output(_output(1, received_s=1.0))
+ 
+         self.assertTrue(worker.wait_callbacks())

@@ -1,0 +1,39 @@
+["bash", "deploy/mocap_bridge/run_robotbridge4_vicon_real.sh", "--check-only"]
+table calibration: /home/yhl/Desktop/RobotBridge4_refactor/deploy/mocap_bridge/calibrations/vicon_table_frame_20260822_validated.json (sha256=3a7b08abd615e0fa06715c8af424b01cf346a39c0734f4e32bdf6d5d0663b649)
+pelvis calibration: /home/yhl/Desktop/RobotBridge4_refactor/deploy/mocap_bridge/calibrations/vicon_g1_pelvis_orientation_20260822_validated.json (sha256=a9f841d119ba8db531a7c463d5c7c2bcef27e747e5f62e88418531a15d9d56ee)
+policy calibration contract: vicon_state_data_v2/G2Pelvis, center=[1.365369, 0.0], H/L/W=0.76/2.730738/1.512451
+RobotBridge4 real deployment calibration bundle: 20260822 validated
+Calibration preflight: PASS
+
+["ldd", "deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2"]
+	linux-vdso.so.1 (0x00007ffdfe273000)
+	libViconDataStreamSDK_CPP.so => /home/yhl/Desktop/RobotBridge4_refactor/vicon_datastream_sdk/linux64/Linux64/libViconDataStreamSDK_CPP.so (0x00007042dfb6b000)
+	liblcm.so.1 => /home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib/liblcm.so.1 (0x00007042dfb52000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007042df800000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007042dfa58000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007042dfa36000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007042df400000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007042dfcaa000)
+	libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007042df6c5000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007042dfa31000)
+	libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007042df64f000)
+
+["ldd", "unitree_sdk2/.build-robotbridge4-v2/bin/trans"]
+	linux-vdso.so.1 (0x00007fffbbcdf000)
+	libddsc.so.0 => /home/yhl/Desktop/RobotBridge4_refactor/unitree_sdk2/thirdparty/lib/x86_64/libddsc.so.0 (0x00007bcd41b35000)
+	libddscxx.so.0 => /home/yhl/Desktop/RobotBridge4_refactor/unitree_sdk2/thirdparty/lib/x86_64/libddscxx.so.0 (0x00007bcd41800000)
+	liblcm.so.1 => /home/yhl/miniforge3/envs/isaaclab/lib/python3.10/site-packages/lib/liblcm.so.1 (0x00007bcd41b1c000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007bcd41400000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007bcd41ae7000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007bcd41000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007bcd41e19000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007bcd41ae2000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007bcd41add000)
+	libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007bcd416c5000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007bcd41319000)
+	libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007bcd41a65000)
+
+["deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2", "--help"]
+Usage: deploy/mocap_bridge/.build-v2/vicon_table_lcm_bridge_v2 [--host 192.168.10.1:801] [--tracker-name G1Pelvis] [--base-subject G2Pelvis] [--calib-sec 2] [--table-calib table_frame_latest.json] [--pelvis-orientation-calib pelvis_orientation.json] [--save-table-calib vicon_table_frame_candidate.json] [--ignore-raw-sphere-m x,y,z,r] [--clear-raw-ignore-spheres] [--corner-exclusion-radius-mm 50] [--vicon-frame-rate-hz FALLBACK_HZ] [--channel vicon_state_data_v2] [--ball-track-association-radius-m 0.35] [--ball-track-end-timeout-s 0.25] [--duration 0] [--publish]
+  --vicon-frame-rate-hz is fallback only when the SDK rate is unavailable.
+

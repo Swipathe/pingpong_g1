@@ -1,0 +1,30 @@
+_target_: simulator.mujoco.Mujoco
+_recursive_: False
+config:
+  marker: True
+  random_init_heading: False
+  control: ${robot.control}
+  asset: ${robot.asset}
+  hitter_ball_input:
+    mode: chingmu_ghost
+    robot_backend: mujoco
+    planner_feed: snapshot_stream
+    loop_pacing: simulator
+    lcm_url: "udpm://239.255.76.67:7667?ttl=255"
+    channel: vicon_state_data
+    read_only: true
+    use_mujoco_base_pose: true
+    stale_timeout_s: 0.10
+    ghost_collision: false
+    ghost_max_extrapolation_s: 0.05
+    table_position_tolerance_m: 0.03
+    table_angle_tolerance_deg: 3.0
+    required_table_confirmations: 3
+    ball_xy_margin_m: 0.50
+    ball_min_height_offset_m: -0.30
+    ball_max_height_offset_m: 2.50
+    trace_queue_capacity: 4096
+    trace_rotate_bytes: 67108864
+    trace_retained_files: 4
+    trace_flush_interval_s: 1.0
+    status_log_interval_s: 1.0
